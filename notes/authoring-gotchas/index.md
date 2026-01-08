@@ -83,11 +83,11 @@ If the system needs to reason about something, it must be expressed as **Concept
 
 ## 5. “But I _can_ do things inside text — what’s going on?”
 
-Because Content supports **Patch**.
+Because Content supports **Gloss**.
 
-Inside Content, Codex recognizes **Patch language constructs**.
+Inside Content, Codex recognizes **Gloss language constructs**.
 
-Patch allows authors to:
+Gloss allows authors to:
 
 - add semantic emphasis
 - reference declared entities or resources
@@ -95,19 +95,19 @@ Patch allows authors to:
 
 However:
 
-- Patch is **not styling**
-- Patch does **not** create new Concepts or Traits
-- Patch does **not** affect validity unless explicitly defined to do so by schema
+- Gloss is **not styling**
+- Gloss does **not** create new Concepts or Traits
+- Gloss does **not** affect validity unless explicitly defined to do so by schema
 
-Patch enriches meaning inside Content without turning prose into structure.
+Gloss enriches meaning inside Content without turning prose into structure.
 
 ---
 
 ## 6. “Why didn’t my inline thing affect layout or appearance?”
 
-Because **Patch is not presentation**.
+Because **Gloss is not presentation**.
 
-- Patch expresses _what something is_
+- Gloss expresses _what something is_
 - Design Policy decides _how it appears_
 - Renderers decide _how that policy manifests per target_
 
@@ -143,7 +143,7 @@ Because editorial annotations:
 
 They behave like **editorial margin notes**, not inline markup.
 
-If you need precise attachment or inline semantics, use Patch.
+If you need precise attachment or inline semantics, use Gloss.
 If you need visible output, use `<Annotation>`.
 
 ---
@@ -234,7 +234,7 @@ Relaxed rules here would create chaos downstream.
 - Identity, meaning, and structure are intentional
 - Schemas own semantics; authors provide facts
 - Content carries human meaning, not inferred data
-- Patch enriches meaning inline without becoming presentation
+- Gloss enriches meaning inline without becoming presentation
 - Annotations are preserved but selectively rendered
 - Canonical form is non-negotiable
 

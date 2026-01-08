@@ -98,29 +98,29 @@ Developer convenience is never a justification for authoring complexity.
 
 ---
 
-### 2.3 Inline Content Enrichment: Patch (Hard)
+### 2.3 Inline Content Enrichment: Gloss (Hard)
 
-Within Codex **Content**, inline enrichment MAY be expressed using the **Patch language**.
+Within Codex **Content**, inline enrichment MAY be expressed using the **Gloss language**.
 
-**Patch is a language.**
+**Gloss is a language.**
 It is not formatting, styling, or presentation.
 
-Patch exists to allow authors to **annotate, qualify, and reference meaning inside content**, without breaking declarative purity or introducing target assumptions.
+Gloss exists to allow authors to **annotate, qualify, and reference meaning inside content**, without breaking declarative purity or introducing target assumptions.
 
-Patch:
+Gloss:
 
 * operates *only* inside Content
 * is fully declarative
 * is parseable and round-trippable
 * produces structured semantic data, not decorated strings
 
-Patch is used to express, for example:
+Gloss is used to express, for example:
 
 * emphasis and semantic weight
 * references to declared resources or identifiers
 * annotations that participate in meaning, not appearance
 
-Patch is **not**:
+Gloss is **not**:
 
 * HTML
 * Markdown
@@ -128,10 +128,10 @@ Patch is **not**:
 * a styling language
 * a presentation instruction system
 
-Patch does **not** define how something looks.
+Gloss does **not** define how something looks.
 It defines **what something is**, semantically, within authored content.
 
-All Patch constructs compile into internal semantic structures and remain subject to:
+All Gloss constructs compile into internal semantic structures and remain subject to:
 
 * determinism
 * validation
@@ -152,7 +152,7 @@ This means:
 
 If something is not declared, it does not exist.
 
-This applies equally to Codex structure and to Patch-enriched content.
+This applies equally to Codex structure and to Gloss-enriched content.
 
 ---
 
@@ -160,7 +160,7 @@ This applies equally to Codex structure and to Patch-enriched content.
 
 ### 4.1 Compilation Is Mandatory
 
-All Codex documents, including Patch-enriched content, are compiled into internal representations, including:
+All Codex documents, including Gloss-enriched content, are compiled into internal representations, including:
 
 * abstract syntax structures
 * intermediate representations
@@ -182,7 +182,7 @@ Authors MUST NEVER see or write these representations.
 
 ### 4.2 Naming and Abbreviation Rule
 
-* **Codex and Patch use full, plain-English names**
+* **Codex and Gloss use full, plain-English names**
 * **Internal representations may use abbreviated names freely**
 
 Abbreviations are permitted only where humans do not see them.
@@ -205,7 +205,7 @@ The system MUST be able to explain:
 * why something is hidden
 * why something is ordered or grouped
 
-This applies equally to structure, content, and Patch-derived semantics.
+This applies equally to structure, content, and Gloss-derived semantics.
 
 Opaque behavior is forbidden.
 
@@ -224,7 +224,7 @@ Paperhat Codex enforces strict separation:
 * **Warden** enforces validity
 * **Renderers** emit target-specific output
 
-Patch contributes semantic data only.
+Gloss contributes semantic data only.
 It may not assume responsibilities owned by Design Policy or Renderers.
 
 No library may assume responsibilities owned by another.
@@ -242,7 +242,7 @@ This means:
 * persistence does not depend on JavaScript
 * constraint enforcement does not depend on JavaScript
 
-Patch semantics MUST remain correct in non-JavaScript environments.
+Gloss semantics MUST remain correct in non-JavaScript environments.
 
 JavaScript MAY enhance experience, but MUST NOT enable correctness.
 
@@ -258,7 +258,7 @@ All authoritative semantics in Paperhat Codex MUST be referentially transparent.
 
 Runtime-only sources (cookies, clocks, APIs, UI state) MUST NOT affect semantic truth.
 
-This includes semantics derived from Patch.
+This includes semantics derived from Gloss.
 
 ---
 
@@ -276,7 +276,7 @@ The same Codex document may be rendered to:
 * Voice systems
 * future targets not yet defined
 
-No authoring construct — including Patch — may assume a specific target.
+No authoring construct — including Gloss — may assume a specific target.
 
 ---
 
@@ -306,7 +306,7 @@ It prioritizes:
 * humans over machines
 
 Structure is authored in Codex.
-Inline meaning may be enriched with Patch.
+Inline meaning may be enriched with Gloss.
 Presentation is decided elsewhere.
 
-If something cannot be expressed clearly and declaratively in Codex and Patch, it does not belong in the system.
+If something cannot be expressed clearly and declaratively in Codex and Gloss, it does not belong in the system.
