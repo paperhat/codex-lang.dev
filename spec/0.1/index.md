@@ -62,29 +62,29 @@ documents. All are required for a complete and compliant implementation.
 
 ### Core Language Definition
 
-- **Language Specification** (`/language/`)
-- **Structural Concepts** (`/structural-concepts/`)
-- **Naming Rules** (`/naming/`)
-- **Identifiers** (`/identifiers/`)
+- [**Language Specification**](./language/)
+- [**Structural Concepts**](./structural-concepts/)
+- [**Naming Rules**](./naming/)
+- [**Identifiers**](./dentifiers/)
 
 ### Surface Syntax and Content
 
-- **Surface Form** (`/surface-form/`)
-- **Inline Text Markup (Patch)** (`/inline-text-markup/`)
+- [**Surface Form**](./surface-form/)
+- [**Inline Text Markup (Patch)**](./inline-text-markup/)
 
 ### Schema and Versioning
 
-- **Schema Authoring** (`/schema-authoring/`)
-- **Schema Versioning** (`/schema-versioning/`)
+- [**Schema Authoring**](./schema-authoring/)
+- [**Schema Versioning**](./schema-versioning/)
 
 ### Relationships and Semantics
 
-- **Reference Traits** (`/reference-traits/`)
+- [**Reference Traits**](./reference-traits/)
 
 ### Error Classification
 
-- **Formatting Errors** (`/formatting-errors/`)
-- **Validation Errors** (`/validation-errors/`)
+- [**Formatting Errors**](./formatting-errors/)
+- [**Validation Errors**](./validation-errors/)
 
 ---
 
