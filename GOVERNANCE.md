@@ -20,22 +20,22 @@ Final authority over **Normative** content rests with the **Specification Editor
 
 ## Origin and Stewardship
 
-Codex was originated by **Charles F. Munat**.
+Codex was originated by **Charles F. Munat**, who serves as the **Specification Editor**.
 
-The Codex Language Specification is stewarded under a strong editorial governance model to ensure long-term coherence, semantic stability, and architectural consistency.
+The Codex Language Specification is stewarded under a **single-editor governance model** to ensure long-term coherence, semantic integrity, and architectural consistency.
 
-The **Specification Editor** is responsible for:
+The Specification Editor holds final responsibility and authority for:
 
 - defining the canonical meaning of the Codex language
-- approving and ratifying normative changes
+- approving, rejecting, and ratifying normative changes
 - maintaining versioned, authoritative specifications
-- determining compatibility and conformance requirements
+- determining compatibility, conformance, and compliance criteria
 
-While the specification is public and open to review, final authority over **Normative** content rests with the Specification Editor.
-
-This stewardship model prioritizes clarity, continuity, and correctness over consensus.
+While the specification is public and open to review, **decision-making authority over Normative content is centralized** in the Specification Editor in order to preserve clarity, continuity, and conceptual integrity.
 
 If the Specification Editor is unable or unwilling to continue in this role, editorial authority may be transferred by the outgoing editor, or, in their absence, by a process publicly defined in this repository.
+
+This stewardship model is intended to prioritize correctness and long-term stability over consensus or majority rule.
 
 ---
 
