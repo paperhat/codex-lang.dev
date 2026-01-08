@@ -1,16 +1,22 @@
-# Codex Formatting Error Rules (DRAFT)
+Status: NORMATIVE  
+Version: 0.1  
+Editor: Charles F. Munat
 
-## Status
+# Codex Formatting Error Rules — Version 0.1
 
-- **DRAFT**  
-- Normative once locked  
-- Applies to all Codex formatters, validators, and normalization tooling
+This document defines **how formatting-related errors are classified and handled**
+in the Codex language.
+
+Formatting error rules are part of the Codex language specification and are governed
+by this document.
+
+This document is **Normative**.
 
 ---
 
 ## 1. Purpose
 
-This contract defines **how formatting-related errors are classified and handled** in Codex.
+This contract defines **formatting and normalization error handling** in Codex.
 
 Its goals are to:
 
@@ -32,17 +38,18 @@ Codex processing follows this strict sequence:
 3. **Normalize (canonicalize)**
 4. _(Optional)_ Re-parse canonical form
 
-Formatting errors may arise in phases 2 or 3, but **never** alter phase ordering.
+Formatting errors MAY arise during validation or normalization,
+but MUST NOT alter phase ordering.
 
 ---
 
-## 3. Parse vs Formatting Errors (Normative)
+## 3. Parse Errors vs Formatting Errors (Normative)
 
 ### Parse Errors
 
-Parse Errors occur when the input cannot be read into a syntactic structure.
+Parse errors occur when the input cannot be read into a valid syntactic structure.
 
-Examples:
+Examples include:
 
 - malformed Concept markers
 - invalid quoting
@@ -50,18 +57,18 @@ Examples:
 - unterminated Concepts
 - unterminated annotations
 
-Parse Errors halt processing immediately.
+Parse errors halt processing immediately.
 
 ---
 
 ### Formatting Errors
 
-Formatting Errors occur when:
+Formatting errors occur when:
 
 - input parses successfully
 - but violates **canonical surface form rules**
 
-Formatting Errors are **distinct from semantic or schema errors**.
+Formatting errors are **distinct from semantic, schema, or validation errors**.
 
 ---
 
@@ -77,7 +84,7 @@ There is no “closest” or “best-effort” canonical form.
 
 ## 5. Classes of Formatting Errors
 
-Formatting Errors include (non-exhaustive):
+Formatting errors include (non-exhaustive):
 
 - expanded empty Concepts
 - non-canonical indentation
@@ -87,33 +94,38 @@ Formatting Errors include (non-exhaustive):
 - blank lines in invalid positions
 - non-canonical Trait ordering
 - invalid line continuations
-- **misplaced or malformed annotations**
+- misplaced or malformed annotations
 
-Each violation is a **formatting error**, not a schema error.
+Each listed violation is a **formatting error**, not a schema error.
 
 ---
 
 ## 6. Annotation Formatting Errors (Normative)
 
-The following are **formatting errors** related to annotations:
+The following are **formatting errors** related to annotations.
 
 ### 6.1 Structural Errors
 
-- Unterminated editorial annotation (`[` without matching `]`)
-- Nested editorial annotations
-- Editorial annotation appearing inside Content
-- Editorial annotation appearing inside a Concept marker
-- Editorial annotation appearing inside a Trait name or value
+Structural annotation errors include:
 
-These are **fatal errors**.
+- unterminated editorial annotations (`[` without matching `]`)
+- nested editorial annotations
+- editorial annotations appearing inside Content
+- editorial annotations appearing inside Concept markers
+- editorial annotations appearing inside Trait names or values
+
+Structural annotation errors are **fatal formatting errors**.
 
 ---
 
 ### 6.2 Canonicalization Errors
 
-- Annotation placement that cannot be deterministically attached to a target Concept
-- Ambiguous attachment caused by invalid whitespace or structure
-- Editorial annotation that splits a syntactic unit (e.g. between a marker name and its Traits)
+Canonicalization errors include:
+
+- annotation placement that cannot be deterministically attached to a target Concept
+- ambiguous attachment caused by invalid whitespace or structure
+- editorial annotations that split a syntactic unit
+  (e.g. between a marker name and its Traits)
 
 If deterministic attachment cannot be established, normalization MUST fail.
 
@@ -121,12 +133,15 @@ If deterministic attachment cannot be established, normalization MUST fail.
 
 ### 6.3 Typed Annotation Errors
 
-- Editorial annotation with a malformed type prefix (e.g. missing colon)
-- `<Annotation>` Concept with an invalid or non-canonical `kind` Trait value
-- `<Annotation>` Concept missing required structure defined by schema
+The following conditions apply:
 
-Unrecognized editorial prefixes are **not errors**; they are treated as plain text.
-Invalid `<Annotation>` Concepts are schema errors, not formatting errors.
+- editorial annotations with malformed type prefixes (e.g. missing colon)
+  are **formatting errors**
+- unrecognized editorial prefixes are **not errors** and are treated as literal text
+- `<Annotation>` Concepts with invalid structure or invalid `kind` Trait values
+  are **schema errors**, not formatting errors
+
+Error classification MUST follow this distinction.
 
 ---
 
@@ -155,7 +170,7 @@ A **normalization failure** occurs when:
 
 Normalization failures are **fatal formatting errors**.
 
-Examples:
+Examples include:
 
 - ambiguous indentation
 - conflicting sectioning rules
@@ -166,14 +181,14 @@ Examples:
 
 ## 9. Formatting vs Schema Errors
 
-The following distinctions are mandatory:
+The following distinction is mandatory:
 
-- Formatting Errors concern **how** Codex is written
-- Schema Errors concern **what** Codex means
+- Formatting errors concern **how** Codex is written
+- Schema errors concern **what** Codex means
 
-A document MAY have both, but errors MUST be classified correctly.
+A document MAY contain both kinds of errors, but tools MUST classify them correctly.
 
-Tools MUST NOT report schema errors when the true cause is formatting.
+Tools MUST NOT report schema errors when the true cause is a formatting error.
 
 ---
 
@@ -184,9 +199,9 @@ Formatting error reports SHOULD include:
 - error classification: `FormattingError`
 - violated rule reference (surface form section)
 - location (line number or Concept path)
-- expected canonical form (if applicable)
+- expected canonical form, when applicable
 
-Exact wording and UI presentation are tool-defined.
+Exact wording and presentation are tool-defined.
 
 ---
 
@@ -226,3 +241,7 @@ It strictly defines **error classification and enforcement**.
 - Normalization must be deterministic or fail
 - No heuristic or silent correction is permitted
 - Codex formatting is mechanical and enforceable
+
+---
+
+End of Codex Formatting Error Rules v0.1.

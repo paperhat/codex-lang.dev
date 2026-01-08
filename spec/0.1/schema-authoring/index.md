@@ -1,10 +1,15 @@
-# Codex Schema Authoring Contract (DRAFT)
+Status: NORMATIVE  
+Version: 0.1  
+Editor: Charles F. Munat
 
-## Status
+# Codex Schema Authoring Contract — Version 0.1
 
-- **DRAFT**  
-- Normative once locked  
-- Applies to all Codex schemas that define Concepts, Traits, collections, or constraints
+This document defines **how schemas are authored** in the Codex language.
+
+Schema authoring rules are part of the Codex language specification and are governed
+by this document.
+
+This document is **Normative**.
 
 ---
 
@@ -19,13 +24,16 @@ Its goals are to:
 - prevent ambiguity between structure, meaning, and identity
 - keep Codex declarative, deterministic, and low-cognitive-load
 
-This contract governs **schema authoring**, not surface syntax or compilation.
+This contract governs **schema authoring responsibilities**, not surface syntax,
+compilation, or runtime behavior.
 
 ---
 
 ## 2. Role of a Schema
 
-A Codex schema:
+A Codex schema is the **sole authority on meaning**.
+
+A schema:
 
 - defines **which Concepts exist**
 - defines **which Traits are allowed** on those Concepts
@@ -33,9 +41,7 @@ A Codex schema:
 - defines **collection semantics** (ordered vs unordered)
 - defines **contextual meaning** for names
 
-Schemas are the **sole authority** on meaning in Codex.
-
-Surface syntax has no semantics without a schema.
+Codex surface syntax has no semantics without a schema.
 
 ---
 
@@ -54,7 +60,7 @@ For each Concept, a schema MUST define:
   - MAY be an Entity
   - MUST NOT be an Entity
 
-Schemas MUST NOT rely on naming conventions to infer these properties.
+Schemas MUST NOT rely on naming conventions or heuristics to infer these properties.
 
 ---
 
@@ -66,9 +72,10 @@ For each Concept, a schema MUST define:
 - which Traits are required
 - which Traits are forbidden
 
-Traits are never implicitly allowed.
+Traits are **never implicitly allowed**.
 
-If a Trait is not authorized for a Concept, its presence is a validation error.
+If a Trait is not explicitly authorized for a Concept, its presence is a validation
+error.
 
 ---
 
@@ -80,7 +87,7 @@ For each authorized Trait, a schema SHOULD define:
 
 - expected Value type(s)
 - cardinality (single vs multiple, if applicable)
-- whether the Trait participates in identity or reference
+- whether the Trait participates in identity or reference semantics
 
 Schemas MAY define additional constraints, but MUST remain declarative.
 
@@ -94,7 +101,7 @@ If a schema authorizes reference Traits (`reference`, `target`, `for`), it MUST 
 - what kinds of Entities they may refer to
 - whether exceptions to the singleton rule are permitted
 
-Absent explicit schema permission, reference Traits are mutually exclusive.
+Absent explicit schema authorization, reference Traits are mutually exclusive.
 
 ---
 
@@ -134,15 +141,15 @@ Schemas MUST NOT rely on numbering Traits to encode order.
 
 ## 9. Context Definition
 
-Schemas define **context**.
+Schemas define **contextual meaning**.
 
 A schema MAY:
 
 - define special meaning for Concepts within a specific parent Concept
-- reuse Concept names that have different meaning elsewhere
-- scope structural Concepts to a particular assembly or domain
+- reuse Concept names that have different meaning in other schemas or contexts
+- scope Structural Concepts to a particular assembly or domain
 
-Schemas MUST document contextual meanings clearly.
+Schemas MUST document contextual meanings explicitly.
 
 ---
 
@@ -155,7 +162,7 @@ Schemas MUST define validation rules sufficient to determine:
 - whether identity rules are satisfied
 - whether collections conform to declared semantics
 
-Schemas MUST be deterministic and mechanically enforceable.
+All schema validation MUST be deterministic and mechanically enforceable.
 
 ---
 
@@ -164,10 +171,10 @@ Schemas MUST be deterministic and mechanically enforceable.
 Schemas are responsible for making validation errors:
 
 - precise
-- actionable
 - attributable to a specific rule
+- explainable without heuristics
 
-Schemas MUST NOT rely on tool heuristics or guesswork.
+Schemas MUST NOT rely on tool guesswork or best-effort interpretation.
 
 ---
 
@@ -179,9 +186,9 @@ This contract does **not**:
 - mandate a schema language
 - prescribe ontology modeling styles
 - define inference rules
-- define runtime behavior
+- define runtime or execution behavior
 
-It defines **responsibilities**, not mechanisms.
+It defines **responsibilities and guarantees**, not mechanisms.
 
 ---
 
@@ -192,3 +199,7 @@ It defines **responsibilities**, not mechanisms.
 - Concepts, Traits, identity, collections, and context are schema-defined
 - Validation is deterministic and enforceable
 - Codex remains declarative end-to-end
+
+---
+
+End of Codex Schema Authoring Contract v0.1.

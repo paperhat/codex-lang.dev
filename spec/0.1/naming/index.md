@@ -1,24 +1,31 @@
-# Codex Naming Contract (DRAFT)
+Status: NORMATIVE  
+Version: 0.1  
+Editor: Charles F. Munat
 
-## Status
+# Codex Naming Contract — Version 0.1
 
-- **DRAFT**  
-- Normative once locked  
-- Applies to all Codex documentation, tooling, and error messages
+This document defines the **core naming vocabulary** and **naming rules** used
+throughout the Codex language.
+
+Naming rules are part of the Codex language specification and are governed by this
+document.
+
+This document is **Normative**.
 
 ---
 
 ## 1. Purpose
 
-This contract defines the **core naming vocabulary** and **naming rules** used to describe Codex.
+This contract defines the **terminology and naming rules** used to describe Codex.
 
 Its goals are to:
 
 - minimize cognitive load by making Codex read like **plain English**
-- avoid confusion with HTML / XML / SGML, UI frameworks, and OO terminology
+- avoid confusion with HTML, XML, SGML, UI frameworks, and object-oriented terminology
 - ensure humans, tools, and LLMs reason consistently about Codex
 
-This contract governs **naming only**. It does not restrict prose or other **Content**.
+This contract governs **naming only**.  
+It does not restrict prose or other **Content**.
 
 ---
 
@@ -44,8 +51,8 @@ Examples:
 
 Notes:
 
-- “Concept” refers to the _surface construct_, not a philosophical abstraction.
-- Not all Concepts are entities.
+- “Concept” refers to the Codex surface construct, not a philosophical abstraction.
+- Not all Concepts are Entities.
 
 ---
 
@@ -82,7 +89,7 @@ Values are:
 
 - immutable
 - schema-typed
-- never narrative
+- non-narrative
 
 Examples:
 
@@ -108,7 +115,7 @@ Example:
 <Description>
 	A cool dude.
 </Description>
-```
+````
 
 ---
 
@@ -116,14 +123,14 @@ Example:
 
 An **Entity** is a Concept that has identity.
 
-- A Concept **is an Entity iff it has an `id` Trait**
-- Entity identity is semantic and graph-addressable
-- Identity requirements are defined by schema, not by syntax
+* A Concept **is an Entity if and only if it declares an `id` Trait**
+* Entity identity is semantic and graph-addressable
+* Identity requirements are defined by schema, not by syntax
 
 Examples:
 
-- `<Recipe id="recipe:spaghetti">` → Entity
-- `<Step>` → not an Entity (unless schema explicitly allows it)
+* `<Recipe id="recipe:spaghetti">` → Entity
+* `<Step>` → not an Entity (unless schema explicitly authorizes it)
 
 ---
 
@@ -131,21 +138,22 @@ Examples:
 
 This section defines naming rules for Concept and Trait names.
 
-These rules apply **only to naming**. They do not restrict prose or other Content.
+These rules apply **only to naming**.
+They do not restrict prose or other Content.
 
 ---
 
 ### 3.1 Case Conventions
 
-- **Concept names** MUST use **PascalCase**
-- **Trait names** MUST use **camelCase**
+* **Concept names** MUST use **PascalCase**
+* **Trait names** MUST use **camelCase**
 
 The following styles are forbidden everywhere in Codex naming:
 
-- kebab-case
-- snake_case
-- SCREAMING_CASE
-- mixed or inconsistent casing
+* kebab-case
+* snake_case
+* SCREAMING_CASE
+* mixed or inconsistent casing
 
 ---
 
@@ -153,10 +161,9 @@ The following styles are forbidden everywhere in Codex naming:
 
 Codex avoids abbreviations in names.
 
-- In prose, general abbreviations are often identifiable by a trailing period (e.g. “Chas.” for “Charles”).
-- Periods are **never permitted** in Concept or Trait names.
-- Therefore, general abbreviations MUST NOT be used in Codex naming unless explicitly whitelisted.
-- When in doubt, names MUST be spelled out in full.
+* Periods are **never permitted** in Concept or Trait names.
+* General abbreviations MUST NOT be used unless explicitly whitelisted by schema.
+* When in doubt, names MUST be spelled out in full.
 
 This rule applies **only to naming**, not to Content.
 
@@ -168,29 +175,30 @@ Initialisms and acronyms MAY be used when widely understood.
 
 For naming purposes:
 
-- Initialisms are sequences of letters pronounced individually (e.g. FBI, CIA).
-- Acronyms are initialisms intended to be pronounced as words, and may include extra letters for readability.
+* Initialisms are sequences of letters pronounced individually (e.g. FBI, CIA).
+* Acronyms are initialisms intended to be pronounced as words and may include
+  additional letters for readability.
 
 Both are treated identically for casing.
 
 #### Capitalization Rule (Normative)
 
-- Only the **first letter** is capitalized.
-- Remaining letters follow normal word casing.
+* Only the **first letter** is capitalized.
+* Remaining letters follow normal word casing.
 
 Examples (correct):
 
-- `AstNode`
-- `FbiAgent`
-- `PlainHtml`
-- `LatexDocument`
+* `AstNode`
+* `FbiAgent`
+* `PlainHtml`
+* `LatexDocument`
 
 Examples (invalid):
 
-- `ASTNode`
-- `FBIAgent`
-- `PlainHTML`
-- `plainHTML`
+* `ASTNode`
+* `FBIAgent`
+* `PlainHTML`
+* `plainHTML`
 
 ---
 
@@ -200,15 +208,15 @@ Shorthand Trait names are forbidden.
 
 Examples of invalid Trait names:
 
-- `ref`
-- `lang`
-- `href`
+* `ref`
+* `lang`
+* `href`
 
 Trait names MUST use plain English:
 
-- `reference`
-- `language`
-- `uri` (or a more specific plain-English alternative)
+* `reference`
+* `language`
+* `uri` (or a more specific plain-English alternative)
 
 Longer names are preferred over abbreviated or opaque ones.
 
@@ -218,10 +226,10 @@ Longer names are preferred over abbreviated or opaque ones.
 
 These rules exist to ensure that Codex:
 
-- reads as **plain English**
-- minimizes cognitive load
-- avoids legacy markup and programming-language conventions
-- remains approachable to humans and LLMs alike
+* reads as **plain English**
+* minimizes cognitive load
+* avoids legacy markup and programming-language conventions
+* remains approachable to humans and LLMs alike
 
 ---
 
@@ -231,7 +239,8 @@ These rules exist to ensure that Codex:
 
 Traits are **never global**.
 
-All Traits are **authorized by schema** and may be restricted to Concepts in specific semantic roles.
+All Traits are authorized by schema and may be restricted to Concepts in specific
+semantic roles.
 
 A Trait is valid **only** when explicitly allowed for the Concept on which it appears.
 
@@ -241,11 +250,11 @@ A Trait is valid **only** when explicitly allowed for the Concept on which it ap
 
 The following Trait is authorized **only** for Entity Concepts:
 
-- `id`
+* `id`
 
 Declaring an `id` Trait makes a Concept an Entity.
 
-Concepts that are not Entities **must not** declare an `id` Trait.
+Concepts that are not Entities MUST NOT declare an `id` Trait.
 
 ---
 
@@ -253,24 +262,22 @@ Concepts that are not Entities **must not** declare an `id` Trait.
 
 Reference Traits bind a Concept to another Entity by identifier (IRI).
 
-- `reference` is the identifier (IRI) of another Entity.
-- Reference Traits are authorized only for Concepts whose schema-defined role is referential.
+Codex defines three reference Trait names with distinct intent:
 
-Codex defines three reference-trait names with distinct intent:
+* `reference` — a generic declarative pointer to another Entity
+* `target` — the Entity this Concept is about, applied to, or oriented toward
+* `for` — the Entity or Concept kind this Concept is intended for or applies to
 
-- `reference` — a generic declarative pointer to another Entity (default)
-- `target` — the Entity that this Concept is about / applied to / oriented toward
-- `for` — the Entity (or Concept kind) this Concept is intended for / applies to
-
-These are naming and intent distinctions. Their precise semantics are defined by schema.
+These are **naming and intent distinctions only**.
+Their precise semantics are defined by schema.
 
 #### Singleton Rule (Normative)
 
 A Concept MUST NOT declare more than one of the following Traits:
 
-- `reference`
-- `target`
-- `for`
+* `reference`
+* `target`
+* `for`
 
 unless explicitly permitted by schema.
 
@@ -278,13 +285,14 @@ unless explicitly permitted by schema.
 
 ### 4.4 Examples of `for` (Naming-Intent Examples)
 
-`for` is used when the meaning is **applicability or scope**, not generic reference and not “acted upon”.
+`for` is used when the meaning is **applicability or scope**, not generic reference
+and not action.
 
 Examples (illustrative):
 
-- A view definition that applies to a Concept kind: a view “for Recipe”
-- A policy definition that applies to a Concept kind: a policy “for User”
-- A configuration Concept that applies to a subsystem concept: config “for SearchIndex”
+* a view definition that applies to a Concept kind: a view “for Recipe”
+* a policy definition that applies to a Concept kind: a policy “for User”
+* a configuration Concept that applies to a subsystem Concept
 
 `for` is declarative scope. It is not UI wiring.
 
@@ -306,9 +314,11 @@ The same name MAY have different meaning in different contexts.
 
 Some Concept names are structural within specific contexts.
 
-Example: within a Codex module-assembly context, the Concept `Module` has assembly meaning because the schema defines it as such.
+For example, within a Codex module-assembly context, the Concept `Module` has
+assembly meaning because the schema defines it as such.
 
-Outside that context, `Module` is just a name that another schema may define differently.
+Outside that context, `Module` is simply a name that another schema may define
+differently.
 
 Codex avoids global prefixing (e.g. `CodexModule`) in favor of schema-scoped meaning.
 
@@ -316,14 +326,15 @@ Codex avoids global prefixing (e.g. `CodexModule`) in favor of schema-scoped mea
 
 ## 6. Structural vs Semantic Concepts
 
-This distinction is **terminological only** (no syntax difference):
+This distinction is **terminological only**.
 
-- **Semantic Concepts** express domain meaning
+* **Semantic Concepts** express domain meaning
   (e.g. `Recipe`, `Person`, `Policy`)
-- **Structural Concepts** organize or group meaning
+* **Structural Concepts** organize or group meaning
   (e.g. `Steps`, `Data`, `Policies`)
 
-Authors do **not** need to reason about this distinction while writing Codex. It exists to support clear documentation and tooling.
+Authors do not need to reason about this distinction while writing Codex.
+It exists to support documentation, tooling, and validation clarity.
 
 ---
 
@@ -333,7 +344,7 @@ Authors do **not** need to reason about this distinction while writing Codex. It
 
 A Concept is an Entity **if and only if** it declares an `id` Trait.
 
-Nothing else makes something an Entity.
+Nothing else confers identity.
 
 ---
 
@@ -341,8 +352,9 @@ Nothing else makes something an Entity.
 
 Which Concepts may or must be Entities is defined by schema.
 
-- Some Concepts **must** be Entities (e.g. `Recipe`, `Module`).
-- Some Concepts **must never** be Entities (e.g. value-like or structural Concepts such as `Step`, `Description`, `Data`), unless schema explicitly allows it.
+* Some Concepts MUST be Entities (e.g. `Recipe`, `Module`)
+* Some Concepts MUST NOT be Entities (e.g. structural or value-like Concepts),
+  unless schema explicitly authorizes it
 
 This prevents accidental identity explosion and graph pollution.
 
@@ -350,32 +362,38 @@ This prevents accidental identity explosion and graph pollution.
 
 ## 8. Forbidden Vocabulary (Normative)
 
-The following terms MUST NOT be used to describe Codex constructs, as they introduce ambiguity or legacy semantics.
+The following terms MUST NOT be used to describe Codex constructs, as they introduce
+ambiguity or legacy semantics.
 
 Forbidden as replacements for **Concept**:
 
-- element
-- component
-- tag
-- node
-- class
+* element
+* component
+* tag
+* node
+* class
 
 Forbidden as replacements for **Trait**:
 
-- prop
-- property
-- attribute
-- field
-- parameter
+* prop
+* property
+* attribute
+* field
+* parameter
 
 ---
 
 ## 9. Summary
 
-- Codex is written in **Concepts**
-- Concepts declare **Traits**
-- Traits bind names to **Values**
-- Concepts may carry **Content**
-- A Concept is an **Entity iff it has an `id` Trait**
-- Naming is plain-English, case-disciplined, and schema-scoped
-- `reference`, `target`, and `for` are distinct reference-trait names with a singleton rule
+* Codex is written in **Concepts**
+* Concepts declare **Traits**
+* Traits bind names to **Values**
+* Concepts may carry **Content**
+* A Concept is an **Entity if and only if it has an `id` Trait**
+* Naming is plain-English, case-disciplined, and schema-scoped
+* `reference`, `target`, and `for` are distinct reference Trait names with a
+  singleton rule
+
+---
+
+End of Codex Naming Contract v0.1.

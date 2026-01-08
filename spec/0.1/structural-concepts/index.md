@@ -1,16 +1,21 @@
-# Codex Structural Concepts Contract (DRAFT)
+Status: NORMATIVE  
+Version: 0.1  
+Editor: Charles F. Munat
 
-## Status
+# Codex Structural Concepts Contract — Version 0.1
 
-- **DRAFT**  
-- Normative once locked  
-- Applies to all Codex schemas and documents that use structural Concepts
+This document defines **Structural Concepts** in the Codex language.
+
+Structural Concepts are part of the Codex language model and are governed by this
+specification.
+
+This document is **Normative**.
 
 ---
 
 ## 1. Purpose
 
-This contract defines **structural Concepts** in Codex.
+This contract defines **Structural Concepts** in Codex.
 
 Structural Concepts:
 
@@ -39,7 +44,7 @@ A **Structural Concept** is a Concept whose primary role is to:
 Structural Concepts:
 
 - do **not** express domain meaning on their own
-- do **not** imply identity unless explicitly allowed
+- do **not** imply identity unless explicitly authorized
 - do **not** have universal semantics
 
 Their meaning is **entirely schema-defined**.
@@ -58,13 +63,15 @@ The same Concept name MAY:
 - be semantic in another context
 - or be unused entirely
 
-Codex deliberately avoids global prefixing (e.g. `CodexModule`) in favor of **contextual meaning**.
+Codex deliberately avoids global prefixing (e.g. `CodexModule`) in favor of
+**contextual meaning**.
 
 ---
 
 ## 4. Codex Module Assembly Context
 
-Within the **Codex module-assembly context**, the following Concepts are defined as **Structural Concepts** by schema:
+Within the **Codex module-assembly context**, the following Concepts are defined as
+**Structural Concepts** by schema:
 
 - `Module`
 - `Data`
@@ -90,7 +97,7 @@ Their meaning exists **only** because the Codex module schema defines it.
 Structural Concepts:
 
 - do **not** assert facts about the domain
-- do **not** represent entities unless explicitly allowed
+- do **not** represent entities unless explicitly authorized
 - do **not** compete with external vocabularies
 
 For example:
@@ -107,15 +114,16 @@ They are **organizational constructs**, not domain terms.
 
 By default:
 
-- Structural Concepts **must not** declare an `id`
+- Structural Concepts MUST NOT declare an `id`
 - Structural Concepts are **not Entities**
 
 Exceptions:
 
 - A schema MAY explicitly authorize identity for a specific Structural Concept
-- Such authorization must be explicit and documented
+- Such authorization MUST be explicit and documented
 
-Absent explicit authorization, assigning an `id` to a Structural Concept is a schema error.
+Absent explicit authorization, assigning an `id` to a Structural Concept is a schema
+error.
 
 ---
 
@@ -148,7 +156,7 @@ This contract does **not**:
 
 - define domain ontologies
 - prescribe schema contents
-- enforce specific section names outside Codex module context
+- enforce specific section names outside the Codex module context
 - restrict external schema design
 - impose global namespaces
 
@@ -161,3 +169,7 @@ This contract does **not**:
 - Names are intentionally plain and reusable
 - Codex avoids global prefixes in favor of scoped meaning
 - Structural Concepts are not domain entities by default
+
+---
+
+End of Codex Structural Concepts Contract v0.1.

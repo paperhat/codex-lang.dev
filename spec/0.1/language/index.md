@@ -1,324 +1,183 @@
-# Codex language spec (CANONICAL)
+Status: NORMATIVE  
+Version: 0.1  
+Editor: Charles F. Munat
 
-This document defines the **CDX language** used by Paperhat Codex.
+# Codex Language Specification — Version 0.1  
+## Language Definition
 
-CDX is a **human-first declarative language** for expressing meaning, constraints, behavior, presentation policy, and bindings.
+This document defines the **Codex language itself**.
 
-This document is **CANONICAL**.
-It is governed by global Codex Change Control.
+It specifies the **foundational language model, semantics, and invariants** that
+apply to all Codex documents, schemas, and tooling.
 
----
-
-## 1. What CDX Is
-
-**CDX is a language, not a notation.**
-
-It is designed to be:
-
-- readable by non-programmers
-- writable without technical training
-- precise enough for formal compilation
-- expressive without hidden complexity
-
-CDX is the **only** authoring language in Paperhat Codex.
+This document is **Normative**.
 
 ---
 
-## 2. Design Principles (Hard)
+## Role of This Document
 
-CDX is governed by these non-negotiable principles:
+This document is the **authoritative definition of the Codex language**.
 
-1. **Plain English First**
-   Canonical constructs must read like natural language.
+It defines:
 
-2. **Low Cognitive Load**
-   Authors should not need to understand programming, math notation, or markup theory.
+- what Codex is as a language
+- what Codex constructs mean
+- what Codex explicitly does and does not include
+- the invariants that all Codex tooling MUST respect
 
-3. **Structural Clarity**
-   Meaning is expressed through structure, not syntax tricks.
-
-4. **No Implicit Meaning**
-   Nothing is inferred silently.
-
-5. **Deterministic Interpretation**
-   The same CDX always means the same thing.
+This document is part of the Codex Language Specification v0.1 and MUST be read in
+conjunction with the other Normative documents listed in `/spec/0.1/index.md`.
 
 ---
 
-## 3. Who CDX Is For
+## What Codex Is
 
-CDX is designed for:
+**Codex is a declarative semantic authoring language.**
 
-- hobbyists
-- designers
-- subject-matter experts
-- business analysts
-- lawyers
-- educators
-- product owners
+Codex is designed to describe:
 
-Programming experience is **not assumed**.
+- meaning
+- structure
+- constraints
+- behavior (as data)
+- presentation policy
+- bindings to environments
 
-If a construct would confuse a careful, intelligent non-programmer, it is invalid.
+Codex is **not**:
 
----
+- a web framework
+- a UI framework
+- a component system
+- a configuration format layered on top of code
 
-## 4. Canonical Naming Rules (Hard)
-
-### 4.1 Full Names Are Canonical
-
-Canonical CDX concept names MUST:
-
-- be written in full
-- use plain English
-- avoid abbreviations
-- avoid acronyms
-- avoid programming jargon
-
-Examples (canonical):
-
-- `<IsGreaterThan>`
-- `<PreparationTime>`
-- `<MatchesPattern>`
-- `<RootMeanSquare>`
-
-Examples (non-canonical, but may exist as aliases):
-
-- `<Gt>`
-- `<PrepTime>`
-- `<Regex>`
-- `<RMS>`
-
-Aliases MAY exist, but documentation and examples MUST use canonical names.
+All of the above are **applications of Codex**, not the language itself.
 
 ---
 
-### 4.2 Case and Form
+## Authoring Surface
 
-- Concept names use **PascalCase**
-- Trait names use **camelCase**
-- Text content is freeform unless otherwise constrained
+Codex authoring is performed exclusively using the **Codex surface syntax**
+expressed in `.cdx` files.
 
----
+All author-authored material—including:
 
-## 5. Structure Over Syntax (Critical)
-
-CDX derives meaning from **structure**, not from symbols or punctuation.
-
-- Nesting expresses relationship
-- Order expresses sequence
-- Grouping expresses proximity or association
-
-There are:
-
-- no operators
-- no precedence rules
-- no inline expressions
-- no symbolic syntax
-
----
-
-## 6. Ordering Semantics (Hard)
-
-**Order is derived from authoring order.**
-
-If concepts appear in sequence, that sequence is meaningful.
-
-CDX MUST NOT include explicit ordering markers such as:
-
-- `<Order>`
-- numeric indices
-- priority numbers (except where explicitly semantic)
-
-If two items are authored in order, they are ordered.
-
-If order matters, authors express it by placement.
-
----
-
-## 7. Traits vs Child Concepts
-
-### 7.1 Traits
-
-Traits are used for:
-
-- simple scalar values
-- units
-- flags
-- identifiers
-- modifiers
-
-Example:
-
-```
-<Quantity amount="3" unit="tablespoon" />
-```
-
----
-
-### 7.2 Child Concepts
-
-Child concepts are used for:
-
-- complex structure
-- grouping
-- composition
-- explanation
-- nested meaning
-
-Example:
-
-```
-<Constraint>
-  <IsGreaterThan>
-    <Referent>x</Referent>
-    <Comparator>a</Comparator>
-  </IsGreaterThan>
-</Constraint>
-```
-
----
-
-## 8. Text Content
-
-Text content in CDX:
-
-- is literal by default
-- does not imply structure
-- does not introduce meaning unless explicitly defined
-
-Example:
-
-```
-<Step>Stir gently for 20 seconds.</Step>
-```
-
-Text never becomes a reference implicitly.
-
----
-
-## 9. Variables and Names
-
-### 9.1 Variables Are Symbols
-
-Variables in CDX are:
-
-- symbolic placeholders
-- named explicitly
-- not values
-
-They do not imply source, type, or lifetime.
-
----
-
-### 9.2 Variables Are Never Bound Inline
-
-CDX expressions reference variables.
-
-Variables are bound later by **Scribe**, using CDX binding configuration.
-
-This applies everywhere:
-
+- data
+- views
+- schemas
 - constraints
 - behaviors
-- calculations
-- presentation logic
+- policies
+- bindings
+- configuration
+
+—MUST be expressed in Codex.
+
+No alternative authoring formats are permitted.
 
 ---
 
-## 10. No Hidden Execution Model
+## Declarative and Closed World Model
 
-CDX:
+Codex operates as a **closed declarative system**.
 
-- does not execute
-- does not branch imperatively
-- does not loop implicitly
-- does not mutate state
+This means:
 
-Any notion of “doing” is declarative and explicit.
+- all meaning must be explicitly declared
+- nothing is inferred implicitly
+- nothing is filled in heuristically
+- nothing exists outside what is authored or deterministically derived
+
+If something is not declared, it does not exist.
 
 ---
 
-## 11. No Target Leakage (Hard)
+## Determinism and Explainability
 
-CDX MUST NOT reference:
+Given the same Codex inputs:
+
+- parsing MUST be deterministic
+- validation MUST be deterministic
+- compilation MUST be deterministic
+
+Codex tooling MUST be able to explain:
+
+- why something is valid or invalid
+- why something appears or does not appear
+- why something is ordered, grouped, or scoped as it is
+
+Opaque or heuristic behavior is forbidden.
+
+---
+
+## Separation of Responsibility
+
+Codex enforces strict separation between:
+
+- language semantics
+- schema-defined meaning
+- constraints
+- behavior modeling
+- design and presentation
+- rendering and execution
+
+Codex defines **what is declared**, not **how it is executed or rendered**.
+
+Responsibilities outside the language itself are defined in separate contracts
+(e.g. Scribe, Warden, Architect).
+
+---
+
+## Multi-Target by Design
+
+Codex is **target-agnostic**.
+
+The same Codex document MAY be rendered to:
 
 - HTML
-- CSS
-- DOM
-- JavaScript
-- ARIA
-- platform APIs
-- storage mechanisms
-- transport protocols
+- DOM mutation plans
+- PDF
+- LaTeX
+- SVG
+- voice systems
+- future targets not yet defined
 
-Targets are selected later.
-
----
-
-## 12. Explainability Requirement
-
-Every CDX construct MUST be explainable in plain language.
-
-The system must be able to say:
-
-- “This means…”
-- “This is valid because…”
-- “This appears here because…”
-
-If a construct cannot be explained simply, it is invalid.
+No Codex construct may assume a specific target.
 
 ---
 
-## 13. Extensibility Rules
+## Relationship to Other Specification Documents
 
-CDX may be extended by libraries, but extensions MUST:
+This document defines **language-level semantics only**.
 
-- follow naming rules
-- avoid abbreviations
-- declare meaning explicitly
-- not overload existing constructs
-- not introduce implicit behavior
+It does **not** define:
 
-Extensions define **new words**, not new grammar.
+- surface syntax rules (see **Surface Form**)
+- inline text enrichment semantics (see **Inline Text Markup**)
+- schema structure (see **Schema Authoring**)
+- identifier rules (see **Identifiers**)
+- error classification (see **Formatting Errors** and **Validation Errors**)
 
----
-
-## 14. Prohibited Patterns (Hard)
-
-CDX MUST NOT include:
-
-- inline scripts
-- embedded expressions
-- implicit defaults that change meaning
-- positional magic
-- symbolic operators
-- developer-centric shorthand in canonical form
-
-If it looks like code, it does not belong in CDX.
+All such concerns are defined in their respective Normative documents.
 
 ---
 
-## 15. Summary
+## Stability
 
-CDX is:
+This document is **immutable** as part of Codex 0.1.
 
-> **A language for people to describe reality clearly.**
-
-It favors:
-
-- clarity over brevity
-- structure over symbols
-- explicitness over inference
-- humans over machines
-
-Machines adapt to CDX — not the other way around.
+Any clarification or change requires a new published version.
 
 ---
 
-## Status
+## Summary
 
-**CANONICAL**
+- Codex is a language, not a framework
+- Codex is declarative, closed-world, and deterministic
+- All authoring is done in Codex
+- Meaning is explicit and explainable
+- Execution, rendering, and storage are outside the language
+- This document defines the language; other documents refine it
 
-This document is authoritative.
-Anything not explicitly permitted is forbidden.
+---
+
+End of Codex Language Specification v0.1 — Language Definition

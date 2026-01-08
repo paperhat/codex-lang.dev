@@ -1,6 +1,11 @@
-# Codex Surface Form Contract (DRAFT)
+Status: NORMATIVE  
+Version: 0.1  
+Editor: Charles F. Munat
 
-This document defines the **canonical textual form** of Codex (the language), as expressed in `.cdx` files.
+# Codex Surface Form Contract — Version 0.1
+
+This document defines the **canonical textual surface form** of **Codex** (the language),
+as expressed in `.cdx` files.
 
 Its purpose is to ensure that Codex is:
 
@@ -10,57 +15,61 @@ Its purpose is to ensure that Codex is:
 - human-readable with minimal cognitive load
 - unambiguous for compilation to triples
 
-This contract is **normative**. Any `.cdx` file that does not conform is **not Codex** and must be rejected.
+This document is **Normative**.  
+Any `.cdx` file that does not conform to this contract is **not Codex** and MUST be rejected.
 
 ---
 
 ## 1. Canonical Formatting Model
 
-Codex has **one canonical surface form**.
+Codex has **exactly one canonical surface form**.
 
 All Codex processing follows this rule:
 
 > `parse → validate → normalize → (re-parse optional) → proceed`
 
-The canonical form is produced by the Codex formatter.
-Any valid Codex AST must serialize to **exactly one** canonical textual representation.
+The canonical form is produced by the Codex formatter.  
+Any valid Codex AST MUST serialize to **exactly one** canonical textual representation.
 
 ---
 
 ## 2. Indentation and Whitespace
 
-- **Indentation:**
-  - Exactly **one tab per nesting level**
-  - Tabs are canonical
-  - Parsers may optionally accept spaces if indentation is consistent
-  - Canonical output always uses tabs
+### Indentation
 
-- **Whitespace normalization:**
-  - Leading and trailing whitespace outside the document is removed
-  - The file ends with **exactly one newline**
-  - No trailing whitespace on lines
+- Exactly **one tab per nesting level**
+- Tabs are canonical
+- Parsers MAY accept spaces if indentation is consistent
+- Canonical output ALWAYS uses tabs
+
+### Whitespace normalization
+
+- Leading and trailing whitespace outside the document is removed
+- The file ends with **exactly one newline**
+- No trailing whitespace is permitted on any line
 
 ---
 
 ## 3. Quotes and Escaping
 
-- **Trait values use double quotes only** (`"`).
-- Single quotes (`'`) are never special and never need escaping.
-- Smart quotes are invalid.
+- **Trait values use double quotes only** (`"`)
+- Single quotes (`'`) are never special and never require escaping
+- Smart quotes are invalid
 
 ### Escaping
 
-- Backslash escape (`\`) is used.
+- Backslash escape (`\`) is used
 
-- Required escapes:
-  - `\"` for double quote
-  - `\\` for backslash
-  - `\n`, `\t` where needed
+Required escapes:
 
-- Codex is **not XML**:
-  - `<`, `>`, and `&` do **not** require escaping inside quoted strings or text nodes.
+- `\"` for double quote
+- `\\` for backslash
+- `\n`, `\t` where required
 
-There are no entity encodings (`&lt;`, `&amp;`, etc.) in Codex.
+Codex is **not XML**:
+
+- `<`, `>`, and `&` do **not** require escaping inside quoted strings or text nodes
+- There are no entity encodings (`&lt;`, `&amp;`, etc.)
 
 ---
 
@@ -70,168 +79,189 @@ There are no entity encodings (`&lt;`, `&amp;`, etc.) in Codex.
 
 Codex uses **markers** to denote the boundaries of Concept instances in the surface form.
 
-A **marker** is a purely syntactic construct. Markers have **no semantic meaning**.
+Markers are **purely syntactic** and have **no semantic meaning**.
 
 There are three kinds of Concept markers:
 
-- **Opening Concept marker**
-  Begins a Concept instance
+- **Opening Concept marker**  
+  Begins a Concept instance  
   Example: `<Recipe>`
 
-- **Closing Concept marker**
-  Ends a Concept instance
+- **Closing Concept marker**  
+  Ends a Concept instance  
   Example: `</Recipe>`
 
-- **Self-closing Concept marker**
-  Represents an empty Concept instance
+- **Self-closing Concept marker**  
+  Represents an empty Concept instance  
   Example: `<Title />`
 
-Markers are not Concepts.
+Markers are not Concepts.  
+Concepts are semantic constructs; markers only delimit surface structure.
 
-A Concept is a semantic construct; markers merely delimit where a Concept instance begins and ends in the surface form.
+Malformed, mismatched, or invalid markers result in **parse errors**.
 
-Malformed, mismatched, or invalid Concept markers result in **parse errors**.
+---
 
-### Single root
+### Single Root
 
-- Each `.cdx` file has **exactly one root concept**.
-- Any concept may be a root (`<Recipe>`, `<Recipes>`, `<RecipeView>`, `<Module>`, etc.).
-- A Codex file may contain:
+- Each `.cdx` file has **exactly one root Concept**
+- Any Concept MAY be a root
+- A Codex file MAY represent:
   - a single domain individual
   - a domain collection
-  - or a Module assembly
+  - a Module assembly
 
-- Codex imposes **no semantic meaning on file boundaries**.
-- When multiple artifacts appear in one file, they must be explicitly grouped using either a **domain collection** or a **Module**, according to intent.
+Codex assigns **no semantic meaning to file boundaries**.
 
-### Empty concepts
+When multiple artifacts appear in one file, they MUST be explicitly grouped using a
+domain collection or a Module, according to intent.
 
-- Concepts with no content **must** be written as self-closing tags:
+---
 
-  ```
-  <Title />
-  ```
+### Empty Concepts
 
-- Expanded empty forms are invalid:
+- Concepts with no content MUST be written as self-closing:
 
-  ```
-  <Title>
-  </Title>
-  ```
+```cdx
+<Title />
+````
 
-- Whether a concept _may_ be empty is defined by the schema.
+* Expanded empty forms are invalid:
 
-- Semantically meaningless empty concepts are schema errors and halt compilation.
+```cdx
+<Title>
+</Title>
+```
+
+* Whether a Concept MAY be empty is defined by schema
+* Semantically meaningless empty Concepts are schema errors and halt compilation
 
 ---
 
 ## 5. Traits
 
-- No whitespace around `=`:
+* No whitespace around `=`:
 
-  ```
-  amount=200
-  optional=false
-  name="Spaghetti"
-  ```
+```cdx
+amount=200
+optional=false
+name="Spaghetti"
+```
 
-- Traits are printed in canonical order (defined by schema + global rules).
+* Traits are printed in canonical order (defined by schema and global rules)
 
-- Trait values:
-  - **Strings** are quoted
-  - **Numbers** are unquoted
-  - **Booleans** are unquoted (`true`, `false`)
-  - `null` does not exist in Codex
+### Trait Values
 
-### Numeric types
+* Strings are quoted
+* Numbers are unquoted
+* Booleans are unquoted (`true`, `false`)
+* `null` does not exist in Codex
 
-Codex supports unquoted numeric literals. Their **semantic type** is determined by the ontology/schema, not by syntax.
+---
 
-Examples of semantic numeric types include (non-exhaustive):
+### Numeric Types
 
-- Integer (bigint)
-- WholeNumber (safe integer)
-- Fraction
-- PrecisionNumber
-- SafeFloat
-- Imaginary / complex (future-capable)
+Codex supports unquoted numeric literals.
+Their **semantic type** is defined by ontology/schema, not syntax.
 
-The canonical printer may normalize numeric literals, but semantic typing is enforced by schema validation.
+Examples (illustrative):
+
+* Integer (bigint)
+* WholeNumber (safe integer)
+* Fraction
+* PrecisionNumber
+* SafeFloat
+* Imaginary / complex (future-capable)
+
+The canonical printer MAY normalize numeric literals.
+Semantic typing is enforced by schema validation.
+
+---
 
 ### Boolean Traits
 
-Traits whose schema-defined value type is boolean MAY be written either:
+Boolean traits MAY be written as:
 
-- as a bare trait name, indicating true, or
-- with an explicit `=true` value.
+* presence-only (indicating `true`), or
+* explicitly as `=true`
 
-The canonical surface form for boolean traits is presence-only.
+The canonical surface form is **presence-only**.
 
 Boolean traits MUST NOT be written with `=false`.
-Absence of a trait indicates that it is unspecified.
+Absence indicates the trait is unspecified.
 
 ---
 
 ## 6. Content and Text Nodes
 
-Codex distinguishes **structure** from **content**.
+Codex strictly separates **structure** from **content**.
 
-### General text content
+### General Text Content
 
-- Text is treated as **opaque data**.
-- Codex does not interpret prose.
-- Whitespace is collapsed unless explicitly marked as preformatted.
+* Text is treated as **opaque data**
+* Codex does not interpret prose
+* Whitespace is collapsed unless explicitly designated as preformatted
+* Codex does not interpret, annotate, or assign meaning to inline text during parsing,
+  validation, or compilation
 
-### Line wrapping
+---
 
-- Canonical formatter enforces a maximum line width (TBD, likely 100 chars).
-- Long tokens (e.g. URLs) may be split:
-  - A trailing `\` indicates continuation
-  - Continuation lines ignore indentation for width calculation
+### Line Wrapping
 
-### Preformatted text
+* The canonical formatter enforces a maximum line width (TBD)
+* Long tokens MAY be split using a trailing `\`
+* Continuation lines ignore indentation for width calculation
 
-- Preformatted content (e.g. poetry, code, precise layout) is a **separate case**
-- It will be explicitly designated (mechanism TBD)
-- Newlines and spacing are preserved exactly
+---
+
+### Preformatted Text
+
+Preformatted content is a distinct case:
+
+* Explicitly designated (mechanism defined elsewhere)
+* Whitespace and newlines are preserved exactly
 
 ---
 
 ## 7. No Inline Formatting in Codex
 
-Codex **does not support inline formatting**.
+Codex provides **no inline formatting constructs**.
 
-- There is no concept of “inline vs block” in Codex.
-- All concepts are structural.
-- Formatting such as bold, emphasis, stress, links, etc. is **not Codex**.
+* There is no inline vs block distinction
+* All Concepts are structural
+* Formatting such as emphasis, links, stress, or decoration is **not part of Codex**
 
-If rich textual markup is needed:
+Codex treats all textual content as **opaque data** throughout its language phases.
+Any interpretation or enrichment of inline text occurs **outside the Codex language**,
+during rendering or target-specific processing, and does not affect Codex semantics,
+validation, or storage.
 
-- It is encoded as **opaque content**
-- Or handled by a **separate markup language**, explicitly embedded as data
-
-This is a deliberate design decision to avoid HTML-style semantic confusion.
+This separation is deliberate and fundamental.
 
 ---
 
 ## 8. Sectioning and Blank Lines
 
-- Codex itself has no notion of “block” vs “inline”.
-- Blank lines are controlled by **schema-designated sectioning concepts**.
-- Sectioning concepts may be separated from siblings by a single blank line.
-- No blank lines appear immediately inside a parent concept.
+* Codex has no intrinsic notion of sections
+* Blank lines are controlled by schema-defined sectioning Concepts
+* Sectioning Concepts MAY be separated from siblings by a single blank line
+* No blank lines appear immediately inside a parent Concept
 
-All blank line rules are deterministic and schema-driven, not heuristic.
+All blank-line behavior is deterministic and schema-driven.
 
 ---
 
 ## 9. Annotations
 
-Codex supports **annotations**: non-normative, author-supplied textual notes that are preserved through the full Codex pipeline.
+Codex supports **annotations**: non-normative, author-supplied notes preserved through
+the full pipeline.
 
-Annotations are **not Content**, do not affect validation or semantics, and never alter the meaning of Concepts or Traits.
+Annotations:
 
-Annotations exist to preserve **authorial intent, rationale, and editorial context**, and are fully round-trippable.
+* are not Content
+* do not affect semantics or validation
+* never alter meaning
+* are fully round-trippable
 
 ---
 
@@ -239,93 +269,77 @@ Annotations exist to preserve **authorial intent, rationale, and editorial conte
 
 Editorial annotations use square brackets:
 
-```
+```text
 [This is an editorial annotation.]
 ```
 
-#### Properties
+Properties:
 
-- May be **single-line or multi-line**
-- Whitespace inside the brackets is not semantically significant
-- May appear anywhere **outside Content** where whitespace is allowed
-- Are **not recognized inside Content** and are treated as literal text there
+* Single-line or multi-line
+* Whitespace inside brackets is not semantically significant
+* May appear anywhere whitespace is permitted outside Content
+* Are literal text inside Content
 
 Editorial annotations:
 
-- Attach to the **next Concept instance** in document order
-- Are preserved through AST, IR, and triple storage
-- Are ignored by default in non-CDX renderers (HTML, PDF, voice, etc.)
+* Attach to the **next Concept instance** in document order
+* Are preserved through AST, IR, and storage
+* Are ignored by default in non-Codex renderers
 
 ---
 
 ### 9.2 Typed Editorial Annotations
 
-Editorial annotations MAY specify a kind using an editor-style prefix:
+Editorial annotations MAY specify a kind:
 
-```
+```text
 [kind: annotation text]
 ```
 
 Rules:
 
-- `kind` must be a single word
-- The colon (`:`) is required
-- A space after the colon is optional
+* `kind` is a single word
+* `:` is required
+* Space after `:` is optional
 
-If `kind` matches a schema-defined annotation kind, it is recorded as such.
-
-If `kind` is not recognized, the entire annotation is treated as plain text and the kind defaults to `note`.
-
-Example:
-
-```
-[todo: verify cooking time]
-```
-
-Example (untyped due to unrecognized prefix):
-
-```
-[bob says: this sucks]
-```
+Unrecognized kinds default to `note`.
 
 ---
 
 ### 9.3 Output Annotations (`<Annotation>`)
 
-Codex also defines an explicit **Annotation Concept**:
+Codex defines an explicit **Annotation Concept**:
 
-```
+```cdx
 <Annotation kind="warning">
 	Do not brown the garlic.
 </Annotation>
 ```
 
-Properties:
+* `<Annotation>` is a normal Concept
+* It attaches to its parent Concept
+* It carries opaque textual Content
+* It is preserved through the pipeline
 
-- `<Annotation>` is a normal Concept
-- It attaches to its **parent Concept**
-- It carries opaque textual Content
-- It is preserved through the full pipeline
-
-Output annotations MAY be rendered by downstream targets (HTML, voice, etc.), according to renderer policy.
+Renderers MAY emit output annotations according to target policy.
 
 ---
 
 ### 9.4 Annotation Kinds
 
-Annotation kinds are defined by schema as a **closed enumerated set**.
+Annotation kinds are schema-defined and closed.
 
-Typical kinds include (illustrative, not normative):
+Illustrative examples:
 
-- `note`
-- `warning`
-- `todo`
-- `rationale`
-- `question`
-- `example`
-- `provenance`
+* `note`
+* `warning`
+* `todo`
+* `rationale`
+* `question`
+* `example`
+* `provenance`
 
-Schemas may extend this set.
+Schemas MAY extend this set.
 
 ---
 
@@ -334,29 +348,25 @@ Schemas may extend this set.
 A `.cdx` file is valid Codex **iff**:
 
 1. It parses
-2. It validates against the ontology/schema
-3. It can be normalized into canonical form
-4. (Optionally) canonical form re-parses to an equivalent AST
+2. It validates against schema
+3. It normalizes to canonical form
+4. Canonical form MAY re-parse to an equivalent AST
 
-Non-conforming files are rejected.
+Non-conforming files MUST be rejected.
 
 ---
 
 ## 11. Purpose of This Contract
 
-This surface form contract exists to guarantee:
+This contract guarantees:
 
-- Deterministic formatting
-- Lossless semantic round-tripping
-- Stable compilation to triples
-- Elimination of offset/column dependence
-- Low cognitive load for humans and LLMs
-- Mechanical enforcement of correctness
+* deterministic formatting
+* lossless semantic round-tripping
+* stable compilation to triples
+* elimination of offset dependence
+* low cognitive load for humans and LLMs
+* mechanical enforcement of correctness
 
 ---
 
-### Status
-
-- **DRAFT**
-- Intended to be stored in the Codex repository
-- To be reviewed, finalized, then **LOCKED**
+End of Codex Surface Form Contract v0.1.

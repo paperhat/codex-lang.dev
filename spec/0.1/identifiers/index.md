@@ -1,10 +1,15 @@
-# Codex Identifier Contract (DRAFT)
+Status: NORMATIVE  
+Version: 0.1  
+Editor: Charles F. Munat
 
-## Status
+# Codex Identifier Contract — Version 0.1
 
-- **DRAFT**  
-- Normative once locked  
-- Applies to all Codex schemas, documents, and tooling that use `id` Traits
+This document defines **identifiers (`id`)** in the Codex language.
+
+Identifiers are part of the Codex language model and are governed by this
+specification.
+
+This document is **Normative**.
 
 ---
 
@@ -19,13 +24,14 @@ Its goals are to:
 - support stable graph construction and reference
 - avoid accidental coupling to storage, runtime, or transport concerns
 
-This contract governs **identifier meaning and form**, not persistence or resolution mechanisms.
+This contract governs **identifier meaning and form**, not persistence,
+resolution, or storage mechanisms.
 
 ---
 
 ## 2. What an Identifier Is
 
-An **identifier** is a **stable, globally unique name** for an Entity.
+An **identifier** is a **stable, globally unique name** for an **Entity**.
 
 In Codex:
 
@@ -33,7 +39,7 @@ In Codex:
 - identifiers are **declared**, not inferred
 - identifiers identify the **Entity itself**, not its representation
 
-Identifiers are used exclusively via the `id` Trait.
+Identifiers are expressed exclusively via the `id` Trait.
 
 ---
 
@@ -41,24 +47,25 @@ Identifiers are used exclusively via the `id` Trait.
 
 All Codex identifiers MUST be **IRIs**.
 
-- They MUST be globally unique in intent
-- They MUST be usable as graph identifiers
-- They MUST be comparable as opaque strings
+- Identifiers MUST be globally unique in intent
+- Identifiers MUST be usable as graph identifiers
+- Identifiers MUST be comparable as opaque strings
 
-Codex does not require identifiers to be dereferenceable.
+Codex does **not** require identifiers to be dereferenceable.
 
 ---
 
 ## 4. Identifier Form (Normative)
 
-Codex does not mandate a single concrete syntax, but identifiers MUST conform to the following constraints:
+Codex does not mandate a single concrete syntax.
+However, identifiers MUST conform to the following constraints:
 
-- MUST be a valid IRI
+- MUST be valid IRIs
 - MUST NOT depend on file paths, offsets, or document structure
 - MUST NOT encode ordering or position
 - MUST NOT rely on implicit context for uniqueness
 
-Examples (illustrative):
+Examples (illustrative, not normative):
 
 - `recipe:spaghetti`
 - `user:chas`
@@ -91,17 +98,17 @@ Identifiers are **not labels**.
 - Human-readable names belong in other Traits (e.g. `name`, `title`)
 - Identifiers SHOULD remain stable even if labels change
 
-Do not encode presentation concerns into identifiers.
+Presentation concerns MUST NOT be encoded into identifiers.
 
 ---
 
 ## 7. Relationship to References
 
-- Reference Traits (`reference`, `target`, `for`) use identifiers as their Values
+- Reference Traits (e.g. `reference`, `target`, `for`) use identifiers as their values
 - References MUST point to valid Entity identifiers
 - Referencing a non-Entity is a schema or validation error
 
-Identifiers are the **only** way Concepts may refer to other Entities.
+Identifiers are the **only** mechanism by which Concepts may refer to other Entities.
 
 ---
 
@@ -119,7 +126,7 @@ Codex does not interpret namespace prefixes.
 
 ## 9. Prohibited Identifier Uses (Normative)
 
-The following are invalid uses of identifiers:
+The following uses of identifiers are invalid:
 
 - using identifiers as ordering keys
 - embedding document structure or hierarchy
@@ -148,5 +155,9 @@ This contract does **not**:
 - Identifiers are explicit, semantic, and stable
 - All identifiers are IRIs
 - Identifiers identify Entities, not representations
-- Schema governs identifier usage
+- Schemas govern identifier usage
 - Identifiers are opaque, not structural
+
+---
+
+End of Codex Identifier Contract v0.1.

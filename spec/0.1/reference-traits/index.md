@@ -1,10 +1,15 @@
-# Codex Reference Traits Contract (DRAFT)
+Status: NORMATIVE  
+Version: 0.1  
+Editor: Charles F. Munat
 
-## Status
+# Codex Reference Traits Contract — Version 0.1
 
-- **DRAFT**  
-- Normative once locked  
-- Applies to all Codex schemas, documents, and tooling that use reference Traits
+This document defines the **reference Traits** used in the Codex language.
+
+Reference Traits are part of the Codex language model and are governed by this
+specification.
+
+This document is **Normative**.
 
 ---
 
@@ -19,8 +24,8 @@ Its goals are to:
 - avoid legacy markup and programming-language semantics
 - ensure consistent reasoning by humans, tools, and LLMs
 
-This contract defines **naming and intent only**.
-It does **not** define execution, behavior, or inference rules.
+This contract defines **naming and semantic intent only**.  
+It does **not** define execution, behavior, inference rules, or runtime wiring.
 
 ---
 
@@ -36,7 +41,7 @@ Each reference Trait:
 
 - binds a Concept to another Entity by identifier (IRI)
 - has a distinct **semantic intent**
-- is authorized only where allowed by schema
+- is authorized only where permitted by schema
 
 Reference Traits are **mutually exclusive by default**.
 
@@ -46,7 +51,7 @@ Reference Traits are **mutually exclusive by default**.
 
 ### Definition
 
-`reference` is a Trait whose Value is the identifier (IRI) of another Entity.
+`reference` is a Trait whose value is the identifier (IRI) of another Entity.
 
 It represents a **generic declarative link**.
 
@@ -57,9 +62,9 @@ Use `reference` when a Concept:
 - mentions another Entity
 - depends on another Entity for meaning
 - needs to point to another Entity
-- but does **not** act on, apply to, or specialize it
+- but does **not** act on, apply to, specialize, or scope it
 
-`reference` carries **no implied direction**, action, or applicability.
+`reference` carries **no implied direction, action, or applicability**.
 
 ### Examples (Illustrative)
 
@@ -67,7 +72,7 @@ Use `reference` when a Concept:
 - A policy referencing a role Entity
 - A view referencing a Concept it mentions but does not operate on
 
-Plain English reading:
+Plain-English reading:
 
 > “This Concept references that Entity.”
 
@@ -77,7 +82,7 @@ Plain English reading:
 
 ### Definition
 
-`target` is a reference Trait whose Value is the identifier (IRI) of another Entity.
+`target` is a reference Trait whose value is the identifier (IRI) of another Entity.
 
 ### Intent
 
@@ -96,7 +101,7 @@ Use `target` when a Concept is:
 - A policy that constrains a particular Entity
 - A plan that transforms or produces a specific Entity
 
-Plain English reading:
+Plain-English reading:
 
 > “This Concept targets that Entity.”
 
@@ -106,7 +111,8 @@ Plain English reading:
 
 ### Definition
 
-`for` is a reference Trait whose Value is the identifier (IRI) of another Entity or Concept kind.
+`for` is a reference Trait whose value is the identifier (IRI) of another Entity
+**or Concept kind**, as permitted by schema.
 
 ### Intent
 
@@ -119,7 +125,7 @@ Use `for` when a Concept expresses:
 
 `for` answers the question:
 
-> “Who or what is this _for_?”
+> “Who or what is this for?”
 
 It does **not** imply action, wiring, execution, or transformation.
 
@@ -129,7 +135,7 @@ It does **not** imply action, wiring, execution, or transformation.
 - A policy that applies to all Users (a policy _for User_)
 - A configuration Concept that applies to a subsystem Concept
 
-Plain English reading:
+Plain-English reading:
 
 > “This Concept is for that Concept or Entity.”
 
@@ -143,7 +149,8 @@ By default, a Concept MUST NOT declare more than one of the following Traits:
 - `target`
 - `for`
 
-A schema MAY explicitly permit exceptions, but such exceptions must be documented.
+A schema MAY explicitly authorize exceptions.
+Any such exception MUST be explicitly documented.
 
 This rule prevents ambiguous or conflicting reference intent.
 
@@ -151,12 +158,12 @@ This rule prevents ambiguous or conflicting reference intent.
 
 ## 7. Schema Authority
 
-- Reference Traits are **never global**
-- Their validity and interpretation are defined by schema
+- Reference Traits are **not global**
+- Their validity and interpretation are defined entirely by schema
 - Schemas determine:
   - which Concepts may declare reference Traits
-  - which reference Trait is appropriate
-  - whether exceptions to the singleton rule are allowed
+  - which reference Trait is appropriate in a given context
+  - whether exceptions to the singleton rule are permitted
 
 Codex surface syntax does not infer reference meaning.
 
@@ -172,7 +179,7 @@ This contract does **not**:
 - mandate specific triple structures
 - replace domain-specific relationship modeling
 
-It exists solely to standardize **naming and intent**.
+It exists solely to standardize **naming and semantic intent**.
 
 ---
 
@@ -182,4 +189,8 @@ It exists solely to standardize **naming and intent**.
 - All reference Traits bind to another Entity by identifier (IRI)
 - Each has a distinct plain-English intent
 - Reference Traits are mutually exclusive by default
-- Schema governs authorization and meaning
+- Schema governs authorization and interpretation
+
+---
+
+End of Codex Reference Traits Contract v0.1.
