@@ -1,34 +1,45 @@
-# Codex Domain Collections Contract (DRAFT)
+Status: NORMATIVE
+Lock State: LOCKED
+Version: 0.1
+Editor: Charles F. Munat
 
-## Status
+# Codex Domain Collections Contract
 
-- **DRAFT**  
-- Normative once locked  
-- Applies to all Codex documents using domain collection concepts
+This document defines **domain collection Concepts** in Codex.
+
+A **domain collection** is a semantic construct used to group **multiple individuals of the same domain class** (e.g. `Recipe`, `Song`, `Event`) into a single, schema-defined collection.
+
+Domain collections are **part of the domain model**.
+They are not structural containers, modules, or packaging constructs.
+
+This contract is a **domain-level specialization** of the canonical collection rules defined in the *Codex Canonical Collection Semantics Contract*.
 
 ---
 
 ## 1. Purpose
 
-This document defines **domain collection concepts** in Codex.
+This contract exists to:
 
-A domain collection is a semantic construct used to collect **multiple individuals of the same domain class** (e.g. Recipes, Songs, Events) into a single structured grouping.
+* define how **domain-level “many-of-the-same”** is expressed in Codex
+* distinguish domain collections from structural grouping and assembly
+* ensure ordering semantics are intentional and schema-defined
+* prevent misuse of collections as modules, sections, or presentation devices
 
-Domain collections are **part of the domain model**, not meta-containers or packaging constructs.
+This contract governs **semantic domain collections only**.
 
 ---
 
 ## 2. What a Domain Collection Is
 
-A domain collection:
+A **domain collection** is a Concept that:
 
-- groups **individuals of a single class**
-- is defined by the **domain ontology/schema**
-- may be **ordered** or **unordered**
-- compiles directly to triples as collection membership
-- does **not** mix document kinds (data vs view vs policy)
+* groups **multiple individuals of a single domain Concept class**
+* is defined and constrained by a **domain schema**
+* may be **ordered** or **unordered**
+* compiles directly to semantic membership in the graph
+* does **not** mix document roles (data, view, policy, configuration)
 
-Example:
+Example (Illustrative):
 
 ```xml
 <Recipes>
@@ -37,46 +48,56 @@ Example:
 </Recipes>
 ```
 
-A domain collection may appear either as the **root concept** of a Codex file or as a **child concept within a Module**.
+A domain collection MAY appear:
+
+* as the **root Concept** of a Codex file, or
+* as a **child Concept within a Module**, when explicitly authorized by schema
 
 ---
 
-## 3. Schema Authority
+## 3. Schema Authority (Normative)
 
-Domain collections are **schema-defined**, not ad hoc.
+Domain collections are **schema-defined**, never ad hoc.
 
-For each collection concept (e.g. `<Recipes>`), the schema MUST define:
+For each domain collection Concept, a schema MUST define:
 
-- the **member class** (e.g. `Recipe`)
-- whether the collection is:
-  - an **ordered sequence**
-  - or an **unordered bag**
+* the **member Concept class**
 
-- whether duplicate membership is allowed
-- whether empty collections are allowed
+* whether the collection is:
 
-Codex files **use** domain collections; they do not define them.
+  * **ordered**, or
+  * **unordered**
+
+* whether empty collections are permitted
+
+* whether duplicate membership is permitted
+
+* whether members MAY or MUST be Entities
+
+Codex documents **use** domain collections.
+They do not define their semantics.
 
 ---
 
-## 4. Ordering Semantics
+## 4. Ordering Semantics (Normative)
 
-### 4.1 Ordered collections
+### 4.1 Ordered Domain Collections
 
-If a collection is declared **ordered** in the schema:
+If a domain collection is declared **ordered** by schema:
 
-- lexical order of child concepts is **semantically significant**
-- order must be preserved exactly
-- ordering must be represented in triples (e.g. RDF list or explicit ordering predicates)
+* lexical order of member Concepts **is semantically significant**
+* order MUST be preserved exactly
+* order MUST be represented explicitly in the semantic graph
+* numbering or ordering Traits MUST NOT be used
 
-Typical use cases:
+Typical use cases (Illustrative):
 
-- recipe steps
-- musical movements
-- procedural sequences
-- ranked lists
+* procedural steps
+* musical movements
+* ranked lists
+* ordered phases or sequences
 
-Example:
+Example (Illustrative):
 
 ```xml
 <Steps>
@@ -86,48 +107,55 @@ Example:
 </Steps>
 ```
 
-No numbering is required or allowed to encode order.
-
 ---
 
-### 4.2 Unordered collections (bags)
+### 4.2 Unordered Domain Collections
 
-If a collection is declared **unordered**:
+If a domain collection is declared **unordered**:
 
-- membership is semantic
-- lexical order has **no semantic meaning**
-- lexical order must still be preserved textually
-- canonical formatting **must not reorder concepts**
+* membership is semantic; order is not
+* lexical order has **no semantic meaning**
+* lexical order MUST be preserved textually
+* canonical formatting MUST NOT reorder members
 
-Typical use cases:
+Typical use cases (Illustrative):
 
-- tags
-- ingredients (when order does not matter)
-- contributors
-- references
+* tags
+* ingredients (when order is irrelevant)
+* contributors
+* references
 
 ---
 
 ## 5. Identity Rules
 
-- Member concepts **may** have IDs if they are graph-addressable entities.
-- Member concepts **must not** have IDs if they are purely structural or value-like, unless the schema explicitly allows it.
-- Identity requirements are defined by the ontology, not by surface syntax.
+Identity and membership are orthogonal.
 
-Example:
+* Member Concepts MAY be Entities if schema authorizes identity
+* Member Concepts MUST NOT be Entities if they are value-like or structural, unless explicitly permitted
+* Identity requirements are defined by schema, not by surface syntax
 
-- `<Recipe id="…">` → entity
-- `<Step>` → value node, no ID (unless schema says otherwise)
+Examples (Illustrative):
+
+* `<Recipe id="…">` → Entity
+* `<Step>` → non-Entity value Concept (unless schema allows identity)
+
+Membership alone never creates identity.
 
 ---
 
-## 6. Nesting Rules
+## 6. Nesting Rules (Normative)
 
-- Domain collections may be nested **only if explicitly allowed by the schema**.
-- Nested collections must always respect their own ordering rules.
-- Collections may not mix member classes.
+Domain collections MAY be nested **only if explicitly authorized by schema**.
 
-Invalid example:
+When nesting is permitted:
+
+* each collection retains its own ordering semantics
+* member-class restrictions apply independently at each level
+
+Collections MUST NOT mix member classes.
+
+Invalid example (Illustrative):
 
 ```xml
 <Recipes>
@@ -138,17 +166,18 @@ Invalid example:
 
 ---
 
-## 7. Compilation to Triples
+## 7. Compilation to Semantic Graphs
 
 For a domain collection:
 
-- the collection concept maps to a node (if semantically meaningful), or may be implicit
-- each member maps to its individual node
-- membership is represented via:
-  - ordering predicates (for ordered collections)
-  - membership predicates (for unordered collections)
+* the collection Concept MAY map to a graph node if semantically meaningful
+* each member maps to its individual node
+* membership is represented via:
 
-The exact mapping is defined by the Codex ontology.
+  * ordering predicates (for ordered collections), or
+  * membership predicates (for unordered collections)
+
+The exact encoding is defined by the Codex ontology and is outside the scope of this contract.
 
 ---
 
@@ -156,12 +185,12 @@ The exact mapping is defined by the Codex ontology.
 
 Domain collections do **not**:
 
-- package mixed artifact types
-- carry provenance about tooling or generation
-- encode presentation intent
-- act as modules or configuration units
+* package mixed artifact types
+* carry tooling or generation provenance
+* encode presentation intent
+* act as modules, assemblies, or configuration units
 
-Those concerns are handled by **assemblies**, defined separately.
+Those concerns are handled by **structural Concepts** and **Module assemblies**, defined elsewhere.
 
 ---
 
@@ -169,11 +198,12 @@ Those concerns are handled by **assemblies**, defined separately.
 
 Domain collections are:
 
-- semantic
-- schema-defined
-- single-class
-- optionally ordered
-- never reordered automatically
-- part of the domain graph
+* semantic and schema-defined
+* single-class and homogeneous
+* optionally ordered
+* never reordered automatically
+* independent of identity
+* first-class parts of the domain graph
 
-They are the **correct way** to represent “many of the same thing” in Codex.
+They are the **correct and only way** to represent
+**“many of the same thing”** in Codex.

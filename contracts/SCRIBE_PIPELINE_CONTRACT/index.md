@@ -1,54 +1,61 @@
-Status: NORMATIVE  
-Version: 0.1  
+Status: NORMATIVE
+Lock State: LOCKED
+Version: 0.1
 Editor: Charles F. Munat
 
 # Scribe Library Contract
 
 This document defines the **exclusive responsibilities, boundaries, and guarantees** of the **Scribe** library.
 
-Scribe is the **end-to-end pipeline** for Paperhat Codex applications.
+Scribe is the **end-to-end processing pipeline** for Paperhat Codex applications.
 
 ---
 
 ## 1. Purpose (Hard)
 
-Scribe owns the **entire Codex pipeline** as a single library, split into internal modules.
+Scribe owns the **entire Codex processing pipeline** as a single library, internally composed of modules.
 
 Scribe is responsible for:
 
-- compiling CDX → AST → IR → RDF/Turtle (pure)
-- storing RDF into the triple store (IO boundary via Pathfinder)
-- querying the triple store with SPARQL (IO boundary via Pathfinder)
-- shaping results into a **ViewModel** (pure)
-- applying **Design Policy** to produce a **Presentation Plan** (pure)
-- rendering Presentation Plans to:
-  - DOM mutation plans (client)
-  - HTML strings (SSR/SSG)
-  - CDX (round-tripping)
-  - SVG, LaTeX, VoiceML, and other target formats
-  - JSON/XML/etc. (serialization targets)
+* compiling CDX → AST → IR → RDF/Turtle (pure)
+* storing RDF into a triple store (IO boundary via Pathfinder)
+* querying the triple store using SPARQL (IO boundary via Pathfinder)
+* shaping query results into a **ViewModel** (pure)
+* applying **Design Policy** to produce a **Presentation Plan** (pure)
+* rendering Presentation Plans to:
 
-Scribe provides a coherent, coordinated pipeline so other libraries can remain focused on their own domains.
+  * DOM mutation plans (client)
+  * HTML strings (SSR/SSG)
+  * CDX (round-tripping)
+  * SVG, LaTeX, VoiceML, and other targets
+  * serialized formats (JSON/XML/etc.)
+
+Scribe provides a coordinated pipeline so other libraries remain focused on their own domains.
 
 ---
 
 ## 2. What Scribe Owns (Exclusive)
 
-Scribe exclusively owns:
+Scribe exclusively owns the responsibilities defined below.
 
 ---
 
 ### 2.1 Pipeline Orchestration API
 
-Scribe defines and owns the canonical pipeline entry points and modes:
+Scribe defines and owns the pipeline entry points and execution phases:
 
-- `compile` (pure)
-- `store` (IO boundary; uses Pathfinder)
-- `query` (IO boundary; uses Pathfinder)
-- `render` (pure)
-- `run` / `execute` (optional convenience composition of the above)
+* `compile` (pure)
+* `store` (IO boundary; via Pathfinder)
+* `query` (IO boundary; via Pathfinder)
+* `render` (pure)
+* `run` / `execute` (optional convenience composition)
 
-Scribe owns the **contracts** for these phases, including their inputs, outputs, invariants, and phase ordering.
+Scribe owns the **contracts** governing:
+
+* phase ordering
+* inputs and outputs
+* invariants
+* purity and IO boundaries
 
 ---
 
@@ -56,69 +63,71 @@ Scribe owns the **contracts** for these phases, including their inputs, outputs,
 
 Scribe exclusively owns:
 
-- CDX grammar and syntax rules
-- CDX lexical validation (concept names, trait names, structure)
-- AST node definitions
-- IR shape and canonical normalization
-- source-location tracking
-- round-trip preservation metadata
-- RDF/Turtle emission from IR
+* CDX grammar and syntax rules
+* lexical validation (Concept names, Trait names, structure)
+* AST node definitions
+* IR shape and normalization rules
+* source-location tracking
+* round-trip preservation metadata
+* RDF/Turtle emission from IR
 
-No other library may parse CDX or define a competing CDX → IR compiler.
+No other library may parse CDX or define an alternative CDX → IR compiler.
 
 ---
 
-### 2.3 ViewModel Shaping Contract
+### 2.3 ViewModel Shaping
 
-Scribe owns:
-
-- the rule that SPARQL results are shaped into a **ViewModel**
-- the stability guarantees of that ViewModel as a render input
+Scribe owns the rule that SPARQL query results are shaped into a **ViewModel**.
 
 The ViewModel is:
 
-- structural
-- target-neutral
-- deterministic
-- independent of rendering decisions
+* structural
+* target-neutral
+* deterministic
+* independent of rendering and design decisions
 
-Domain semantics remain external; shaping is structural only.
+Scribe shapes structure only; **semantic meaning remains external**.
 
 ---
 
 ### 2.4 Design Policy Application (Hard)
 
-Scribe owns the **application of design and layout policy** as a pure planning phase.
+Scribe owns the **application** of Design Policy as a pure planning phase.
 
 Design Policy:
 
-- is authored in **CDX** using a **Scribe-owned vocabulary**
-- is configuration, not semantic meaning
-- introduces no ontology facts
-- performs no IO
-- is deterministic and explainable
+* is authored in **CDX**
+* uses a **Scribe-defined vocabulary**
+* is configuration, not semantic meaning
+* introduces no ontology facts
+* performs no IO
+* is deterministic and explainable
 
 Scribe applies Design Policy to:
 
-- a ViewModel and/or Concept Form IR
-- a render target classification (e.g., screen, print, voice)
-- declared presentation capacity context
+* a ViewModel and/or Concept-form IR
+* a render-target classification (e.g. screen, print, voice)
+* declared presentation-capacity context
 
-The result is a **Presentation Plan** that is pure, deterministic, and target-neutral.
+The result is a **Presentation Plan** that is:
 
-Design Policy MUST NOT invent semantic structure, modify semantic truth, encode behavior, bindings, or workflows.
+* pure
+* deterministic
+* target-neutral
+
+Design Policy MUST NOT invent structure, modify semantic truth, encode behavior, bindings, or workflows.
 
 ---
 
-### 2.5 Render Targets Contract
+### 2.5 Render Targets
 
 Scribe owns the definition of render targets and the requirement that rendering is pure and deterministic given:
 
-- a Presentation Plan
-- a render target
-- render target configuration
+* a Presentation Plan
+* a render target
+* render-target configuration
 
-Rendering is target-specific realization of a plan, not policy or semantics.
+Rendering is realization of a plan, not policy or semantics.
 
 ---
 
@@ -126,18 +135,18 @@ Rendering is target-specific realization of a plan, not policy or semantics.
 
 Scribe does **not** own:
 
-- triple store implementation details (Pathfinder owns adapters)
-- SPARQL language design beyond issuing queries
-- ontology definitions or SHACL constraints (owned by domain libraries; enforced by Warden)
-- semantic meaning or projections (Architect owns)
-- application workflows or command semantics (e.g. commerce, scheduling)
-- behavior modeling or execution semantics (Artificer owns)
-- CQRS or event-sourcing mechanics (Operator owns)
-- application state containers (Custodian owns)
-- pub/sub or event transport (Operator owns)
-- scaffolding, dev server, file watching (Quartermaster owns)
+* triple-store implementations (Pathfinder owns adapters)
+* SPARQL language design
+* ontologies or SHACL constraints (domain libraries; enforced by Warden)
+* semantic meaning or projections (Architect owns)
+* application workflows or commands
+* behavior modeling or execution semantics (Artificer owns)
+* CQRS or event-sourcing mechanics (Operator owns)
+* application state containers (Custodian owns)
+* pub/sub or transport (Operator owns)
+* scaffolding, dev server, file watching (Quartermaster owns)
 
-Scribe may **invoke** these libraries through defined interfaces, but does not subsume their responsibilities.
+Scribe may **invoke** other libraries via defined interfaces but does not subsume their responsibilities.
 
 ---
 
@@ -145,31 +154,32 @@ Scribe may **invoke** these libraries through defined interfaces, but does not s
 
 ### 4.1 Inputs
 
-- `.cdx` files (all configuration and authoring)
-- optional pipeline configuration (authored in CDX)
-- optional runtime context (render targets, portal context)
+* `.cdx` files (all authoring and configuration)
+* optional pipeline configuration (authored in CDX)
+* optional runtime context (render targets, portal context)
 
 ### 4.2 Outputs
 
-- **AST** (typed, location-aware)
-- **IR** (canonical, normalized)
-- **RDF/Turtle triples**
-- **ViewModel**
-- **Presentation Plan** (internal, ephemeral)
-- **Render outputs**:
-  - DOM patch plans / mutations
-  - HTML strings
-  - CDX text
-  - SVG, LaTeX, VoiceML, etc.
-  - serialized formats (JSON/XML/etc.)
+* AST (typed, location-aware)
+* IR (normalized, deterministic)
+* RDF/Turtle triples
+* ViewModel
+* Presentation Plan (internal, ephemeral)
+* Render outputs:
+
+  * DOM mutation plans
+  * HTML strings
+  * CDX text
+  * SVG, LaTeX, VoiceML
+  * serialized formats
 
 All pure outputs are deterministic and serializable.
 
 ---
 
-## 5. Canonical Phase Separation (Hard)
+## 5. Phase Separation (Hard)
 
-Scribe phases are strictly separated:
+Scribe phases are strictly separated.
 
 ### 5.1 Pure Compilation
 
@@ -186,48 +196,45 @@ Store → SPARQL → Results
 
 ### 5.3 Pure Shaping, Planning, and Rendering
 
-Results → ViewModel → Presentation Plan → Render Target
+Results → ViewModel → Presentation Plan → Render Output
 
-No IO occurs in compilation, shaping, planning, or rendering.
+No IO occurs outside the IO boundary.
 
 ---
 
-## 6. Modes (Hard)
+## 6. Execution Modes (Hard)
 
-Scribe supports multiple execution modes.
-Modes affect **which phases execute**, not their semantics.
+Modes affect **which phases execute**, not semantics.
 
 ### 6.1 Dev-A (Fast, Non-Authoritative)
 
-- bypasses triple store IO
-- uses IR → ViewModel shaping from deterministic fixtures
-- applies Design Policy
-- renders immediately
+* bypasses store IO
+* uses deterministic fixtures
+* applies Design Policy
+* renders immediately
 
-Dev-A is ergonomics-only. It MUST produce identical ViewModel and Presentation Plan shapes as the canonical store/SPARQL path when fed equivalent fixtures. Dev-A outputs are non-authoritative and MUST NOT be used for persistence, validation, or acceptance.
+Dev-A is ergonomics-only and MUST NOT be used for persistence or acceptance.
 
 ---
 
 ### 6.2 Dev-B (Safe, Local)
 
-- uses an ephemeral/local store
-- full round trip through store + SPARQL
-- identical semantics to production
+* full round-trip through local/ephemeral store
+* semantics identical to production
 
 ---
 
 ### 6.3 Test
 
-- full round trip through a test store
-- deterministic fixtures and golden outputs
-- never touches production data
+* deterministic fixtures and golden outputs
+* never touches production data
 
 ---
 
-### 6.4 Prod
+### 6.4 Production
 
-- full pipeline through production store
-- identical semantics, different targets/config
+* full pipeline through production store
+* identical semantics; different configuration
 
 ---
 
@@ -235,41 +242,35 @@ Dev-A is ergonomics-only. It MUST produce identical ViewModel and Presentation P
 
 ### 7.1 Concepts
 
-- PascalCase concept names
-- Multiple top-level concepts allowed
-- No required root concept
+* PascalCase names
+* Multiple top-level Concepts permitted
+* Root requirements are schema-defined, not grammatical
 
 ### 7.2 Traits
 
-- camelCase only
-- case-sensitive
-- no kebab-case
-- no snake_case
-- no leading underscores
-- no namespace colons
-- no hyphens
+* camelCase only
+* case-sensitive
+* no kebab-case, snake_case, colons, hyphens, or leading underscores
 
-Canonical CDX naming rules follow `/spec/0.1/`. Traits that violate these rules are invalid and must be rejected during lexical validation.
+Invalid Traits MUST be rejected during lexical validation.
 
 ---
 
-## 8. Validation and "Help" (error) Handling (Hard)
+## 8. Validation and Help Handling (Hard)
 
-### 8.1 Structural Validation Only (Compile Phase)
+### 8.1 Compile-Phase Validation
 
-Scribe compile validates:
+Scribe validates:
 
-- grammar correctness
-- structural correctness
-- lexical correctness
+* grammar
+* structure
+* lexical correctness
 
-Scribe compile does **not** validate:
+Scribe does **not** validate:
 
-- ontology constraints
-- business rules
-- workflow invariants
-
-Those are enforced by other libraries.
+* ontology constraints
+* business rules
+* workflows
 
 ---
 
@@ -277,9 +278,9 @@ Those are enforced by other libraries.
 
 Across all phases:
 
-- no throws
-- no `null` / `undefined`
-- all failures become Help (pedagogical)
+* no throws
+* no `null` / `undefined`
+* all failures are Help values
 
 ---
 
@@ -287,16 +288,11 @@ Across all phases:
 
 Scribe MUST preserve:
 
-- UTF-16 offsets
-- line number
-- column number
+* UTF-16 offsets
+* line numbers
+* column numbers
 
-Locations are:
-
-- validated numeric newtypes
-- attached to AST and IR nodes
-- preserved through RDF emission when required
-- used for diagnostics and round-tripping
+Locations are validated newtypes attached to AST and IR nodes.
 
 ---
 
@@ -306,10 +302,9 @@ Locations are:
 
 IR MUST be:
 
-- canonical
-- normalized
-- deterministic
-- stable for equivalent CDX inputs (modulo location metadata)
+* normalized
+* deterministic
+* stable for equivalent CDX inputs (modulo location metadata)
 
 ---
 
@@ -317,9 +312,9 @@ IR MUST be:
 
 ViewModel MUST be:
 
-- deterministic for equivalent query results + configuration
-- stable under equivalent semantic inputs
-- independent of render target and design policy
+* deterministic
+* stable for equivalent semantic inputs
+* independent of render target and Design Policy
 
 ---
 
@@ -327,16 +322,10 @@ ViewModel MUST be:
 
 Rendering is a pure function of:
 
-- Presentation Plan
-- render target configuration
+* Presentation Plan
+* render-target configuration
 
-Scribe rendering may delegate to:
-
-- Architect for markup primitives
-- Artificer for behavior attachment (optional enhancement)
-- other libraries for target-specific adapters
-
-Scribe owns render orchestration and guarantees that rendering performs no IO.
+Rendering performs no IO.
 
 ---
 
@@ -344,13 +333,13 @@ Scribe owns render orchestration and guarantees that rendering performs no IO.
 
 Scribe MUST:
 
-- use Toolsmith monads exclusively
-- use Toolsmith newtypes for identifiers and locations
-- use Toolsmith help infrastructure
-- never inspect monad internals
-- never introduce ad-hoc "help" (error) handling
+* use Toolsmith monads exclusively
+* use Toolsmith newtypes for identifiers and locations
+* use Toolsmith Help infrastructure
+* never inspect monad internals
+* never introduce ad-hoc error handling
 
-Imperative code may exist **only inside Toolsmith**.
+Imperative code exists **only inside Toolsmith**.
 
 ---
 
@@ -358,21 +347,25 @@ Imperative code may exist **only inside Toolsmith**.
 
 Scribe follows global folder rules:
 
-- public API is explicit
-- private implementation lives under `_` folders
-- no junk-drawer folders
-- lowest common ancestor rule applies
+* explicit public API
+* private implementation under `_` folders
+* no junk-drawer folders
+* lowest-common-ancestor rule applies
 
-Folder structure is part of the architecture.
+Folder structure is architectural.
 
 ---
 
-## 14. Relationship to Canonical Docs
+## 14. Relationship to Higher-Authority Documents
 
 This contract must be read in conjunction with:
 
-- the Codex Language Specification (/spec/)
-- the Codex System Contract (/contracts/CODEX_SYSTEM_CONTRACT)
-- the global governance documents (/GOVERNANCE.md)
+* the Codex Language Specification (`/spec/`)
+* the Codex System Contract
+* global governance documents
 
-In case of conflict, **global canonical documents prevail**.
+In case of conflict, **higher-authority documents prevail**.
+
+---
+
+**End of Scribe Library Contract v0.1**

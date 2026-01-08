@@ -1,4 +1,4 @@
-Status: INFORMATIVE  
+Status: INFORMATIVE (NON-NORMATIVE)  
 Editor: Charles F. Munat
 
 # Codex Language Specification — Current Version

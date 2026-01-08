@@ -1,5 +1,6 @@
-Status: NORMATIVE  
-Version: 0.1  
+Status: NORMATIVE
+Lock State: LOCKED
+Version: 0.1
 Editor and Specification Steward: Charles F. Munat
 
 # Codex System Contract
@@ -16,54 +17,56 @@ It supersedes any interpretation of Paperhat as a “framework” or “toolkit�
 
 It is a **declarative, semantic authoring language** for describing:
 
-- meaning
-- structure
-- constraints
-- behavior (as data)
-- presentation policy
-- bindings to environments
+* meaning
+* structure
+* constraints
+* behavior (as data)
+* presentation policy
+* bindings to environments
 
 Paperhat Codex is **not**:
 
-- a web framework
-- a UI framework
-- a component library
-- a configuration system layered on top of code
+* a web framework
+* a UI framework
+* a component library
+* a configuration system layered on top of code
 
-All of those are _applications_ of the language, not the language itself.
+All of those are *applications* of the language, not the language itself.
 
 ---
 
 ## 2. The Authoring Surface (Hard)
 
-### 2.1 CDX Is the Only Authoring Language
+### 2.1 Codex Is the Only Authoring Language
 
-**All authoring is done in CDX.**
+**All authoring is done in Codex.**
+
+Codex is expressed textually using the canonical `.cdx` surface form.
 
 This includes, without exception:
 
-- semantic data
-- semantic views
-- constraints
-- behaviors
-- bindings
-- design policy
-- pipeline configuration
-- environment configuration
+* semantic data
+* semantic views
+* constraints
+* behaviors
+* bindings
+* design policy
+* pipeline configuration
+* environment configuration
 
 No other authoring formats are permitted.
 
 Forbidden authoring surfaces:
 
-- JSON
-- YAML
-- TOML
-- XML
-- imperative configuration
-- embedded scripts
-- inline code blocks
+* JSON
+* YAML
+* TOML
+* XML
+* imperative configuration
+* embedded scripts
+* inline code blocks
 
-If it is authored by a human, it is CDX.
+If it is authored by a human, it is Codex.
 
 ---
 
@@ -73,23 +76,23 @@ Paperhat Codex is designed for **non-developers**.
 
 Authors may include:
 
-- hobbyists
-- designers
-- subject-matter experts
-- business analysts
-- lawyers
-- product managers
-- educators
+* hobbyists
+* designers
+* subject-matter experts
+* business analysts
+* lawyers
+* product managers
+* educators
 
 Programming experience is **not assumed**.
 
-CDX MUST:
+Codex MUST:
 
-- read like plain English
-- minimize cognitive load
-- avoid abbreviations in its canonical form
-- avoid programming jargon
-- avoid implementation detail leakage
+* read like plain English
+* minimize cognitive load
+* avoid abbreviations in its canonical form
+* avoid programming jargon
+* avoid implementation detail leakage
 
 Developer convenience is never a justification for authoring complexity.
 
@@ -97,7 +100,7 @@ Developer convenience is never a justification for authoring complexity.
 
 ### 2.3 Inline Content Enrichment: Patch (Hard)
 
-Within CDX **content elements**, inline enrichment is expressed using the **Patch language**.
+Within Codex **Content**, inline enrichment MAY be expressed using the **Patch language**.
 
 **Patch is a language.**
 It is not formatting, styling, or presentation.
@@ -106,33 +109,33 @@ Patch exists to allow authors to **annotate, qualify, and reference meaning insi
 
 Patch:
 
-- operates _only_ inside content-bearing elements
-- is fully declarative
-- is parseable and round-trippable
-- produces structured semantic data, not decorated strings
+* operates *only* inside Content
+* is fully declarative
+* is parseable and round-trippable
+* produces structured semantic data, not decorated strings
 
 Patch is used to express, for example:
 
-- emphasis and semantic weight
-- references to declared resources or identifiers
-- annotations that participate in meaning, not appearance
+* emphasis and semantic weight
+* references to declared resources or identifiers
+* annotations that participate in meaning, not appearance
 
 Patch is **not**:
 
-- HTML
-- Markdown
-- rich text
-- a styling language
-- a presentation instruction system
+* HTML
+* Markdown
+* rich text
+* a styling language
+* a presentation instruction system
 
 Patch does **not** define how something looks.
 It defines **what something is**, semantically, within authored content.
 
 All Patch constructs compile into internal semantic structures and remain subject to:
 
-- determinism
-- validation
-- target-agnostic rendering
+* determinism
+* validation
+* target-agnostic rendering
 
 ---
 
@@ -142,14 +145,14 @@ Paperhat Codex operates as a **closed declarative system**.
 
 This means:
 
-- all meaning must be explicitly declared
-- nothing is inferred implicitly
-- nothing is “filled in” silently
-- nothing exists outside what is authored or derived deterministically
+* all meaning must be explicitly declared
+* nothing is inferred implicitly
+* nothing is “filled in” silently
+* nothing exists outside what is authored or derived deterministically
 
 If something is not declared, it does not exist.
 
-This applies equally to CDX structure and to Patch-enriched content.
+This applies equally to Codex structure and to Patch-enriched content.
 
 ---
 
@@ -157,21 +160,21 @@ This applies equally to CDX structure and to Patch-enriched content.
 
 ### 4.1 Compilation Is Mandatory
 
-All CDX, including Patch-enriched content, is compiled into internal representations, including:
+All Codex documents, including Patch-enriched content, are compiled into internal representations, including:
 
-- abstract syntax structures
-- intermediate representations
-- semantic graphs (triples)
-- constraint graphs
-- view models
-- presentation plans
+* abstract syntax structures
+* intermediate representations
+* semantic graphs (triples)
+* constraint graphs
+* view models
+* presentation plans
 
 These representations are:
 
-- internal
-- invisible to end users
-- unstable across versions
-- optimized for machines
+* internal
+* invisible to end users
+* unstable across versions
+* optimized for machines
 
 Authors MUST NEVER see or write these representations.
 
@@ -179,8 +182,8 @@ Authors MUST NEVER see or write these representations.
 
 ### 4.2 Naming and Abbreviation Rule
 
-- **CDX and Patch use full, plain-English names**
-- **Internal representations may use abbreviated names freely**
+* **Codex and Patch use full, plain-English names**
+* **Internal representations may use abbreviated names freely**
 
 Abbreviations are permitted only where humans do not see them.
 
@@ -188,19 +191,19 @@ Abbreviations are permitted only where humans do not see them.
 
 ## 5. Determinism and Explainability (Hard)
 
-Given the same CDX inputs:
+Given the same Codex inputs:
 
-- compilation MUST be deterministic
-- outputs MUST be reproducible
-- validation MUST be consistent
+* compilation MUST be deterministic
+* outputs MUST be reproducible
+* validation MUST be consistent
 
 The system MUST be able to explain:
 
-- why something is valid
-- why something is invalid
-- why something is shown
-- why something is hidden
-- why something is ordered or grouped
+* why something is valid
+* why something is invalid
+* why something is shown
+* why something is hidden
+* why something is ordered or grouped
 
 This applies equally to structure, content, and Patch-derived semantics.
 
@@ -212,14 +215,14 @@ Opaque behavior is forbidden.
 
 Paperhat Codex enforces strict separation:
 
-- **Architect and domain libraries** define meaning
-- **Constraints** define validity
-- **Behaviors** define optional computation
-- **Bindings** define value sources
-- **Design Policy** defines appearance
-- **Scribe** orchestrates compilation and rendering
-- **Warden** enforces validity
-- **Renderers** emit target-specific output
+* **Architect and domain libraries** define meaning
+* **Constraints** define validity
+* **Behaviors** define optional computation
+* **Bindings** define value sources
+* **Design Policy** defines appearance
+* **Scribe** orchestrates compilation and rendering
+* **Warden** enforces validity
+* **Renderers** emit target-specific output
 
 Patch contributes semantic data only.
 It may not assume responsibilities owned by Design Policy or Renderers.
@@ -234,10 +237,10 @@ All Paperhat Codex applications MUST be correct **without JavaScript**.
 
 This means:
 
-- data validity does not depend on JS
-- form submission does not depend on JS
-- persistence does not depend on JS
-- constraint enforcement does not depend on JS
+* data validity does not depend on JavaScript
+* form submission does not depend on JavaScript
+* persistence does not depend on JavaScript
+* constraint enforcement does not depend on JavaScript
 
 Patch semantics MUST remain correct in non-JavaScript environments.
 
@@ -249,9 +252,9 @@ JavaScript MAY enhance experience, but MUST NOT enable correctness.
 
 All authoritative semantics in Paperhat Codex MUST be referentially transparent.
 
-- constraints depend only on the semantic graph
-- calculations depend only on declared inputs
-- no hidden state may influence correctness
+* constraints depend only on the semantic graph
+* calculations depend only on declared inputs
+* no hidden state may influence correctness
 
 Runtime-only sources (cookies, clocks, APIs, UI state) MUST NOT affect semantic truth.
 
@@ -263,15 +266,15 @@ This includes semantics derived from Patch.
 
 Paperhat Codex is **target-agnostic by design**.
 
-The same CDX may be rendered to:
+The same Codex document may be rendered to:
 
-- HTML
-- DOM mutations
-- PDF
-- LaTeX
-- SVG
-- Voice systems
-- Future targets not yet defined
+* HTML
+* DOM mutations
+* PDF
+* LaTeX
+* SVG
+* Voice systems
+* future targets not yet defined
 
 No authoring construct — including Patch — may assume a specific target.
 
@@ -297,13 +300,13 @@ Paperhat Codex is:
 
 It prioritizes:
 
-- clarity over cleverness
-- explicitness over inference
-- meaning over mechanics
-- humans over machines
+* clarity over cleverness
+* explicitness over inference
+* meaning over mechanics
+* humans over machines
 
-Structure is authored in CDX.
-Inline meaning is enriched with Patch.
+Structure is authored in Codex.
+Inline meaning may be enriched with Patch.
 Presentation is decided elsewhere.
 
-If something cannot be expressed clearly and declaratively in CDX and Patch, it does not belong in the system.
+If something cannot be expressed clearly and declaratively in Codex and Patch, it does not belong in the system.

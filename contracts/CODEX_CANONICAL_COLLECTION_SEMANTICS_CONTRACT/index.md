@@ -1,25 +1,26 @@
-# Codex Canonical Collection Semantics Contract (DRAFT)
+Status: NORMATIVE
+Lock State: LOCKED
+Version: 0.1
+Editor: Charles F. Munat
 
-## Status
+# Codex Canonical Collection Semantics Contract
 
-- **DRAFT**  
-- Normative once locked  
-- Applies to all Codex schemas and documents that define or use domain collections
+This document defines the **canonical semantics of collections** in Codex.
+
+Its requirements apply to all Codex schemas and documents that define or use **domain collections**.
 
 ---
 
 ## 1. Purpose
 
-This contract defines the **canonical semantics of collections** in Codex.
+This contract exists to:
 
-Its goals are to:
+* make “many-of-the-same” precise and unambiguous
+* clearly separate **collection semantics** from assembly and structure
+* ensure ordering is intentional and schema-defined
+* prevent accidental misuse of collections as containers or modules
 
-- make “many-of-the-same” precise and unambiguous
-- clearly separate **collection semantics** from assembly and structure
-- ensure ordering is intentional and schema-defined
-- prevent accidental misuse of collections as containers or modules
-
-This contract governs **semantic collections**, not formatting or grouping for convenience.
+This contract governs **semantic collections**, not formatting, grouping, or organization for convenience.
 
 ---
 
@@ -27,19 +28,19 @@ This contract governs **semantic collections**, not formatting or grouping for c
 
 A **collection** in Codex is a Concept that:
 
-- groups **multiple members of a single Concept class**
-- represents **membership** as a semantic fact
-- is defined and constrained by schema
-- may be ordered or unordered
+* groups **multiple members of a single Concept type**
+* represents **membership** as a semantic fact
+* is defined and constrained entirely by schema
+* may be ordered or unordered
 
 Collections are **domain-level constructs**.
 
 They are not:
 
-- modules
-- structural sections
-- packaging mechanisms
-- presentation devices
+* modules
+* structural sections
+* packaging mechanisms
+* presentation devices
 
 ---
 
@@ -49,36 +50,41 @@ All collection semantics are defined by schema.
 
 For each collection Concept, a schema MUST define:
 
-- the **member Concept type**
-- whether the collection is:
-  - **ordered**
-  - **unordered**
+* the **member Concept type**
 
-- whether empty collections are allowed
-- whether duplicate membership is allowed
-- whether members may or must be Entities
+* whether the collection is:
 
-Codex documents **use** collections; they do not define them.
+  * **ordered**, or
+  * **unordered**
+
+* whether empty collections are permitted
+
+* whether duplicate membership is permitted
+
+* whether members MAY or MUST be Entities
+
+Codex documents **use** collections.
+They do not define their semantics.
 
 ---
 
 ## 4. Ordered Collections (Normative)
 
-An **ordered collection** is one where member order is semantically significant.
+An **ordered collection** is one in which member order is semantically significant.
 
 ### Rules
 
-- Lexical order of member Concepts **is the semantic order**
-- Order MUST be preserved exactly
-- No numbering, indexing, or ordering Traits are permitted
-- Order MUST be represented explicitly in the semantic graph
+* Lexical order of member Concepts **is the semantic order**
+* Order MUST be preserved exactly
+* No numbering, indexing, or ordering Traits are permitted
+* Order MUST be represented explicitly in the semantic graph
 
-### Typical Use Cases
+### Typical Use Cases (Illustrative)
 
-- procedural steps
-- sequences
-- ranked lists
-- ordered movements or phases
+* procedural steps
+* sequences
+* ranked lists
+* ordered phases or movements
 
 ### Example (Illustrative)
 
@@ -94,21 +100,21 @@ An **ordered collection** is one where member order is semantically significant.
 
 ## 5. Unordered Collections (Normative)
 
-An **unordered collection** is one where order has no semantic meaning.
+An **unordered collection** is one in which order has no semantic meaning.
 
 ### Rules
 
-- Membership is semantic; order is not
-- Lexical order MUST be preserved textually
-- Canonical formatting MUST NOT reorder members
-- Graph semantics MUST NOT depend on order
+* Membership is semantic; order is not
+* Lexical order MUST be preserved textually
+* Canonical formatting MUST NOT reorder members
+* Graph semantics MUST NOT depend on order
 
-### Typical Use Cases
+### Typical Use Cases (Illustrative)
 
-- ingredients
-- tags
-- contributors
-- references
+* ingredients
+* tags
+* contributors
+* references
 
 ---
 
@@ -116,9 +122,9 @@ An **unordered collection** is one where order has no semantic meaning.
 
 For all collections:
 
-- Each member represents a distinct membership assertion
-- Membership does not imply identity
-- Membership does not imply containment outside the collection context
+* Each member represents a distinct membership assertion
+* Membership does not imply identity
+* Membership does not imply containment outside the collection context
 
 Membership is a **semantic relation**, not a structural one.
 
@@ -128,56 +134,56 @@ Membership is a **semantic relation**, not a structural one.
 
 Identity and collection membership are orthogonal.
 
-- A collection MAY be an Entity if schema allows
-- A collection member MAY be an Entity if schema allows
-- Membership alone does not create or require identity
+* A collection MAY be an Entity if schema authorizes it
+* A collection member MAY be an Entity if schema authorizes it
+* Membership alone does not create, require, or imply identity
 
-Examples:
+Examples (Illustrative):
 
-- A collection of non-Entity Steps (common)
-- A collection of Entity Recipes (common)
-- A non-Entity collection containing Entity members (common)
+* a collection of non-Entity `Step` Concepts
+* a collection of Entity `Recipe` Concepts
+* a non-Entity collection containing Entity members
 
 ---
 
 ## 8. Nesting Rules
 
-Collections MAY be nested **only if explicitly allowed by schema**.
+Collections MAY be nested **only if explicitly authorized by schema**.
 
-When nested:
+When nesting is permitted:
 
-- each collection retains its own ordering rules
-- member type restrictions apply independently at each level
+* each collection retains its own ordering semantics
+* member-type constraints apply independently at each level
 
-Absent explicit schema permission, nested collections are invalid.
+Absent explicit schema authorization, nested collections are invalid.
 
 ---
 
 ## 9. Collections vs Structural Concepts
 
-Collections are **not** structural Concepts.
+Collections are **not** Structural Concepts.
 
-Differences:
+Key distinctions:
 
-- Collections group **homogeneous** members
-- Structural Concepts group **heterogeneous** Concepts
-- Collections assert semantic membership
-- Structural Concepts assert organization or scope
+* Collections group **homogeneous** members
+* Structural Concepts group **heterogeneous** Concepts
+* Collections assert semantic membership
+* Structural Concepts assert organization or scope
 
-Using a structural Concept where a collection is required is a schema error.
+Using a Structural Concept where a collection is required is a **schema error**.
 
 ---
 
 ## 10. Canonical Behavior (Normative)
 
-Codex tools MUST:
+Codex tooling MUST:
 
-- preserve lexical order of collection members
-- never reorder members automatically
-- enforce schema-defined ordering semantics
-- reject collections that violate member-type constraints
+* preserve lexical order of collection members
+* never reorder members automatically
+* enforce schema-defined ordering semantics
+* reject collections that violate member-type constraints
 
-Collections are deterministic and mechanically enforceable.
+Collection behavior is deterministic and mechanically enforceable.
 
 ---
 
@@ -185,11 +191,11 @@ Collections are deterministic and mechanically enforceable.
 
 This contract does **not**:
 
-- define collection syntax
-- prescribe triple encodings
-- define list or bag implementations
-- define performance characteristics
-- replace domain modeling decisions
+* define collection surface syntax
+* prescribe triple encodings
+* define list or bag implementations
+* define performance characteristics
+* replace domain modeling decisions
 
 It defines **semantic intent**, not representation.
 
@@ -197,8 +203,8 @@ It defines **semantic intent**, not representation.
 
 ## 12. Summary
 
-- Collections represent “many of the same thing”
-- Collection semantics are schema-defined
-- Ordering is explicit and intentional
-- Identity is orthogonal to membership
-- Collections are semantic, not structural
+* Collections represent “many of the same thing”
+* Collection semantics are entirely schema-defined
+* Ordering is explicit and intentional
+* Identity is orthogonal to membership
+* Collections are semantic constructs, not structural ones
