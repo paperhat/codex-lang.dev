@@ -1,7 +1,7 @@
 # Codex Specification Governance
 
-Status: NORMATIVE
-Version: 0.1
+Status: NORMATIVE  
+Version: 0.1  
 Editor: Charles F. Munat
 
 ---

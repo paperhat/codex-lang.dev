@@ -89,11 +89,35 @@ Contracts may evolve at different rates.
 
 The following contracts are currently defined:
 
-- **CODEX_SYSTEM_CONTRACT**  
-  Defines baseline requirements for any system that processes Codex documents.
+- **/CODEX_SYSTEM_CONTRACT/**  
+  Defines the **foundational nature, scope, and invariants** of **Paperhat Codex**.
 
-- **SCRIBE_PIPELINE_CONTRACT**  
-  Defines the required stages, invariants, and responsibilities of the Codex processing pipeline.
+- **/CODEX_CANONICAL_COLLECTION_SEMANTICS_CONTRACT/**  
+  Defines the **canonical semantics of collections** in Codex.
+
+- **/CODEX_CDX_TO_IR_BOUNDARY_CONTRACT/**  
+  Defines the **semantic and responsibility boundary** between **Codex**, authored in `.cdx` files, and the **Intermediate Representation (IR)** consumed by downstream systems (e.g. Scribe, planners, renderers, exporters).
+
+- **/CODEX_DESIGN_POLICY_CONTRACT/**  
+  Defines the **exclusive responsibilities, boundaries, and guarantees** of **Design Policy** in Paperhat Codex.
+
+- **/CODEX_DOMAIN_COLLECTIONS_CONTRACT/**  
+  Defines **domain collection Concepts** in Codex.
+
+- **/CODEX_ENTITY_ELIGIBILITY_CONTRACT/**  
+  Defines **when a Concept may be an Entity** in Codex.
+
+- **/CODEX_MODULE_ASSEMBLY_CONTRACT/**  
+  Defines **Module assemblies** in Codex.
+
+- **/CODEX_ORCHESTRATION_CONTRACT/**  
+  Defines the **authority, responsibilities, and constraints of orchestration** within the Paperhat Codex system.
+
+- **/CODEX_PROVENANCE_CONTRACT/**  
+  Defines **provenance in Codex**.
+
+- **/SCRIBE_PIPELINE_CONTRACT/**  
+  Defines the **exclusive responsibilities, boundaries, and guarantees** of the **Scribe** library.
 
 Additional contracts may be added as the ecosystem expands.
 
