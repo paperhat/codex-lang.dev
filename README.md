@@ -1,86 +1,89 @@
-# Codex Language — Specification & Reference
+# Codex Language Specification
 
-This repository hosts the **canonical specification and reference documentation** for **Codex**, a declarative semantic language for expressing structured meaning independent of runtime, presentation, or target platform.
+This repository publishes the **canonical specification and system contracts** for **Codex**, a declarative semantic language for expressing structured meaning independent of runtime, presentation, or target platform.
 
-The content published here is **authoritative** unless explicitly marked otherwise.
-
----
-
-## Purpose
-
-This site exists to:
-
-- define the Codex language (syntax, semantics, invariants)
-- publish normative contracts and rules
-- document architectural principles and design constraints
-- establish public, timestamped prior art
-- serve as a stable reference for implementers
-
-It is **not** a marketing site, tutorial hub, or community portal.
-
-Those concerns live elsewhere.
+This site is intentionally minimal.
+It exists to define **what Codex is**, **what compliant systems must do**, and **where authority resides**.
 
 ---
 
-## Scope
+## What Codex Is
 
-This repository includes:
+**Codex is a language.**
 
-- language grammar and syntax rules
-- semantic models and invariants
-- formatting and round-trip guarantees
-- core architectural contracts
-- reference examples (clearly labeled)
+It is used to author:
 
-Out of scope:
+- semantic structure
+- meaning and constraints
+- behavior (as data)
+- presentation policy
+- bindings to environments
 
-- implementation details of specific libraries
-- hosted services or operational infrastructure
-- product positioning or sales material
-
----
-
-## Normative vs Informative Content
-
-Documents are explicitly labeled as one of:
-
-- **NORMATIVE** — binding language or system rules
-- **INFORMATIVE** — explanatory or illustrative material
-
-Only **Normative** documents define Codex behavior.
-
-If a document is not labeled, it should be treated as **Informative**.
+Codex is **not** a framework, toolkit, or UI system.
+Those are applications _of_ the language.
 
 ---
 
-## Versioning
+## Repository Structure
 
-- Codex specifications are versioned.
-- Each published version is immutable once released.
-- Later revisions supersede earlier ones but do not invalidate them.
+Authority is expressed structurally.
 
-URLs are intended to be stable and citable.
+```
+/spec/        Codex language specification (versioned, immutable)
+/contracts/   Normative system and library contracts
+/notes/       Informative, non-binding material
+/about/       Scope and status definitions
+```
+
+If a document defines required behavior, it is **Normative**.
+If it explains or discusses, it is **Informative**.
 
 ---
 
-## Authority & Governance
+## Specification Versions
 
-Codex is an open language with **strong editorial governance**.
+- Language specifications live under `/spec/<version>/`
+- Published versions are **immutable**
+- `/spec/current/` points to the most recent version
+
+Versioned URLs are stable and citable.
+
+---
+
+## Contracts
+
+Contracts define **obligations and boundaries** for systems and libraries that implement or operate on Codex.
+
+Each contract is:
+
+- a named artifact
+- versioned independently
+- authoritative within its scope
+
+Compliance is explicit and non-ambiguous.
+
+---
+
+## Governance
+
+Codex is maintained under a **strong editorial governance model**.
 
 - The specification is public.
+- The specification is open to review.
 - The specification is not crowd-designed.
-- Changes follow an explicit review and ratification process.
 
-This model prioritizes coherence, long-term consistency, and semantic stability.
+Final authority over **Normative** content rests with the **Specification Editor**.
+
+See `GOVERNANCE.md` for details.
 
 ---
 
 ## Licensing
 
-- Specification text: © respective authors, all rights reserved unless otherwise stated.
-- Code samples (if present): licensed as noted in the file header.
+- **Specification text**: Creative Commons Attribution 4.0 International (CC BY 4.0)
+- **Trademarks**: Not licensed
 
-Licensing details will be clarified per document as the project matures.
+See `LICENSE.md` and `SPECIFICATION_LICENSE.md`.
 
 ---
 
@@ -88,30 +91,22 @@ Licensing details will be clarified per document as the project matures.
 
 Codex is under active development.
 
-The presence of a document here does **not** imply finality, only intent.
+The presence of a document here establishes intent and authority, not finality.
 
 ---
 
-## Related Projects
+## Scope Note
 
-- **Paperhat** — the primary ecosystem and reference implementation
-- Additional libraries and tools will be linked as they become public
+This repository is a **reference**.
+
+It is not:
+
+- a tutorial site
+- a community forum
+- a marketing property
+
+Those concerns live elsewhere.
 
 ---
 
-## Contact / References
-
-This repository is intended to be referenced, not discussed.
-
-For now, issues and pull requests may be closed without response.
-
----
-
-_This repository is intentionally minimal._
-_Clarity and correctness take precedence over completeness._
-
-## Trademark Notice
-
-**Codex**, **Codex Language**, and related names and marks are trademarks of their respective owner(s).
-
-No trademark rights are granted under this repository’s license.
+_Clarity, coherence, and correctness take precedence over popularity._
