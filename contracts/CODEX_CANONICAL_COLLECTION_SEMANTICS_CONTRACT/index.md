@@ -2,8 +2,8 @@
 
 ## Status
 
-- **DRAFT**
-- Normative once locked
+- **DRAFT**  
+- Normative once locked  
 - Applies to all Codex schemas and documents that define or use domain collections
 
 ---

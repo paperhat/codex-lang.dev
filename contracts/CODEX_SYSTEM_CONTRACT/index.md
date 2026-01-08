@@ -1,5 +1,5 @@
-Status: NORMATIVE
-Version: 0.1
+Status: NORMATIVE  
+Version: 0.1  
 Editor and Specification Steward: Charles F. Munat
 
 # Codex System Contract

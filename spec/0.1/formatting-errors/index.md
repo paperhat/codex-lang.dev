@@ -2,8 +2,8 @@
 
 ## Status
 
-- **DRAFT**
-- Normative once locked
+- **DRAFT**  
+- Normative once locked  
 - Applies to all Codex formatters, validators, and normalization tooling
 
 ---

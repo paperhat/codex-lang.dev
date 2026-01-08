@@ -1,4 +1,4 @@
-Status: INFORMATIVE
+Status: INFORMATIVE  
 Editor: Charles F. Munat
 
 # Codex Language Specification — Current Version

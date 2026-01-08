@@ -2,8 +2,8 @@
 
 ## Status
 
-- **DRAFT**
-- Normative once locked
+- **DRAFT**  
+- Normative once locked  
 - Applies to any Codex tooling that interprets **Content** as styled text
 - This contract defines a **Content sub-language**, not Codex Concepts/Traits/Markers
 

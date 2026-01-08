@@ -2,8 +2,8 @@
 
 ## Status
 
-- **DRAFT**
-- Normative once locked
+- **DRAFT**  
+- Normative once locked  
 - Applies to all tooling that consumes Codex (`.cdx`) files and produces an intermediate representation (IR)
 
 ---

@@ -2,8 +2,8 @@
 
 ## Status
 
-- **DRAFT**
-- Normative once locked
+- **DRAFT**  
+- Normative once locked  
 - This document introduces **no new rules**
 - It mirrors terminology defined in Codex contracts
 

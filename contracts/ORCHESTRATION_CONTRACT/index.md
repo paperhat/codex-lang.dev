@@ -1,8 +1,8 @@
 # ORCHESTRATION_CONTRACT
 
-**Status:** CANONICAL
-**Lock State:** LOCKED
-**Audience:** Orchestrator LLMs, Human Authorities
+**Status:** CANONICAL  
+**Lock State:** LOCKED  
+**Audience:** Orchestrator LLMs, Human Authorities  
 **Non-Audience:** Packet Executors, Runtime Systems
 
 ---

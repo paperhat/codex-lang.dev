@@ -1,4 +1,4 @@
-# CDX_LANGUAGE_SPEC (CANONICAL)
+# Codex language spec (CANONICAL)
 
 This document defines the **CDX language** used by Paperhat Codex.
 

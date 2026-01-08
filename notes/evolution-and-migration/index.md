@@ -2,8 +2,8 @@
 
 ## Status
 
-- **DRAFT**
-- Informative
+- **DRAFT**  
+- Informative  
 - Applies to humans and tools evolving Codex schemas and data over time
 
 ---
