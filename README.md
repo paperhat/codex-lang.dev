@@ -109,3 +109,9 @@ For now, issues and pull requests may be closed without response.
 
 _This repository is intentionally minimal._
 _Clarity and correctness take precedence over completeness._
+
+## Trademark Notice
+
+**Codex**, **Codex Language**, and related names and marks are trademarks of their respective owner(s).
+
+No trademark rights are granted under this repository’s license.
