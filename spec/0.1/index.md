@@ -70,7 +70,7 @@ documents. All are required for a complete and compliant implementation.
 ### Surface Syntax and Content
 
 - [**Surface Form**](./surface-form/)
-- [**Inline Text Markup (Patch)**](./inline-text-markup/)
+- [**Inline Text Markup (Gloss)**](./inline-text-markup/)
 
 ### Schema and Versioning
 

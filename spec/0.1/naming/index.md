@@ -1,7 +1,7 @@
-# Codex Naming and Value Contract
+# Codex Naming and Value Specification
 
-**Status:** NORMATIVE
-**Version:** 0.2
+**Status:** NORMATIVE  
+**Version:** 0.1  
 **Editor:** Charles F. Munat
 
 This document defines the **core surface vocabulary**, **naming rules**, and **literal value spellings** used throughout the Codex language.
@@ -14,7 +14,7 @@ This document is **Normative**.
 
 ## 1. Purpose
 
-This contract defines the **terminology, naming rules, and literal value forms**
+This specification defines the **terminology, naming rules, and literal value forms**
 used to describe Codex.
 
 Its goals are to:
@@ -24,7 +24,7 @@ Its goals are to:
 * ensure humans, tools, and LLMs reason consistently about Codex
 * ensure Codex remains **markup, not code**
 
-This contract governs **naming and literal values only**.
+This specification governs **naming and literal values only**.
 It does not restrict prose or other **Content**.
 
 ---
@@ -109,7 +109,7 @@ Example:
 <Description>
 	A cool dude.
 </Description>
-```
+````
 
 ---
 
@@ -322,6 +322,7 @@ Rules:
 
 * Lists are ordered
 * Lists may be empty
+* List items MAY be any valid Codex Value spelling, including nested lists
 * Lists may be mixed or homogeneous, as defined by schema
 * Lists are not expanded by Codex
 
@@ -330,6 +331,7 @@ Examples:
 ```xml
 friends=["sam", "ted", "mary"]
 favoriteNumbers=[3, 7, 12]
+value=[33, "bob", false, ["x", "y", 3], {now}, 1..42]
 ```
 
 ---
@@ -447,6 +449,56 @@ Their interpretation is context-dependent and consumer-defined.
 
 ---
 
+### 4.7 Color Values
+
+Color Values are literal spellings representing a color.
+
+Color Values are **data notations**, not expressions.
+
+Codex does not interpret, validate, normalize, or convert colors.
+Their meaning is schema- and consumer-defined.
+
+#### 4.7.1 Hex color literals
+
+Forms:
+
+* `#RGB`
+* `#RRGGBB`
+* `#RRGGBBAA`
+
+Examples:
+
+* `#f00`
+* `#ff0000`
+* `#ff000080`
+
+#### 4.7.2 Functional color literals
+
+Functional forms are treated as **atomic literals**, not evaluable expressions.
+
+Examples (non-exhaustive):
+
+* `rgb(255,0,0)`
+* `rgb(255 0 0 / 0.5)`
+* `hsl(120,100%,50%)`
+* `hsl(120 100% 50% / 0.5)`
+* `oklch(62.8% 0.25 29)`
+* `color(display-p3 1 0 0)`
+
+Rules:
+
+* Parentheses are required
+* No whitespace normalization is performed by Codex
+* Internal separators, units, and parameter conventions are consumer-defined
+
+#### 4.7.3 Named colors
+
+Named color keywords (for example, CSS named colors) are **schema-only**.
+
+Codex does not define any global set of named colors.
+
+---
+
 ## 5. Trait Authorization and Reference Traits (Normative)
 
 ### 5.1 Traits Are Schema-Authorized
@@ -527,8 +579,8 @@ Forbidden as replacements for **Trait**:
 * Concepts may carry **Content**
 * A Concept is an **Entity if and only if it declares an `id` Trait**
 * Naming and values are plain-English, declarative, and schema-scoped
-* Lists, ranges, precision numbers, and temporal literals are first-class data forms
+* Lists, ranges, precision numbers, temporal literals, and color literals are first-class data forms
 
 ---
 
-**End of Codex Naming and Value Contract**
+**End of Codex Naming and Value Specification**
