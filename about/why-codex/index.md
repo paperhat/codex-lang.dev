@@ -18,7 +18,7 @@ Codex separates these concerns deliberately and permanently.
 No programming code. No styling. No behavior.  
 Just data expressed in **declarative, semantic markup**, with meaning made explicit.
 
-Inline meaning inside prose is added using **Gloss**, without breaking the text.
+Inline meaning inside prose is added using [**Gloss**](https://gloss-lang.dev/about/why-gloss/), without breaking the text.
 
 **This is the entire `.cdx` file. No other code required.**
 
