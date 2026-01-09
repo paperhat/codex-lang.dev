@@ -54,7 +54,9 @@ Inline meaning inside prose is added using [**Gloss**](https://gloss-lang.dev/ab
     The dough should feel {#soft} but not {#sticky}.
   </Note>
 </Article>
-````
+```
+
+> Codex: the earliest form of book, replacing the scrolls and wax tablets of earlier times. [Dictionary.com](https://www.dictionary.com/browse/codex)
 
 Codex expresses:
 
@@ -134,7 +136,7 @@ environment.
     { "name": "Flour", "amount": "2 cups" }
   ]
 }
-````
+```
 
 Problems:
 
