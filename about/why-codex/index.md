@@ -56,8 +56,6 @@ Inline meaning inside prose is added using [**Gloss**](https://gloss-lang.dev/ab
 </Article>
 ```
 
-> Codex: the earliest form of book, replacing the scrolls and wax tablets of earlier times. [Dictionary.com](https://www.dictionary.com/browse/codex)
-
 Codex expresses:
 
 * **structure** (`Article`, `Paragraph`, `Ingredient`, `Step`)
@@ -67,6 +65,8 @@ Codex expresses:
 
 No layout. No logic. No presentation.  
 Only meaning.
+
+> Codex: the earliest form of book, replacing the scrolls and wax tablets of earlier times. [Dictionary.com](https://www.dictionary.com/browse/codex)
 
 ---
 
