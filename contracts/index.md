@@ -1,11 +1,12 @@
 Status: NORMATIVE  
 Lock State: LOCKED  
 Version: 0.1  
-Editor: Charles F. Munat
+Editor: Charles F. Munat  
 
 # Codex System Contracts
 
-This section contains **contracts** governing systems, libraries, and pipelines that implement or operate on the Codex language.
+This section contains **contracts** governing systems, libraries, and pipelines
+that implement or operate on the Codex language.
 
 Contracts define **required behavior** for compliant systems.  
 They do **not** define the Codex language itself.
@@ -30,7 +31,8 @@ Violation of a Normative contract constitutes **non-compliance**.
 ## 2. Relationship to the Codex Specification
 
 - The **Codex Language Specification** (under `/spec/`) defines the language.
-- Contracts define how systems must interpret, validate, transform, store, query, plan, or render that language.
+- Contracts define how systems must interpret, validate, transform, store, query,
+  plan, or render that language.
 
 In the event of conflict:
 
@@ -42,13 +44,15 @@ In the event of conflict:
 
 ## 3. Authority and Governance
 
-Contracts are maintained under the same strong editorial governance model as the Codex specification.
+Contracts are maintained under the same strong editorial governance model as the
+Codex specification.
 
 - Contracts are public.
 - Contracts are open to review.
 - Contracts are not crowd-designed.
 
-Final authority over Normative contracts rests with the **Specification Editor**.
+Final authority over Normative contracts rests with the
+**Specification Editor**.
 
 ---
 
@@ -69,7 +73,8 @@ If a contract declares `Lock State: LOCKED`, then:
 
 - its requirements are considered stable
 - changes MUST be introduced only by publishing a new version
-- editorial clarification MAY be published only as an Informative note (never by modifying the locked contract text)
+- editorial clarification MAY be published only as an Informative note
+  (never by modifying the locked contract text)
 
 Lock State does not change the conflict rules in §2.
 
@@ -89,17 +94,28 @@ Contracts may evolve at different rates.
 
 The following contracts are currently defined:
 
+- **[ARCHITECT_CONTRACT](./ARCHITECT_CONTRACT/)**  
+  Defines the **exclusive responsibilities, boundaries, and guarantees** of the
+  **Architect** library, including:
+  - semantic vocabularies and schema authorization
+  - document and domain structure
+  - Entity eligibility and identity semantics
+  - schema.org alignment  
+  Architect is the exclusive owner of **structure and meaning**.
+
 - **[CODEX_SYSTEM_CONTRACT](./CODEX_SYSTEM_CONTRACT/)**  
-  Defines the **foundational nature, scope, and invariants** of **Paperhat Codex**.
+  Defines the **foundational nature, scope, and invariants** of Paperhat Codex.
 
 - **[CODEX_CANONICAL_COLLECTION_SEMANTICS_CONTRACT](./CODEX_CANONICAL_COLLECTION_SEMANTICS_CONTRACT/)**  
   Defines the **canonical semantics of collections** in Codex.
 
 - **[CODEX_CDX_TO_IR_BOUNDARY_CONTRACT](./CODEX_CDX_TO_IR_BOUNDARY_CONTRACT/)**  
-  Defines the **semantic and responsibility boundary** between **Codex**, authored in `.cdx` files, and the **Intermediate Representation (IR)** consumed by downstream systems (e.g. Scribe, planners, renderers, exporters).
+  Defines the **semantic and responsibility boundary** between Codex (CDX) and the
+  Intermediate Representation (IR) consumed by downstream systems.
 
 - **[CODEX_DESIGN_POLICY_CONTRACT](./CODEX_DESIGN_POLICY_CONTRACT/)**  
-  Defines the **exclusive responsibilities, boundaries, and guarantees** of **Design Policy** in Paperhat Codex.
+  Defines the **exclusive responsibilities, boundaries, and guarantees** of
+  Design Policy in Paperhat Codex.
 
 - **[CODEX_DOMAIN_COLLECTIONS_CONTRACT](./CODEX_DOMAIN_COLLECTIONS_CONTRACT/)**  
   Defines **domain collection Concepts** in Codex.
@@ -111,21 +127,39 @@ The following contracts are currently defined:
   Defines **Module assemblies** in Codex.
 
 - **[CODEX_ORCHESTRATION_CONTRACT](./CODEX_ORCHESTRATION_CONTRACT/)**  
-  Defines the **authority, responsibilities, and constraints of orchestration** within the Paperhat Codex system.
+  Defines the **authority, responsibilities, and constraints of orchestration**
+  within the Paperhat Codex system.
 
 - **[CODEX_PROVENANCE_CONTRACT](./CODEX_PROVENANCE_CONTRACT/)**  
   Defines **provenance in Codex**.
 
 - **[SCRIBE_PIPELINE_CONTRACT](./SCRIBE_PIPELINE_CONTRACT/)**  
-  Defines the **exclusive responsibilities, boundaries, and guarantees** of the **Scribe** library.
-
-Additional contracts may be added as the ecosystem expands.
-
-Contract names appearing in ALL_CAPS are canonical identifiers.
+  Defines the **exclusive responsibilities, boundaries, and guarantees** of the
+  Scribe library.
 
 ---
 
-## 7. Scope of Compliance
+## 7. Relationship to Gloss
+
+Gloss is a **subordinate, dependent language** used for **inline semantic
+span binding**.
+
+- Codex (via Architect) defines:
+  - all Concepts, Traits, Values, and Entities
+  - all structural semantics
+- Gloss defines:
+  - how Codex-defined meaning is referenced inline
+  - when that meaning becomes observable
+  - how semantic failures are surfaced
+
+Gloss contracts live under `gloss-lang.dev/contracts/` and must be read in
+conjunction with Codex contracts.
+
+In the event of conflict, **Codex contracts prevail**.
+
+---
+
+## 8. Scope of Compliance
 
 A system may:
 
@@ -133,14 +167,21 @@ A system may:
 - comply with a documented subset of contracts
 - intentionally diverge
 
-A system that diverges from a contract MUST NOT claim compliance with that contract.
+A system that diverges from a contract MUST NOT claim compliance with that
+contract.
 
-Only systems that meet all applicable requirements may claim full compliance with the referenced contract(s).
+Only systems that meet all applicable requirements may claim full compliance
+with the referenced contract(s).
 
 ---
 
-## 8. Informative Notes
+## 9. Informative Notes
 
 This index defines contract authority and structure only.
 
-Rationale, design discussion, and implementation guidance belong in `/notes/` and are **not binding**.
+Rationale, inventories, and scope clarification belong in `/notes/` and are
+**not binding**.
+
+---
+
+**End of Codex System Contracts v0.1**

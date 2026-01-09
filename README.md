@@ -1,4 +1,4 @@
-# Codex Language Specification
+# Codex Semantic Markup Language
 
 This repository publishes the **canonical specification and system contracts** for **Codex**, a declarative semantic language for expressing structured meaning independent of runtime, presentation, or target platform.
 
