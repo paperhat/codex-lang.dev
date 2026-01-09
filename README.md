@@ -13,14 +13,14 @@ It exists to define **what Codex is**, **what compliant systems must do**, and *
 
 It is used to author:
 
-- semantic structure
-- meaning and constraints
-- behavior (as data)
-- presentation policy
-- bindings to environments
+* semantic structure
+* meaning and constraints
+* behavior (as data)
+* presentation policy
+* bindings to environments
 
 Codex is **not** a framework, toolkit, or UI system.
-Those are applications _of_ the language.
+Those are applications *of* the language.
 
 ---
 
@@ -28,37 +28,40 @@ Those are applications _of_ the language.
 
 Authority is expressed structurally.
 
-```
-/spec/        Codex language specification (versioned, immutable)
-/contracts/   Normative system and library contracts
-/notes/       Informative, non-binding material
-/about/       Scope and status definitions
-```
+This repository is organized into the following top-level areas:
 
-If a document defines required behavior, it is **Normative**.
-If it explains or discusses, it is **Informative**.
+* specifications
+* contracts
+* examples
+* notes
+* scope and status material
+
+Documents that define required behavior are marked **Normative**.
+Documents that explain, motivate, or discuss are **Non-Normative**.
 
 ---
 
-## Specification Versions
+## Specifications
 
-- Language specifications live under `/spec/<version>/`
-- Published versions are **immutable**
-- `/spec/current/` points to the most recent version
+Codex language specifications are:
 
-Versioned URLs are stable and citable.
+* versioned
+* immutable once published
+* intended to be stable and citable
+
+The existence of a specification defines authoritative language behavior for that version.
 
 ---
 
 ## Contracts
 
-Contracts define **obligations and boundaries** for systems and libraries that implement or operate on Codex.
+Contracts define **obligations, boundaries, and guarantees** for systems and libraries that implement or operate on Codex.
 
 Each contract is:
 
-- a named artifact
-- versioned independently
-- authoritative within its scope
+* a named artifact
+* versioned independently
+* authoritative within its declared scope
 
 Compliance is explicit and non-ambiguous.
 
@@ -68,22 +71,26 @@ Compliance is explicit and non-ambiguous.
 
 Codex is maintained under a **strong editorial governance model**.
 
-- The specification is public.
-- The specification is open to review.
-- The specification is not crowd-designed.
+* Normative content is authoritative.
+* Changes to LOCKED documents are deliberate and versioned.
+* Final authority rests with the Specification Editor.
 
-Final authority over **Normative** content rests with the **Specification Editor**.
-
-See `GOVERNANCE.md` for details.
+See **`GOVERNANCE.md`** for formal governance rules.
 
 ---
 
-## Licensing
+## Licensing and Copyright
 
-- **Specification text**: Creative Commons Attribution 4.0 International (CC BY 4.0)
-- **Trademarks**: Not licensed
+All documentation in this repository is licensed under the
+**Creative Commons Attribution 4.0 International License (CC BY 4.0)**.
 
-See `LICENSE.md` and `SPECIFICATION_LICENSE.md`.
+* The license applies to textual, diagrammatic, and illustrative content only.
+* No rights are granted to trademarks, names, or software implementations.
+
+See:
+
+* **`LICENSE.md`**
+* **`COPYRIGHT.md`**
 
 ---
 
@@ -91,7 +98,7 @@ See `LICENSE.md` and `SPECIFICATION_LICENSE.md`.
 
 Codex is under active development.
 
-The presence of a document here establishes intent and authority, not finality.
+The presence of material in this repository establishes **intent and authority**, not finality.
 
 ---
 
@@ -101,12 +108,12 @@ This repository is a **reference**.
 
 It is not:
 
-- a tutorial site
-- a community forum
-- a marketing property
+* a tutorial site
+* a community forum
+* a marketing property
 
-Those concerns live elsewhere.
+Those concerns are intentionally handled elsewhere.
 
 ---
 
-_Clarity, coherence, and correctness take precedence over popularity._
+*Clarity, coherence, and correctness take precedence over popularity.*

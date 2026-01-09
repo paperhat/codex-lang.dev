@@ -1,8 +1,8 @@
-# Codex Naming and Value Specification
+Status: NORMATIVE  
+Version: 0.1  
+Editor: Charles F. Munat
 
-**Status:** NORMATIVE  
-**Version:** 0.1  
-**Editor:** Charles F. Munat
+# Codex Naming and Value Specification
 
 This document defines the **core surface vocabulary**, **naming rules**, and **literal value spellings** used throughout the Codex language.
 
@@ -100,7 +100,7 @@ Their interpretation is the responsibility of consuming systems and schemas.
 Content:
 
 * is not interpreted by Codex
-* may contain prose, code, poetry, or markup
+* may contain prose, code, poetry, or Gloss markup
 * is always carried inside a Concept
 
 Example:
@@ -120,6 +120,7 @@ An **Entity** is a Concept that has identity.
 * A Concept **is an Entity if and only if it declares an `id` Trait**
 * Entity identity is semantic and graph-addressable
 * Identity requirements are defined by schema, not by syntax
+* Entities are concepts with high semantic density
 
 Examples:
 
@@ -138,8 +139,9 @@ Examples:
 The following styles are forbidden everywhere in Codex naming:
 
 * kebab-case
+* Train-Case
 * snake_case
-* SCREAMING_CASE
+* SCREAMING_SNAKE_CASE
 * mixed or inconsistent casing
 
 ---
@@ -196,13 +198,13 @@ Invalid examples:
 
 * `ref`
 * `lang`
-* `href`
+* `dir`
 
 Required forms:
 
 * `reference`
 * `language`
-* `uri` (or a more specific plain-English alternative)
+* `direction`
 
 ---
 
@@ -357,7 +359,7 @@ Ranges MAY appear inside lists or wherever schema permits.
 Example:
 
 ```xml
-<Toy forAges=[3..6] />
+<Toy forAges=3..6 />
 ```
 
 ---
@@ -373,7 +375,7 @@ start..end s step
 Example:
 
 ```
-1.25..1.75s0.05
+values=1.25..1.75s0.05
 ```
 
 Rules:
@@ -427,13 +429,13 @@ Example:
 ISO 8601 duration form:
 
 ```
-{P...}
+{±PnYnMnWnDTnHnMnS}
 ```
 
 Example:
 
 ```
-{PT3M15S}
+{P2DT3M15S}
 ```
 
 ---
@@ -463,12 +465,14 @@ Their meaning is schema- and consumer-defined.
 Forms:
 
 * `#RGB`
+* `RGBA`
 * `#RRGGBB`
 * `#RRGGBBAA`
 
 Examples:
 
 * `#f00`
+* `#f009`
 * `#ff0000`
 * `#ff000080`
 

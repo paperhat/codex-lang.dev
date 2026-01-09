@@ -1,6 +1,6 @@
-Status: NORMATIVE
-Lock State: LOCKED
-Version: 0.1
+Status: NORMATIVE  
+Lock State: LOCKED  
+Version: 0.1  
 Editor: Charles F. Munat
 
 # Scribe Library Contract

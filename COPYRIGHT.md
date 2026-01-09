@@ -1,4 +1,4 @@
-© 2025–present Charles F. Munat. Codex Language Specification.
+© 2023–present Charles F. Munat. Codex Language Specification.
 
 Specification text licensed under
 Creative Commons Attribution 4.0 International (CC BY 4.0).

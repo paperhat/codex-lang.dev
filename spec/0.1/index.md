@@ -51,7 +51,7 @@ Codex 0.1 does **not** define:
 - storage, querying, or rendering behavior
 - operational or implementation concerns
 
-Those concerns are defined by separate contracts under `/contracts/`.
+Those concerns are defined by separate contracts under [**contracts**](../../contracts/).
 
 ---
 
@@ -65,7 +65,7 @@ documents. All are required for a complete and compliant implementation.
 - [**Language Specification**](./language/)
 - [**Structural Concepts**](./structural-concepts/)
 - [**Naming Rules**](./naming/)
-- [**Identifiers**](./dentifiers/)
+- [**Identifiers**](./identifiers/)
 
 ### Surface Syntax and Content
 

@@ -1,177 +1,139 @@
-# Codex Specification Governance
-
 Status: NORMATIVE  
+Lock State: LOCKED  
 Version: 0.1  
 Editor: Charles F. Munat
 
----
+# Gloss Language Documentation Governance
 
-## Authority
+## 1. Purpose
 
-The Codex Language Specification is maintained under a **strong editorial governance model**.
+This document defines the **governance rules** for the documentation published at **gloss-lang.dev**.
 
-* The specification is public.
-* The specification is open to review.
-* The specification is not crowd-designed.
+Its purpose is to:
 
-Final authority over **Normative** content rests with the **Specification Editor**.
+* establish **authority and precedence** among documents
+* define **normative status**, lock state, and change control
+* clarify the relationship between the Gloss language specification and implementations
+* prevent ambiguity, drift, or contradictory interpretation
 
----
-
-## Origin and Stewardship
-
-Codex was originated by **Charles F. Munat**, who serves as the **Specification Editor**.
-
-The Codex Language Specification and all associated Normative documents are stewarded under a **single-editor governance model** to ensure long-term coherence, semantic integrity, and architectural consistency.
-
-The Specification Editor holds final responsibility and authority for:
-
-* defining the canonical meaning of the Codex language
-* approving, rejecting, and ratifying normative changes
-* maintaining versioned, authoritative specifications and contracts
-* determining compatibility, conformance, and compliance criteria
-
-While the specification is public and open to review, **decision-making authority over Normative content is centralized** in the Specification Editor in order to preserve clarity, continuity, and conceptual integrity.
-
-If the Specification Editor is unable or unwilling to continue in this role, editorial authority may be transferred by the outgoing editor, or, in their absence, by a process publicly defined in this repository.
-
-This stewardship model prioritizes correctness, stability, and semantic coherence over consensus or majority rule.
+This document governs **documentation only**.
 
 ---
 
-## Authority Lattice (Normative)
+## 2. Scope
 
-This section defines the **authoritative ordering of documents and artifacts** within the Codex ecosystem.
+This governance applies to all content in the gloss-lang.dev repository, including:
 
-In the event of conflict, **higher-tier documents take precedence over lower-tier documents**.
-Lower-tier documents MUST conform to higher-tier documents.
+* the Gloss Language Specification
+* formal contracts and constraints
+* normative supporting documents
+* examples and explanatory material
 
-### 1. Codex Language Specification (`/spec/`)
-
-* Defines the Codex language itself
-* Defines syntax, structure, naming, identity, collections, schemas, and validation
-* Is **immutable once published**
-* Is the highest authority in the system
-
-Nothing may contradict the specification.
+It does **not** govern software implementations, tools, editors, parsers, or runtimes, which are maintained separately and may be licensed independently.
 
 ---
 
-### 2. Codex System Contract
+## 3. Document Categories
 
-* Defines the foundational invariants and guarantees of Paperhat Codex as a system
-* Interprets the specification into system-level obligations
-* MUST conform fully to the Codex Language Specification
+Documentation is categorized as follows.
 
----
+### 3.1 Normative Documents
 
-### 3. Normative Contracts (`/contracts/`)
+Normative documents define **binding rules** of the Gloss language.
 
-* Define required behavior, boundaries, and responsibilities of systems and libraries
-* Include (but are not limited to):
+These include, but are not limited to:
 
-  * pipeline contracts
-  * library responsibility contracts
-  * orchestration and provenance contracts
+* the Gloss Language Specification
+* naming and structural rules
+* semantic and interpretive constraints
+* formally declared invariants
 
-All Normative contracts:
+Normative documents may be marked **LOCKED** or **DRAFT**.
 
-* MUST conform to the Codex Language Specification
-* MUST conform to the Codex System Contract
-* MAY further constrain behavior, but MUST NOT redefine semantics
+### 3.2 Non-Normative Documents
 
----
+Non-normative documents provide:
 
-### 4. Lock State
+* explanation and clarification
+* rationale and background
+* illustrative examples
+* exploratory or historical notes
 
-A document marked with:
-
-```
-Lock State: LOCKED
-```
-
-is **frozen within its authority tier**.
-
-* LOCKED documents MUST NOT be reinterpreted
-* Changes require a new version
-* LOCKED does **not** elevate a document above its tier
-* LOCKED only enforces immutability, not authority
-
-Lock State applies primarily to **Normative contracts** and governance-critical documents.
+Non-normative documents are **not authoritative**.
 
 ---
 
-### 5. Orchestration and Process Documents
+## 4. Lock State
 
-Documents governing orchestration, delegation, or process:
+### 4.1 LOCKED
 
-* define control flow and authority boundaries
-* introduce no new semantics
-* MUST conform to all higher tiers
-* MAY enforce stricter discipline on execution and tooling
+A document marked **LOCKED**:
 
-They govern **how work proceeds**, not **what Codex means**.
+* is authoritative
+* MUST NOT be changed except via an explicit, versioned revision
+* provides a stable reference for implementations and tooling
+* is safe to rely upon for automated processing
 
----
+### 4.2 DRAFT
 
-### 6. Informative Documents
+A document marked **DRAFT**:
 
-Informative documents:
-
-* include notes, rationale, examples, and guidance
-* carry **no authority**
-* MUST NOT be used to justify behavior
-* MAY be changed or removed without formal process
-
-If an Informative document conflicts with a Normative one, it is wrong by definition.
+* is under active development
+* may change without notice
+* MUST NOT be treated as authoritative
 
 ---
 
-## Normative Changes
+## 5. Authority Order
 
-Changes to **Normative** documents:
+In the event of conflict, documents are interpreted according to the following precedence (highest first):
 
-* must be explicit and intentional
-* must preserve declared guarantees
-* must be versioned
-* are ratified by the Specification Editor
+1. **Gloss Language Specification**
+2. **Normative Language Contracts**
+3. **Normative Supporting Documents**
+4. **Examples**
+5. **Notes**
 
-Once published, a version of a Normative document is **immutable**.
-
----
-
-## Informative Content
-
-Informative documents:
-
-* may change without formal process
-* do not define required behavior
-* do not participate in authority resolution
-
-They exist to aid understanding, not to govern systems.
+Lower-authority documents MUST NOT contradict higher-authority documents.
 
 ---
 
-## Implementations
+## 6. Relationship to Implementations
 
-This repository defines **language and system requirements**, not implementations.
+The Gloss documentation:
 
-Implementations may:
+* defines the **syntax, structure, and semantic intent** of the Gloss language
+* does **not** mandate any specific implementation strategy
+* does **not** grant rights to any software implementation
 
-* reimplement Codex independently
-* extend it experimentally
-* diverge intentionally
+Implementations of Gloss:
 
-Only documents designated as **Normative** define Codex.
-
----
-
-## Compatibility & Claims
-
-Use of the terms “Codex”, “Codex-compatible”, or similar claims of compliance may be subject to additional requirements defined by the Specification Editor.
-
-False or misleading claims of compliance constitute non-conformance.
+* are independent works
+* may be licensed separately
+* may differ internally, provided they conform to all applicable normative documents
 
 ---
 
-### End of GOVERNANCE.md
+## 7. Licensing
+
+All documentation in this repository is licensed under the **Creative Commons Attribution 4.0 International License (CC BY 4.0)** as specified in the repository’s `LICENSE` file.
+
+The license applies to **textual, diagrammatic, and illustrative content only**.
+
+No rights are granted to:
+
+* trademarks, service marks, or logos
+* project, language, or specification names
+* software implementations, unless explicitly stated otherwise
+
+---
+
+## 8. Final Authority
+
+This document is **NORMATIVE and LOCKED**.
+
+Any interpretation of Gloss documentation MUST be consistent with this governance.
+
+---
+
+**End of Gloss Language Documentation Governance v0.1**

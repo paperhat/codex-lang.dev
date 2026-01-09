@@ -26,7 +26,7 @@ It defines:
 - the invariants that all Codex tooling MUST respect
 
 This document is part of the Codex Language Specification v0.1 and MUST be read in
-conjunction with the other Normative documents listed in `/spec/0.1/index.md`.
+conjunction with the other Normative documents listed in [Specification v0.1](../../).
 
 ---
 
@@ -59,7 +59,7 @@ All of the above are **applications of Codex**, not the language itself.
 Codex authoring is performed exclusively using the **Codex surface syntax**
 expressed in `.cdx` files.
 
-All author-authored material—including:
+All author-authored material — including:
 
 - data
 - views
@@ -70,7 +70,7 @@ All author-authored material—including:
 - bindings
 - configuration
 
-—MUST be expressed in Codex.
+— MUST be expressed in Codex.
 
 No alternative authoring formats are permitted.
 
@@ -139,7 +139,7 @@ The same Codex document MAY be rendered to:
 - LaTeX
 - SVG
 - voice systems
-- future targets not yet defined
+- others, including future targets not yet defined
 
 No Codex construct may assume a specific target.
 
@@ -151,11 +151,11 @@ This document defines **language-level semantics only**.
 
 It does **not** define:
 
-- surface syntax rules (see **Surface Form**)
-- inline text enrichment semantics (see **Inline Text Markup**)
-- schema structure (see **Schema Authoring**)
-- identifier rules (see **Identifiers**)
-- error classification (see **Formatting Errors** and **Validation Errors**)
+- surface syntax rules (see [**Surface Form**](../surface-form/))
+- inline text enrichment semantics (see [**Gloss Inline Text Markup**](../inline-text-markup/))
+- schema structure (see [**Schema Authoring**](../schema-authoring/))
+- identifier rules (see [**Identifiers**](../identifiers/))
+- error classification (see [**Formatting Errors**](//formatting-errors/) and [**Validation Errors**](../validation-errors/))
 
 All such concerns are defined in their respective Normative documents.
 
