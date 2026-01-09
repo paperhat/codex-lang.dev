@@ -20,6 +20,8 @@ Just data expressed in **declarative, semantic markup**, with meaning made expli
 
 Inline meaning inside prose is added using **Gloss**, without breaking the text.
 
+**This is the entire `.cdx` file. No other code required.**
+
 ```cdx
 <Article id="article:bread:intro" title="Making Bread at Home">
   <Author id="person:smith" name="Jane Smith" />
