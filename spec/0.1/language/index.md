@@ -2,7 +2,8 @@ Status: NORMATIVE
 Version: 0.1  
 Editor: Charles F. Munat
 
-# Codex Language Specification — Version 0.1  
+# Codex Language Specification — Version 0.1
+
 ## Language Definition
 
 This document defines the **Codex language itself**.
