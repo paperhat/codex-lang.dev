@@ -1,0 +1,13 @@
+<Module id="module:recipes">
+	<Data>
+		<Recipe id="recipe:spaghetti">…</Recipe>
+	</Data>
+
+	<Views>
+		<RecipeView id="view:recipe-default" for="Recipe">…</RecipeView>
+	</Views>
+
+	<Policies>
+		<DesignPolicy id="policy:recipe:standard">…</DesignPolicy>
+	</Policies>
+</Module>

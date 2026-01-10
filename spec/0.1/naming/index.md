@@ -100,7 +100,7 @@ Their interpretation is the responsibility of consuming systems and schemas.
 Content:
 
 * is not interpreted by Codex
-* may contain prose, code, poetry, or Gloss markup
+* may contain prose, code, poetry, or markup
 * is always carried inside a Concept
 
 Example:
@@ -109,7 +109,7 @@ Example:
 <Description>
 	A cool dude.
 </Description>
-````
+```
 
 ---
 
@@ -120,12 +120,15 @@ An **Entity** is a Concept that has identity.
 * A Concept **is an Entity if and only if it declares an `id` Trait**
 * Entity identity is semantic and graph-addressable
 * Identity requirements are defined by schema, not by syntax
-* Entities are concepts with high semantic density
 
 Examples:
 
 * `<Recipe id="recipe:spaghetti">` → Entity
 * `<Step>` → not an Entity (unless schema explicitly authorizes it)
+
+Notes:
+
+* The `id` value is a string. Consuming systems commonly interpret it as an IRI reference resolved against a module-defined base.
 
 ---
 
@@ -139,9 +142,8 @@ Examples:
 The following styles are forbidden everywhere in Codex naming:
 
 * kebab-case
-* Train-Case
 * snake_case
-* SCREAMING_SNAKE_CASE
+* SCREAMING_CASE
 * mixed or inconsistent casing
 
 ---
@@ -155,6 +157,10 @@ Codex avoids abbreviations in names.
 * When in doubt, names MUST be spelled out in full.
 
 This rule applies **only to naming**, not to Content or Values.
+
+**Whitelisted exception:**
+
+* `uri` is explicitly permitted by this specification.
 
 ---
 
@@ -198,13 +204,13 @@ Invalid examples:
 
 * `ref`
 * `lang`
-* `dir`
+* `href`
 
 Required forms:
 
 * `reference`
 * `language`
-* `direction`
+* `uri` (or a more specific plain-English alternative)
 
 ---
 
@@ -259,9 +265,6 @@ Form:
 Rules:
 
 * A leading `-` MAY appear only at the very start
-
-  * `-1/3` ✅
-  * `1/-3` ❌
 * No spaces are permitted
 * No exponent form is permitted
 * `0/3` is valid
@@ -300,19 +303,46 @@ Two forms are permitted:
 
 **Inferred precision**
 
-* `3.141500p` → precision = 6 decimal places
-* `3p` → precision = 0 decimal places
+* `3.141500p`
+* `3p`
 
 **Explicit precision**
 
-* `3p6` → precision = 6 decimal places
-* `3.1415p6` → precision = 6 decimal places
+* `3p6`
+* `3.1415p6`
 
 Codex does not normalize precision numbers.
 
 ---
 
-### 4.4 List Values
+### 4.4 Enumerated Token Values
+
+Enumerated values are symbolic tokens drawn from a **schema-defined closed set**.
+
+Form:
+
+```
+$Identifier
+```
+
+Rules:
+
+* `$` introduces an enumerated token
+* `Identifier` MUST follow Concept naming rules (PascalCase recommended)
+* Enumerated tokens are **not strings**
+* Codex does not define or validate the allowed set
+
+Examples:
+
+```xml
+alignment=$Center
+status=$Draft
+tone=$Friendly
+```
+
+---
+
+### 4.5 List Values
 
 Lists are written using square brackets:
 
@@ -324,21 +354,26 @@ Rules:
 
 * Lists are ordered
 * Lists may be empty
-* List items MAY be any valid Codex Value spelling, including nested lists
+* List items MAY be any valid Codex Value spelling
 * Lists may be mixed or homogeneous, as defined by schema
+* Lists may be nested
 * Lists are not expanded by Codex
 
 Examples:
 
 ```xml
 friends=["sam", "ted", "mary"]
-favoriteNumbers=[3, 7, 12]
 value=[33, "bob", false, ["x", "y", 3], {now}, 1..42]
 ```
 
+**Parsing rule (Normative):**
+
+* Lists are parsed as a sequence of Value items separated by commas at the list’s top level.
+* Nested list brackets `[...]`, temporal braces `{...}`, and color parentheses `(...)` are balanced and do not split items.
+
 ---
 
-### 4.5 Range Values
+### 4.6 Range Values
 
 Ranges are declarative interval literals.
 
@@ -351,20 +386,22 @@ start..end
 Rules:
 
 * Ranges are **inclusive**
+* `start` and `end` are any valid Codex Value spellings
+* Whether a given range is meaningful is schema-defined
 * Ranges are not evaluated or expanded by Codex
 * Ordering is preserved as written
 
-Ranges MAY appear inside lists or wherever schema permits.
-
-Example:
+Examples:
 
 ```xml
-<Toy forAges=3..6 />
+ages=3..6
+letters="A".."Z"
+window={2026-01-01}..{2026-12-31}
 ```
 
 ---
 
-#### 4.5.1 Stepped ranges
+#### 4.6.1 Stepped ranges
 
 Ranges MAY include an explicit step:
 
@@ -372,29 +409,70 @@ Ranges MAY include an explicit step:
 start..end s step
 ```
 
-Example:
+No spaces are permitted.
+
+The `step` MAY be one of:
+
+1. **Numeric literal**
+
+Examples:
 
 ```
-values=1.25..1.75s0.05
+1..10s2
+"A".."Z"s2
 ```
 
-Rules:
+2. **Keyword step**
 
-* `s` introduces the step value
-* Step is a numeric literal
-* No spaces are permitted
-* Direction is implied by start/end
-* Codex does not require exact alignment or termination
+Forms:
+
+```
+(unit)
+N(unit)
+```
+
+Where:
+
+* `unit` is a schema-authorized identifier
+* `N` is a non-negative integer
+* No operators, spaces, or nesting are permitted
+
+Examples:
+
+```
+{2026-01-01}..{2026-12-31}s(month)
+{2026-01-01}..{2026-12-31}s3(month)
+```
+
+3. **Duration literal**
+
+Form:
+
+```
+s{P...}
+```
+
+Examples:
+
+```
+{2026-01-01}..{2026-12-31}s{P3M}
+{2026-01-01}..{2026-12-31}s{P3M5D}
+```
+
+Notes:
+
+* Steps annotate the range; they do not imply enumeration
+* Inclusivity applies to interval endpoints only
 
 ---
 
-### 4.6 Temporal Values
+### 4.7 Temporal Values
 
 Temporal Values are written using **curly braces** `{...}`.
 
 They are literal spellings of ISO 8601 forms.
 
-#### 4.6.1 Date
+#### 4.7.1 Date
 
 ```
 {YYYY-MM-DD}
@@ -408,7 +486,7 @@ Example:
 
 ---
 
-#### 4.6.2 DateTime
+#### 4.7.2 DateTime
 
 ```
 {YYYY-MM-DDThh:mm:ss(.sss)?(Z|±HH:MM)}
@@ -424,82 +502,89 @@ Example:
 
 ---
 
-#### 4.6.3 Duration
-
-ISO 8601 duration form:
+#### 4.7.3 Duration
 
 ```
-{±PnYnMnWnDTnHnMnS}
+{P...}
 ```
 
 Example:
 
 ```
-{P2DT3M15S}
+{PT3M15S}
 ```
 
 ---
 
-#### 4.6.4 Special temporal values
+#### 4.7.4 Special temporal values
 
-The following are reserved:
+Reserved literals:
 
 * `{now}`
 * `{today}`
 
-Their interpretation is context-dependent and consumer-defined.
+Interpretation is consumer-defined.
 
 ---
 
-### 4.7 Color Values
+### 4.8 Color Values
 
 Color Values are literal spellings representing a color.
 
-Color Values are **data notations**, not expressions.
-
 Codex does not interpret, validate, normalize, or convert colors.
-Their meaning is schema- and consumer-defined.
 
-#### 4.7.1 Hex color literals
+#### 4.8.1 Hex color literals
 
-Forms:
+Permitted forms:
 
 * `#RGB`
-* `RGBA`
+* `#RGBA`
 * `#RRGGBB`
 * `#RRGGBBAA`
 
 Examples:
 
 * `#f00`
-* `#f009`
+* `#f00f`
 * `#ff0000`
 * `#ff000080`
 
-#### 4.7.2 Functional color literals
+---
 
-Functional forms are treated as **atomic literals**, not evaluable expressions.
+#### 4.8.2 Functional color literals
+
+Functional forms are **atomic literals**, not expressions.
 
 Examples (non-exhaustive):
 
-* `rgb(255,0,0)`
-* `rgb(255 0 0 / 0.5)`
-* `hsl(120,100%,50%)`
-* `hsl(120 100% 50% / 0.5)`
-* `oklch(62.8% 0.25 29)`
-* `color(display-p3 1 0 0)`
+```
+rgb(255,0,0)
+rgb(255 0 0 / 0.5)
+hsl(120,100%,50%)
+hsl(120 100% 50% / 0.5)
+oklch(62.8% 0.25 29)
+color(display-p3 1 0 0)
+```
 
 Rules:
 
 * Parentheses are required
-* No whitespace normalization is performed by Codex
-* Internal separators, units, and parameter conventions are consumer-defined
+* Codex does not define internal separators, units, or parameter conventions
+* Codex performs no whitespace normalization inside the parentheses
 
-#### 4.7.3 Named colors
+---
 
-Named color keywords (for example, CSS named colors) are **schema-only**.
+#### 4.8.3 Named colors
 
-Codex does not define any global set of named colors.
+Named colors are represented as **string values**.
+
+Codex defines no global set of named colors.
+
+Example:
+
+```xml
+color="firebrick"
+```
 
 ---
 
@@ -574,16 +659,30 @@ Forbidden as replacements for **Trait**:
 
 ---
 
-## 9. Summary
+## 9. Relationship to Other Specifications (Normative)
+
+This specification must be read in conjunction with:
+
+- the **Codex ID Resolution Specification**
+- the **Codex View Definition Specification**
+
+In case of conflict:
+
+- naming and literal spelling rules in this document prevail
+- identity resolution rules are governed exclusively by the ID Resolution Specification
+- View structure and projection rules are governed exclusively by the View Definition Specification
+
+## 10. Summary
 
 * Codex is written in **Concepts**
 * Concepts declare **Traits**
 * Traits bind names to **Values**
 * Values are literal spellings, not expressions
+* Enumerated values are written as `$EnumToken`
 * Concepts may carry **Content**
 * A Concept is an **Entity if and only if it declares an `id` Trait**
 * Naming and values are plain-English, declarative, and schema-scoped
-* Lists, ranges, precision numbers, temporal literals, and color literals are first-class data forms
+* Lists, ranges, stepped ranges, temporal values, precision numbers, enumerations, and color literals are first-class data forms
 
 ---
 
