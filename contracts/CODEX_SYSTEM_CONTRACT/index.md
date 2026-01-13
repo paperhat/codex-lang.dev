@@ -220,7 +220,7 @@ Paperhat Codex enforces strict separation:
 * **Behaviors** define optional computation
 * **Bindings** define value sources
 * **Design Policy** defines appearance
-* **Scribe** orchestrates compilation and rendering
+* **Kernel** orchestrates compilation and rendering
 * **Warden** enforces validity
 * **Renderers** emit target-specific output
 

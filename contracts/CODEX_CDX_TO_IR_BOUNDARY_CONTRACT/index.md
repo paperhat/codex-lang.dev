@@ -5,7 +5,7 @@ Editor: Charles F. Munat
 
 # Codex CDX → IR Boundary Contract
 
-This document defines the **semantic and responsibility boundary** between **Codex**, authored in `.cdx` files, and the **Intermediate Representation (IR)** consumed by downstream systems (e.g. Scribe, planners, renderers, exporters).
+This document defines the **semantic and responsibility boundary** between **Codex**, authored in `.cdx` files, and the **Intermediate Representation (IR)** consumed by downstream systems (e.g. Kernel, planners, renderers, exporters).
 
 Its requirements apply to all tooling that consumes Codex and produces an IR.
 

@@ -133,9 +133,9 @@ The following contracts are currently defined:
 - **[CODEX_PROVENANCE_CONTRACT](./CODEX_PROVENANCE_CONTRACT/)**  
   Defines **provenance in Codex**.
 
-- **[SCRIBE_PIPELINE_CONTRACT](./SCRIBE_PIPELINE_CONTRACT/)**  
+- **[KERNEL_PIPELINE_CONTRACT](https://paperhat.dev/contracts/KERNEL_PIPELINE_CONTRACT/)**  
   Defines the **exclusive responsibilities, boundaries, and guarantees** of the
-  Scribe library.
+  Kernel pipeline.
 
 ---
 

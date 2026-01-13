@@ -129,9 +129,11 @@ Given:
 >
 	<Data />
 	<Views />
-	<Designs />
+	<DesignPolicies />
 </Module>
 ```
+
+The `<Data>`, `<Views>`, and `<DesignPolicies>` Concepts are section/role markers within the module. They do not change the resolution algorithm; they only participate to the extent that they may carry `idBase` values that scope for their subtrees.
 
 And:
 

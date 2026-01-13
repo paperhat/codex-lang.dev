@@ -124,7 +124,7 @@ Codex enforces strict separation between:
 Codex defines **what is declared**, not **how it is executed or rendered**.
 
 Responsibilities outside the language itself are defined in separate contracts
-(e.g. Scribe, Warden, Architect).
+(e.g. Kernel, Warden, Architect).
 
 ---
 

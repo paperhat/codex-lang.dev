@@ -68,7 +68,7 @@ A **binding** maps a symbolic variable name to a value source.
 Bindings:
 
 - are authored in CDX
-- are owned and resolved by **Scribe**
+- are owned and resolved by **Kernel**
 - are specific to an application and render target
 - may reference:
   - user inputs
@@ -102,7 +102,7 @@ No behavior or binding may redefine correctness.
 2. Constraints MUST NOT depend on runtime-only sources.
 3. Constraints MUST be referentially transparent.
 4. Behaviors MUST NOT be required for correctness.
-5. Bindings MUST be resolved by Scribe, not by expression logic.
+5. Bindings MUST be resolved by Kernel, not by expression logic.
 6. Compilation MUST be deterministic.
 7. All rules MUST be explainable.
 8. No implicit inference or silent correction is permitted.
@@ -149,9 +149,9 @@ They define **what is valid**, not how validity is enforced.
 
 ---
 
-### 5.2 Scribe
+### 5.2 Kernel
 
-Scribe owns:
+Kernel owns:
 
 - compilation of CDX into triples and internal representations
 - compilation of constraint declarations into SHACL shapes
@@ -159,7 +159,7 @@ Scribe owns:
 - resolution of all variable bindings using CDX configuration
 - render orchestration for all targets
 
-Scribe is the only library that knows the render target.
+Kernel is the only component that knows the render target.
 
 ---
 
@@ -169,23 +169,23 @@ Warden enforces constraints by validating candidate graphs against compiled cons
 
 ---
 
-### 5.4 Artificer
+### 5.4 Expression Evaluation
 
-Artificer defines:
+The expression evaluation layer defines:
 
 - a declarative expression language over **named symbolic variables**
 - predicate, arithmetic, and computation operators
 - evaluation semantics over an explicit environment
 - explainable, serializable behavior specifications
 
-Artificer:
+Expression evaluation:
 
 - does not define bindings
 - does not resolve bindings
 - does not know render targets
 - does not care where values originate
 
-Artificer evaluates expressions over provided values and never throws.
+Expression evaluation evaluates expressions over provided values and never throws.
 
 ---
 
@@ -219,7 +219,7 @@ Bindings compile to a binding plan that:
 
 - maps variable names to value sources
 - is specific to a render target
-- is resolved by Scribe during render orchestration
+- is resolved by Kernel during render orchestration
 
 ---
 
@@ -341,9 +341,9 @@ Aggregate:
 
 ---
 
-### 8.7 Time and Date (Toolsmith Temporal)
+### 8.7 Time and Date (Temporal Types)
 
-No legacy JavaScript Date objects are permitted.
+JavaScript Date objects are not permitted.
 
 Illustrative types:
 
@@ -370,11 +370,11 @@ Variables are symbolic placeholders, not values.
 
 ---
 
-### 9.2 Variables Are Bound by Scribe
+### 9.2 Variables Are Bound by Kernel
 
-Variables are bound exclusively by Scribe using CDX-authored binding configuration.
+Variables are bound exclusively by Kernel using CDX-authored binding configuration.
 
-Artificer never binds variables and never cares where bound values originate.
+Expression evaluation never binds variables and never cares where bound values originate.
 
 ---
 
@@ -434,7 +434,7 @@ Intent:
 All symbols (`x`, `a`, `b`, `c`, `d`) are variables.
 
 - In a **constraint**, all variables must be bound to graph-resident values.
-- In a **behavior**, variables may be bound by Scribe to runtime sources.
+- In a **behavior**, variables may be bound by Kernel to runtime sources.
 
 ---
 
@@ -445,7 +445,7 @@ All symbols (`x`, `a`, `b`, `c`, `d`) are variables.
 - encoding runtime sources in constraints
 - requiring JavaScript for correctness
 - silently fixing invalid data
-- using legacy Date objects
+- using JavaScript Date objects
 
 ---
 
@@ -456,7 +456,7 @@ Paperhat Codex enforces a strict separation:
 - **Constraints** define validity.
 - **Behaviors** enhance interaction.
 - **Variables** are symbolic placeholders.
-- **Bindings** are target-specific and resolved by Scribe.
+- **Bindings** are target-specific and resolved by Kernel.
 - **All authoring is CDX.**
 
 > **Correctness is semantic.

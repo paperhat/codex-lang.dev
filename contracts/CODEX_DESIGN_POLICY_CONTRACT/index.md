@@ -75,9 +75,9 @@ Design Policy:
 Canonical separation of responsibility:
 
 * **Architect** defines meaning
-* **Surveyor** defines projections
+* **View Definitions** define projections
 * **Gloss** enriches inline content semantics
-* **Scribe** orchestrates the pipeline
+* **Kernel** orchestrates the pipeline
 * **Design Policy** defines appearance
 * **Renderers** implement targets
 
@@ -89,7 +89,7 @@ Design Policy operates on **semantic groupings and distinctions**, not on markup
 
 Sources of semantic input include:
 
-* ViewModels derived from Surveyor projections
+* ViewModels derived from View Definitions
 * Gloss-derived semantic distinctions embedded in Content
 
 Examples of semantic groupings and distinctions include:
@@ -115,8 +115,8 @@ Design Policy is:
 
 * authored by site or application owners
 * expressed exclusively in **Codex** (`.cdx`)
-* owned by the application, not by Architect or Surveyor
-* consumed by Scribe and renderers
+* owned by the application, not by Architect
+* consumed by Kernel and renderers
 
 End users MAY author or modify Design Policy without writing code.
 
@@ -215,7 +215,7 @@ Gloss semantics MUST NOT be treated as behavior triggers.
 Design Policy is:
 
 * parsed from Codex
-* compiled by Scribe into a Presentation Plan
+* compiled by Kernel into a Presentation Plan
 * combined with a ViewModel and Gloss-derived semantics
 * consumed by renderers
 

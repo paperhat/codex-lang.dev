@@ -56,20 +56,20 @@ Whenever possible:
 
 - add new Concepts instead of changing existing ones
 - add new optional Traits instead of changing meanings
-- deprecate old Concepts gradually
+- phase out old Concepts gradually
 
 This minimizes migration pressure.
 
 ---
 
-### 4.2 Deprecation Before Removal
+### 4.2 Phase-Out Before Removal
 
 When a Concept or Trait must be removed:
 
-1. Mark it as deprecated in the schema
+1. Mark it as scheduled for removal in the schema
 2. Allow both old and new forms temporarily
 3. Migrate data explicitly
-4. Remove deprecated forms in a later breaking version
+4. Remove old forms in a later breaking version
 
 Never remove silently.
 

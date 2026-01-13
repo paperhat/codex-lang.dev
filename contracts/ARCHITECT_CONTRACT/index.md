@@ -25,8 +25,8 @@ Architect exists to:
 * define **document, domain, and collection structure** (e.g. sections, lists, tables)
 * define when a Concept is an **Entity** and what identity means for it
 * align Concept vocabularies to **ontologies**, including schema.org where applicable
-* provide the canonical semantic and structural definitions consumed by Scribe,
-  Surveyor, Gloss, Design Policy, and renderers
+* provide the canonical semantic and structural definitions consumed by Kernel,
+  Gloss, Design Policy, and renderers
 
 Architect defines meaning and structure; it does not execute pipelines.
 
@@ -203,7 +203,7 @@ schema.org JSON-LD) by virtue of:
 * their ontology alignment
 
 Architect does not prescribe emission format, placement, or aggregation.
-Those decisions belong to Scribe/renderers and Design Policy.
+Those decisions belong to Kernel/renderers and Design Policy.
 
 ---
 
@@ -211,14 +211,13 @@ Those decisions belong to Scribe/renderers and Design Policy.
 
 Architect does **not** own:
 
-* the CDX grammar, parsing, AST, IR, or RDF/Turtle compilation (Scribe owns)
-* pipeline orchestration, storage, or query execution (Scribe owns; IO via Pathfinder)
-* projections and query definitions (Surveyor owns)
-* Design Policy (application-owned; applied by Scribe)
-* Presentation Plans and render outputs (Scribe + renderers)
+* the CDX grammar, parsing, AST, IR, or RDF/Turtle compilation (Kernel owns)
+* pipeline orchestration, storage, or query execution (Kernel owns; IO via a configured graph store adapter)
+* Design Policy (authored externally; applied by Kernel)
+* Presentation Plans and render outputs (Kernel + renderers)
 * renderer implementation details (targets own)
 * behavior, state, workflows, or event semantics
-  (Artificer / Custodian / Operator own)
+  (outside this contract)
 
 Architect defines **meaning and structure only**.
 

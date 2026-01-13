@@ -21,7 +21,7 @@ Its goals are to:
 
 - provide clear, plain-English naming for graph relationships
 - prevent ambiguity between different kinds of references
-- avoid legacy markup and programming-language semantics
+- avoid markup-system and programming-language semantics
 - ensure consistent reasoning by humans, tools, and LLMs
 
 This contract defines **naming and semantic intent only**.  

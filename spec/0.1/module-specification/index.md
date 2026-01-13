@@ -19,8 +19,10 @@ Modules:
 
 * establish identity boundaries
 * declare base IRIs for Entity resolution
-* group related data, views, and designs
+* group related data, views, and design policies
 * serve as the unit of reuse, import, and distribution
+
+In Paperhat terminology, the module section for design and presentation policy is named `DesignPolicies`.
 
 This specification defines:
 
@@ -47,7 +49,7 @@ Example:
 >
 	<Data />
 	<Views />
-	<Designs />
+	<DesignPolicies />
 </Module>
 ```
 
@@ -73,11 +75,14 @@ A `<Module>` MAY contain the following child Concepts, in any order:
 
 * `<Data>`
 * `<Views>`
-* `<Designs>`
+* `<DesignPolicies>`
 
 No other child Concepts are authorized by this specification.
 
 Each of these child Concepts establishes a **semantic section** within the module.
+
+These section Concepts act as **role markers**: they declare which kinds of artifacts (dialects) are present in the module, and they may carry traits such as `idBase` that scope within that role.
+This specification does not define the evaluation semantics of those dialects.
 
 ---
 
@@ -111,21 +116,21 @@ The semantics of views are defined elsewhere.
 
 `<Views>` MAY be empty.
 
+
 ---
 
-### 3.3 Designs
+### 3.3 Design Policies
 
-`<Designs>` contains Concepts representing **design and presentation policy**.
+`<DesignPolicies>` contains Concepts representing **design and presentation policy**.
 
 Examples include:
 
 * design policies
 * styling rules
 * layout guidance
+The semantics of design policies are defined elsewhere.
 
-The semantics of designs are defined elsewhere.
-
-`<Designs>` MAY be empty.
+`<DesignPolicies>` MAY be empty.
 
 ---
 
@@ -156,7 +161,7 @@ The `idBase` Trait MAY appear on:
 * `<Module>`
 * `<Data>`
 * `<Views>`
-* `<Designs>`
+* `<DesignPolicies>`
 
 No other Concepts are authorized to declare `idBase`.
 
@@ -227,18 +232,18 @@ Both specifications MUST be applied together.
 
 This specification does not:
 
-* define schemas for Data, Views, or Designs
+* define schemas for Data, Views, or DesignPolicies
 * define what constitutes a valid domain Concept
 * define how modules are imported or linked
 * define versioning or dependency mechanisms
-* define how views or designs are evaluated
+* define how views or design policies are evaluated
 
 ---
 
 ## 8. Summary
 
 * A module is defined by a single `<Module>` root Concept
-* Modules may contain `<Data>`, `<Views>`, and `<Designs>`
+* Modules may contain `<Data>`, `<Views>`, and `<DesignPolicies>`
 * `idBase` declares a Base IRI for Entity id resolution
 * Bases are lexically scoped and inheritable
 * Child bases override parent bases

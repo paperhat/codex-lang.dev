@@ -152,7 +152,7 @@ Example (Illustrative):
 ```xml
 <Provenance>
 	<AuthoredBy reference="user:chas" />
-	<GeneratedBy reference="tool:scribe" />
+	<GeneratedBy reference="tool:kernel" />
 </Provenance>
 ```
 

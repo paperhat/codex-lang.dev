@@ -199,7 +199,7 @@ This separation keeps Codex stable and predictable.
 Codex sits at the **semantic center** of Paperhat:
 
 * **Architect** defines vocabularies and schemas
-* **Scribe** compiles and preserves meaning
+* **Kernel** compiles and preserves meaning
 * **Gloss** binds meaning inline in prose
 * **Design Policy** determines presentation
 * **Renderers** produce target-specific output

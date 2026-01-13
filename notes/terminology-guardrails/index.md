@@ -15,7 +15,7 @@ This contract defines **terminology guardrails** for Codex.
 Its goals are to:
 
 - prevent vocabulary drift
-- eliminate legacy markup and programming-language leakage
+- eliminate markup-system and programming-language leakage
 - ensure consistent reasoning by humans and LLMs
 - make Codex mechanically and semantically unambiguous
 
@@ -178,7 +178,7 @@ When generating Codex-related output, LLMs MUST:
 
 LLMs MUST NOT:
 
-- substitute legacy terms for Codex terms
+- substitute non-Codex terms for Codex terms
 - refer to annotations as comments
 - infer semantics from surface syntax
 - invent Concepts or Traits not defined by schema
@@ -216,8 +216,9 @@ It exists solely to lock **language discipline**.
 
 - Codex terminology is closed and intentional
 - Canonical terms are mandatory
-- Legacy and code-derived vocabulary is forbidden
+- Markup- and code-derived vocabulary is forbidden
 - **Annotations are not comments**
 - Casing and abbreviation rules are strict
 - Context determines meaning
 - Guardrails exist primarily for LLM correctness
+
