@@ -86,7 +86,7 @@ Bindings supply values; they do not define meaning and do not define correctness
 
 ---
 
-### 2.4 Source of Truth Rule (Hard)
+### 2.4 Source of Truth Rule (Normative)
 
 **Constraints define correctness.
 Behaviors enhance interaction.
@@ -438,7 +438,7 @@ All symbols (`x`, `a`, `b`, `c`, `d`) are variables.
 
 ---
 
-## 12. Prohibited Patterns (Hard)
+## 12. Prohibited Patterns (Normative)
 
 - using behaviors as the sole source of validity
 - binding variables inside expressions

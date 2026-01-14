@@ -16,7 +16,7 @@ This document is **Normative** and is governed by global Paperhat change control
 
 ---
 
-## 1. Purpose (Hard)
+## 1. Purpose (Normative)
 
 Architect exists to:
 
@@ -38,7 +38,7 @@ Architect exclusively owns the responsibilities defined below.
 
 ---
 
-## 2.1 Vocabulary and Schema Authorization (Hard)
+## 2.1 Vocabulary and Schema Authorization (Normative)
 
 Architect defines:
 
@@ -51,7 +51,7 @@ No other library may redefine Architect-owned vocabulary meaning.
 
 ---
 
-## 2.2 Structural Semantics (Hard)
+## 2.2 Structural Semantics (Normative)
 
 Architect is the **exclusive owner of structure**.
 
@@ -74,7 +74,7 @@ or replace them.
 
 ---
 
-## 2.3 Entity Semantics (Hard)
+## 2.3 Entity Semantics (Normative)
 
 Architect owns the definition and authorization of **Entities**.
 
@@ -109,7 +109,7 @@ defines or enumerates them.
 
 ---
 
-## 2.5 Inline Annotation Vocabularies for Gloss (Hard)
+## 2.5 Inline Annotation Vocabularies for Gloss (Normative)
 
 Architect owns all **domain vocabularies** that Gloss may reference, including but
 not limited to:
@@ -140,7 +140,7 @@ referenced by Gloss.
 
 ---
 
-## 3.1 `@` vs `#` (Hard)
+## 3.1 `@` vs `#` (Normative)
 
 Architect’s Entity semantics are used by Gloss addressing rules:
 
@@ -160,7 +160,7 @@ Architect is the sole authority on whether a Concept is an Entity.
 
 ---
 
-## 3.2 Open Vocabulary Rule (Hard)
+## 3.2 Open Vocabulary Rule (Normative)
 
 Architect MAY define open-ended families of Concepts for inline semantics,
 including:
@@ -207,7 +207,7 @@ Those decisions belong to Kernel/renderers and Design Policy.
 
 ---
 
-## 6. What Architect Does NOT Own (Hard)
+## 6. What Architect Does NOT Own (Normative)
 
 Architect does **not** own:
 
@@ -223,7 +223,7 @@ Architect defines **meaning and structure only**.
 
 ---
 
-## 7. Determinism and Explainability (Hard)
+## 7. Determinism and Explainability (Normative)
 
 Architect-defined vocabulary and schema rules MUST support explainability:
 

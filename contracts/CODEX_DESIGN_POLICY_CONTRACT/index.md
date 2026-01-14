@@ -33,7 +33,7 @@ Design Policy is **data**, not code.
 
 ---
 
-## 2. Scope (Hard)
+## 2. Scope (Normative)
 
 Design Policy governs **presentation-level interpretation** of semantic projections and content semantics, including:
 
@@ -61,7 +61,7 @@ Design Policy never defines meaning.
 
 ---
 
-## 3. Separation of Concerns (Hard)
+## 3. Separation of Concerns (Normative)
 
 Design Policy:
 
@@ -225,7 +225,7 @@ No runtime inference is permitted.
 
 ---
 
-## 12. Prohibited Content (Hard)
+## 12. Prohibited Content (Normative)
 
 Design Policy MUST NOT include:
 

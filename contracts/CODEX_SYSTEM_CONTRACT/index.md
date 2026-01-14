@@ -35,7 +35,7 @@ All of those are *applications* of the language, not the language itself.
 
 ---
 
-## 2. The Authoring Surface (Hard)
+## 2. The Authoring Surface (Normative)
 
 ### 2.1 Codex Is the Only Authoring Language
 
@@ -98,7 +98,7 @@ Developer convenience is never a justification for authoring complexity.
 
 ---
 
-### 2.3 Inline Content Enrichment: Gloss (Hard)
+### 2.3 Inline Content Enrichment: Gloss (Normative)
 
 Within Codex **Content**, inline enrichment MAY be expressed using the **Gloss language**.
 
@@ -139,7 +139,7 @@ All Gloss constructs compile into internal semantic structures and remain subjec
 
 ---
 
-## 3. Closed World Assumption (Hard)
+## 3. Closed World Assumption (Normative)
 
 Paperhat Codex operates as a **closed declarative system**.
 
@@ -189,7 +189,7 @@ Abbreviations are permitted only where humans do not see them.
 
 ---
 
-## 5. Determinism and Explainability (Hard)
+## 5. Determinism and Explainability (Normative)
 
 Given the same Codex inputs:
 
@@ -211,7 +211,7 @@ Opaque behavior is forbidden.
 
 ---
 
-## 6. Separation of Responsibility (Hard)
+## 6. Separation of Responsibility (Normative)
 
 Paperhat Codex enforces strict separation:
 
@@ -231,7 +231,7 @@ No library may assume responsibilities owned by another.
 
 ---
 
-## 7. Non-JavaScript Correctness (Hard)
+## 7. Non-JavaScript Correctness (Normative)
 
 All Paperhat Codex applications MUST be correct **without JavaScript**.
 
@@ -248,7 +248,7 @@ JavaScript MAY enhance experience, but MUST NOT enable correctness.
 
 ---
 
-## 8. Referential Transparency (Hard)
+## 8. Referential Transparency (Normative)
 
 All authoritative semantics in Paperhat Codex MUST be referentially transparent.
 
@@ -280,7 +280,7 @@ No authoring construct — including Gloss — may assume a specific target.
 
 ---
 
-## 10. Change Discipline (Hard)
+## 10. Change Discipline (Normative)
 
 Any change to Paperhat Codex MUST:
 

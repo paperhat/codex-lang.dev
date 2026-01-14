@@ -72,7 +72,7 @@ No other role may assume these powers.
 
 ---
 
-## 4. Authority Constraints (Hard)
+## 4. Authority Constraints (Normative)
 
 The Orchestrator MUST:
 
@@ -204,7 +204,7 @@ LLM-to-LLM escalation is forbidden.
 
 ---
 
-## 8. Determinism Guarantee (Hard)
+## 8. Determinism Guarantee (Normative)
 
 The Orchestrator MUST ensure that:
 
@@ -216,7 +216,7 @@ Any reliance on executor discretion constitutes **contract violation**.
 
 ---
 
-## 9. Human-First Enforcement (Hard)
+## 9. Human-First Enforcement (Normative)
 
 The Orchestrator is the **final enforcer** of the Codex principle:
 
@@ -246,7 +246,7 @@ Failure is **never** attributed to ambiguity in LOCKED documents.
 
 ---
 
-## 11. Prohibited Behaviors (Hard)
+## 11. Prohibited Behaviors (Normative)
 
 The Orchestrator MUST NOT:
 
