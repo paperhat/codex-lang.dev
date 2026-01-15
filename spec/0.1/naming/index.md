@@ -123,12 +123,14 @@ An **Entity** is a Concept that has identity.
 
 Examples:
 
-* `<Recipe id="recipe:spaghetti">` → Entity
+* `<Recipe id=recipe:spaghetti>` → Entity
 * `<Step>` → not an Entity (unless schema explicitly authorizes it)
 
 Notes:
 
-* The `id` value is a string. Consuming systems commonly interpret it as an IRI reference resolved against a module-defined base.
+* The `id` value is an **IRI reference**, not a display label.
+* `id` values are written as **unquoted tokens** (see §4.10).
+* Consuming systems commonly resolve `id` values against a module-defined base (see the Codex ID Resolution Specification).
 
 ---
 
@@ -584,6 +586,68 @@ Example:
 
 ```xml
 color="firebrick"
+```
+
+---
+
+### 4.9 UUID Values
+
+UUID Values are literal spellings representing a UUID.
+
+Form:
+
+```
+[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}
+```
+
+Rules:
+
+* UUID Values are **not strings**.
+* UUID Values MUST NOT contain braces.
+* Case is not semantically significant.
+* Codex does not mandate a UUID version.
+
+Examples:
+
+```xml
+uuid=017f22e2-79b0-7cc3-98c4-dc0c0c07398f
+```
+
+---
+
+### 4.10 IRI Reference Values
+
+An **IRI reference value** is an unquoted token used to express identity and references.
+
+Form:
+
+* a single token with no whitespace
+
+Rules:
+
+* IRI reference values are **not strings**.
+* Codex does not validate full IRI grammar.
+* IRI reference values MUST be written without leading or trailing whitespace.
+
+Special-case (Normative):
+
+The following Traits MUST use IRI reference values (unquoted):
+
+* `id`
+* `idBase`
+* `reference`
+* `target`
+* `for`
+* `key`
+
+All other Traits MUST NOT accept IRI reference values unless explicitly defined by a future revision of this specification.
+
+Examples:
+
+```xml
+<Recipe id=recipe:spaghetti key=spaghetti />
+<Module idBase=https://paperhat.dev/id/ />
+<View target=recipe:spaghetti />
 ```
 
 ---

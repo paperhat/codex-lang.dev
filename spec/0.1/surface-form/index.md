@@ -274,6 +274,17 @@ ClosingMarker ::= "</" ConceptName Whitespace? ">"
 Trait ::= TraitName "=" Value
 ```
 
+Special-case (Normative):
+
+For the following Trait names, the Value MUST be an **IRI reference value** (an unquoted single token; no whitespace):
+
+* `id`
+* `idBase`
+* `reference`
+* `target`
+* `for`
+* `key`
+
 TraitName and Value spellings are defined elsewhere (Naming and Value Specification), but Values may contain nested structures:
 
 * lists: `[...]`

@@ -44,8 +44,8 @@ Example:
 
 ```cdx
 <Module
-	id="module:recipe"
-	idBase="https://paperhat.dev/id/examples/recipe/"
+	id=module:recipe
+	idBase=https://paperhat.dev/id/examples/recipe/
 >
 	<Data />
 	<Views />
@@ -143,12 +143,12 @@ The `idBase` Trait declares a **Base IRI** for resolving Entity ids.
 Form:
 
 ```cdx
-idBase="https://example.test/id/base/"
+idBase=https://example.test/id/base/
 ```
 
 Rules:
 
-* `idBase` MUST be a string value
+* `idBase` MUST be an IRI reference value (unquoted single token)
 * `idBase` MUST be an absolute IRI reference (consumer-validated)
 * Codex does not validate IRI syntax
 
@@ -200,9 +200,9 @@ Declaring `idBase` on a child Concept **overrides** any inherited base for that 
 Example:
 
 ```cdx
-<Module idBase="https://example.test/id/">
-	<Data idBase="https://example.test/id/data/">
-		<Thing id="x" />
+<Module idBase=https://example.test/id/>
+	<Data idBase=https://example.test/id/data/>
+		<Thing id=x />
 	</Data>
 </Module>
 ```

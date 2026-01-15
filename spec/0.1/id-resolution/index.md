@@ -16,7 +16,7 @@ It does not define schemas, ontologies, or application semantics.
 Codex Entities declare an `id` Trait to establish identity.
 
 Many consuming systems require identity to be expressed as an **absolute IRI**.
-Codex therefore defines a normative mechanism to resolve string `id` values into absolute IRIs using the active module’s declared base.
+Codex therefore defines a normative mechanism to resolve `id` values into absolute IRIs using the active module’s declared base.
 
 Goals:
 
@@ -35,7 +35,7 @@ An **IRI** is an Internationalized Resource Identifier, used to uniquely identif
 
 ### 2.2 IRI Reference
 
-An **IRI Reference** is a string that may be either:
+An **IRI Reference** is a value that may be either:
 
 * an absolute IRI
 * a relative reference intended to be resolved against a base IRI
@@ -61,12 +61,12 @@ If present, the `idBase` Trait declares the module’s default Base IRI.
 Form:
 
 ```xml
-<Module idBase="https://example.test/id/some-module/" />
+<Module idBase=https://example.test/id/some-module/ />
 ```
 
 Rules:
 
-* `idBase` MUST be a string value.
+* `idBase` MUST be an IRI reference value.
 * `idBase` MUST be an absolute IRI reference (consumer-validated).
 * Codex does not validate IRI syntax.
 
@@ -89,18 +89,18 @@ Whenever a consuming system requires an Entity’s **absolute identity**, it MUS
 
 Resolution requires:
 
-* the Entity’s `id` value (a string)
-* the active module’s `idBase` value (a string), if present
+* the Entity’s `id` value (an IRI reference value)
+* the active module’s `idBase` value (an IRI reference value), if present
 
 ### 4.3 Absolute `id`
 
-If the Entity’s `id` string is an **absolute IRI reference**, the resolved IRI is the `id` value itself.
+If the Entity’s `id` value is an **absolute IRI reference**, the resolved IRI is the `id` value itself.
 
 Codex does not define the full IRI grammar; consumers decide how to recognize absolute IRIs.
 
 ### 4.4 Relative `id`
 
-If the Entity’s `id` string is not absolute, it is a **relative IRI reference**.
+If the Entity’s `id` value is not absolute, it is a **relative IRI reference**.
 
 If `idBase` is present, the resolved IRI is produced by resolving the relative reference against `idBase`.
 
@@ -124,8 +124,8 @@ Given:
 
 ```cdx
 <Module
-	id="module:recipe"
-	idBase="https://paperhat.dev/id/examples/recipe/"
+	id=module:recipe
+	idBase=https://paperhat.dev/id/examples/recipe/
 >
 	<Data />
 	<Views />
@@ -138,7 +138,7 @@ The `<Data>`, `<Views>`, and `<DesignPolicies>` Concepts are section/role marker
 And:
 
 ```cdx
-<Recipe id="spaghetti-aglio-e-olio">
+<Recipe id=spaghetti-aglio-e-olio>
 	...
 </Recipe>
 ```

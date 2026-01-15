@@ -9,4 +9,4 @@ All documents under this directory are immutable.
 Any change, correction, clarification, or extension
 MUST be introduced as a new specification version.
 
-Freeze date: 2026-01-08
+Freeze date: 2026-01-15
