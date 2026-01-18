@@ -2,46 +2,48 @@ Status: NORMATIVE
 Version: 0.1  
 Editor: Charles F. Munat
 
-# Codex Reference Traits Contract — Version 0.1
+# **Codex Reference Traits Specification — Version 0.1 (FINAL, CORE)**
 
-This document defines the **reference Traits** used in the Codex language.
+This specification defines the **reference Traits** used in the Codex language.
 
-Reference Traits are part of the Codex language model and are governed by this
-specification.
+Reference Traits are part of the **core Codex language model** and are governed by
+this specification.
 
 This document is **Normative**.
 
 ---
 
+# Codex Reference Traits Specification — Version 0.1
+
 ## 1. Purpose
 
-This contract defines the **reference Traits** used in Codex.
+This specification defines the **reference Traits** used in Codex.
 
 Its goals are to:
 
-- provide clear, plain-English naming for graph relationships
-- prevent ambiguity between different kinds of references
-- avoid markup-system and programming-language semantics
-- ensure consistent reasoning by humans, tools, and LLMs
+* provide clear, plain-English naming for graph relationships
+* prevent ambiguity between different kinds of references
+* avoid programming-language or markup-system semantics
+* ensure consistent reasoning by humans and machines
 
-This contract defines **naming and semantic intent only**.  
-It does **not** define execution, behavior, inference rules, or runtime wiring.
+This specification defines **naming and semantic intent only**.
+It does **not** define execution, inference, or runtime wiring.
 
 ---
 
-## 2. Reference Traits Overview
+## 2. Reference Traits Overview (Normative)
 
-Codex defines **three reference Traits**:
+Codex defines exactly **three reference Traits**:
 
-- `reference`
-- `target`
-- `for`
+* `reference`
+* `target`
+* `for`
 
 Each reference Trait:
 
-- binds a Concept to another Entity by identifier (IRI)
-- has a distinct **semantic intent**
-- is authorized only where permitted by schema
+* binds a Concept to another **Entity** by identifier (IRI)
+* has a distinct semantic intent
+* is valid only where authorized by schema
 
 Reference Traits are **mutually exclusive by default**.
 
@@ -53,24 +55,16 @@ Reference Traits are **mutually exclusive by default**.
 
 `reference` is a Trait whose value is the identifier (IRI) of another Entity.
 
-It represents a **generic declarative link**.
-
 ### Intent
 
 Use `reference` when a Concept:
 
-- mentions another Entity
-- depends on another Entity for meaning
-- needs to point to another Entity
-- but does **not** act on, apply to, specialize, or scope it
+* mentions another Entity
+* depends on another Entity for meaning
+* points to another Entity
+* but does **not** apply to, act on, or scope it
 
-`reference` carries **no implied direction, action, or applicability**.
-
-### Examples (Illustrative)
-
-- A recipe referencing an ingredient Entity
-- A policy referencing a role Entity
-- A view referencing a Concept it mentions but does not operate on
+`reference` carries **no implied direction or action**.
 
 Plain-English reading:
 
@@ -82,24 +76,17 @@ Plain-English reading:
 
 ### Definition
 
-`target` is a reference Trait whose value is the identifier (IRI) of another Entity.
+`target` is a Trait whose value is the identifier (IRI) of another Entity.
 
 ### Intent
 
 Use `target` when a Concept is:
 
-- about another Entity
-- applied to another Entity
-- oriented toward another Entity
-- defined in terms of another Entity as its focus
+* about another Entity
+* applied to another Entity
+* oriented toward another Entity as its focus
 
 `target` is **directional and intent-bearing**.
-
-### Examples (Illustrative)
-
-- A view whose purpose is to present a specific Recipe
-- A policy that constrains a particular Entity
-- A plan that transforms or produces a specific Entity
 
 Plain-English reading:
 
@@ -111,86 +98,80 @@ Plain-English reading:
 
 ### Definition
 
-`for` is a reference Trait whose value is the identifier (IRI) of another Entity
-**or Concept kind**, as permitted by schema.
+`for` is a Trait whose value is the identifier (IRI) of another Entity **or Concept kind**, as authorized by schema.
 
 ### Intent
 
 Use `for` when a Concept expresses:
 
-- applicability
-- scope
-- specialization
-- intended audience or domain
+* applicability
+* scope
+* specialization
+* intended domain or audience
 
 `for` answers the question:
 
 > “Who or what is this for?”
 
-It does **not** imply action, wiring, execution, or transformation.
-
-### Examples (Illustrative)
-
-- A view definition that applies to all Recipes (a view _for Recipe_)
-- A policy that applies to all Users (a policy _for User_)
-- A configuration Concept that applies to a subsystem Concept
-
-Plain-English reading:
-
-> “This Concept is for that Concept or Entity.”
+It does **not** imply execution or transformation.
 
 ---
 
 ## 6. Singleton Rule (Normative)
 
-By default, a Concept MUST NOT declare more than one of the following Traits:
+By default, a Concept MUST NOT declare more than one of:
 
-- `reference`
-- `target`
-- `for`
+* `reference`
+* `target`
+* `for`
 
 A schema MAY explicitly authorize exceptions.
-Any such exception MUST be explicitly documented.
-
-This rule prevents ambiguous or conflicting reference intent.
+Any exception MUST be explicit and documented.
 
 ---
 
-## 7. Schema Authority
+## 7. Schema Authority (Normative)
 
-- Reference Traits are **not global**
-- Their validity and interpretation are defined entirely by schema
-- Schemas determine:
-  - which Concepts may declare reference Traits
-  - which reference Trait is appropriate in a given context
-  - whether exceptions to the singleton rule are permitted
+Schemas define:
+
+* which Concepts may declare reference Traits
+* which reference Trait is appropriate
+* what kinds of Entities may be referenced
+* whether singleton-rule exceptions are permitted
 
 Codex surface syntax does not infer reference meaning.
 
 ---
 
-## 8. Non-Goals
+## 8. Relationship to Identity
 
-This contract does **not**:
-
-- define execution semantics
-- imply runtime behavior
-- prescribe inference rules
-- mandate specific triple structures
-- replace domain-specific relationship modeling
-
-It exists solely to standardize **naming and semantic intent**.
+* Reference Traits always bind to **identifiers**
+* Referencing a non-Entity is a validation error
+* Reference resolution semantics are schema-defined
 
 ---
 
-## 9. Summary
+## 9. Non-Goals
 
-- Codex defines three reference Traits: `reference`, `target`, and `for`
-- All reference Traits bind to another Entity by identifier (IRI)
-- Each has a distinct plain-English intent
-- Reference Traits are mutually exclusive by default
-- Schema governs authorization and interpretation
+This specification does **not**:
+
+* define execution semantics
+* prescribe inference rules
+* mandate triple shapes
+* replace domain-specific relationship modeling
 
 ---
 
-End of Codex Reference Traits Contract v0.1.
+## 10. Summary
+
+* Codex defines exactly three reference Traits
+* Each has a distinct semantic intent
+* Reference Traits bind by identifier (IRI)
+* They are mutually exclusive by default
+* Schemas govern authorization and meaning
+
+---
+
+**End of Codex Reference Traits Specification v0.1**
+
+---

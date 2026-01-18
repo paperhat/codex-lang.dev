@@ -2,7 +2,7 @@ Status: NORMATIVE
 Version: 0.1
 Editor: Charles F. Munat
 
-# Codex Schema Definition Specification — Version 0.1
+# **Codex Schema Definition Specification — Version 0.1**
 
 This document defines the **schema definition model** for the Codex language.
 

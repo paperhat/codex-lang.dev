@@ -1,12 +1,11 @@
-Proceeding.
+Status: NORMATIVE  
+Version: 0.1  
+Editor: Charles F. Munat
 
-## **Codex Surface Form Specification — Version 0.1 (REVISED, CORE-ONLY)**
+# **Codex Surface Form Specification — Version 0.1 (FINAL, CORE)**
 
-**Status:** NORMATIVE
-**Version:** 0.1
-**Editor:** Charles F. Munat
-
-This specification defines the **surface form** of Codex documents: the concrete spellings authors write and tools parse.
+This specification defines the **surface form** of Codex documents: the concrete
+spellings authors write and tools parse.
 
 It governs:
 
@@ -14,24 +13,28 @@ It governs:
 * Traits and their Values
 * **Multiline Annotations**
 * Content blocks (opaque narrative text)
-* Whitespace significance required for deterministic parsing
+* Whitespace significance for deterministic parsing
 * String literal escaping
-* **Canonicalization rules for surface form**
+* Structural requirements necessary for canonicalization
 
-This document governs **surface form and canonicalization only**.
-It does **not** define schemas, semantics, modules, dialects, or inline text markup.
+This specification is **core language**.
+It contains **no Module, Dialect, Gloss, Paperhat, or tooling concerns**.
 
 ---
+
+# Codex Surface Form Specification — Version 0.1
 
 ## 1. Purpose
 
 The Codex surface form exists to:
 
-* read as plain-English structured markup
+* read as structured, precise English
 * be deterministic to parse
+* be mechanically canonicalizable
 * support lossless round-tripping
-* admit exactly **one canonical textual form**
 * avoid heuristic or best-effort interpretation
+
+This specification defines **what is parseable Codex**.
 
 ---
 
@@ -39,30 +42,32 @@ The Codex surface form exists to:
 
 Codex documents are composed of **Concepts**.
 
-A Concept may include:
+A Concept MAY include:
 
 * zero or more **Traits**
 * zero or more **child Concepts**
 * optional **Content**
-* optional **Annotations** (editorial)
+* optional **Annotations**
 
 ---
 
 ## 3. Annotations (Normative)
 
-Annotations are **editorial metadata**, not Values and not Content.
+Annotations are **editorial metadata**.
+They are not Values, not Content, and not interpreted by Codex.
+
+---
 
 ### 3.1 Annotation Form
 
-An Annotation consists of everything from an opening `[` to a matching closing `]`.
+An Annotation consists of all text from an opening `[` to a matching closing `]`.
 
 Annotations:
 
 * MAY span multiple lines
 * MAY contain arbitrary text
-* attach to the **next Concept**
-* are not nested
-* are not interpreted by Codex
+* MUST attach to the **next Concept**
+* MUST NOT be nested
 
 Example:
 
@@ -78,7 +83,7 @@ Example:
 ### 3.2 Structural Rules
 
 * The opening `[` MUST be the **first non-whitespace character** on its line
-* The closing `]` MUST terminate the annotation (may appear on any line)
+* The closing `]` MUST terminate the annotation
 * There MUST be no blank line between an Annotation and the Concept it annotates
 * Annotations MAY contain blank lines internally
 
@@ -91,23 +96,27 @@ Within an Annotation:
 * `\]` represents a literal `]`
 * `\\` represents a literal `\`
 
-No other escapes are defined.
+No other escape sequences are defined.
 
 ---
 
-### 3.4 Canonicalization of Annotations
+### 3.4 Annotation Whitespace
 
-For canonical form:
+Annotations preserve their authored text for tooling purposes.
 
-* Leading and trailing whitespace inside the annotation is trimmed
-* Internal runs of whitespace (spaces, tabs, newlines) are collapsed to a single space
-* Escaped characters are preserved as written
+For canonical surface form:
+
+* leading and trailing whitespace is trimmed
+* internal runs of whitespace (spaces, tabs, newlines) are collapsed to a single space
+* escaped characters remain escaped
 
 If whitespace collapse would make attachment ambiguous, canonicalization MUST fail.
 
 ---
 
 ## 4. Concept Markers (Normative)
+
+---
 
 ### 4.1 Opening Marker
 
@@ -130,7 +139,10 @@ Rules:
 </ConceptName>
 ```
 
+Rules:
+
 * MUST match the most recent unclosed Concept
+* No additional content is permitted on the line
 
 ---
 
@@ -141,7 +153,10 @@ Rules:
 <ConceptName trait=value />
 ```
 
+Rules:
+
 * Represents a Concept with no Content and no children
+* MAY include Traits
 
 ---
 
@@ -155,10 +170,10 @@ traitName=value
 
 Rules:
 
-* No whitespace around `=`
-* Traits separated by whitespace
-* Trait names are schema-authorized
+* No whitespace is permitted around `=`
+* Traits are separated by whitespace
 * Trait order is preserved
+* Trait names are schema-authorized
 
 ---
 
@@ -170,7 +185,7 @@ Rules:
 
 * No leading or trailing whitespace
 * Parsed mechanically
-* Not evaluated or normalized
+* Not evaluated or normalized by Codex
 
 Balanced delimiters (`[]`, `{}`, `()`) MUST be respected during parsing.
 
@@ -178,7 +193,7 @@ Balanced delimiters (`[]`, `{}`, `()`) MUST be respected during parsing.
 
 ## 7. Content Blocks (Normative)
 
-Content is opaque narrative text between opening and closing markers.
+Content is opaque narrative text between opening and closing Concept markers.
 
 Example:
 
@@ -191,8 +206,8 @@ Example:
 
 Rules:
 
-* Content is not a Value
-* Content is not parsed
+* Content is **not** a Value
+* Content is **not** parsed
 * Content MUST be indented relative to its Concept
 * Content MAY contain blank lines and arbitrary characters
 
@@ -203,17 +218,17 @@ Rules:
 ### 8.1 Insignificant Whitespace
 
 * Multiple spaces between tokens are equivalent
-* Line breaks between Traits are separators
+* Line breaks between Traits act as separators
 
 ---
 
 ### 8.2 Significant Boundaries
 
-The following are structural delimiters:
+The following delimiters are structurally significant:
 
 * `<`, `</`, `>`, `/>`
-* `[` as first non-whitespace character
-* matching `]` ending an Annotation
+* `[` as the first non-whitespace character of a line
+* the matching `]` that closes an Annotation
 * string literal delimiters `"`
 
 ---
@@ -226,7 +241,7 @@ The following are structural delimiters:
 Document ::= (Annotation | BlankLine)* RootConcept (BlankLine)*
 ```
 
-Exactly one root Concept is required.
+A document MUST contain exactly one root Concept.
 
 ---
 
@@ -241,16 +256,17 @@ Concept ::= BlockConcept | SelfClosingConcept
 ### 9.3 Block Concept
 
 ```
-<BlockConcept> ::= OpeningMarker
-                   (Annotation | ChildConcept | ContentLine | BlankLine)*
-                   ClosingMarker
+BlockConcept ::=
+	OpeningMarker
+	(Annotation | ChildConcept | ContentLine | BlankLine)*
+	ClosingMarker
 ```
 
 ---
 
-## 10. String Literals (Normative)
+## 10. String Literal Escaping (Normative)
 
-String Values:
+String Values are written as:
 
 ```
 "..."
@@ -264,22 +280,21 @@ Rules:
   * `\"` → `"`
   * `\\` → `\`
   * `\uXXXX`, `\u{H...}` → Unicode scalar
-* No other escapes permitted
-* No raw line breaks allowed
+* All other escapes are forbidden
+* Raw line breaks are forbidden
 
 ---
 
-## 11. Canonical Surface Form (Normative)
+## 11. Canonical Surface Requirements (Normative)
 
-A valid Codex document MUST normalize to **exactly one canonical textual form**.
+A valid Codex document MUST be transformable into **exactly one canonical surface form**.
 
-Canonicalization rules:
+Surface requirements include:
 
-* Deterministic indentation
-* Canonical Trait spacing
-* Canonical Annotation whitespace collapse
-* Canonical string escaping
-* No reordering of Concepts, Traits, or Content
+* deterministic indentation
+* canonical Trait spacing
+* canonical Annotation whitespace collapse
+* canonical string escaping
 
 If canonicalization cannot be performed mechanically, the document is invalid.
 
@@ -287,11 +302,11 @@ If canonicalization cannot be performed mechanically, the document is invalid.
 
 ## 12. Prohibited Behaviors (Normative)
 
-Tools MUST NOT:
+Codex tools MUST NOT:
 
 * infer missing structure
 * silently rewrite Content
-* silently correct formatting errors
+* silently correct surface errors
 * accept multiple canonical forms
 
 ---
@@ -309,7 +324,7 @@ This specification does **not**:
 
 ## 14. Summary
 
-* Codex surface form is deterministic and canonical
+* Codex surface form is deterministic and canonicalizable
 * Annotations are multiline, escaped, and editorial
 * Content is opaque and distinct from Values
 * Canonicalization is mechanical or fails
@@ -318,8 +333,3 @@ This specification does **not**:
 ---
 
 **End of Codex Surface Form Specification v0.1**
-
----
-
-Next (unless redirected):
-**Codex Identifier Specification — Revised (semantic density explicit, no resolution)**

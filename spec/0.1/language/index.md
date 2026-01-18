@@ -2,109 +2,278 @@ Status: NORMATIVE
 Version: 0.1  
 Editor: Charles F. Munat
 
-# Codex Language Specification — Version 0.1  
-## Entry Point and Table of Contents
+# Codex Language Specification — Version 0.1
 
-This document is the **authoritative entry point** for the Codex Language
-Specification, version 0.1.
+## Language Definition
 
-It defines the **scope, structure, authority, and immutability** of the
-specification and enumerates the **Normative documents** that together define
-the Codex language.
+This document defines the **Codex language itself**.
 
-This document does **not** itself define language rules.
+It specifies the **foundational language model, semantics, and invariants** that
+apply to all Codex documents, schemas, and tooling.
 
----
-
-## Purpose of This Document
-
-This document exists to:
-
-- establish the scope of Codex 0.1
-- declare which documents are Normative
-- define immutability and versioning rules
-- provide a stable table of contents for implementers and auditors
-
-All language rules are defined in the documents listed below.
+This document is **Normative**.
 
 ---
 
-## Scope of Codex 0.1
+## Role of This Document
 
-Codex 0.1 defines:
+This document is the **authoritative definition of Codex as a language**.
 
-- the core Codex language model
-- declarative semantics and invariants
-- surface form and canonicalization
-- naming and literal value spellings
-- identity and reference semantics
-- schema definition and validation
-- schema versioning rules
-- validation error classification
+It defines:
 
-Codex 0.1 does **not** define:
+* what Codex is
+* what Codex constructs mean
+* the invariants all Codex tooling MUST respect
+* the boundaries of Codex responsibility
 
-- modules or dialects
-- pipeline orchestration
-- storage, querying, or rendering behavior
-- application frameworks or tooling
-- inline text markup systems
-
-Those concerns are defined by **separate, non-core specifications**.
+It does **not** define implementation, runtime, or pipeline behavior.
 
 ---
 
-## Included Normative Specifications
+## What Codex Is
 
-### Core Language
+**Codex is a declarative language for meaning.**
 
-- **Language Definition** (`./language/`)
-- **Naming and Value Specification** (`./naming-and-values/`)
-- **Surface Form Specification** (`./surface-form/`)
-- **Formatting and Canonicalization Specification** (`./formatting-and-canonicalization/`)
+Codex is designed to describe:
 
-### Identity and References
+* ontologies and schemas
+* structured data
+* configuration and policy
+* constraints and validation rules
+* relationships between entities
+* presentation intent (as data)
 
-- **Identifier Specification** (`./identifiers/`)
-- **Reference Traits Specification** (`./reference-traits/`)
-
-### Schemas and Validation
-
-- **Schema Definition Specification** (`./schema-definition/`)
-- **Schema Versioning Specification** (`./schema-versioning/`)
-- **Validation Error Taxonomy** (`./validation-errors/`)
+Codex is especially suited to **conversion into graph representations**
+(e.g. RDF triples) but does not require any particular backend or target.
 
 ---
 
-## Stability and Immutability
+## What Codex Is Not
 
-Codex 0.1 is **immutable**.
+Codex is **not**:
 
-Once published:
+* a programming language
+* a scripting language
+* a templating language
+* a markup language for rendering
+* a runtime or execution environment
 
-- documents under `/spec/0.1/` MUST NOT be edited
-- clarifications or changes require a new version
-- superseding versions live alongside this version
+Codex expresses **what is declared**, never **how it is executed**.
 
-No implementation-led reinterpretation is permitted.
+---
+
+## Declarative and Closed-World Model
+
+Codex operates as a **closed declarative system**.
+
+This means:
+
+* all meaning MUST be explicitly declared
+* nothing is inferred implicitly
+* no defaults are assumed
+* no heuristics are permitted
+
+If something is not declared, it does not exist.
+
+---
+
+## Determinism
+
+Given the same Codex input:
+
+* parsing MUST be deterministic
+* validation MUST be deterministic
+* canonicalization MUST be deterministic
+
+Codex tooling MUST be able to explain:
+
+* why a document is valid or invalid
+* which rule was applied
+* which declaration caused an outcome
+
+Non-deterministic or heuristic behavior is forbidden.
+
+---
+
+## Concepts, Traits, Values, and Content
+
+Codex is composed of four fundamental elements:
+
+### Concepts
+
+A **Concept** is a named declarative construct.
+
+Concepts:
+
+* may declare Traits
+* may contain child Concepts
+* may carry Content
+* may or may not be Entities (see below)
+
+---
+
+### Traits
+
+A **Trait** binds a name to a Value.
+
+Traits:
+
+* are schema-authorized
+* have no independent identity
+* do not imply semantics without schema definition
+
+---
+
+### Values
+
+A **Value** is a literal datum.
+
+Values:
+
+* are immutable
+* are not expressions
+* are not evaluated by Codex
+* include rich first-class forms (numbers, ranges, temporal values, colors, lists, etc.)
+
+Codex parses Value spellings but does not interpret their meaning.
+Interpretation is the responsibility of schemas and consuming systems.
+
+---
+
+### Content
+
+**Content** is opaque narrative data.
+
+Content:
+
+* is not a Value
+* is not typed
+* is not interpreted by Codex
+* may contain arbitrary text
+
+Content exists to carry human-authored material that is outside the semantic
+model.
+
+---
+
+## Entities and Semantic Density
+
+A **Concept is an Entity if and only if it declares an `id` Trait.**
+
+Entities:
+
+* have semantic identity
+* participate in graph identity
+* may be referenced by other Concepts
+* are intended to represent ontologically meaningful units
+
+Non-Entity Concepts:
+
+* do not have identity
+* do not participate directly in ontology graphs
+* exist to structure, describe, or annotate Entities
+
+This distinction exists to control **semantic density**.
+
+Codex deliberately avoids treating every Concept as a first-class ontological
+entity in order to:
+
+* prevent ontology explosion
+* preserve clarity of meaning
+* keep graphs semantically tractable
+
+Schemas are responsible for deciding which Concepts carry identity.
+
+---
+
+## Canonical Form
+
+Every valid Codex document MUST admit **exactly one canonical textual form**.
+
+Canonicalization:
+
+* is mechanical
+* is deterministic
+* preserves all declared meaning
+* preserves annotations and attachment targets
+* MUST fail if a unique canonical form cannot be produced
+
+Canonical form exists to support:
+
+* stable diffs
+* reliable round-tripping
+* tool interoperability
+
+Canonicalization rules are defined in the **Formatting and Canonicalization
+Specification**.
+
+---
+
+## Separation of Responsibility
+
+Codex enforces strict separation between:
+
+* language semantics
+* schema-defined meaning
+* validation and constraints
+* storage, querying, or inference
+* rendering or execution
+
+Codex defines **what is declared**, not **what is done with it**.
+
+---
+
+## Target Agnosticism
+
+Codex is **target-agnostic**.
+
+The same Codex document MAY be transformed into:
+
+* graph representations
+* configuration formats
+* serialized data
+* rendered outputs
+* other languages
+
+No Codex construct may assume a specific target or runtime.
 
 ---
 
 ## Relationship to Other Specifications
 
-- `/spec/current/` points to the most recent published version
-- draft or experimental work lives under `/spec/DRAFT/`
-- implementations MUST target a specific published version
+This document defines **language-level semantics only**.
+
+It must be read in conjunction with:
+
+* Naming and Value Specification
+* Surface Form Specification
+* Formatting and Canonicalization Specification
+* Identifier Specification
+* Reference Traits Specification
+* Schema Definition Specification
+* Validation Error Taxonomy
+
+In case of conflict, this document defines the **language invariants**.
 
 ---
 
-## Authority
+## Stability
 
-This specification is maintained under the governance rules defined in
-`GOVERNANCE.md`.
+This document is **Normative** but not immutable by itself.
 
-Final authority over Codex 0.1 rests with the **Specification Editor**.
+Changes are governed by repository governance and editorial control.
 
 ---
 
-End of Codex Language Specification v0.1 — Entry Point
+## Summary
+
+* Codex is a declarative language for meaning
+* It is closed-world, deterministic, and explainable
+* Schemas are the sole source of semantics
+* Entities represent semantic density boundaries
+* Canonical form is mandatory
+* Execution, storage, and rendering are outside the language
+
+---
+
+**End of Codex Language Specification v0.1**

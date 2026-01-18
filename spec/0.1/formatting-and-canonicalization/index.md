@@ -2,304 +2,212 @@ Status: NORMATIVE
 Version: 0.1
 Editor: Charles F. Munat
 
-# Codex Formatting and Canonicalization Specification — Version 0.1
+# **Codex Formatting and Canonicalization Specification — Version 0.1 (FINAL, CORE)**
 
-This document defines **canonical formatting and normalization rules** for Codex
-documents.
+This specification defines **formatting rules and canonicalization requirements**
+for Codex documents.
 
-It specifies:
+It governs:
 
-* what it means for a Codex document to be **canonical**
-* how canonical form is produced
-* which formatting conditions are errors
-* when normalization MUST fail
+* the distinction between parsing, surface form, formatting, and validation
+* deterministic canonical surface form
+* classification of formatting and canonicalization failures
 
-This document governs **formatting and normalization only**.
-It does **not** define parsing, schemas, identity, or semantic meaning.
-
-This document is **Normative**.
+This specification is **core language**.
+It replaces and supersedes the former **Formatting Error Rules** specification.
 
 ---
 
+# Codex Formatting and Canonicalization Specification — Version 0.1
+
 ## 1. Purpose
 
-This specification exists to:
+This specification defines how Codex documents are:
 
-* ensure every valid Codex document has **exactly one canonical textual form**
-* make formatting **deterministic, mechanical, and enforceable**
-* eliminate heuristic or best-effort normalization
-* support stable diffs, round-tripping, and reproducible builds
-* ensure tools and humans agree on document equivalence
+* **formatted**
+* **canonicalized**
+* **rejected** when canonicalization is not possible
 
-Formatting is a **pure function** over valid Codex syntax.
+Its goals are to:
+
+* ensure exactly one canonical surface form
+* eliminate heuristic or best-effort formatting
+* enable mechanical, explainable normalization
+* support lossless round-tripping
+
+This specification governs **formatting and canonicalization only**.
 
 ---
 
 ## 2. Processing Phases (Normative)
 
-Codex processing occurs in the following strict order:
+Codex processing follows this strict sequence:
 
 1. **Parse**
-2. **Validate**
-3. **Canonicalize**
-4. *(Optional)* Re-parse canonical form
+2. **Surface Form Validation**
+3. **Formatting and Canonicalization**
+4. **Schema Validation**
 
-Canonicalization MUST NOT alter this ordering.
-
-Formatting errors MAY be detected during validation or canonicalization, but
-canonicalization MUST NOT attempt to repair invalid input.
+Formatting MUST NOT alter phase ordering.
 
 ---
 
-## 3. Definition of Canonical Form (Normative)
+## 3. Parse Errors vs Formatting Errors (Normative)
 
-A Codex document is in **canonical form** if and only if:
+### 3.1 Parse Errors
 
-* it conforms to the Codex Surface Form Specification
-* it satisfies all schema and validation rules
-* it obeys all formatting rules defined in this document
-* no further canonicalization step would change its textual representation
+Parse Errors occur when input cannot be read into a syntactic structure.
 
-For every valid Codex document, there MUST exist **exactly one** canonical textual
-representation.
+Examples:
 
-If no such representation exists, the document is invalid.
+* unbalanced Concept markers
+* invalid string literal escaping
+* malformed Traits
+* unterminated Annotations
+
+Parse Errors are **fatal** and halt processing immediately.
 
 ---
 
-## 4. Canonicalization Is Mechanical (Normative)
+### 3.2 Formatting Errors
+
+Formatting Errors occur when:
+
+* input parses successfully
+* but cannot be transformed into canonical surface form
+
+Formatting Errors are **distinct** from schema or semantic errors.
+
+---
+
+## 4. Canonical Form Requirement (Normative)
+
+Every valid Codex document MUST normalize to **exactly one canonical textual form**.
 
 Canonicalization:
 
-* MUST be deterministic
-* MUST be total over valid input
-* MUST NOT depend on source offsets, editor state, or tool configuration
-* MUST NOT consult schemas for formatting decisions
-* MUST NOT infer missing structure
-* MUST NOT invent, remove, or reorder semantic content
+* is deterministic
+* is mechanical
+* preserves meaning and Content
+* never guesses author intent
 
-Canonicalization operates **only on surface structure and whitespace**.
+If canonicalization cannot be performed unambiguously, the document is invalid.
 
 ---
 
-## 5. Canonicalization Outputs (Normative)
+## 5. Canonicalization Rules (Normative)
 
-Canonicalization MUST:
+Canonicalization includes, at minimum:
 
-* preserve all Concepts, Traits, Values, Content, and annotations
-* preserve Concept nesting and document structure
-* preserve semantic order where order is meaningful
-* preserve author-authored literal spellings (Values)
+* deterministic indentation
+* canonical spacing of Traits
+* canonical placement of self-closing markers
+* canonical Annotation whitespace collapse
+* canonical string escaping
+* preservation of Concept, Trait, and Content order
 
 Canonicalization MUST NOT:
 
 * reorder Concepts
-* reorder child Concepts
-* reorder lists
 * reorder Traits
-* normalize numeric, temporal, or color literals
-* rewrite Content text
-* discard annotations
+* invent or remove Concepts, Traits, or Content
+* infer missing structure
 
 ---
 
-## 6. Canonical Whitespace Rules (Normative)
+## 6. Annotation Canonicalization (Normative)
 
-### 6.1 Line Endings
+Annotations MUST:
 
-* Canonical documents MUST use LF (`\n`) line endings.
+* preserve attachment to the annotated Concept
+* preserve escaped characters
+* collapse internal whitespace to single spaces
+* trim leading and trailing whitespace
 
----
-
-### 6.2 Indentation
-
-* Indentation MUST be performed using **tabs**.
-* One indentation level corresponds to **one tab character**.
-* Spaces MUST NOT be used for indentation.
+If attachment cannot be determined deterministically, canonicalization MUST fail.
 
 ---
 
-### 6.3 Blank Lines
+## 7. Normalization Failures (Normative)
 
-* No more than **one consecutive blank line** is permitted anywhere.
-* Blank lines at the start of the document are forbidden.
-* Blank lines at the end of the document are forbidden.
-
----
-
-### 6.4 Trailing Whitespace
-
-* Trailing whitespace on any line is forbidden.
-
----
-
-## 7. Canonical Concept Formatting (Normative)
-
-### 7.1 Opening Markers
-
-* Opening markers MUST appear on their own line.
-* Traits MAY appear on the same line or on subsequent lines.
-* If Traits span multiple lines:
-
-  * each Trait MUST appear on its own line
-  * Trait lines MUST be indented one level deeper than the Concept marker
-
-Example (canonical):
-
-```cdx
-<Recipe
-	id=recipe:spaghetti
-	servings=4
->
-```
-
----
-
-### 7.2 Self-Closing Concepts
-
-* Self-closing Concepts MUST appear on a single line.
-* Traits MUST appear inline unless line length exceeds tool-defined limits.
-* If line wrapping occurs, the same multi-line Trait rules as §7.1 apply.
-
----
-
-### 7.3 Closing Markers
-
-* Closing markers MUST appear on their own line.
-* Closing markers MUST align with their opening marker.
-
----
-
-## 8. Canonical Trait Formatting (Normative)
-
-* Trait order is **preserved as authored**.
-* No whitespace is permitted around `=`.
-* Exactly one space or line break separates adjacent Traits.
-
-Canonicalization MUST NOT reorder Traits.
-
----
-
-## 9. Canonical Annotation Formatting (Normative)
-
-### 9.1 Placement
-
-* An annotation MUST immediately precede the Concept it annotates.
-* No blank line is permitted between an annotation and its target Concept.
-
----
-
-### 9.2 Whitespace Normalization
-
-Annotation text MUST be normalized as follows:
-
-* leading and trailing whitespace removed
-* all internal runs of whitespace collapsed to a single space
-
-The canonical annotation MUST be emitted on a **single line**.
-
-Example:
-
-```cdx
-[This is an annotation.]
-```
-
----
-
-### 9.3 Escaping
-
-* Literal `]` MUST be emitted as `\]`
-* Literal `\` MUST be emitted as `\\`
-
----
-
-## 10. Canonical Content Formatting (Normative)
-
-* Content text MUST be preserved exactly as authored.
-* Content lines MUST be indented one level deeper than their enclosing Concept.
-* Canonicalization MUST NOT:
-
-  * trim Content
-  * reflow Content
-  * normalize whitespace inside Content
-  * alter line breaks inside Content
-
-Content is opaque.
-
----
-
-## 11. Canonical Document Structure (Normative)
-
-* A document MUST contain exactly one root Concept.
-* Annotations MAY appear before the root Concept but MUST attach to it.
-* Canonicalization MUST remove any redundant blank lines.
-
----
-
-## 12. Canonicalization Failures (Normative)
-
-Canonicalization MUST fail if:
+A **canonicalization failure** occurs when:
 
 * indentation is ambiguous
-* tabs and spaces are mixed for indentation
 * annotation attachment is ambiguous
-* annotation spans are unterminated
-* annotation normalization would change attachment semantics
-* surface form violations cannot be normalized mechanically
+* whitespace cannot be normalized without changing meaning
+* structural inconsistencies prevent a unique surface form
 
-A canonicalization failure is a **fatal formatting error**.
-
----
-
-## 13. Formatting Errors (Normative)
-
-A **Formatting Error** occurs when:
-
-* input parses successfully
-* validation succeeds
-* but canonical form cannot be produced
-
-Formatting Errors are **fatal**.
-
-Formatting Errors MUST NOT be downgraded to warnings.
+Canonicalization failures are **fatal formatting errors**.
 
 ---
 
-## 14. Error Classification
+## 8. Formatting vs Schema Errors (Normative)
 
-Formatting Errors MUST be reported as a single primary error class.
+Mandatory distinction:
 
-They MUST NOT be misclassified as:
+* **Formatting errors** concern *how* Codex is written
+* **Schema errors** concern *what* Codex means
 
-* parse errors
-* schema errors
-* identity errors
-* reference errors
+Tools MUST NOT report schema errors when the root cause is a formatting failure.
 
 ---
 
-## 15. Non-Goals
+## 9. Error Classification (Normative)
+
+Formatting and canonicalization failures MUST be classified as:
+
+```
+FormattingError
+```
+
+They MUST NOT be downgraded to warnings.
+
+---
+
+## 10. Prohibited Behaviors (Normative)
+
+Codex tools MUST NOT:
+
+* silently normalize invalid input
+* auto-correct formatting errors without reporting them
+* accept multiple canonical forms
+* discard or rewrite Content
+* depend on source offsets or editor state
+
+---
+
+## 11. Reporting Requirements
+
+Formatting error reports SHOULD include:
+
+* error class (`FormattingError`)
+* violated rule
+* location (line number or Concept path)
+* explanation of canonicalization failure
+
+Exact wording is tool-defined.
+
+---
+
+## 12. Non-Goals
 
 This specification does **not**:
 
 * define editor behavior
-* prescribe auto-format-on-save
-* define pretty-printing options
+* prescribe auto-format-on-save policies
 * define diff or patch semantics
-* define schema-dependent formatting rules
-
-It defines **one canonical form**, not multiple styles.
+* define schema validation rules
+* define rendering or execution behavior
 
 ---
 
-## 16. Summary
+## 13. Summary
 
-* Every valid Codex document has exactly one canonical form
-* Canonicalization is deterministic and mechanical
-* Formatting is not semantic
-* No heuristic correction is permitted
-* Ambiguity causes failure, not guesswork
-* Canonical form is the foundation for stable tooling
+* Canonical surface form is mandatory
+* Canonicalization is mechanical and deterministic
+* Formatting errors are fatal
+* No heuristic or best-effort formatting is permitted
+* Formatting is separate from schema validation
 
 ---
 

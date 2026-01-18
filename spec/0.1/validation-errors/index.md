@@ -16,291 +16,299 @@ This document is **Normative**.
 
 ## 1. Purpose
 
-This contract defines a **canonical taxonomy of validation errors** in Codex.
+This specification defines a **canonical taxonomy of validation errors** in Codex.
 
 Its goals are to:
 
-- make validation failures precise and predictable
-- ensure consistent error classification across tools
-- avoid vague or heuristic error reporting
-- support correct reasoning by humans and LLMs
-- separate syntax, surface form, schema, and semantic failures cleanly
+* make failures precise and predictable
+* ensure consistent classification across tools
+* avoid vague or heuristic reporting
+* separate parsing, surface form, formatting/canonicalization, and schema failures cleanly
 
-This contract governs **error classification only**, not wording, UI presentation,
+This specification governs **error classification only**, not wording, UI presentation,
 or recovery behavior.
 
 ---
 
-## 2. Core Principle
+## 2. Core Principle (Normative)
 
-> Every Codex validation failure MUST belong to exactly **one primary error class**.
+Every Codex failure MUST belong to exactly **one primary error class**.
 
 Secondary information MAY be attached, but the **primary class** MUST be unambiguous.
 
 ---
 
-## 3. Error Classes (Top Level)
+## 3. Error Classes (Top Level) (Normative)
 
-Codex defines the following **closed set** of top-level validation error classes:
+Codex defines the following **closed set** of top-level error classes:
 
-1. **Parse Errors**
-2. **Surface Form Errors**
-3. **Schema Errors**
-4. **Identity Errors**
-5. **Reference Errors**
-6. **Collection Errors**
-7. **Context Errors**
-8. **Constraint Errors**
+1. **ParseError**
+2. **SurfaceFormError**
+3. **FormattingError**
+4. **SchemaError**
+5. **IdentityError**
+6. **ReferenceError**
+7. **CollectionError**
+8. **ContextError**
+9. **ConstraintError**
 
 No other top-level error classes are permitted.
 
 ---
 
-## 4. Parse Errors
+## 4. ParseError
 
 ### Definition
 
-Parse Errors occur when a `.cdx` file cannot be parsed into a syntactic structure.
+A ParseError occurs when a `.cdx` file cannot be parsed into a syntactic structure.
 
 ### Characteristics
 
-- input is not structurally readable
-- parsing cannot continue
-- no schema is consulted
+* input is not structurally readable
+* parsing cannot continue
+* no schema is consulted
 
-### Examples
+### Examples (Illustrative)
 
-- unbalanced Concept markers
-- invalid quoting
-- malformed Traits
-- invalid indentation
-- unterminated editorial annotations (`[` without matching `]`)
-- nested editorial annotations
+* unbalanced Concept markers
+* invalid string literal escaping
+* malformed Traits
+* unterminated Annotation (missing closing `]`)
+* structurally invalid nesting of markers
 
-Parse Errors are **fatal**.
+ParseError is **fatal**.
 
 ---
 
-## 5. Surface Form Errors
+## 5. SurfaceFormError
 
 ### Definition
 
-Surface Form Errors occur when a file parses successfully but violates the
-**Codex Surface Form Contract**.
+A SurfaceFormError occurs when a file parses successfully but violates the
+**Codex Surface Form Specification**.
 
 ### Characteristics
 
-- syntax is readable
-- canonical formatting rules are violated
-- schema may not yet be consulted
+* syntax is readable
+* surface requirements are violated
+* schema may not be consulted yet
 
-### Examples
+### Examples (Illustrative)
 
-- expanded empty Concepts
-- invalid casing in Concept or Trait names
-- forbidden or ambiguous whitespace
-- multiple root Concepts in a file
-- editorial annotation appearing inside Content
-- editorial annotation appearing inside a Concept marker
-- annotation placement that cannot be deterministically attached
-- annotation splitting a syntactic unit
+* invalid casing in Concept or Trait names
+* multiple root Concepts in a file
+* forbidden whitespace around `=`
+* invalid indentation for Content
+* annotation opening `[` not at first non-whitespace position
+* annotation escape misuse (e.g. `\q` in an Annotation)
 
-Surface Form Errors are **fatal**.
+SurfaceFormError is **fatal**.
 
 ---
 
-## 6. Schema Errors
+## 6. FormattingError
 
 ### Definition
 
-Schema Errors occur when parsed Codex violates schema-defined rules.
+A FormattingError occurs when input parses and passes surface-form requirements
+but **cannot be transformed into canonical surface form**.
+
+Formatting and canonicalization behavior is defined by the
+**Formatting and Canonicalization Specification**.
 
 ### Characteristics
 
-- schema is consulted
-- structure or Traits are invalid for a Concept
-- semantic meaning cannot be assigned
+* canonicalization is deterministic or must fail
+* tools MUST NOT guess or “best-effort” normalize
 
-### Examples
+### Examples (Illustrative)
 
-- unauthorized Trait on a Concept
-- missing required Trait
-- unknown Concept name
-- invalid Trait value type
-- invalid or unauthorized `<Annotation>` Concept
-- invalid `kind` value on an `<Annotation>` Concept
+* ambiguous annotation attachment
+* structural ambiguity preventing unique canonical indentation
+* whitespace patterns that cannot be normalized without changing structure
+* any other canonicalization failure
 
-Schema Errors are **fatal**.
+FormattingError is **fatal**.
 
 ---
 
-## 7. Identity Errors
+## 7. SchemaError
 
 ### Definition
 
-Identity Errors occur when identity rules are violated.
+A SchemaError occurs when parsed Codex violates schema-defined rules.
 
 ### Characteristics
 
-- related to `id` Traits and Entity eligibility
-- graph identity or referential stability is compromised
+* schema is consulted
+* Concepts or Traits are invalid under the active schema
+* meaning cannot be assigned
 
-### Examples
+### Examples (Illustrative)
 
-- `id` declared on a Concept that must not be an Entity
-- missing required `id`
-- duplicate identifiers within a scope
-- invalid identifier form
-- `id` declared on an annotation where identity is not authorized
+* unknown Concept name
+* unauthorized Trait on a Concept
+* missing required Trait
+* invalid Trait value type
 
-Identity Errors are **fatal**.
+SchemaError is **fatal**.
 
 ---
 
-## 8. Reference Errors
+## 8. IdentityError
 
 ### Definition
 
-Reference Errors occur when reference Traits are invalid or inconsistent.
+An IdentityError occurs when identity rules are violated.
 
 ### Characteristics
 
-- involve `reference`, `target`, or `for`
-- relate to graph linkage and intent
+* concerns Entity eligibility and identifier use
+* compromises stable identity or uniqueness
 
-### Examples
+### Examples (Illustrative)
 
-- reference to a non-existent Entity
-- reference to a non-Entity Concept
-- violation of the reference singleton rule
-- reference to an Entity of an unauthorized Concept type
-- annotation provenance referencing an invalid or non-addressable target
+* `id` declared on a Concept that MUST NOT be an Entity
+* missing required `id` where schema requires an Entity
+* duplicate identifiers within a schema-defined scope
+* identifier form invalid under schema constraints
 
-Reference Errors are **fatal**.
+IdentityError is **fatal**.
 
 ---
 
-## 9. Collection Errors
+## 9. ReferenceError
 
 ### Definition
 
-Collection Errors occur when domain collection rules are violated.
+A ReferenceError occurs when reference Traits are invalid or inconsistent.
 
 ### Characteristics
 
-- involve collection Concepts
-- membership or ordering semantics are incorrect
+* involves `reference`, `target`, or `for`
+* relates to graph linkage and intent
 
-### Examples
+### Examples (Illustrative)
 
-- mixed member Concept types in a collection
-- invalid ordering for an unordered collection
-- missing required members
-- duplicate membership where forbidden
-- annotation collections violating schema-defined membership rules
+* violation of the reference singleton rule (unless schema permits)
+* reference to a non-existent Entity (where resolution is required)
+* reference to an Entity of an unauthorized Concept type
 
-Collection Errors are **fatal**.
+ReferenceError is **fatal**.
 
 ---
 
-## 10. Context Errors
+## 10. CollectionError
 
 ### Definition
 
-Context Errors occur when Concepts or Traits are used outside their valid
-schema-defined context.
+A CollectionError occurs when schema-defined collection rules are violated.
 
 ### Characteristics
 
-- meaning depends on containment or scope
-- names are valid but misapplied
+* concerns domain collection Concepts
+* membership and ordering semantics are incorrect
 
-### Examples
+### Examples (Illustrative)
 
-- using a Structural Concept outside its defining context
-- using a Trait whose meaning is not defined in the current context
-- assuming Codex module semantics outside a Module context
-- using `<Annotation>` outside a schema-defined annotation context
-- assuming annotation rendering semantics in a non-rendering context
+* mixed member Concept types in a collection
+* missing required members
+* duplicate membership where forbidden
+* member count outside required bounds
 
-Context Errors are **fatal**.
+CollectionError is **fatal**.
 
 ---
 
-## 11. Constraint Errors
+## 11. ContextError
 
 ### Definition
 
-Constraint Errors occur when schema-defined constraints are violated beyond basic
-structure.
+A ContextError occurs when a Concept or Trait is used outside its schema-defined context.
 
 ### Characteristics
 
-- involve semantic or logical invariants
-- schema-defined rules are broken
+* the name may be valid
+* but it is misapplied due to containment or scope rules
 
-### Examples
+### Examples (Illustrative)
 
-- mutually exclusive Traits both present
-- invalid combinations of Traits
-- value range violations
-- domain-specific invariant failures
-- annotation constraint violations (e.g. forbidden combinations of annotation kinds)
+* Concept permitted only under a specific parent appears elsewhere
+* Trait permitted only in a particular context appears outside it
 
-Constraint Errors are **fatal**.
+ContextError is **fatal**.
 
 ---
 
-## 12. Error Severity
+## 12. ConstraintError
 
-Codex validation errors are **not warnings**.
+### Definition
 
-- any validation error halts compilation
-- Codex does not permit best-effort interpretation
-- tools MUST NOT silently recover
+A ConstraintError occurs when schema-defined declarative constraints are violated beyond
+basic structure and authorization.
 
-Severity gradation (warning vs error) is outside the scope of the Codex language.
+### Characteristics
 
----
+* logical or semantic invariants fail
+* constraints are schema-defined and mechanically enforceable
 
-## 13. Error Reporting Requirements
+### Examples (Illustrative)
 
-Codex tools SHOULD report validation errors with:
+* mutually exclusive Traits both present
+* invalid combinations of Traits
+* value range violations
+* domain-specific invariant failures
 
-- error class
-- Concept name
-- Trait name (if applicable)
-- violated schema or specification rule
-- precise location (line number or Concept path)
-
-Error **classification** is mandatory.  
-Error wording and presentation are tool-defined.
+ConstraintError is **fatal**.
 
 ---
 
-## 14. Non-Goals
+## 13. Error Severity (Normative)
 
-This contract does **not**:
+Codex errors are **not warnings**.
 
-- define error message wording
-- mandate user-facing UX
-- define recovery strategies
-- prescribe exception hierarchies
-- define logging or telemetry formats
+* any failure halts compilation or processing
+* no best-effort recovery is permitted
+* tools MUST NOT silently reinterpret invalid data
+
+---
+
+## 14. Reporting Requirements
+
+Tools SHOULD report failures with:
+
+* primary error class
+* Concept name
+* Trait name (if applicable)
+* violated rule reference
+* precise location (line number or Concept path)
+
+Classification is mandatory.
+Wording and presentation are tool-defined.
+
+---
+
+## 15. Non-Goals
+
+This specification does **not**:
+
+* define message wording
+* mandate UX
+* define recovery strategies
+* prescribe exception hierarchies
+* define logging formats
 
 It defines **what kind of error occurred**, not how it is presented.
 
 ---
 
-## 15. Summary
+## 16. Summary
 
-- every validation failure has exactly one primary error class
-- error classes are finite and closed
-- annotations introduce no new error classes
-- annotation errors are classified using existing categories
-- errors are deterministic and fatal
-- validation is mechanical, not heuristic
+* every failure has exactly one primary error class
+* error classes are finite and closed
+* parsing, surface form, formatting/canonicalization, and schema are separated
+* errors are deterministic and fatal
 
 ---
 
-End of Codex Validation Error Taxonomy v0.1.
+**End of Codex Validation Error Taxonomy v0.1**

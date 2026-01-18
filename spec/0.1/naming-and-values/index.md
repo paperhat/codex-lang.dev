@@ -1,20 +1,31 @@
-Status: NORMATIVE
-Version: 0.1
+Status: NORMATIVE  
+Version: 0.1  
 Editor: Charles F. Munat
+
+# **Codex Naming and Value Specification — Version 0.1 (FINAL, CORE)**
+
+This specification defines the **core surface vocabulary**, **naming rules**, and
+**literal value spellings** of the Codex language.
+
+It is **language-level and core**.
+It contains **no Module, Dialect, Gloss, Paperhat, or tooling concerns**.
+
+---
 
 # Codex Naming and Value Specification — Version 0.1
 
 ## 1. Purpose
 
-This specification defines the **surface vocabulary, naming rules, and literal value spellings** of Codex.
+This specification defines **how things are named** and **how literal data is written**
+in Codex.
 
 Its goals are to:
 
-* make Codex readable as structured English
-* ensure deterministic parsing and reasoning
-* support ontology modeling and configuration equally well
-* provide first-class data values beyond strings and booleans
-* prevent semantic ambiguity and ontology bloat
+* make Codex read as structured, precise English
+* prevent ambiguity for humans and machines
+* support ontology authoring, configuration, and data interchange
+* provide **first-class data values**, not string encodings
+* keep Codex declarative and closed-world
 
 This document governs **naming and literal values only**.
 
@@ -24,17 +35,17 @@ This document governs **naming and literal values only**.
 
 ### 2.1 Concept
 
-A **Concept** is the primary structural unit in Codex.
+A **Concept** is the primary surface construct in Codex.
 
 A Concept:
 
-* is named
+* has a name
 * may declare Traits
 * may contain Content
 * may contain child Concepts
 * is purely declarative
 
-Concepts express **structure**, not behavior.
+A Concept is **not** an element, component, tag, node, or class.
 
 ---
 
@@ -46,10 +57,10 @@ Traits:
 
 * are declared inline on Concepts
 * are schema-authorized
-* have no identity of their own
+* have no independent identity
 * are immutable once declared
 
-Traits are **not properties, attributes, or fields**.
+Traits are **not properties, attributes, fields, or parameters**.
 
 ---
 
@@ -63,9 +74,9 @@ Values are:
 * immutable
 * not expressions
 * not evaluated by Codex
-* first-class (not strings unless explicitly written as strings)
+* parsed mechanically
 
-Codex defines a rich literal value system.
+Codex defines a rich set of **first-class literal value spellings**.
 
 ---
 
@@ -75,11 +86,11 @@ Codex defines a rich literal value system.
 
 Content:
 
-* is not a Value
-* is not typed
-* is not interpreted by Codex
-* may contain prose, markup, or code
-* is schema-positioned but semantically opaque
+* is **not** a Value
+* is **not** typed
+* is **not** interpreted by Codex
+* may contain prose, markup, code, or other text
+* exists only inside Concepts
 
 This distinction prevents conflating **data** with **text**.
 
@@ -91,11 +102,11 @@ A Concept is an **Entity if and only if it declares an `id` Trait**.
 
 Entities:
 
-* represent high-semantic-density concepts
-* participate in graphs and ontologies
+* represent **high semantic density**
+* participate in ontologies and graphs
 * may be referenced by other Concepts
 
-Identity rules are governed by the Identifier Specification.
+Entity eligibility is **explicit and schema-defined**.
 
 ---
 
@@ -110,7 +121,7 @@ Forbidden everywhere:
 
 * kebab-case
 * snake_case
-* screaming case
+* SCREAMING_CASE
 * mixed or inconsistent casing
 
 ---
@@ -121,8 +132,8 @@ Abbreviations are forbidden unless explicitly whitelisted.
 
 Rules:
 
-* no periods in names
-* no shorthand (`ref`, `def`, `cfg`, etc.)
+* periods are never permitted
+* shorthand names (`ref`, `def`, `cfg`, etc.) are forbidden
 * names must be full English words
 
 Whitelisted exception:
@@ -144,13 +155,20 @@ Examples (valid):
 * `HttpRequest`
 * `LatexDocument`
 
+Examples (invalid):
+
+* `ASTNode`
+* `HTMLParser`
+* `plainHTML`
+
 ---
 
 ## 4. Literal Value Spellings (Normative)
 
-Codex defines the following **first-class literal value forms**.
+Codex defines the following **literal value forms**.
 
-Codex does **not** evaluate or normalize Values.
+Codex **parses** these values but **does not evaluate, normalize, or interpret them**.
+Typing and semantics are schema responsibilities.
 
 ---
 
@@ -162,7 +180,7 @@ Codex does **not** evaluate or normalize Values.
 
 * delimited by double quotes
 * single-line only
-* escaped according to Surface Form rules
+* escaped per Surface Form rules
 
 ---
 
@@ -181,15 +199,15 @@ Numeric literals are declarative spellings.
 
 Supported:
 
-* integers
-* decimals
-* scientific notation
+* integers (`7`, `-42`)
+* decimals (`3.14`)
+* scientific notation (`1.2e6`)
 * infinities (`Infinity`, `-Infinity`)
 * fractions (`3/4`)
 * imaginary numbers (`2i`)
 * precision-significant numbers (`3.1415p6`)
 
-Codex does not perform arithmetic or normalization.
+Codex performs **no arithmetic and no normalization**.
 
 ---
 
@@ -199,7 +217,7 @@ Codex does not perform arithmetic or normalization.
 $Identifier
 ```
 
-* schema-defined closed sets
+* drawn from schema-defined closed sets
 * not strings
 * not evaluated
 
@@ -211,10 +229,13 @@ $Identifier
 [ value, value, ... ]
 ```
 
+Rules:
+
 * ordered
-* nested allowed
-* mixed types allowed
-* no expansion
+* may be empty
+* may be nested
+* may mix value types
+* no implicit expansion
 
 ---
 
@@ -225,38 +246,40 @@ start..end
 start..end s step
 ```
 
-Ranges are declarative intervals.
+Ranges are **declarative intervals**.
 
-Codex does not enumerate ranges.
+* inclusive endpoints
+* not enumerated
+* semantics are schema-defined
 
 ---
 
 ### 4.7 Temporal Values
 
-Temporal values are literal spellings enclosed in `{}`.
+Temporal literals are written in `{}`.
 
-Supported forms:
+Supported spellings:
 
-* `{YYYY-MM}` — PlainYearMonth
-* `{MM-DD}` — PlainMonthDay
-* `{YYYY-MM-DD}` — PlainDate
-* `{YYYY-MM-DDThh:mm:ss(.sss)?}` — PlainDateTime (local)
+* `{YYYY-MM}` — Year-Month
+* `{MM-DD}` — Month-Day
+* `{YYYY-MM-DD}` — Date
+* `{YYYY-MM-DDThh:mm:ss(.sss)?}` — Local Date-Time
 * `{P...}` — Duration
 * `{now}`, `{today}` — Reserved literals
 
-Codex does not assign time zones or perform conversions.
+Codex does **not** assign time zones or perform conversion.
 
 ---
 
 ### 4.8 Color Values
 
-Colors are first-class literals.
+Colors are **first-class values**, not strings.
 
 Supported:
 
 * hex (`#RGB`, `#RRGGBBAA`)
-* functional forms (`rgb(...)`, `oklch(...)`)
-* named colors as strings
+* functional forms (`rgb(...)`, `hsl(...)`, `oklch(...)`)
+* named colors as string values
 
 Codex does not validate or normalize colors.
 
@@ -264,19 +287,20 @@ Codex does not validate or normalize colors.
 
 ### 4.9 UUID Values
 
-UUIDs are literal tokens.
+UUID literals:
 
-* not strings
-* case-insensitive
-* no braces
+* are not strings
+* contain no braces
+* are case-insensitive
+* have no mandated version
 
 ---
 
 ### 4.10 IRI Reference Values
 
-Unquoted tokens representing identity or reference.
+IRI reference values are **unquoted tokens** representing identity or reference.
 
-Used by:
+Used by the following Traits only:
 
 * `id`
 * `reference`
@@ -294,10 +318,10 @@ Schemas MUST define:
 
 * which Traits are allowed
 * which Value types are valid
-* cardinality
+* cardinality rules
 * semantic meaning
 
-Codex syntax alone conveys no semantics.
+Codex syntax alone carries **no semantics**.
 
 ---
 
@@ -307,9 +331,8 @@ This specification does **not**:
 
 * define schema syntax
 * define inference rules
-* define storage formats
-* define resolution or normalization
-* define dialects or modules
+* define validation logic
+* define modules or dialects
 * define inline text markup
 
 ---
@@ -317,10 +340,10 @@ This specification does **not**:
 ## 7. Summary
 
 * Codex distinguishes Concepts, Traits, Values, and Content
-* Values are first-class and richly typed
+* Values are rich, first-class, and declarative
 * Content is opaque and non-semantic
 * Naming is explicit and English-readable
-* Semantics come exclusively from schema
+* Semantics come exclusively from schemas
 
 ---
 

@@ -1,85 +1,80 @@
+Status: NORMATIVE  
+Version: 0.1  
+Editor: Charles F. Munat
+
+# **Codex Identifier Specification — Version 0.1**
+
+This specification defines **identifiers (`id`)** in the Codex language.
+
+Identifiers are part of the Codex language model and are governed by this
+specification.
+
+This document is **Normative**.
+
+---
+
 # Codex Identifier Specification — Version 0.1
 
 ## 1. Purpose
 
-This specification defines **identity in Codex**.
+This specification defines what an **identifier (`id`)** is in Codex.
 
 Its goals are to:
 
-* make identity explicit and unambiguous
-* support graph construction and querying
-* avoid ontology explosion
-* preserve semantic density
-* decouple identity from structure, storage, and transport
+* make identity precise and unambiguous
+* ensure identifiers are globally safe and semantically meaningful
+* support stable graph construction and reference
+* avoid accidental coupling to storage, runtime, or transport concerns
 
-This document governs **what an identifier is**, not how it is resolved,
-stored, normalized, or dereferenced.
+This specification governs **identifier meaning and form**, not persistence,
+resolution, or storage mechanisms.
 
 ---
 
-## 2. What an Identifier Is (Normative)
+## 2. What an Identifier Is
 
-An **identifier (`id`)** is a **stable, globally meaningful name** for an **Entity**.
+An **identifier** is a **stable, globally unique name** for an **Entity**.
 
 In Codex:
 
-* identifiers are **semantic**
-* identifiers are **explicitly declared**
-* identifiers identify **things with meaning**, not containers or syntax
+* identifiers are **semantic**, not positional
+* identifiers are **declared**, not inferred
+* identifiers identify the **Entity itself**, not its representation
 
-An identifier names an **ontological individual**.
+Identifiers are expressed exclusively via the `id` Trait.
 
 ---
 
-## 3. Entity vs. Non-Entity (Normative)
+## 3. Identifiers Are IRIs (Normative)
 
-A Concept is an **Entity if and only if it declares an `id` Trait**.
+All Codex identifiers MUST be **IRIs**.
 
-### 3.1 Why Not Everything Is an Entity
+* Identifiers MUST be globally unique in intent
+* Identifiers MUST be usable as graph identifiers
+* Identifiers MUST be comparable as opaque strings
 
-Not all Concepts carry sufficient semantic weight to justify identity.
-
-Entities represent **high-semantic-density concepts**:
-
-* things that participate meaningfully in an ontology
-* things worth naming, referencing, and reasoning over
-* things that appear as nodes in a graph
-
-Non-Entities represent **low-semantic-density constructs**:
-
-* narrative text (`<Description>`)
-* structural grouping
-* auxiliary or descriptive material
-* values that exist *about* Entities, not *as* Entities
-
-This distinction exists to:
-
-* prevent uncontrolled class explosion
-* keep ontologies tractable
-* avoid meaningless nodes in graphs
-* preserve conceptual clarity
-
-Example:
-
-* `Flour` → Entity (ontological concept)
-* `"all-purpose flour"` → Value or Content (qualifier, not ontology node)
-
-Schemas control this boundary explicitly.
+Codex does **not** require identifiers to be dereferenceable.
 
 ---
 
 ## 4. Identifier Form (Normative)
 
-All identifiers MUST be **IRI references**.
+Codex does not mandate a single concrete syntax.
+However, identifiers MUST conform to the following constraints:
 
-Rules:
+* MUST be valid IRIs
+* MUST NOT depend on file paths, offsets, or document structure
+* MUST NOT encode ordering or position
+* MUST NOT rely on implicit context for uniqueness
 
-* identifiers MUST be written as **unquoted tokens**
-* identifiers MUST contain no whitespace
-* identifiers are treated as **opaque strings**
-* Codex does not validate full IRI grammar
+Examples (illustrative, not normative):
 
-Codex does **not** require identifiers to be dereferenceable.
+* `recipe:spaghetti`
+* `user:chas`
+* `module:recipes`
+* `policy:recipe:standard`
+
+The choice of namespace scheme is a schema and project concern.
 
 ---
 
@@ -90,72 +85,80 @@ Identifiers are **stable**.
 Once assigned:
 
 * an identifier MUST continue to refer to the same Entity
-* identifiers MUST NOT be reused
+* identifiers MUST NOT be reused for different Entities
 * identifiers MUST NOT be repurposed
 
 Changing an identifier creates a **new Entity**.
 
 ---
 
-## 6. Identity Is Not Presentation
+## 6. Identity vs Labels
 
-Identifiers:
+Identifiers are **not labels**.
 
-* are not labels
-* are not human-facing text
-* MUST NOT encode presentation, ordering, or formatting
-* MUST NOT change for cosmetic reasons
+* Identifiers are not intended for display
+* Human-readable names belong in other Traits (e.g. `name`, `title`)
+* Identifiers SHOULD remain stable even if labels change
 
-Human-readable naming belongs in other Traits or Content.
-
----
-
-## 7. Reference Relationship (Normative)
-
-Identifiers are the **only mechanism** by which Concepts may refer to Entities.
-
-* reference Traits bind to identifiers
-* references are semantic, not structural
-* referencing a non-Entity is a validation error
-
-Reference meaning is governed by the Reference Traits specification.
+Presentation concerns MUST NOT be encoded into identifiers.
 
 ---
 
-## 8. Schema Authority
+## 7. Relationship to References
 
-Schemas MUST define:
+* Reference Traits (e.g. `reference`, `target`, `for`) use identifiers as their values
+* References MUST point to valid Entity identifiers
+* Referencing a non-Entity is a schema or validation error
 
-* which Concepts MAY declare an `id`
-* which Concepts MUST declare an `id`
-* which Concepts MUST NOT declare an `id`
-
-Codex syntax never infers identity.
+Identifiers are the **only** mechanism by which Concepts may refer to other Entities.
 
 ---
 
-## 9. Non-Goals
+## 8. Scope and Namespaces
+
+Codex does not impose a global namespace registry.
+
+* Projects MAY define their own namespace conventions
+* Schemas SHOULD document expected identifier patterns
+* Tools MUST treat identifiers as opaque values
+
+Codex does not interpret namespace prefixes.
+
+---
+
+## 9. Prohibited Identifier Uses (Normative)
+
+The following uses of identifiers are invalid:
+
+* using identifiers as ordering keys
+* embedding document structure or hierarchy
+* encoding version numbers into identifiers
+* using identifiers as mutable state
+* auto-generating identifiers implicitly without schema authorization
+
+Identifiers are not metadata dumps.
+
+---
+
+## 10. Non-Goals
 
 This specification does **not**:
 
-* define identifier resolution
-* define namespaces or prefixes
-* mandate UUIDs
-* define registries
-* define base IRIs
-* define normalization or canonicalization
-
-Those concerns belong to **tooling or dialects**, not the language core.
+* require identifiers to resolve over HTTP
+* mandate UUIDs or specific encodings
+* define identifier minting workflows
+* define cross-document or cross-module resolution rules
+* prescribe registry or catalog mechanisms
 
 ---
 
-## 10. Summary
+## 11. Summary
 
-* Identity is explicit and semantic
-* Entities are high-semantic-density Concepts
-* Not everything should be an Entity
-* Identifiers are IRIs, opaque, and stable
-* Schemas are the sole authority on identity
+* Identifiers are explicit, semantic, and stable
+* All identifiers are IRIs
+* Identifiers identify Entities, not representations
+* Schemas govern identifier usage
+* Identifiers are opaque, not structural
 
 ---
 

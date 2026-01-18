@@ -1,5 +1,5 @@
-Status: NORMATIVE
-Version: 0.1
+Status: NORMATIVE  
+Version: 0.1  
 Editor: Charles F. Munat
 
 # Codex Language Specification — Version 0.1
@@ -9,9 +9,9 @@ Editor: Charles F. Munat
 This document is the **authoritative entry point** for the Codex Language
 Specification, version 0.1.
 
-It defines the **scope, structure, authority, and immutability** of the
-specification and enumerates the **Normative documents** that together define
-the Codex language.
+It defines the **scope, structure, authority, and stability conventions** of the
+specification and enumerates the **Normative documents** that together define the
+Codex language.
 
 This document does **not** itself define language rules.
 
@@ -23,7 +23,6 @@ This document exists to:
 
 * establish the scope of Codex 0.1
 * declare which documents are Normative
-* define immutability and versioning rules
 * provide a stable table of contents for implementers, auditors, and tooling
 
 All language rules are defined in the documents listed below.
@@ -35,24 +34,23 @@ All language rules are defined in the documents listed below.
 Codex 0.1 defines:
 
 * the core Codex language model
-* declarative semantic and identity rules
-* naming and literal value constraints
-* surface syntax and structure
-* deterministic formatting and canonicalization
-* schema authoring and schema versioning semantics
-* reference and linkage semantics
+* structural and semantic rules for Concepts, Traits, Values, and Content
+* naming and identifier constraints
+* surface form rules
+* formatting and canonicalization rules
+* schema definition and schema versioning rules
+* reference trait semantics
 * validation error classification
-
-Together, these documents define **what Codex is**.
 
 Codex 0.1 does **not** define:
 
-* application- or framework-specific dialects
-* module or assembly mechanisms
-* pipeline orchestration
+* any module system or module containers
+* dialects, sections, or Paperhat-specific conventions
+* identifier base scoping or base resolution mechanisms
 * storage, querying, or rendering behavior
+* pipeline orchestration or runtime behavior
 
-Those concerns are defined by separate specifications.
+Those concerns are defined by separate contracts.
 
 ---
 
@@ -63,32 +61,23 @@ documents. All are required for a complete and compliant implementation.
 
 ### Core Language Definition
 
-* [**Language Definition**](./language/)
-* [**Naming and Value Specification**](./naming/)
-* [**Identifiers**](./identifiers/)
-* [**Structural Concepts**](./structural-concepts/)
+* [**Language Specification**](./language/)
 
----
+### Naming, Values, and Identity
 
-### Surface Syntax and Normalization
+* [**Naming and Value Specification**](./naming-and-values/)
+* [**Identifier Specification**](./identifiers/)
+* [**Reference Traits Specification**](./reference-traits/)
+
+### Surface Syntax and Canonicalization
 
 * [**Surface Form Specification**](./surface-form/)
 * [**Formatting and Canonicalization Specification**](./formatting-and-canonicalization/)
 
----
+### Schema
 
-### Schema and Versioning
-
-* [**Schema Authoring Contract**](./schema-authoring/)
-* [**Schema Versioning Contract**](./schema-versioning/)
-
----
-
-### Relationships and Semantics
-
-* [**Reference Traits Contract**](./reference-traits/)
-
----
+* [**Schema Definition Specification**](./schema-definition/)
+* [**Schema Versioning Specification**](./schema-versioning/)
 
 ### Error Classification
 
@@ -98,23 +87,11 @@ documents. All are required for a complete and compliant implementation.
 
 ## Stability and Immutability
 
-Codex 0.1 is **immutable**.
+Codex 0.1 stability is governed by repository governance.
 
-Once published:
-
-* documents under `/spec/0.1/` MUST NOT be edited
-* clarifications or changes require a new version
-* superseding versions live alongside this version
-
-No implementation-led reinterpretation is permitted.
-
----
-
-## Relationship to Other Versions
-
-* `/spec/current/` points to the most recent published version
-* draft or experimental work lives under `/spec/DRAFT/`
-* implementations MUST target a specific published version
+* published versions SHOULD be treated as stable
+* revisions are permitted only under editor control
+* tools MUST target a specific published version
 
 ---
 
@@ -128,5 +105,3 @@ Final authority over Codex 0.1 rests with the **Specification Editor**.
 ---
 
 End of Codex Language Specification v0.1 — Entry Point
-
----
