@@ -2,183 +2,109 @@ Status: NORMATIVE
 Version: 0.1  
 Editor: Charles F. Munat
 
-# Codex Language Specification — Version 0.1
+# Codex Language Specification — Version 0.1  
+## Entry Point and Table of Contents
 
-## Language Definition
+This document is the **authoritative entry point** for the Codex Language
+Specification, version 0.1.
 
-This document defines the **Codex language itself**.
+It defines the **scope, structure, authority, and immutability** of the
+specification and enumerates the **Normative documents** that together define
+the Codex language.
 
-It specifies the **foundational language model, semantics, and invariants** that
-apply to all Codex documents, schemas, and tooling.
-
-This document is **Normative**.
-
----
-
-## Role of This Document
-
-This document is the **authoritative definition of the Codex language**.
-
-It defines:
-
-- what Codex is as a language
-- what Codex constructs mean
-- what Codex explicitly does and does not include
-- the invariants that all Codex tooling MUST respect
-
-This document is part of the Codex Language Specification v0.1 and MUST be read in
-conjunction with the other Normative documents listed in [Specification v0.1](../../).
+This document does **not** itself define language rules.
 
 ---
 
-## What Codex Is
+## Purpose of This Document
 
-**Codex is a declarative semantic authoring language.**
+This document exists to:
 
-Codex is designed to describe:
+- establish the scope of Codex 0.1
+- declare which documents are Normative
+- define immutability and versioning rules
+- provide a stable table of contents for implementers and auditors
 
-- meaning
-- structure
-- constraints
-- behavior (as data)
-- presentation policy
-- bindings to environments
-
-Codex is **not**:
-
-- a web framework
-- a UI framework
-- a component system
-- a configuration format layered on top of code
-
-All of the above are **applications of Codex**, not the language itself.
+All language rules are defined in the documents listed below.
 
 ---
 
-## Authoring Surface
+## Scope of Codex 0.1
 
-Codex authoring is performed exclusively using the **Codex surface syntax**
-expressed in `.cdx` files.
+Codex 0.1 defines:
 
-All author-authored material — including:
+- the core Codex language model
+- declarative semantics and invariants
+- surface form and canonicalization
+- naming and literal value spellings
+- identity and reference semantics
+- schema definition and validation
+- schema versioning rules
+- validation error classification
 
-- data
-- views
-- schemas
-- constraints
-- behaviors
-- policies
-- bindings
-- configuration
+Codex 0.1 does **not** define:
 
-— MUST be expressed in Codex.
+- modules or dialects
+- pipeline orchestration
+- storage, querying, or rendering behavior
+- application frameworks or tooling
+- inline text markup systems
 
-No alternative authoring formats are permitted.
-
----
-
-## Declarative and Closed World Model
-
-Codex operates as a **closed declarative system**.
-
-This means:
-
-- all meaning must be explicitly declared
-- nothing is inferred implicitly
-- nothing is filled in heuristically
-- nothing exists outside what is authored or deterministically derived
-
-If something is not declared, it does not exist.
+Those concerns are defined by **separate, non-core specifications**.
 
 ---
 
-## Determinism and Explainability
+## Included Normative Specifications
 
-Given the same Codex inputs:
+### Core Language
 
-- parsing MUST be deterministic
-- validation MUST be deterministic
-- compilation MUST be deterministic
+- **Language Definition** (`./language/`)
+- **Naming and Value Specification** (`./naming-and-values/`)
+- **Surface Form Specification** (`./surface-form/`)
+- **Formatting and Canonicalization Specification** (`./formatting-and-canonicalization/`)
 
-Codex tooling MUST be able to explain:
+### Identity and References
 
-- why something is valid or invalid
-- why something appears or does not appear
-- why something is ordered, grouped, or scoped as it is
+- **Identifier Specification** (`./identifiers/`)
+- **Reference Traits Specification** (`./reference-traits/`)
 
-Opaque or heuristic behavior is forbidden.
+### Schemas and Validation
 
----
-
-## Separation of Responsibility
-
-Codex enforces strict separation between:
-
-- language semantics
-- schema-defined meaning
-- constraints
-- behavior modeling
-- design and presentation
-- rendering and execution
-
-Codex defines **what is declared**, not **how it is executed or rendered**.
-
-Responsibilities outside the language itself are defined in separate contracts
-(e.g. Kernel, Warden, Architect).
+- **Schema Definition Specification** (`./schema-definition/`)
+- **Schema Versioning Specification** (`./schema-versioning/`)
+- **Validation Error Taxonomy** (`./validation-errors/`)
 
 ---
 
-## Multi-Target by Design
+## Stability and Immutability
 
-Codex is **target-agnostic**.
+Codex 0.1 is **immutable**.
 
-The same Codex document MAY be rendered to:
+Once published:
 
-- HTML
-- DOM mutation plans
-- PDF
-- LaTeX
-- SVG
-- voice systems
-- others, including future targets not yet defined
+- documents under `/spec/0.1/` MUST NOT be edited
+- clarifications or changes require a new version
+- superseding versions live alongside this version
 
-No Codex construct may assume a specific target.
+No implementation-led reinterpretation is permitted.
 
 ---
 
-## Relationship to Other Specification Documents
+## Relationship to Other Specifications
 
-This document defines **language-level semantics only**.
-
-It does **not** define:
-
-- surface syntax rules (see [**Surface Form**](../surface-form/))
-- inline text enrichment semantics (see [**Gloss Inline Text Markup**](../inline-text-markup/))
-- schema structure (see [**Schema Authoring**](../schema-authoring/))
-- identifier rules (see [**Identifiers**](../identifiers/))
-- error classification (see [**Formatting Errors**](//formatting-errors/) and [**Validation Errors**](../validation-errors/))
-
-All such concerns are defined in their respective Normative documents.
+- `/spec/current/` points to the most recent published version
+- draft or experimental work lives under `/spec/DRAFT/`
+- implementations MUST target a specific published version
 
 ---
 
-## Stability
+## Authority
 
-This document is **immutable** as part of Codex 0.1.
+This specification is maintained under the governance rules defined in
+`GOVERNANCE.md`.
 
-Any clarification or change requires a new published version.
-
----
-
-## Summary
-
-- Codex is a language, not a framework
-- Codex is declarative, closed-world, and deterministic
-- All authoring is done in Codex
-- Meaning is explicit and explainable
-- Execution, rendering, and storage are outside the language
-- This document defines the language; other documents refine it
+Final authority over Codex 0.1 rests with the **Specification Editor**.
 
 ---
 
-End of Codex Language Specification v0.1 — Language Definition
+End of Codex Language Specification v0.1 — Entry Point

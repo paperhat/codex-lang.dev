@@ -1,8 +1,9 @@
-Status: NORMATIVE  
-Version: 0.1  
+Status: NORMATIVE
+Version: 0.1
 Editor: Charles F. Munat
 
-# Codex Language Specification — Version 0.1  
+# Codex Language Specification — Version 0.1
+
 ## Entry Point and Table of Contents
 
 This document is the **authoritative entry point** for the Codex Language
@@ -20,10 +21,10 @@ This document does **not** itself define language rules.
 
 This document exists to:
 
-- establish the scope of Codex 0.1
-- declare which documents are Normative
-- define immutability and versioning rules
-- provide a stable table of contents for implementers, auditors, and tooling
+* establish the scope of Codex 0.1
+* declare which documents are Normative
+* define immutability and versioning rules
+* provide a stable table of contents for implementers, auditors, and tooling
 
 All language rules are defined in the documents listed below.
 
@@ -33,25 +34,25 @@ All language rules are defined in the documents listed below.
 
 Codex 0.1 defines:
 
-- the core Codex language model
-- structural and semantic rules
-- naming and identifier constraints
-- surface form rules
-- inline text markup semantics
-- schema authoring and versioning rules
-- formatting and validation error taxonomies
-- reference and linkage semantics
+* the core Codex language model
+* declarative semantic and identity rules
+* naming and literal value constraints
+* surface syntax and structure
+* deterministic formatting and canonicalization
+* schema authoring and schema versioning semantics
+* reference and linkage semantics
+* validation error classification
 
 Together, these documents define **what Codex is**.
 
 Codex 0.1 does **not** define:
 
-- system architecture
-- pipeline orchestration
-- storage, querying, or rendering behavior
-- operational or implementation concerns
+* application- or framework-specific dialects
+* module or assembly mechanisms
+* pipeline orchestration
+* storage, querying, or rendering behavior
 
-Those concerns are defined by separate contracts under [**contracts**](../../contracts/).
+Those concerns are defined by separate specifications.
 
 ---
 
@@ -62,29 +63,36 @@ documents. All are required for a complete and compliant implementation.
 
 ### Core Language Definition
 
-- [**Language Specification**](./language/)
-- [**Structural Concepts**](./structural-concepts/)
-- [**Naming Rules**](./naming/)
-- [**Identifiers**](./identifiers/)
+* [**Language Definition**](./language/)
+* [**Naming and Value Specification**](./naming/)
+* [**Identifiers**](./identifiers/)
+* [**Structural Concepts**](./structural-concepts/)
 
-### Surface Syntax and Content
+---
 
-- [**Surface Form**](./surface-form/)
-- [**Inline Text Markup (Gloss)**](./inline-text-markup/)
+### Surface Syntax and Normalization
+
+* [**Surface Form Specification**](./surface-form/)
+* [**Formatting and Canonicalization Specification**](./formatting-and-canonicalization/)
+
+---
 
 ### Schema and Versioning
 
-- [**Schema Authoring**](./schema-authoring/)
-- [**Schema Versioning**](./schema-versioning/)
+* [**Schema Authoring Contract**](./schema-authoring/)
+* [**Schema Versioning Contract**](./schema-versioning/)
+
+---
 
 ### Relationships and Semantics
 
-- [**Reference Traits**](./reference-traits/)
+* [**Reference Traits Contract**](./reference-traits/)
+
+---
 
 ### Error Classification
 
-- [**Formatting Errors**](./formatting-errors/)
-- [**Validation Errors**](./validation-errors/)
+* [**Validation Error Taxonomy**](./validation-errors/)
 
 ---
 
@@ -94,9 +102,9 @@ Codex 0.1 is **immutable**.
 
 Once published:
 
-- documents under `/spec/0.1/` MUST NOT be edited
-- clarifications or changes require a new version
-- superseding versions live alongside this version
+* documents under `/spec/0.1/` MUST NOT be edited
+* clarifications or changes require a new version
+* superseding versions live alongside this version
 
 No implementation-led reinterpretation is permitted.
 
@@ -104,9 +112,9 @@ No implementation-led reinterpretation is permitted.
 
 ## Relationship to Other Versions
 
-- `/spec/current/` points to the most recent published version
-- draft or experimental work lives under `/spec/DRAFT/`
-- implementations MUST target a specific published version
+* `/spec/current/` points to the most recent published version
+* draft or experimental work lives under `/spec/DRAFT/`
+* implementations MUST target a specific published version
 
 ---
 
@@ -120,3 +128,5 @@ Final authority over Codex 0.1 rests with the **Specification Editor**.
 ---
 
 End of Codex Language Specification v0.1 — Entry Point
+
+---

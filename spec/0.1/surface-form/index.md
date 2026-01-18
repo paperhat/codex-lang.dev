@@ -1,8 +1,10 @@
-Status: NORMATIVE  
-Version: 0.1  
-Editor: Charles F. Munat
+Proceeding.
 
-# Codex Surface Form Specification
+## **Codex Surface Form Specification — Version 0.1 (REVISED, CORE-ONLY)**
+
+**Status:** NORMATIVE
+**Version:** 0.1
+**Editor:** Charles F. Munat
 
 This specification defines the **surface form** of Codex documents: the concrete spellings authors write and tools parse.
 
@@ -10,24 +12,26 @@ It governs:
 
 * Concept markers (`<...>`, `</...>`, `/>`)
 * Traits and their Values
-* Annotation lines (`[ ... ]`)
-* Content blocks (opaque narrative content)
+* **Multiline Annotations**
+* Content blocks (opaque narrative text)
 * Whitespace significance required for deterministic parsing
 * String literal escaping
+* **Canonicalization rules for surface form**
 
-This document governs **surface form only**.
-It does not define schemas or domain semantics.
+This document governs **surface form and canonicalization only**.
+It does **not** define schemas, semantics, modules, dialects, or inline text markup.
 
 ---
 
 ## 1. Purpose
 
-Codex surface form exists to:
+The Codex surface form exists to:
 
-* read like plain English structured markup
-* avoid confusion with programming languages
-* be deterministic to parse and round-trip
-* support automatic formatting (gofmt-like) without ambiguity
+* read as plain-English structured markup
+* be deterministic to parse
+* support lossless round-tripping
+* admit exactly **one canonical textual form**
+* avoid heuristic or best-effort interpretation
 
 ---
 
@@ -37,81 +41,107 @@ Codex documents are composed of **Concepts**.
 
 A Concept may include:
 
-* zero or more **Traits** (name/value pairs)
+* zero or more **Traits**
 * zero or more **child Concepts**
-* optional **Content** (opaque narrative text)
-
-A Concept is written using angle-bracket markers similar to (but not the same as) XML.
-
-Codex documents may also include **Annotations**.
+* optional **Content**
+* optional **Annotations** (editorial)
 
 ---
 
 ## 3. Annotations (Normative)
 
-An Annotation line is written as:
+Annotations are **editorial metadata**, not Values and not Content.
 
+### 3.1 Annotation Form
+
+An Annotation consists of everything from an opening `[` to a matching closing `]`.
+
+Annotations:
+
+* MAY span multiple lines
+* MAY contain arbitrary text
+* attach to the **next Concept**
+* are not nested
+* are not interpreted by Codex
+
+Example:
+
+```cdx
+[This
+ is a
+ multiline annotation.]
+<Recipe>
 ```
-[Annotation text.]
-```
 
-Rules:
+---
 
-* An Annotation line MUST begin with `[` and end with `]` on the same line.
-* Annotation lines are not nested and have no escape mechanism.
-* Annotation lines attach to the **next** Concept in the document.
-* There MUST be no blank line between an Annotation and the Concept it annotates.
+### 3.2 Structural Rules
 
-Annotations are not Values and are not interpreted by Codex.
+* The opening `[` MUST be the **first non-whitespace character** on its line
+* The closing `]` MUST terminate the annotation (may appear on any line)
+* There MUST be no blank line between an Annotation and the Concept it annotates
+* Annotations MAY contain blank lines internally
+
+---
+
+### 3.3 Escaping
+
+Within an Annotation:
+
+* `\]` represents a literal `]`
+* `\\` represents a literal `\`
+
+No other escapes are defined.
+
+---
+
+### 3.4 Canonicalization of Annotations
+
+For canonical form:
+
+* Leading and trailing whitespace inside the annotation is trimmed
+* Internal runs of whitespace (spaces, tabs, newlines) are collapsed to a single space
+* Escaped characters are preserved as written
+
+If whitespace collapse would make attachment ambiguous, canonicalization MUST fail.
 
 ---
 
 ## 4. Concept Markers (Normative)
 
-### 4.1 Opening marker
-
-An opening marker begins a Concept:
+### 4.1 Opening Marker
 
 ```
 <ConceptName>
-```
-
-A ConceptName MUST follow the naming rules defined by the Codex Naming and Value Specification.
-
-An opening marker MAY include Traits:
-
-```
 <ConceptName trait=value>
 ```
 
-### 4.2 Closing marker
+Rules:
 
-A closing marker ends a non-self-closing Concept:
+* `ConceptName` MUST follow naming rules
+* Traits MAY appear inline
+* Trait order is preserved
+
+---
+
+### 4.2 Closing Marker
 
 ```
 </ConceptName>
 ```
 
-The closing marker ConceptName MUST match the most recent unclosed ConceptName.
+* MUST match the most recent unclosed Concept
 
-### 4.3 Self-closing marker
+---
 
-A self-closing marker represents a Concept with no child Concepts and no Content:
+### 4.3 Self-Closing Marker
 
 ```
 <ConceptName />
-```
-
-A self-closing marker MAY include Traits:
-
-```
 <ConceptName trait=value />
 ```
 
-Notes:
-
-* A self-closing Concept has no Content block.
-* A self-closing Concept has no child Concepts.
+* Represents a Concept with no Content and no children
 
 ---
 
@@ -125,264 +155,171 @@ traitName=value
 
 Rules:
 
-* Trait names MUST follow the naming rules defined by the Codex Naming and Value Specification.
-* Trait names are schema-authorized; syntax does not imply validity.
-* A Concept MAY declare zero or more Traits.
-* Trait order is preserved as written.
-
-Whitespace rules:
-
-* No whitespace is permitted around `=`.
-
-  * `name="Bob"` ✅
-  * `name = "Bob"` ❌
-* Traits within an opening marker are separated by one or more whitespace characters (space or line break).
+* No whitespace around `=`
+* Traits separated by whitespace
+* Trait names are schema-authorized
+* Trait order is preserved
 
 ---
 
 ## 6. Values (Normative)
 
-A Value is a literal datum spelling.
+Values are literal spellings defined by the **Naming and Value Specification**.
 
-Codex Values are **not expressions** and are **not evaluated**.
+Rules:
 
-The full set of Value spellings is defined by the Codex Naming and Value Specification.
-This surface-form specification defines only how Values appear inline in Traits and how they nest structurally.
+* No leading or trailing whitespace
+* Parsed mechanically
+* Not evaluated or normalized
 
-Values MUST be written without leading or trailing whitespace.
+Balanced delimiters (`[]`, `{}`, `()`) MUST be respected during parsing.
 
 ---
 
 ## 7. Content Blocks (Normative)
 
-Content is opaque narrative data.
+Content is opaque narrative text between opening and closing markers.
 
-A Concept carries Content by placing text lines between its opening and closing markers:
+Example:
 
 ```cdx
-<Title>
-	Some text.
-</Title>
+<Description>
+	This is text.
+	It is opaque to Codex.
+</Description>
 ```
 
 Rules:
 
-* Content is not interpreted by Codex.
-* Content MUST be indented relative to its containing Concept.
-* Content MAY include any characters, including markup and code.
-* Content MAY include blank lines.
-
-Content is not a Value spelling. Content is distinct from string Values.
+* Content is not a Value
+* Content is not parsed
+* Content MUST be indented relative to its Concept
+* Content MAY contain blank lines and arbitrary characters
 
 ---
 
 ## 8. Whitespace Significance (Normative)
 
-Codex is whitespace-tolerant in most places, but requires certain whitespace constraints for deterministic parsing.
+### 8.1 Insignificant Whitespace
 
-### 8.1 Insignificant whitespace
-
-Outside of string Values, whitespace is generally insignificant except where it separates tokens.
-
-Examples:
-
-* Multiple spaces between Traits are treated as a separator.
-* Line breaks between Traits are treated as a separator.
-
-### 8.2 Significant structural boundaries
-
-The following boundaries are structural:
-
-* `<` begins a Concept marker
-* `</` begins a closing marker
-* `/>` ends a self-closing Concept marker
-* `>` ends an opening Concept marker
-* `[` begins an Annotation line (only when it is the first non-whitespace character on the line)
-* `]` ends an Annotation line (same line)
-
-### 8.3 Annotation line recognition
-
-A line is an Annotation line if and only if its first non-whitespace character is `[` and the line ends with `]`.
+* Multiple spaces between tokens are equivalent
+* Line breaks between Traits are separators
 
 ---
 
-## 9. Surface Grammar (Normative)
+### 8.2 Significant Boundaries
 
-This section defines the structural grammar of Codex surface form. It is intentionally simple and non-expressive.
+The following are structural delimiters:
+
+* `<`, `</`, `>`, `/>`
+* `[` as first non-whitespace character
+* matching `]` ending an Annotation
+* string literal delimiters `"`
+
+---
+
+## 9. Structural Grammar (Normative)
 
 ### 9.1 Document
 
-A document consists of exactly one root Concept, preceded and interleaved by optional Annotation lines:
-
 ```
-Document ::= (AnnotationLine | BlankLine)* RootConcept (BlankLine)*
+Document ::= (Annotation | BlankLine)* RootConcept (BlankLine)*
 ```
 
-### 9.2 Concept forms
+Exactly one root Concept is required.
 
-A Concept is either:
+---
 
-* a non-self-closing Concept with children and/or Content, or
-* a self-closing Concept
+### 9.2 Concept Forms
 
 ```
 Concept ::= BlockConcept | SelfClosingConcept
 ```
 
+---
+
 ### 9.3 Block Concept
 
 ```
-BlockConcept ::=
-	OpeningMarker
-	(InterleavedContentOrChildren)*
-	ClosingMarker
+<BlockConcept> ::= OpeningMarker
+                   (Annotation | ChildConcept | ContentLine | BlankLine)*
+                   ClosingMarker
 ```
-
-Where:
-
-* `OpeningMarker` and `ClosingMarker` ConceptName MUST match.
-* `InterleavedContentOrChildren` is any sequence of:
-
-  * Annotation lines
-  * child Concepts
-  * content lines
-  * blank lines
-
-Codex does not interpret Content; tools may still need to detect child Concept markers.
-
-### 9.4 Self-closing Concept
-
-```
-SelfClosingConcept ::= "<" ConceptName (Whitespace Trait)* Whitespace? "/>"
-```
-
-### 9.5 Opening marker
-
-```
-OpeningMarker ::= "<" ConceptName (Whitespace Trait)* Whitespace? ">"
-```
-
-### 9.6 Closing marker
-
-```
-ClosingMarker ::= "</" ConceptName Whitespace? ">"
-```
-
-### 9.7 Trait
-
-```
-Trait ::= TraitName "=" Value
-```
-
-Special-case (Normative):
-
-For the following Trait names, the Value MUST be an **IRI reference value** (an unquoted single token; no whitespace):
-
-* `id`
-* `idBase`
-* `reference`
-* `target`
-* `for`
-* `key`
-
-TraitName and Value spellings are defined elsewhere (Naming and Value Specification), but Values may contain nested structures:
-
-* lists: `[...]`
-* temporals: `{...}`
-* color functional forms: `name(...)`
-
-A parser MUST treat bracketed/parenthesized/braced forms as balanced nested structures when parsing list items and other composite Values.
 
 ---
 
-## 10. String Value Escaping (Normative)
+## 10. String Literals (Normative)
 
-A string Value is delimited by double quotation marks:
+String Values:
 
 ```
 "..."
 ```
 
-Strings are Values and may appear only where schema authorizes string Values.
-
-### 10.1 Permitted characters
-
-Within a string literal, the following are forbidden unless escaped:
-
-* the double quote character: `"`
-* the reverse solidus (backslash): `\`
-
-The following are forbidden in all cases inside a string literal:
-
-* a line break (U+000A LF)
-* a carriage return (U+000D CR)
-
-Notes:
-
-* Codex string Values are **single-line** spellings.
-* Multi-line text belongs in **Content**, not in string Values.
-
-### 10.2 Escape sequences
-
-Codex recognizes the following escape sequences inside string literals.
-
-Required escapes:
-
-* `\"` represents a literal `"` character
-* `\\` represents a literal `\` character
-
-Unicode escapes:
-
-* `\uXXXX` where `X` is a hexadecimal digit (`0-9`, `a-f`, `A-F`) and exactly 4 digits are provided
-* `\u{H...}` where `H...` is 1 or more hexadecimal digits (`0-9`, `a-f`, `A-F`)
-
 Rules:
 
-* Unicode escapes represent a single Unicode scalar value.
-* Codex does not normalize or re-encode the result.
+* Single-line only
+* Escapes:
 
-### 10.3 Forbidden escapes
-
-No escape sequences other than those listed in §10.2 are permitted.
-
-In particular, the following are forbidden:
-
-* `\n`
-* `\r`
-* `\t`
-* `\0`
-* `\x..`
-* `\` followed by any other character
-
-A consumer MUST report a validation error upon encountering an unrecognized escape.
-
-### 10.4 Canonical emission
-
-When a consumer emits (formats) a string literal, it MUST ensure:
-
-* any literal `"` is emitted as `\"`
-* any literal `\` is emitted as `\\`
-* no raw line breaks (LF/CR) are emitted inside the string literal
-
-Consumers MUST NOT introduce or remove Unicode escapes as a normalization step.
-If a string was authored using Unicode escapes, a consumer MAY preserve them as authored.
-
-Examples:
-
-Valid:
-
-* `"firebrick"`
-* `"He said \"hello\"."`
-* `"C:\\Recipes\\Pasta"`
-* `"Spaghetti \u{1F35D}"`
-
-Invalid:
-
-* `"line1
-  line2"` (line break inside string)
-* `"tab\tseparated"` (`\t` escape not permitted)
-* `"bad \q escape"` (unknown escape)
+  * `\"` → `"`
+  * `\\` → `\`
+  * `\uXXXX`, `\u{H...}` → Unicode scalar
+* No other escapes permitted
+* No raw line breaks allowed
 
 ---
 
-**End of Codex Surface Form Specification**
+## 11. Canonical Surface Form (Normative)
+
+A valid Codex document MUST normalize to **exactly one canonical textual form**.
+
+Canonicalization rules:
+
+* Deterministic indentation
+* Canonical Trait spacing
+* Canonical Annotation whitespace collapse
+* Canonical string escaping
+* No reordering of Concepts, Traits, or Content
+
+If canonicalization cannot be performed mechanically, the document is invalid.
+
+---
+
+## 12. Prohibited Behaviors (Normative)
+
+Tools MUST NOT:
+
+* infer missing structure
+* silently rewrite Content
+* silently correct formatting errors
+* accept multiple canonical forms
+
+---
+
+## 13. Non-Goals
+
+This specification does **not**:
+
+* define schemas or validation rules
+* define inline text markup
+* define modules or dialects
+* define rendering or execution semantics
+
+---
+
+## 14. Summary
+
+* Codex surface form is deterministic and canonical
+* Annotations are multiline, escaped, and editorial
+* Content is opaque and distinct from Values
+* Canonicalization is mechanical or fails
+* No heuristics, no guessing
+
+---
+
+**End of Codex Surface Form Specification v0.1**
+
+---
+
+Next (unless redirected):
+**Codex Identifier Specification — Revised (semantic density explicit, no resolution)**
