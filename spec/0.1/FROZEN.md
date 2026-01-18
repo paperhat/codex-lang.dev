@@ -1,4 +1,5 @@
 Status: NORMATIVE  
+Lock State: LOCKED    
 Applies to: /spec/0.1/  
 Editor: Charles F. Munat
 
