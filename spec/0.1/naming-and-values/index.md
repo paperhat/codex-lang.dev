@@ -96,7 +96,7 @@ Content is distinct from Values. This distinction prevents conflating **data** w
 
 ### 2.5 Entity
 
-A Concept is an **Entity if and only if it declares an `id` Trait**.
+A Concept instance is an **Entity if and only if (1) it declares an `id` Trait and (2) the active schema authorizes that identity via `entityEligibility`**.
 
 Entities:
 

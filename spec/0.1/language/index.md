@@ -164,7 +164,7 @@ model.
 
 ## Entities and Semantic Density
 
-A **Concept is an Entity if and only if it declares an `id` Trait.**
+A **Concept instance is an Entity if and only if (1) it declares an `id` Trait and (2) the active schema authorizes that identity via `entityEligibility`.**
 
 See the **Naming and Value Specification § 2.5** for the formal definition.
 
