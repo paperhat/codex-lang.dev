@@ -96,15 +96,15 @@ Content is distinct from Values. This distinction prevents conflating **data** w
 
 ### 2.5 Entity
 
-A Concept is an **Entity if and only if it declares an `id` Trait**.
+A Concept is an **Entity if and only if the schema permits or requires it, and it declares an `id` Trait**.
+
+The schema controls Entity eligibility; the `id` Trait is the mechanism. See the **Schema Definition Specification § 4.1** for `entityEligibility` rules.
 
 Entities:
 
 * represent **high semantic density**
 * participate in ontologies and graphs
 * may be referenced by other Concepts
-
-Entity eligibility is **explicit and schema-defined**.
 
 ---
 
@@ -149,6 +149,7 @@ Forbidden everywhere:
 * snake_case
 * SCREAMING_CASE
 * mixed or inconsistent casing
+* any other casing (sentence, title, Train-Case, etc.)
 
 ---
 

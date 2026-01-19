@@ -164,9 +164,9 @@ model.
 
 ## Entities and Semantic Density
 
-A **Concept is an Entity if and only if it declares an `id` Trait.**
+A **Concept is an Entity if and only if the schema permits or requires it, and it declares an `id` Trait.**
 
-See the **Naming and Value Specification § 2.5** for the formal definition.
+The schema controls Entity eligibility; the `id` Trait is the mechanism. See the **Schema Definition Specification § 4.1** for `entityEligibility` rules.
 
 This section describes the role of Entities in the language model.
 
