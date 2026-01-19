@@ -1,0 +1,98 @@
+{
+  "version": "0.1",
+  "specRoot": "../../spec/0.1",
+  "cases": [
+    {
+      "id": "valid/minimal-selfclosing",
+      "input": "cases/valid/minimal-selfclosing.cdx",
+      "expectedCanonical": "expected/canonical/minimal-selfclosing.cdx",
+      "expectedError": null,
+      "expectedPrimaryErrorClass": null
+    },
+    {
+      "id": "valid/selfclosing-inline-traits",
+      "input": "cases/valid/selfclosing-inline-traits.cdx",
+      "expectedCanonical": "expected/canonical/selfclosing-inline-traits.cdx",
+      "expectedError": null,
+      "expectedPrimaryErrorClass": null
+    },
+    {
+      "id": "valid/selfclosing-multiline-traits",
+      "input": "cases/valid/selfclosing-multiline-traits.cdx",
+      "expectedCanonical": "expected/canonical/selfclosing-multiline-traits.cdx",
+      "expectedError": null,
+      "expectedPrimaryErrorClass": null
+    },
+    {
+      "id": "valid/root-annotation-stack",
+      "input": "cases/valid/root-annotation-stack.cdx",
+      "expectedCanonical": "expected/canonical/root-annotation-stack.cdx",
+      "expectedError": null,
+      "expectedPrimaryErrorClass": null
+    },
+    {
+      "id": "valid/children-with-annotations",
+      "input": "cases/valid/children-with-annotations.cdx",
+      "expectedCanonical": "expected/canonical/children-with-annotations.cdx",
+      "expectedError": null,
+      "expectedPrimaryErrorClass": null
+    },
+    {
+      "id": "valid/uuid-uppercase-normalizes",
+      "input": "cases/valid/uuid-uppercase-normalizes.cdx",
+      "expectedCanonical": "expected/canonical/uuid-uppercase-normalizes.cdx",
+      "expectedError": null,
+      "expectedPrimaryErrorClass": null
+    },
+    {
+      "id": "valid/content-allows-blank-lines",
+      "input": "cases/valid/content-allows-blank-lines.cdx",
+      "expectedCanonical": "expected/canonical/content-allows-blank-lines.cdx",
+      "expectedError": null,
+      "expectedPrimaryErrorClass": null
+    },
+    {
+      "id": "valid/content-escaped-closing-marker",
+      "input": "cases/valid/content-escaped-closing-marker.cdx",
+      "expectedCanonical": "expected/canonical/content-escaped-closing-marker.cdx",
+      "expectedError": null,
+      "expectedPrimaryErrorClass": null
+    },
+
+    {
+      "id": "invalid/blankline-between-annotations-and-root",
+      "input": "cases/invalid/blankline-between-annotations-and-root.cdx",
+      "expectedCanonical": null,
+      "expectedError": "expected/errors/blankline-between-annotations-and-root.json",
+      "expectedPrimaryErrorClass": "ParseError"
+    },
+    {
+      "id": "invalid/non-ascii-iri",
+      "input": "cases/invalid/non-ascii-iri.cdx",
+      "expectedCanonical": null,
+      "expectedError": "expected/errors/non-ascii-iri.json",
+      "expectedPrimaryErrorClass": "ParseError"
+    },
+    {
+      "id": "invalid/iri-missing-colon",
+      "input": "cases/invalid/iri-missing-colon.cdx",
+      "expectedCanonical": null,
+      "expectedError": "expected/errors/iri-missing-colon.json",
+      "expectedPrimaryErrorClass": "ParseError"
+    },
+    {
+      "id": "invalid/empty-block-not-allowed",
+      "input": "cases/invalid/empty-block-not-allowed.cdx",
+      "expectedCanonical": null,
+      "expectedError": "expected/errors/empty-block-not-allowed.json",
+      "expectedPrimaryErrorClass": "SurfaceFormError"
+    },
+    {
+      "id": "invalid/leading-space-before-root",
+      "input": "cases/invalid/leading-space-before-root.cdx",
+      "expectedCanonical": null,
+      "expectedError": "expected/errors/leading-space-before-root.json",
+      "expectedPrimaryErrorClass": "ParseError"
+    }
+  ]
+}

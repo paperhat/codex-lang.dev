@@ -1,0 +1,4 @@
+{
+  "primaryClass": "ParseError",
+  "notes": "Codex IRI references are ASCII-only in surface form; Unicode must be percent-encoded, so a non-ASCII character in an IriReference should be rejected by the grammar."
+}

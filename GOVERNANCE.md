@@ -1,19 +1,19 @@
-Status: NORMATIVE  
-Lock State: LOCKED  
-Version: 0.1  
+Status: NORMATIVE
+Lock State: LOCKED
+Version: 0.1
 Editor: Charles F. Munat
 
-# Gloss Language Documentation Governance
+# Codex Language Documentation Governance
 
 ## 1. Purpose
 
-This document defines the **governance rules** for the documentation published at **gloss-lang.dev**.
+This document defines the **governance rules** for the documentation published at **codex-lang.dev**.
 
 Its purpose is to:
 
 * establish **authority and precedence** among documents
 * define **normative status**, lock state, and change control
-* clarify the relationship between the Gloss language specification and implementations
+* clarify the relationship between the Codex language specification and implementations
 * prevent ambiguity, drift, or contradictory interpretation
 
 This document governs **documentation only**.
@@ -22,9 +22,9 @@ This document governs **documentation only**.
 
 ## 2. Scope
 
-This governance applies to all content in the gloss-lang.dev repository, including:
+This governance applies to all content in the codex-lang.dev repository, including:
 
-* the Gloss Language Specification
+* the Codex Language Specification
 * formal contracts and constraints
 * normative supporting documents
 * examples and explanatory material
@@ -39,11 +39,11 @@ Documentation is categorized as follows.
 
 ### 3.1 Normative Documents
 
-Normative documents define **binding rules** of the Gloss language.
+Normative documents define **binding rules** of the Codex language.
 
 These include, but are not limited to:
 
-* the Gloss Language Specification
+* the Codex Language Specification
 * naming and structural rules
 * semantic and interpretive constraints
 * formally declared invariants
@@ -88,7 +88,7 @@ A document marked **DRAFT**:
 
 In the event of conflict, documents are interpreted according to the following precedence (highest first):
 
-1. **Gloss Language Specification**
+1. **Codex Language Specification**
 2. **Normative Language Contracts**
 3. **Normative Supporting Documents**
 4. **Examples**
@@ -100,13 +100,13 @@ Lower-authority documents MUST NOT contradict higher-authority documents.
 
 ## 6. Relationship to Implementations
 
-The Gloss documentation:
+The Codex documentation:
 
-* defines the **syntax, structure, and semantic intent** of the Gloss language
+* defines the **syntax, structure, and semantic intent** of the Codex language
 * does **not** mandate any specific implementation strategy
 * does **not** grant rights to any software implementation
 
-Implementations of Gloss:
+Implementations of Codex:
 
 * are independent works
 * may be licensed separately
@@ -116,7 +116,7 @@ Implementations of Gloss:
 
 ## 7. Licensing
 
-All documentation in this repository is licensed under the **Creative Commons Attribution 4.0 International License (CC BY 4.0)** as specified in the repository’s `LICENSE` file.
+All documentation in this repository is licensed under the **Creative Commons Attribution 4.0 International License (CC BY 4.0)** as specified in the repository's `LICENSE` file.
 
 The license applies to **textual, diagrammatic, and illustrative content only**.
 
@@ -132,8 +132,8 @@ No rights are granted to:
 
 This document is **NORMATIVE and LOCKED**.
 
-Any interpretation of Gloss documentation MUST be consistent with this governance.
+Any interpretation of Codex documentation MUST be consistent with this governance.
 
 ---
 
-**End of Gloss Language Documentation Governance v0.1**
+**End of Codex Language Documentation Governance v0.1**

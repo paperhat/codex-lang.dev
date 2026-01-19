@@ -86,7 +86,7 @@ ParseError is **fatal**.
 ### Definition
 
 A SurfaceFormError occurs when a file parses successfully but violates the
-**Codex Surface Form Specification**.
+**Surface Form Specification** (see that specification for detailed rules).
 
 ### Characteristics
 
@@ -114,8 +114,7 @@ SurfaceFormError is **fatal**.
 A FormattingError occurs when input parses and passes surface-form requirements
 but **cannot be transformed into canonical surface form**.
 
-Formatting and canonicalization behavior is defined by the
-**Formatting and Canonicalization Specification**.
+See the **Formatting and Canonicalization Specification** for canonicalization rules.
 
 ### Characteristics
 
@@ -162,6 +161,8 @@ SchemaError is **fatal**.
 
 An IdentityError occurs when identity rules are violated.
 
+See the **Identifier Specification** for identity rules.
+
 ### Characteristics
 
 * concerns Entity eligibility and identifier use
@@ -183,6 +184,8 @@ IdentityError is **fatal**.
 ### Definition
 
 A ReferenceError occurs when reference Traits are invalid or inconsistent.
+
+See the **Reference Traits Specification** for reference trait semantics.
 
 ### Characteristics
 

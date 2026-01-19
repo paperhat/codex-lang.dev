@@ -43,7 +43,7 @@ Schemas are the **sole authority on meaning** in Codex.
 * Validation is **closed-world** and deterministic
 * All authorization is **explicit**
 * All constraints are **mechanically enforceable**
-* No inference, defaults, or heuristics are permitted
+* Everything is declared; nothing is inferred or defaulted
 
 ---
 
@@ -79,9 +79,12 @@ A `Schema` MAY contain, in any order:
 
 Defines a Codex Concept.
 
+A `ConceptDefinition` is itself an Entity.
+
 #### Traits (Normative)
 
-* `id` (optional; IRI reference)
+* `id` (required; IRI reference)
+* `key` (optional; lookup token)
 * `name` (required; PascalCase string)
 * `conceptKind` (required; `$Semantic | $Structural | $ValueLike`)
 * `entityEligibility` (required; `$MustBeEntity | $MayBeEntity | $MustNotBeEntity`)
@@ -125,10 +128,12 @@ Defines a Trait independently of any Concept.
 Schemas MAY reference the following built-in value types:
 
 * `$String`
+* `$Char`
 * `$Boolean`
 * `$Number`
 * `$EnumeratedToken`
 * `$IriReference`
+* `$LookupToken`
 * `$Uuid`
 * `$Color`
 * `$Temporal`
@@ -139,6 +144,9 @@ Schemas MAY reference the following built-in value types:
 * `$ZonedDateTime`
 * `$Duration`
 * `$List`
+* `$Set`
+* `$Map`
+* `$Tuple`
 * `$Range`
 
 ---

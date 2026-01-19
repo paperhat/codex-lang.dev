@@ -98,7 +98,9 @@ Non-deterministic or heuristic behavior is forbidden.
 
 ## Concepts, Traits, Values, and Content
 
-Codex is composed of four fundamental elements:
+Codex is composed of four fundamental elements. Complete definitions appear in the
+**Naming and Value Specification § 2**. This section describes their role in the
+language model.
 
 ### Concepts
 
@@ -107,9 +109,10 @@ A **Concept** is a named declarative construct.
 Concepts:
 
 * may declare Traits
-* may contain child Concepts
-* may carry Content
+* may contain child Concepts OR Content (never both)
 * may or may not be Entities (see below)
+
+Concepts are the primary structural unit of Codex.
 
 ---
 
@@ -134,7 +137,9 @@ Values:
 * are immutable
 * are not expressions
 * are not evaluated by Codex
-* include rich first-class forms (numbers, ranges, temporal values, colors, lists, etc.)
+
+Codex defines rich first-class Value forms. See the **Naming and Value
+Specification § 4** for the complete catalog of literal value spellings.
 
 Codex parses Value spellings but does not interpret their meaning.
 Interpretation is the responsibility of schemas and consuming systems.
@@ -160,6 +165,10 @@ model.
 ## Entities and Semantic Density
 
 A **Concept is an Entity if and only if it declares an `id` Trait.**
+
+See the **Naming and Value Specification § 2.5** for the formal definition.
+
+This section describes the role of Entities in the language model.
 
 Entities:
 

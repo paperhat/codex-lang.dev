@@ -56,6 +56,18 @@ All Codex identifiers MUST be **IRIs**.
 
 Codex does **not** require identifiers to be dereferenceable.
 
+### 3.1 Surface Form Restriction (Normative)
+
+In Codex surface form, identifier values use the **IRI reference** literal form.
+This literal form requires a scheme and a ':' separator (e.g., `recipe:spaghetti`).
+
+Codex IRI references are intentionally restricted to **ASCII characters** for portability.
+This is narrower than RFC 3987 IRIs.
+
+Unicode characters MUST be percent-encoded.
+
+This restriction is defined by the **Formal Grammar**.
+
 ---
 
 ## 4. Identifier Form (Normative)
@@ -68,11 +80,13 @@ However, identifiers MUST conform to the following constraints:
 * MUST NOT encode ordering or position
 * MUST NOT rely on implicit context for uniqueness
 
+Codex tools MUST treat identifiers as opaque values.
+Tools MUST NOT reinterpret or normalize identifier spellings beyond canonical surface form rules.
+
 Examples (illustrative, not normative):
 
 * `recipe:spaghetti`
 * `user:chas`
-* `module:recipes`
 * `policy:recipe:standard`
 
 The choice of namespace scheme is a schema and project concern.
@@ -148,7 +162,7 @@ This specification does **not**:
 * require identifiers to resolve over HTTP
 * mandate UUIDs or specific encodings
 * define identifier minting workflows
-* define cross-document or cross-module resolution rules
+* define cross-document resolution rules
 * prescribe registry or catalog mechanisms
 
 ---

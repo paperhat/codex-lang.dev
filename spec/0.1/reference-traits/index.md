@@ -99,7 +99,7 @@ Plain-English reading:
 
 ### Definition
 
-`for` is a Trait whose value is the identifier (IRI) of another Entity **or Concept kind**, as authorized by schema.
+`for` is a Trait whose value is the identifier (IRI or lookup token) of another Entity.
 
 ### Intent
 
@@ -112,9 +112,28 @@ Use `for` when a Concept expresses:
 
 `for` answers the question:
 
-> “Who or what is this for?”
+> "Who or what is this for?"
 
 It does **not** imply execution or transformation.
+
+### Referencing Concept Types
+
+When `for` references a **Concept type** (e.g., "this applies to all Books"), it references
+the `ConceptDefinition` Entity for that Concept.
+
+Since `ConceptDefinition` is itself an Entity (with a required `id` Trait), references
+to Concept types are Entity references.
+
+Example:
+
+```cdx
+<ConceptDefinition id=concept:Book key=~Book name="Book" ... />
+
+<LabelPolicy for=concept:Book ... />
+<LabelPolicy for=~Book ... />
+```
+
+Both forms reference the same Entity: the ConceptDefinition for Book.
 
 ---
 
@@ -146,7 +165,8 @@ Codex surface syntax does not infer reference meaning.
 
 ## 8. Relationship to Identity
 
-* Reference Traits always bind to **identifiers**
+* Reference Traits bind to **identifiers** (IRIs or lookup tokens)
+* Lookup tokens (`~token`) resolve to Entities via the `key` Trait
 * Referencing a non-Entity is a validation error
 * Reference resolution semantics are schema-defined
 

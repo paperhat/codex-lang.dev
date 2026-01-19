@@ -45,13 +45,11 @@ Codex 0.1 defines:
 
 Codex 0.1 does **not** define:
 
-* any module system or module containers
-* dialects, sections, or Paperhat-specific conventions
 * identifier base scoping or base resolution mechanisms
 * storage, querying, or rendering behavior
 * pipeline orchestration or runtime behavior
 
-Those concerns are defined by separate contracts.
+Those concerns belong to consuming systems.
 
 ---
 
@@ -73,6 +71,7 @@ documents. All are required for a complete and compliant implementation.
 ### Surface Syntax and Canonicalization
 
 * [**Surface Form Specification**](./surface-form/)
+* [**Formal Grammar Specification**](./grammar/)
 * [**Formatting and Canonicalization Specification**](./formatting-and-canonicalization/)
 
 ### Schema

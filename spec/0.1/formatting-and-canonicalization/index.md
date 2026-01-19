@@ -3,7 +3,7 @@ Lock State: LOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
-# **Codex Formatting and Canonicalization Specification — Version 0.1 (FINAL, CORE)**
+# Codex Formatting and Canonicalization Specification — Version 0.1
 
 This specification defines **formatting rules and canonicalization requirements**
 for Codex documents.
@@ -15,11 +15,8 @@ It governs:
 * classification of formatting and canonicalization failures
 
 This specification is **core language**.
-It replaces and supersedes the former **Formatting Error Rules** specification.
 
 ---
-
-# Codex Formatting and Canonicalization Specification — Version 0.1
 
 ## 1. Purpose
 
@@ -44,12 +41,13 @@ This specification governs **formatting and canonicalization only**.
 
 Codex processing follows this strict sequence:
 
-1. **Parse**
-2. **Surface Form Validation**
-3. **Formatting and Canonicalization**
-4. **Schema Validation**
+1. **Input Normalization** — encoding detection, line ending normalization, indentation normalization
+2. **Parse** — syntactic analysis of normalized input
+3. **Surface Form Validation** — structural validation per Surface Form Specification
+4. **Output Canonicalization** — deterministic canonical form generation
+5. **Schema Validation** — semantic validation per schema
 
-Formatting MUST NOT alter phase ordering.
+Input normalization MUST occur before parsing. See **Surface Form Specification §§ 2-4** for normalization rules.
 
 ---
 

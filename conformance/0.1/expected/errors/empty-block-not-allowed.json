@@ -1,0 +1,4 @@
+{
+  "primaryClass": "SurfaceFormError",
+  "notes": "Empty blocks '<X></X>' are prohibited by the Surface Form Specification; authors must use '<X />' for deliberately empty concepts."
+}

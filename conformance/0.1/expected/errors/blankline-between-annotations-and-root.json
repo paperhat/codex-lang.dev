@@ -1,0 +1,4 @@
+{
+  "primaryClass": "ParseError",
+  "notes": "A blank line between one-or-more annotations and the root concept is syntactically forbidden (Document = BlankLine* Annotation* RootConcept ...)."
+}

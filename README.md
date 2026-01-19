@@ -1,119 +1,141 @@
-# Codex Semantic Markup Language
+# Codex
 
-This repository publishes the **canonical specification and system contracts** for **Codex**, a declarative semantic language for expressing structured meaning independent of runtime, presentation, or target platform.
-
-This site is intentionally minimal.
-It exists to define **what Codex is**, **what compliant systems must do**, and **where authority resides**.
+**Codex** is a declarative semantic markup language for expressing structured meaning independent of runtime, presentation, or target platform.
 
 ---
 
-## What Codex Is
+## Core Constructs
 
-**Codex is a language.**
+Codex documents are built from four primitives:
 
-It is used to author:
+### Concept
 
-* semantic structure
-* meaning and constraints
-* behavior (as data)
-* presentation policy
-* bindings to environments
+A **Concept** is the primary unit of structure. Concepts have names, may declare Traits, and may contain child Concepts or Content.
 
-Codex is **not** a framework, toolkit, or UI system.
-Those are applications *of* the language.
+```cdx
+<Recipe id=recipe:pasta title="Spaghetti Carbonara">
+	<Ingredients>
+		<Ingredient name="pasta" amount=400 unit=$Grams />
+		<Ingredient name="eggs" amount=4 />
+	</Ingredients>
+</Recipe>
+```
+
+Concepts are not elements, components, tags, or nodes.
+
+### Trait
+
+A **Trait** binds a name to a Value. Traits are declared inline on Concepts and are schema-authorized.
+
+```cdx
+<Person id=person:alice name="Alice" age=30 active=true />
+```
+
+Traits are not properties, attributes, fields, or parameters.
+
+### Value
+
+A **Value** is a literal datum. Codex supports:
+
+- Strings, characters, backtick strings
+- Booleans (`true`, `false`)
+- Numbers (integers, decimals, scientific, fractions, complex)
+- Enumerated tokens (`$Draft`, `$Published`)
+- Lists, sets, maps, tuples
+- Temporal values, colors, UUIDs, ranges
+- IRI references, lookup tokens
+
+Values are parsed but not evaluated. Typing is a schema responsibility.
+
+### Content
+
+**Content** is opaque narrative text. Codex preserves it without interpretation.
+
+```cdx
+<Description>
+	This recipe makes a classic Roman pasta dish.
+	The key is using fresh eggs and quality guanciale.
+</Description>
+```
+
+Content is distinct from Values. Schemas determine what Content may contain.
 
 ---
 
-## Repository Structure
+## Entities and Identity
 
-Authority is expressed structurally.
+An **Entity** is a Concept with stable identity that can be referenced by other Concepts.
 
-This repository is organized into the following top-level areas:
+Entity eligibility is **schema-controlled**:
 
-* specifications
-* contracts
-* examples
-* notes
-* scope and status material
+- `$MustBeEntity` — the Concept MUST declare an `id`
+- `$MayBeEntity` — the Concept MAY declare an `id`
+- `$MustNotBeEntity` — the Concept MUST NOT declare an `id`
 
-Documents that define required behavior are marked **Normative**.
-Documents that explain, motivate, or discuss are **Non-Normative**.
+```cdx
+<Book id=book:1984 title="1984" author=person:orwell />
+```
 
----
-
-## Specifications
-
-Codex language specifications are:
-
-* versioned
-* immutable once published
-* intended to be stable and citable
-
-The existence of a specification defines authoritative language behavior for that version.
+This prevents identity proliferation. Schemas deliberately restrict which Concepts may be Entities to maintain low semantic density. Adding `id` to a Concept where the schema forbids it is a validation error.
 
 ---
 
-## Contracts
+## Annotations
 
-Contracts define **obligations, boundaries, and guarantees** for systems and libraries that implement or operate on Codex.
+**Annotations** are editorial metadata preserved through the pipeline. They attach to the next Concept and do not affect validation.
 
-Each contract is:
+```cdx
+[Review: verify cooking times]
+<Recipe id=recipe:risotto>
+```
 
-* a named artifact
-* versioned independently
-* authoritative within its declared scope
+Annotations are not comments.
 
-Compliance is explicit and non-ambiguous.
+---
+
+## Key Characteristics
+
+- **Declarative**: Codex expresses what, not how
+- **Schema-driven**: Meaning is defined by schema, not inferred
+- **Closed-world**: Validation is deterministic; everything is explicit
+- **Canonical**: Every valid document has exactly one surface form
+- **No evaluation**: Values are parsed, not computed
+
+---
+
+## Specification
+
+The authoritative specification is in [`spec/0.1/`](spec/0.1/).
+
+| Document | Scope |
+|----------|-------|
+| [Language](spec/0.1/language/) | Conceptual model and terminology |
+| [Surface Form](spec/0.1/surface-form/) | Syntax and structure |
+| [Naming and Values](spec/0.1/naming-and-values/) | Vocabulary and literal forms |
+| [Grammar (EBNF)](spec/0.1/grammar/ebnf/) | Normative formal grammar |
+| [Grammar (PEG)](spec/0.1/grammar/peg/) | Informative parsing grammar |
+| [Formatting](spec/0.1/formatting-and-canonicalization/) | Canonicalization rules |
+| [Schema Definition](spec/0.1/schema-definition/) | Schema authoring |
+| [Identifiers](spec/0.1/identifiers/) | Identity rules |
+| [Reference Traits](spec/0.1/reference-traits/) | Reference semantics |
+| [Validation Errors](spec/0.1/validation-errors/) | Error taxonomy |
 
 ---
 
 ## Governance
 
-Codex is maintained under a **strong editorial governance model**.
+Codex is maintained under editorial governance. Normative content is authoritative. Changes to locked documents are versioned.
 
-* Normative content is authoritative.
-* Changes to LOCKED documents are deliberate and versioned.
-* Final authority rests with the Specification Editor.
-
-See **`GOVERNANCE.md`** for formal governance rules.
+See [`GOVERNANCE.md`](GOVERNANCE.md).
 
 ---
 
-## Licensing and Copyright
+## License
 
-All documentation in this repository is licensed under the
-**Creative Commons Attribution 4.0 International License (CC BY 4.0)**.
+Documentation is licensed under [CC BY 4.0](LICENSE.md).
 
-* The license applies to textual, diagrammatic, and illustrative content only.
-* No rights are granted to trademarks, names, or software implementations.
-
-See:
-
-* **`LICENSE.md`**
-* **`COPYRIGHT.md`**
+See [`COPYRIGHT.md`](COPYRIGHT.md) for details.
 
 ---
 
-## Status
-
-Codex is under active development.
-
-The presence of material in this repository establishes **intent and authority**, not finality.
-
----
-
-## Scope Note
-
-This repository is a **reference**.
-
-It is not:
-
-* a tutorial site
-* a community forum
-* a marketing property
-
-Those concerns are intentionally handled elsewhere.
-
----
-
-*Clarity, coherence, and correctness take precedence over popularity.*
+*This repository is a reference specification, not a tutorial or community forum.*
