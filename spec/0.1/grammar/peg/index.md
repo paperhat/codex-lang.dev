@@ -233,8 +233,9 @@ EnumeratedToken <- '$' UppercaseLetter (Letter / Digit)*
 ## 14. IRI References
 
 ```peg
-# Codex IRI references are restricted to ASCII for portability (narrower than RFC 3987).
-# Unicode characters MUST be percent-encoded. IRIs are the fallback; must contain a colon.
+# Codex IRI references allow RFC 3987 IRI-reference characters directly.
+# Unicode characters MAY appear directly; percent-encoding remains valid.
+# Codex further forbids Unicode whitespace, control, bidi-control, and private-use characters.
 
 IriReference <- IriScheme ':' IriBody
 
@@ -242,7 +243,30 @@ IriScheme <- Letter (Letter / Digit / [+.-])*
 
 IriBody <- IriChar*
 
-IriChar <- [A-Za-z0-9_.~:/?#\[\]@!$&'()*+,;=%-]
+IriChar <- IriAsciiChar / UcsChar
+
+IriAsciiChar <- [A-Za-z0-9_.~:/?#\[\]@!$&'()*+,;=%-]
+
+# RFC 3987 character classes. PEG dialects vary in Unicode-range support;
+# treat these as normative character-range definitions.
+UcsChar <- [\u00A0-\uD7FF]
+         / [\uF900-\uFDCF]
+         / [\uFDF0-\uFFEF]
+         / [\U00010000-\U0001FFFD]
+         / [\U00020000-\U0002FFFD]
+         / [\U00030000-\U0003FFFD]
+         / [\U00040000-\U0004FFFD]
+         / [\U00050000-\U0005FFFD]
+         / [\U00060000-\U0006FFFD]
+         / [\U00070000-\U0007FFFD]
+         / [\U00080000-\U0008FFFD]
+         / [\U00090000-\U0009FFFD]
+         / [\U000A0000-\U000AFFFD]
+         / [\U000B0000-\U000BFFFD]
+         / [\U000C0000-\U000CFFFD]
+         / [\U000D0000-\U000DFFFD]
+         / [\U000E1000-\U000EFFFD]
+
 ```
 
 ---

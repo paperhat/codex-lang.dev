@@ -1,0 +1,4 @@
+{
+  "primaryClass": "ParseError",
+  "notes": "IRI references allow Unicode (RFC 3987) in Codex surface form, but MUST NOT contain Unicode private-use characters (e.g., U+E000)."
+}

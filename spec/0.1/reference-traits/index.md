@@ -42,7 +42,7 @@ Codex defines exactly **three reference Traits**:
 
 Each reference Trait:
 
-* binds a Concept to another **Entity** by identifier (IRI)
+* binds a Concept to another Concept by identifier (IRI) or lookup token
 * has a distinct semantic intent
 * is valid only where authorized by schema
 
@@ -54,22 +54,22 @@ Reference Traits are **mutually exclusive by default**.
 
 ### Definition
 
-`reference` is a Trait whose value is the identifier (IRI) of another Entity.
+`reference` is a Trait whose value is the identifier (IRI) or lookup token of another Concept.
 
 ### Intent
 
 Use `reference` when a Concept:
 
-* mentions another Entity
-* depends on another Entity for meaning
-* points to another Entity
+* mentions another Concept
+* depends on another Concept for meaning
+* points to another Concept
 * but does **not** apply to, act on, or scope it
 
 `reference` carries **no implied direction or action**.
 
 Plain-English reading:
 
-> “This Concept references that Entity.”
+> “This Concept references that Concept.”
 
 ---
 
@@ -77,21 +77,21 @@ Plain-English reading:
 
 ### Definition
 
-`target` is a Trait whose value is the identifier (IRI) of another Entity.
+`target` is a Trait whose value is the identifier (IRI) or lookup token of another Concept.
 
 ### Intent
 
 Use `target` when a Concept is:
 
-* about another Entity
-* applied to another Entity
-* oriented toward another Entity as its focus
+* about another Concept
+* applied to another Concept
+* oriented toward another Concept as its focus
 
 `target` is **directional and intent-bearing**.
 
 Plain-English reading:
 
-> “This Concept targets that Entity.”
+> “This Concept targets that Concept.”
 
 ---
 
@@ -99,7 +99,7 @@ Plain-English reading:
 
 ### Definition
 
-`for` is a Trait whose value is the identifier (IRI or lookup token) of another Entity.
+`for` is a Trait whose value is the identifier (IRI) or lookup token of another Concept.
 
 ### Intent
 
@@ -127,10 +127,10 @@ to Concept types are Entity references.
 Example:
 
 ```cdx
-<ConceptDefinition id=concept:Book key=~Book name="Book" ... />
+<ConceptDefinition id=concept:Book key=~book name="Book" ... />
 
 <LabelPolicy for=concept:Book ... />
-<LabelPolicy for=~Book ... />
+<LabelPolicy for=~book ... />
 ```
 
 Both forms reference the same Entity: the ConceptDefinition for Book.
@@ -166,8 +166,7 @@ Codex surface syntax does not infer reference meaning.
 ## 8. Relationship to Identity
 
 * Reference Traits bind to **identifiers** (IRIs or lookup tokens)
-* Lookup tokens (`~token`) resolve to Entities via the `key` Trait
-* Referencing a non-Entity is a validation error
+* Lookup tokens (`~token`) resolve to Concepts via the `key` Trait
 * Reference resolution semantics are schema-defined
 
 ---
@@ -187,7 +186,7 @@ This specification does **not**:
 
 * Codex defines exactly three reference Traits
 * Each has a distinct semantic intent
-* Reference Traits bind by identifier (IRI)
+* Reference Traits bind by identifier (IRI) or lookup token
 * They are mutually exclusive by default
 * Schemas govern authorization and meaning
 

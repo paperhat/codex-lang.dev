@@ -249,8 +249,9 @@ EnumeratedToken = "$", UppercaseLetter, { Letter | Digit } ;
 ## 14. IRI References
 
 ```ebnf
-(* Codex IRI references are intentionally restricted to ASCII characters for portability.
-   This is narrower than RFC 3987 IRIs. Unicode characters MUST be percent-encoded. *)
+(* Codex IRI references allow RFC 3987 IRI-reference characters directly.
+      Unicode characters MAY appear directly; percent-encoding remains valid.
+      Codex further forbids Unicode whitespace, control, bidi-control, and private-use characters. *)
 
 IriReference = IriScheme, ":", IriBody ;
 
@@ -258,9 +259,20 @@ IriScheme = Letter, { Letter | Digit | "+" | "-" | "." } ;
 
 IriBody = { IriChar } ;
 
-IriChar = Letter | Digit | "-" | "." | "_" | "~" | ":" | "/" | "?" | "#"
-        | "[" | "]" | "@" | "!" | "$" | "&" | "'" | "(" | ")"
-        | "*" | "+" | "," | ";" | "=" | "%" ;
+IriChar = IriAsciiChar | UcsChar ;
+
+IriAsciiChar = Letter | Digit | "-" | "." | "_" | "~" | ":" | "/" | "?" | "#"
+          | "[" | "]" | "@" | "!" | "$" | "&" | "'" | "(" | ")"
+          | "*" | "+" | "," | ";" | "=" | "%" ;
+
+(* RFC 3987 character classes (descriptive):
+   UcsChar  = %xA0-D7FF / %xF900-FDCF / %xFDF0-FFEF / %x10000-1FFFD
+          / %x20000-2FFFD / %x30000-3FFFD / %x40000-4FFFD / %x50000-5FFFD
+          / %x60000-6FFFD / %x70000-7FFFD / %x80000-8FFFD / %x90000-9FFFD
+          / %xA0000-AFFFD / %xB0000-BFFFD / %xC0000-CFFFD / %xD0000-DFFFD
+          / %xE1000-EFFFD
+*)
+UcsChar = ? any Unicode scalar value in the RFC 3987 ucschar ranges ? ;
 ```
 
 ---

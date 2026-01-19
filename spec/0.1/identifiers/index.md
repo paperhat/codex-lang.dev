@@ -61,12 +61,19 @@ Codex does **not** require identifiers to be dereferenceable.
 In Codex surface form, identifier values use the **IRI reference** literal form.
 This literal form requires a scheme and a ':' separator (e.g., `recipe:spaghetti`).
 
-Codex IRI references are intentionally restricted to **ASCII characters** for portability.
-This is narrower than RFC 3987 IRIs.
+Codex IRI references allow the full RFC 3987 **IRI-reference** character set in surface form.
+Unicode characters MAY appear directly and do not require percent-encoding.
 
-Unicode characters MUST be percent-encoded.
+However, to reduce ambiguity and implementation hazards, Codex identifier surface form MUST NOT contain:
 
-This restriction is defined by the **Formal Grammar**.
+* Unicode whitespace characters
+* Unicode control characters
+* Unicode bidirectional control characters
+* Unicode private-use characters
+
+Percent-encoding remains valid and MAY be used.
+
+This surface form is defined by the **Formal Grammar**.
 
 ---
 
@@ -121,11 +128,11 @@ Presentation concerns MUST NOT be encoded into identifiers.
 
 ## 7. Relationship to References
 
-* Reference Traits (e.g. `reference`, `target`, `for`) use identifiers as their values
-* References MUST point to valid Entity identifiers
-* Referencing a non-Entity is a schema or validation error
+* Reference Traits (e.g. `reference`, `target`, `for`) use either identifiers (IRIs) or lookup tokens as their values
+* IRI identifiers identify Entities
+* Lookup tokens (`~token`) refer to Concepts by `key`, including non-Entities
 
-Identifiers are the **only** mechanism by which Concepts may refer to other Entities.
+Identifiers are the mechanism by which Concepts refer to Entities.
 
 ---
 

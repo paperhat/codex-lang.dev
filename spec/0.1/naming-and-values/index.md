@@ -690,8 +690,12 @@ IRI references:
 
 * MUST be valid IRIs
 * MUST contain a ':' separating the scheme from the remainder
-* MUST use only ASCII characters in Codex surface form
-* Unicode characters MUST be percent-encoded
+* MAY contain non-ASCII Unicode characters directly (RFC 3987 IRI-reference)
+* Percent-encoding MAY be used, but is not required at the Codex surface layer
+* MUST NOT contain Unicode whitespace characters
+* MUST NOT contain Unicode control characters
+* MUST NOT contain Unicode bidirectional control characters
+* MUST NOT contain Unicode private-use characters
 * are **not** strings (no quotes)
 * are compared as opaque strings
 * are **not** resolved or dereferenced by Codex
@@ -706,7 +710,7 @@ Examples:
 
 ### 4.15 Lookup Token Values
 
-Lookup token values are **shorthand references** to Entities.
+Lookup token values are **shorthand references** to Concepts.
 
 Surface form:
 
@@ -716,14 +720,14 @@ Surface form:
 
 Usage:
 
-* The `key` trait declares an Entity's lookup token
-* The `for` trait accepts lookup tokens to reference Entities by key
+* The `key` trait declares a Concept's lookup token
+* Reference Traits MAY accept lookup tokens to reference Concepts by key
 
 Rules:
 
 * MUST start with `~` sigil
-* Token MUST start with a lowercase letter
-* Token MUST use camelCase
+* Token MUST use camelCase (lowerCamelCase)
+* Therefore, Token MUST start with a lowercase letter
 * Token MAY contain letters (a-z, A-Z) and digits (0-9)
 * Token MUST NOT contain whitespace, punctuation, hyphens, or underscores
 
@@ -743,11 +747,11 @@ Invalid:
 
 #### 4.15.1 Resolution
 
-Lookup tokens are resolved by finding an Entity whose `key` Trait matches.
+Lookup tokens are resolved by finding a Concept whose `key` Trait matches.
 
 Resolution rules:
 
-1. Find all Entities where `key=~token`
+1. Find all Concepts where `key=~token`
 2. If exactly one match: resolved
 3. If zero matches: resolution error (unresolved lookup token)
 4. If multiple matches: resolution error (ambiguous lookup token)

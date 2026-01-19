@@ -67,17 +67,38 @@
       "expectedPrimaryErrorClass": "ParseError"
     },
     {
-      "id": "invalid/non-ascii-iri",
-      "input": "cases/invalid/non-ascii-iri.cdx",
-      "expectedCanonical": null,
-      "expectedError": "expected/errors/non-ascii-iri.json",
-      "expectedPrimaryErrorClass": "ParseError"
+      "id": "valid/non-ascii-iri",
+      "input": "cases/valid/non-ascii-iri.cdx",
+      "expectedCanonical": "expected/canonical/non-ascii-iri.cdx",
+      "expectedError": null,
+      "expectedPrimaryErrorClass": null
     },
     {
       "id": "invalid/iri-missing-colon",
       "input": "cases/invalid/iri-missing-colon.cdx",
       "expectedCanonical": null,
       "expectedError": "expected/errors/iri-missing-colon.json",
+      "expectedPrimaryErrorClass": "ParseError"
+    },
+    {
+      "id": "invalid/iri-bidi-control",
+      "input": "cases/invalid/iri-bidi-control.cdx",
+      "expectedCanonical": null,
+      "expectedError": "expected/errors/iri-bidi-control.json",
+      "expectedPrimaryErrorClass": "ParseError"
+    },
+    {
+      "id": "invalid/iri-unicode-whitespace",
+      "input": "cases/invalid/iri-unicode-whitespace.cdx",
+      "expectedCanonical": null,
+      "expectedError": "expected/errors/iri-unicode-whitespace.json",
+      "expectedPrimaryErrorClass": "ParseError"
+    },
+    {
+      "id": "invalid/iri-private-use",
+      "input": "cases/invalid/iri-private-use.cdx",
+      "expectedCanonical": null,
+      "expectedError": "expected/errors/iri-private-use.json",
       "expectedPrimaryErrorClass": "ParseError"
     },
     {

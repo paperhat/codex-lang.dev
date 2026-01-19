@@ -1,0 +1,4 @@
+{
+  "primaryClass": "ParseError",
+  "notes": "IRI references allow Unicode (RFC 3987) in Codex surface form, but MUST NOT contain bidirectional control characters (e.g., U+202E RIGHT-TO-LEFT OVERRIDE)."
+}
