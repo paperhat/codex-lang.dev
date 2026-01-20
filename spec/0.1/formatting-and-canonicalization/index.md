@@ -1,5 +1,5 @@
-Status: NORMATIVE  
-Lock State: LOCKED  
+Status: NORMATIVE
+Lock State: UNLOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
@@ -41,13 +41,20 @@ This specification governs **formatting and canonicalization only**.
 
 Codex processing follows this strict sequence:
 
-1. **Input Normalization** — encoding detection, line ending normalization, indentation normalization
-2. **Parse** — syntactic analysis of normalized input
-3. **Surface Form Validation** — structural validation per Surface Form Specification
-4. **Output Canonicalization** — deterministic canonical form generation
-5. **Schema Validation** — semantic validation per schema
+1. **Schema Resolution** — obtain the governing schema for the document
+2. **Input Normalization** — encoding detection, line ending normalization
+3. **Schema-Directed Parse** — syntactic analysis consulting the schema for
+   Concept structure (content mode)
+4. **Surface Form Validation** — structural validation per Surface Form Specification
+5. **Output Canonicalization** — deterministic canonical form generation
+6. **Semantic Validation** — constraint evaluation, cardinality checks, reference
+   resolution per schema
 
-Input normalization MUST occur before parsing. See **Surface Form Specification §§ 2-4** for normalization rules.
+Schema resolution MUST occur before parsing. A document cannot be parsed without
+its governing schema. See **Schema Loading Specification**.
+
+Input normalization MUST occur before parsing. See **Surface Form Specification
+§§ 2-4** for normalization rules.
 
 ---
 

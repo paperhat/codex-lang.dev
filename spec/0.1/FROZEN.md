@@ -1,13 +1,22 @@
-Status: NORMATIVE  
-Lock State: LOCKED    
-Applies to: /spec/0.1/  
+Status: INFORMATIVE
+Lock State: UNLOCKED
+Applies to: /spec/0.1/
 Editor: Charles F. Munat
 
-Codex Language Specification v0.1 is frozen.
+# Specification Status
 
-All documents under this directory are immutable.
+Codex Language Specification v0.1 is **under active development**.
 
-Any change, correction, clarification, or extension
-MUST be introduced as a new specification version.
+Documents under this directory are being revised toward a stable v1.0 release.
 
-Freeze date: 2026-01-15
+Changes may include:
+
+* Clarifications and corrections
+* New normative content (e.g., schema-first parsing, ContentRules)
+* Alignment of specification text with existing schema implementations
+
+The specification will be frozen when v1.0 is published.
+
+---
+
+Last updated: 2026-01-20

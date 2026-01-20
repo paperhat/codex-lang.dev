@@ -1,5 +1,5 @@
 Status: NORMATIVE
-Lock State: LOCKED
+Lock State: UNLOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
@@ -53,13 +53,22 @@ Concept = BlockConcept | SelfClosingConcept ;
 ## 3. Block Concepts
 
 ```ebnf
-(* Block concepts contain either children or content, determined by schema *)
+(* Block concepts contain either children or content.
+   The parser consults the schema to determine which.
+   This is schema-directed dispatch, not syntactic ambiguity.
+   See Formal Grammar Specification § 6 for details. *)
 
-BlockConcept = OpeningMarker, ( ChildrenBody | ContentBody ), ClosingMarker ;
+BlockConcept = OpeningMarker, Body, ClosingMarker ;
 
 OpeningMarker = "<", ConceptName, [ Traits ], [ Whitespace ], ">" ;
 
 ClosingMarker = "</", ConceptName, ">" ;
+
+(* Body production is selected by schema lookup on ConceptName:
+   - If schema indicates children mode (ForbidsContent): ChildrenBody
+   - If schema indicates content mode (AllowsContent): ContentBody *)
+
+Body = ChildrenBody | ContentBody ;
 
 ChildrenBody = { ChildEntry } ;
 
@@ -69,11 +78,12 @@ ContentBody = { ContentLine } ;
 
 ContentLine = Newline, Indentation, ContentText ;
 
-ContentText = { ContentChar } ;
+ContentText = { AnyCharExceptNewline } ;
 
-ContentChar = EscapedClosingMarker | AnyCharExceptNewline ;
-
-EscapedClosingMarker = "\\</" ;
+(* Note: No escape sequences are required in content mode.
+   The parser knows it is in content mode from the schema
+   and scans for the closing marker by Concept name match
+   at the correct indentation level. *)
 ```
 
 ---

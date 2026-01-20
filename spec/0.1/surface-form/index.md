@@ -1,5 +1,5 @@
 Status: NORMATIVE
-Lock State: LOCKED
+Lock State: UNLOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
@@ -144,30 +144,60 @@ A Concept MAY include:
 
 ---
 
-## 7. Schema-Determined Content Mode (Normative)
+## 7. Schema-Directed Content Mode (Normative)
 
 The schema determines whether a Concept contains **child Concepts** or **Content**.
 
-### 7.1 Children Mode
+The parser MUST consult the schema when encountering each Concept's opening marker
+to determine its content mode before parsing the body.
 
-When schema specifies a Concept contains children:
+See the **Language Specification § Schema-First Parsing** for the architectural
+rationale.
 
-* Only whitespace, `<` (child Concept), or `[` (Annotation) may appear inside
-* Any other content is a SchemaError (content mode is schema-determined, not parser-determined)
+### 7.1 Parser Dispatch
 
-### 7.2 Content Mode
+When the parser encounters `<ConceptName ...>`:
 
-When schema specifies a Concept contains Content:
+1. Look up `ConceptName` in the active schema
+2. If not found → ParseError ("Unknown Concept: ConceptName")
+3. If found, retrieve the content mode from `ContentRules`
+4. Parse the body according to that mode
+5. Match the closing marker `</ConceptName>`
 
-* Everything between the opening and closing markers is opaque text
-* Content is opaque to Codex
-* Content may contain anything: prose, code, markup, even literal `<` or `[` characters
-* Content is preserved exactly (after indentation normalization)
+This dispatch is deterministic. There is no ambiguity or backtracking.
 
-### 7.3 Mutual Exclusivity
+### 7.2 Children Mode
+
+When schema specifies a Concept contains children (`ForbidsContent`):
+
+* The parser scans the body for child Concept markers and Annotations
+* Only whitespace, Annotations, and child Concepts may appear in the body
+* Any other non-whitespace text is a ParseError
+
+### 7.3 Content Mode
+
+When schema specifies a Concept contains Content (`AllowsContent`):
+
+* The parser captures all text between the opening and closing markers as raw content
+* No parsing of the body occurs—angle brackets, square brackets, and all other
+  characters are literal text
+* The closing marker is identified by matching the Concept name at the correct
+  indentation level
+* Content is preserved exactly after indentation normalization
+
+### 7.4 Empty Mode
+
+When schema specifies a Concept must be empty:
+
+* The Concept MUST use self-closing form (`<Concept ... />`)
+* Block form with any body content is a ParseError
+
+### 7.5 Mutual Exclusivity
 
 A Concept MUST NOT contain both child Concepts and Content.
-This is enforced by schema, not by the parser.
+
+This constraint is enforced structurally by the schema definition and parser
+dispatch. A schema author declares one mode; the parser enforces it.
 
 ---
 
@@ -350,43 +380,89 @@ Balanced delimiters (`[]`, `{}`, `()`, `''`, `""`) MUST be respected during pars
 
 Content is opaque narrative text between opening and closing Concept markers.
 
-Example:
+Content exists for Concepts that the schema designates as content-mode via
+`AllowsContent` in `ContentRules`.
+
+### 12.1 Example
 
 ```cdx
 <Description>
-	This is text.
-	It is opaque to Codex.
+	This is content. It is not parsed by Codex.
+	Angle brackets like <this> are literal text.
+	So are [square brackets] and other characters.
 </Description>
 ```
 
-### 12.1 Rules
+### 12.2 Rules
 
 * Content is **not** a Value
 * Content is **not** parsed by Codex
 * Content MUST be indented one level relative to its Concept
-* Content MAY contain any characters
+* Content MAY contain any characters without restriction
+* Content MAY contain blank lines
+* Content MAY span multiple lines
 
-### 12.2 Content Escaping
+### 12.3 Content Termination
 
-If Content contains a literal closing marker that matches the current Concept, it MUST be escaped.
+The parser identifies the end of content by scanning for the closing marker
+that matches the opening Concept name at the expected indentation level.
 
-Escape `</` as `\</` to prevent the parser from closing the block prematurely.
+Given `<Description>` at indentation level N, the parser scans for
+`</Description>` at indentation level N. Everything between is content.
 
-Example:
+### 12.4 No Escaping Required
+
+Because the parser knows it is in content mode (from the schema), no characters
+require escaping within content. The literal text `</Description>` inside content
+is not ambiguous—the parser matches the closing marker by Concept name and
+indentation context.
+
+Example of content containing markup-like text:
 
 ```cdx
-<Description>
-	Use the description concept like this:
-	<Description>Some text here.\</Description>
-</Description>
+<Tutorial>
+	<Section title="Writing Descriptions">
+		To write a description, use the Description Concept:
+
+		<Description>Your text here.</Description>
+
+		The text inside is opaque content.
+	</Section>
+</Tutorial>
 ```
 
-Rules:
+In this example:
+* `<Section>` is a child Concept (Section is children-mode per schema)
+* The lines inside Section including `<Description>Your text here.</Description>`
+  are literal content text (if Section allows content per schema), or if Section
+  is children-mode, then the inner Description is a nested Concept
 
-* `\</` → literal `</` (not a closing marker)
-* `\\` → literal `\`
+The schema determines interpretation.
 
-This escaping is only needed when the literal `</ConceptName>` matches the current Concept's closing marker.
+### 12.5 Indentation Normalization
+
+Content lines have their leading indentation stripped according to the
+Concept's nesting level. One tab per nesting level is removed.
+
+Given:
+
+```cdx
+<Outer>
+	<Inner>
+		Line one.
+		Line two.
+	</Inner>
+</Outer>
+```
+
+If `Inner` is content-mode, the content is:
+
+```
+Line one.
+Line two.
+```
+
+The two leading tabs (one for Outer, one for Inner) are stripped.
 
 ---
 

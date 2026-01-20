@@ -1,5 +1,5 @@
 Status: NORMATIVE
-Lock State: LOCKED
+Lock State: UNLOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
@@ -76,8 +76,40 @@ This grammar does **not** define:
 
 * Schema validation rules
 * Semantic constraints
-* Content mode determination (schema responsibility)
 * Identifier resolution
+
+---
+
+## 6. Schema-Directed Parsing (Normative)
+
+The grammars in this specification are **schema-parameterized**.
+
+### 6.1 Parser Requirements
+
+A conforming parser MUST:
+
+1. Accept a schema as input alongside the document
+2. Consult the schema when parsing each Concept to determine content mode
+3. Fail with ParseError when encountering a Concept not defined in the schema
+
+### 6.2 Grammar Interpretation
+
+The `BlockConcept` production has two alternatives: `ChildrenBody` and `ContentBody`.
+
+This is **not** syntactic ambiguity. The parser selects the correct alternative
+by consulting the schema:
+
+* Schema says children mode (`ForbidsContent`) → parse `ChildrenBody`
+* Schema says content mode (`AllowsContent`) → parse `ContentBody`
+
+### 6.3 Meta-Schema Bootstrap
+
+When parsing a document whose root Concept is `Schema`, the parser MUST use
+the built-in meta-schema. This enables parsing schema documents without
+circular dependency.
+
+See the **Language Specification § Schema-First Parsing** and the
+**Schema Loading Specification** for details.
 
 ---
 

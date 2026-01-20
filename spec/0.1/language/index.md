@@ -1,6 +1,6 @@
-Status: NORMATIVE  
-Lock State: LOCKED    
-Version: 0.1  
+Status: NORMATIVE
+Lock State: UNLOCKED
+Version: 0.1
 Editor: Charles F. Munat
 
 # Codex Language Specification — Version 0.1
@@ -93,6 +93,69 @@ Codex tooling MUST be able to explain:
 * which declaration caused an outcome
 
 Non-deterministic or heuristic behavior is forbidden.
+
+---
+
+## Schema-First Parsing
+
+Codex is a **schema-first language**.
+
+This means:
+
+* a conforming parser MUST have access to the governing schema before parsing
+* the parser consults the schema to determine Concept structure during parsing
+* documents cannot be parsed without a schema
+* the meta-schema MUST be built into every conforming implementation
+
+### Rationale
+
+Codex documents are meaningless without a schema. The schema is the sole
+authority on meaning. Schema-first parsing makes this architectural reality
+explicit at the language level.
+
+Schema-first parsing:
+
+* eliminates syntactic ambiguity between children mode and content mode
+* produces precise, attributable parse errors
+* aligns with semantic web tooling expectations (OWL, SHACL)
+* enforces discipline—no schema-less Codex
+
+### Schema-Directed Content Mode
+
+Whether a Concept's body contains child Concepts or opaque Content is determined
+by the schema, not by inspecting the body text.
+
+When the parser encounters a Concept's opening marker:
+
+1. It looks up the Concept name in the active schema
+2. If not found → ParseError ("Unknown Concept")
+3. If found, the schema's `ContentRules` indicates children mode or content mode
+4. The parser processes the body accordingly
+
+There is no ambiguity, speculation, or backtracking.
+
+See the **Schema Definition Specification § 4.2** for `ContentRules` definition.
+
+### Implications
+
+* Parsing and schema availability are inseparable
+* Tools that require schema-less processing operate on raw text, not parsed Codex
+* The meta-schema enables bootstrapping: schema documents are parsed using the
+  built-in meta-schema
+
+### What Schema-First Is Not
+
+Schema-first parsing does not mean:
+
+* the parser performs full semantic validation during parsing
+* constraint evaluation happens at parse time
+* all schema errors are parse errors
+
+The parser uses the schema to determine **structure** (which Concepts exist,
+whether they take children or content). Full semantic validation (constraints,
+cardinality, reference resolution) remains a separate phase.
+
+See the **Schema Loading Specification** for how schemas are provided to parsers.
 
 ---
 
@@ -261,6 +324,7 @@ It must be read in conjunction with:
 * Identifier Specification
 * Reference Traits Specification
 * Schema Definition Specification
+* Schema Loading Specification
 * Validation Error Taxonomy
 
 In case of conflict, this document defines the **language invariants**.
@@ -279,6 +343,7 @@ Changes are governed by repository governance and editorial control.
 
 * Codex is a declarative language for meaning
 * It is closed-world, deterministic, and explainable
+* Codex is schema-first: parsing requires schema access
 * Schemas are the sole source of semantics
 * Entities represent semantic density boundaries
 * Canonical form is mandatory

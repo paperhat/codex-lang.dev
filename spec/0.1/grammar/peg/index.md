@@ -1,5 +1,5 @@
 Status: INFORMATIVE
-Lock State: LOCKED
+Lock State: UNLOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
@@ -48,8 +48,10 @@ Concept <- BlockConcept / SelfClosingConcept
 ## 3. Block Concepts
 
 ```peg
-# Block concepts contain either children or content (schema-determined)
-# Parser treats body as opaque; schema validates content mode
+# Block concepts contain either children or content.
+# The parser consults the schema to determine which.
+# This is schema-directed dispatch, not syntactic ambiguity.
+# See Formal Grammar Specification § 6 for details.
 
 BlockConcept <- OpeningMarker Body ClosingMarker
 
@@ -57,16 +59,24 @@ OpeningMarker <- '<' ConceptName Traits? Whitespace? '>'
 
 ClosingMarker <- '</' ConceptName '>'
 
-Body <- (Newline Indentation BodyLine)*
+# Body parsing is schema-directed:
+# - Children mode (ForbidsContent): parse as ChildrenBody
+# - Content mode (AllowsContent): parse as ContentBody
+# Implementation selects the appropriate production at runtime.
 
-BodyLine <- (Annotation Newline Indentation)* Concept
-          / ContentText
+ChildrenBody <- (Newline Indentation ChildEntry)*
 
-ContentText <- (!ClosingMarkerLookahead ContentChar)*
+ChildEntry <- (Annotation Newline Indentation)* Concept
 
-ContentChar <- EscapedClosingMarker / (!Newline .)
+ContentBody <- ContentLine*
 
-EscapedClosingMarker <- '\\</'
+ContentLine <- Newline Indentation ContentText
+
+ContentText <- (!Newline .)*
+
+# Content termination: the parser scans for </ConceptName> matching
+# the opening marker at the correct indentation. No escape sequences
+# are needed—content is truly opaque.
 
 ClosingMarkerLookahead <- Newline Indentation '</' ConceptName '>'
 ```
@@ -490,15 +500,34 @@ Values terminate at:
 
 Balanced delimiters (`[]`, `{}`, `()`, `''`, `""`, ``` `` ```) are respected during parsing.
 
-### 26.2 Content Mode Detection
+### 26.2 Schema-Directed Content Mode
 
-The parser cannot distinguish Children Mode from Content Mode syntactically. The schema determines which mode applies. Implementations should:
+The parser determines content mode by consulting the schema, not by inspecting
+the body content.
 
-1. Parse body as raw text
-2. Consult schema for content mode
-3. Re-parse as children if schema indicates Children Mode
+Implementation approach:
 
-### 26.3 Indentation Handling
+1. Parse opening marker, extract ConceptName
+2. Look up ConceptName in the active schema
+3. If unknown → ParseError
+4. If schema says children mode (`ForbidsContent`) → parse body as `ChildrenBody`
+5. If schema says content mode (`AllowsContent`) → parse body as `ContentBody` (raw text capture)
+6. Parse closing marker
+
+There is no speculative parsing, backtracking, or re-parsing.
+
+### 26.3 Content Capture
+
+In content mode, the parser:
+
+1. Notes the current indentation level N
+2. Scans lines, stripping N+1 leading tabs from each
+3. Accumulates text until encountering `</ConceptName>` at indentation N
+4. Returns accumulated text as content
+
+No character escaping is required or recognized in content.
+
+### 26.4 Indentation Handling
 
 Indentation is significant. Before parsing:
 
@@ -507,7 +536,7 @@ Indentation is significant. Before parsing:
 3. Count leading tabs per line
 4. Validate indentation depth matches nesting
 
-### 26.4 Canonical Form
+### 26.5 Canonical Form
 
 A conforming formatter produces canonical form:
 

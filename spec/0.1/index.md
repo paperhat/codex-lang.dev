@@ -1,6 +1,6 @@
-Status: NORMATIVE  
-Lock State: LOCKED    
-Version: 0.1  
+Status: NORMATIVE
+Lock State: UNLOCKED
+Version: 0.1
 Editor: Charles F. Munat
 
 # Codex Language Specification — Version 0.1
@@ -35,11 +35,12 @@ All language rules are defined in the documents listed below.
 Codex 0.1 defines:
 
 * the core Codex language model
+* schema-first parsing architecture
 * structural and semantic rules for Concepts, Traits, Values, and Content
 * naming and identifier constraints
 * surface form rules
 * formatting and canonicalization rules
-* schema definition and schema versioning rules
+* schema definition, loading, and versioning rules
 * reference trait semantics
 * validation error classification
 
@@ -77,6 +78,7 @@ documents. All are required for a complete and compliant implementation.
 ### Schema
 
 * [**Schema Definition Specification**](./schema-definition/)
+* [**Schema Loading Specification**](./schema-loading/)
 * [**Schema Versioning Specification**](./schema-versioning/)
 
 ### Error Classification
