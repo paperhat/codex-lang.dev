@@ -46,7 +46,8 @@ Each reference Trait:
 * has a distinct semantic intent
 * is valid only where authorized by schema
 
-Reference Traits are **mutually exclusive by default**.
+Reference Trait mutual exclusivity is defined normatively by the **Singleton
+Rule** (see § 6).
 
 ---
 
@@ -187,7 +188,7 @@ This specification does **not**:
 * Codex defines exactly three reference Traits
 * Each has a distinct semantic intent
 * Reference Traits bind by identifier (IRI) or lookup token
-* They are mutually exclusive by default
+* Mutual exclusivity is governed by the Singleton Rule (§ 6)
 * Schemas govern authorization and meaning
 
 ---

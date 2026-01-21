@@ -7,8 +7,8 @@ Editor: Charles F. Munat
 
 This document defines the **bootstrap schema-of-schemas** required by Codex.
 
-Codex is schema-first. A schema document (root Concept `Schema`) cannot depend on
-an external schema document to be parsed and validated without circularity.
+Schema documents (root Concept `Schema`) cannot depend on an external schema
+document to be **validated** without circularity.
 
 Therefore every conforming implementation MUST include a **built-in, hard-coded**
 bootstrap schema-of-schemas.

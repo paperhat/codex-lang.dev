@@ -28,12 +28,14 @@ This specification defines the **authoritative ontology for Codex schemas**.
 Its goals are to:
 
 * make schemas **first-class Codex data**
-* enable deterministic, closed-world validation
+* enable validation consistent with the Codex language invariants
 * allow schemas to validate other schemas (bootstrapping)
 * ensure interoperability across tools and implementations
 * support compilation to external validation systems (e.g., SHACL)
 
-Schemas are the **sole authority on meaning** in Codex.
+The Codex language invariants governing meaning, closed-world semantics,
+determinism, and prohibition of heuristics are defined by the Language
+Specification (`spec/0.1/language/index.md`).
 
 The schema-language itself is bootstrapped by a built-in **bootstrap schema-of-schemas**.
 See `spec/0.1/schema-loading/bootstrap-schema-of-schemas/index.md`.
@@ -43,10 +45,10 @@ See `spec/0.1/schema-loading/bootstrap-schema-of-schemas/index.md`.
 ## 2. Core Principles (Normative)
 
 * Schemas are **declarative data**, not executable programs
-* Validation is **closed-world** and deterministic
 * All authorization is **explicit**
 * All constraints are **mechanically enforceable**
-* Everything is declared; nothing is inferred or defaulted
+* Schema validation semantics MUST satisfy the Codex language invariants
+	(`spec/0.1/language/index.md`)
 
 ---
 
@@ -968,12 +970,14 @@ Validates content rules.
 ## 13. Summary
 
 * Schemas are first-class Codex data
-* Validation is closed-world and deterministic
 * Content mode is declared via `ContentRules`
 * Trait, child, and collection rules are explicit
 * Constraints are declarative and compositional
 * Enumerated value sets may be defined per-schema or built-in
 * This ontology enables self-hosting schema validation
+
+Validation semantics, including closed-world behavior and determinism, are
+governed by the Language Specification (`spec/0.1/language/index.md`).
 
 ---
 

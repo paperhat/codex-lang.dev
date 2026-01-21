@@ -38,7 +38,8 @@ Codex schema versioning is governed by the following principles:
 1. **Schemas evolve; data persists**
 2. **Compatibility is explicit, not inferred**
 3. **Breaking changes are deliberate**
-4. **Validation is deterministic and version-aware**
+4. **Validation is version-aware and conforms to the Language Specification’s
+	determinism invariant** (`spec/0.1/language/index.md`)
 
 Schemas MUST make their versioning intent explicit.
 
@@ -164,7 +165,8 @@ This specification does **not** define migration mechanisms.
 However:
 
 * breaking schema changes imply migration is required
-* migration tooling MUST be explicit and deterministic
+* migration tooling MUST be explicit and MUST NOT rely on heuristics
+	(see `spec/0.1/language/index.md`)
 * migrated data MUST validate cleanly under the target schema version
 
 Schemas define **what changed**, not **how to migrate**.
@@ -202,7 +204,8 @@ It defines **versioning semantics and obligations** only.
 * Schemas are versioned and explicit
 * Compatibility is declared, not inferred
 * Breaking changes are intentional and visible
-* Validation is version-aware and deterministic
+* Validation is version-aware and conforms to the Language Specification’s
+	determinism invariant (`spec/0.1/language/index.md`)
 * Schema evolution is controlled, not ad hoc
 
 ---

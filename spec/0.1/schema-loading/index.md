@@ -21,16 +21,20 @@ This document is **Normative**.
 
 ## 1. Purpose
 
-Codex is a schema-first language. A document cannot be parsed without its
+Codex is a schema-first language. A document cannot be **validated** without its
 governing schema.
+
+However, Codex permits schema-less formatting and well-formedness checks that do
+not require a governing schema (see the **Formatting and Canonicalization
+Specification**).
 
 This specification defines how parsers obtain the schema for a document.
 
 Its goals are to:
 
-* ensure every parse operation has a schema
+* ensure every validation operation has a schema
 * support multiple schema provision mechanisms
-* enable bootstrapping via meta-schema
+* enable schema-document bootstrapping via the built-in bootstrap schema-of-schemas
 * provide clear errors when schema is unavailable
 
 ---

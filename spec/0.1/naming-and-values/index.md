@@ -24,7 +24,8 @@ Its goals are to:
 * prevent ambiguity for humans and machines
 * support ontology authoring, configuration, and data interchange
 * provide **first-class data values**, not string encodings
-* keep Codex declarative and closed-world
+* keep naming and value rules consistent with the Codex language invariants
+	(`spec/0.1/language/index.md`)
 
 This document governs **naming and literal values only**.
 

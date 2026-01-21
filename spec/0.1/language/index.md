@@ -71,7 +71,9 @@ This means:
 
 * all meaning MUST be explicitly declared
 * nothing is inferred implicitly
-* no defaults are assumed
+* no defaults are assumed unless explicitly specified by a governing specification
+  (e.g., schema-language defaults in `spec/0.1/schema-definition/index.md`) or by
+  schema rules
 * no heuristics are permitted
 
 If something is not declared, it does not exist.
@@ -102,10 +104,16 @@ Codex is a **schema-first language**.
 
 This means:
 
-* a conforming parser MUST have access to the governing schema before parsing
-* the parser consults the schema to determine Concept structure during parsing
-* documents cannot be parsed without a schema
-* the meta-schema MUST be built into every conforming implementation
+* semantic interpretation and validation MUST have access to the governing schema
+* schema-directed structural interpretation (e.g., children vs Content) is performed
+  using schema declarations
+* a document cannot be **validated** without a schema
+* schema provisioning and schema-document bootstrapping requirements are defined
+  by the **Schema Loading Specification** (`spec/0.1/schema-loading/index.md`)
+
+Codex also permits an abbreviated, schema-less stage used for well-formedness and
+canonical formatting checks (see the **Formatting and Canonicalization
+Specification**).
 
 ### Rationale
 
@@ -118,30 +126,26 @@ Schema-first parsing:
 * eliminates syntactic ambiguity between children mode and content mode
 * produces precise, attributable parse errors
 * aligns with semantic web tooling expectations (OWL, SHACL)
-* enforces discipline—no schema-less Codex
+* ensures semantic interpretation is schema-governed
 
 ### Schema-Directed Content Mode
 
 Whether a Concept's body contains child Concepts or opaque Content is determined
 by the schema, not by inspecting the body text.
 
-When the parser encounters a Concept's opening marker:
+The normative parsing/dispatch rules are defined in:
 
-1. It looks up the Concept name in the active schema
-2. If not found → ParseError ("Unknown Concept")
-3. If found, the schema's `ContentRules` indicates children mode or content mode
-4. The parser processes the body accordingly
-
-There is no ambiguity, speculation, or backtracking.
-
-See the **Schema Definition Specification § 4.2** for `ContentRules` definition.
+* the **Surface Form Specification** (schema-directed dispatch)
+* the **Schema Definition Specification** (`ContentRules`)
 
 ### Implications
 
-* Parsing and schema availability are inseparable
-* Tools that require schema-less processing operate on raw text, not parsed Codex
-* The meta-schema enables bootstrapping: schema documents are parsed using the
-  built-in meta-schema
+* Semantic validation requires schema availability
+* Tools MAY support schema-less well-formedness and canonical formatting checks
+  that do not require a governing schema
+* Schema-document bootstrapping is defined by the **Schema Loading
+  Specification** (`spec/0.1/schema-loading/index.md`) and the **Bootstrap
+  Schema-of-Schemas Definition** (`spec/0.1/schema-loading/bootstrap-schema-of-schemas/index.md`)
 
 ### What Schema-First Is Not
 
@@ -227,9 +231,11 @@ model.
 
 ## Entities and Semantic Density
 
-A **Concept instance is an Entity if and only if it declares an `id` Trait and the active schema permits or requires Entity identity via `entityEligibility`.**
+The formal definition of **Entity** is in the Naming and Value Specification
+(`spec/0.1/naming-and-values/index.md`, **§ 2.5 Entity**).
 
-The schema controls Entity eligibility; the `id` Trait is the mechanism. See the **Schema Definition Specification § 4.1** for `entityEligibility` rules.
+Entity eligibility is schema-governed; see the Schema Definition Specification
+(**§ 4.1** `entityEligibility`).
 
 This section describes the role of Entities in the language model.
 
@@ -261,24 +267,15 @@ Schemas are responsible for deciding which Concepts carry identity.
 
 ## Canonical Form
 
-Every valid Codex document MUST admit **exactly one canonical textual form**.
-
-Canonicalization:
-
-* is mechanical
-* is deterministic
-* preserves all declared meaning
-* preserves annotations and attachment targets
-* MUST fail if a unique canonical form cannot be produced
+The normative canonical form requirement and canonicalization rules are defined
+by the **Formatting and Canonicalization Specification**
+(`spec/0.1/formatting-and-canonicalization/index.md`).
 
 Canonical form exists to support:
 
 * stable diffs
 * reliable round-tripping
 * tool interoperability
-
-Canonicalization rules are defined in the **Formatting and Canonicalization
-Specification**.
 
 ---
 

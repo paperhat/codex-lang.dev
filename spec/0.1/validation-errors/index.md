@@ -23,7 +23,8 @@ Its goals are to:
 
 * make failures precise and predictable
 * ensure consistent classification across tools
-* avoid vague or heuristic reporting
+* avoid vague reporting and classification approaches that violate the Codex
+	language invariants (see `spec/0.1/language/index.md`)
 * separate parsing, surface form, formatting/canonicalization, and schema failures cleanly
 
 This specification governs **error classification only**, not wording, UI presentation,
@@ -67,8 +68,7 @@ A ParseError occurs when a `.cdx` file cannot be parsed into a syntactic structu
 
 * input is not structurally readable
 * parsing cannot continue
-* parsing is performed under the governing schema (Codex is schema-first)
-* schema is consulted for structural dispatch (e.g., children-mode vs content-mode)
+* parsing MAY be performed without a governing schema for well-formedness checks
 
 ### Examples (Illustrative)
 
@@ -77,7 +77,6 @@ A ParseError occurs when a `.cdx` file cannot be parsed into a syntactic structu
 * malformed Traits
 * unterminated Annotation (missing closing `]`)
 * structurally invalid nesting of markers
-* unknown Concept name under the governing schema
 
 ParseError is **fatal**.
 
@@ -311,7 +310,7 @@ It defines **what kind of error occurred**, not how it is presented.
 * every failure has exactly one primary error class
 * error classes are finite and closed
 * parsing, surface form, formatting/canonicalization, and schema are separated
-* errors are deterministic and fatal
+* failures are fatal within their primary error class
 
 ---
 

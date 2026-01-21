@@ -29,10 +29,10 @@ It defines syntax only. Semantics are schema responsibilities.
 The Codex surface form exists to:
 
 * read as structured, precise English
-* be deterministic to parse
 * be mechanically canonicalizable
 * support lossless round-tripping
-* avoid heuristic or best-effort interpretation
+* be unambiguous and mechanically parseable under the Codex language invariants
+	(`spec/0.1/language/index.md`)
 
 This specification defines **what is parseable Codex**.
 
@@ -159,20 +159,24 @@ A Concept MAY include:
 
 The schema determines whether a Concept contains **child Concepts** or **Content**.
 
-The parser MUST consult the schema when encountering each Concept's opening marker
-to determine its content mode before parsing the body.
+A tool performing **semantic validation** MUST consult the governing schema to
+interpret a Concept’s body according to its declared content mode.
+
+However, tools MAY perform **schema-less well-formed parsing** to check structural
+readability and enable formatting/canonicalization without a governing schema.
+In that mode, content-mode interpretation is deferred until semantic validation.
 
 See the **Language Specification § Schema-First Parsing** for the architectural
 rationale.
 
 ### 7.1 Parser Dispatch
 
-When the parser encounters `<ConceptName ...>`:
+When performing semantic validation and the parser encounters `<ConceptName ...>`:
 
 1. Look up `ConceptName` in the active schema
-2. If not found → ParseError ("Unknown Concept: ConceptName")
+2. If not found → the document is invalid under the schema
 3. If found, retrieve the content mode from `ContentRules`
-4. Parse the body according to that mode
+4. Interpret the body according to that mode
 5. Match the closing marker `</ConceptName>`
 
 This dispatch is deterministic. There is no ambiguity or backtracking.
@@ -841,34 +845,14 @@ SelfClosingConcept ::= '<' ConceptName Traits? Whitespace? '/>'
 
 ---
 
-## 18. Canonical Surface Requirements (Normative)
+## 18. Canonicalization (Normative)
 
-A valid Codex document MUST be transformable into **exactly one canonical surface form**.
+Canonical form requirements and canonicalization rules are defined by the
+**Formatting and Canonicalization Specification**
+(`spec/0.1/formatting-and-canonicalization/index.md`).
 
-### 18.1 Canonical Requirements
-
-* UTF-8 encoding (unless UTF-16 required)
-* LF line endings
-* Tab indentation, one per level
-* Exactly one blank line between sibling Concepts
-* No trailing whitespace on lines
-* No trailing blank lines at end of file
-* Traits: 1-2 on single line, 3+ on separate lines
-* Annotations: whitespace collapsed
-* Strings: minimal escaping
-
-### 18.2 Formatter Requirement
-
-A conforming Codex formatter MUST:
-
-* Normalize encoding
-* Normalize line endings
-* Normalize indentation
-* Normalize blank lines
-* Normalize Trait layout
-* Normalize Annotation whitespace
-
-The formatter runs before the parser. Invalid formatting is an error.
+This specification defines the surface structure, token spellings, and encoding
+rules that canonicalization operates over.
 
 ---
 
@@ -880,7 +864,8 @@ Codex tools MUST NOT:
 * Silently rewrite Content
 * Silently correct surface errors
 * Accept multiple canonical forms
-* Use heuristics to disambiguate
+* Violate the Codex language invariants (e.g., use heuristics to disambiguate;
+	see `spec/0.1/language/index.md`)
 
 ---
 

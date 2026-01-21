@@ -11,7 +11,8 @@ for Codex documents.
 It governs:
 
 * the distinction between parsing, surface form, formatting, and validation
-* deterministic canonical surface form
+* canonical surface form requirements (see `spec/0.1/language/index.md` for the
+   determinism and no-heuristics invariants)
 * classification of formatting and canonicalization failures
 
 This specification is **core language**.
@@ -29,7 +30,8 @@ This specification defines how Codex documents are:
 Its goals are to:
 
 * ensure exactly one canonical surface form
-* eliminate heuristic or best-effort formatting
+* ensure formatting/canonicalization conforms to the language invariants
+   (`spec/0.1/language/index.md`), including the prohibition of heuristics
 * enable mechanical, explainable normalization
 * support lossless round-tripping
 
@@ -39,47 +41,52 @@ This specification governs **formatting and canonicalization only**.
 
 ## 2. Processing Phases (Normative)
 
-Codex processing follows this strict sequence:
+Codex supports two related pipelines:
 
-1. **Schema Resolution** — obtain the governing schema for the document
-2. **Decode + Newline Normalization** — determine encoding and normalize CRLF to LF
-3. **Formatting + Canonicalization (Mandatory)** — schema-directed structural read
-   that produces:
-   * a canonical surface form (text)
-   * a parsed document model (AST) suitable for validation
-4. **Semantic Validation** — schema rule evaluation (constraints, cardinality,
-   identity, references)
+1. **Schema-less formatting / well-formedness check** (no schema required)
+2. **Semantic validation** (schema required)
 
-Schema resolution MUST occur before any schema-directed structural read.
-See **Schema Loading Specification**.
-
-Formatting is not optional. A conforming Codex tool MUST run formatting and
-canonicalization before semantic validation.
-
-Formatting + canonicalization MUST be performed in a way that does not require
-re-parsing. The parsed output produced during formatting is the parsed document
-used for subsequent semantic validation.
+Formatting and canonicalization are not optional in the full pipeline.
+However, schema availability is required only for semantic validation.
 
 ---
 
-## 2.1 Schema-Less Formatting Mode (Optional) (Normative)
+## 2.1 Schema-Less Formatting Mode (Required) (Normative)
 
-Codex is schema-first: full parsing requires a governing schema.
+An implementation MUST provide a **schema-less formatting / canonicalization**
+mode that can be run without a governing schema.
 
-However, an implementation MAY provide a **schema-less formatter** mode intended
-only for document cleanup (lexical normalization).
+This mode exists to support well-formedness and formatting checks (gofmt-like),
+independent of semantic validation.
 
 If provided, a schema-less formatter:
 
 * MUST NOT claim that its output is valid under any schema
 * MUST NOT report schema/semantic error classes (e.g., `SchemaError`,
    `IdentityError`, `ReferenceError`, `ConstraintError`)
-* MAY normalize encoding and line endings
+* MUST normalize encoding and line endings as defined by the **Surface Form
+   Specification** (`spec/0.1/surface-form/index.md`)
+* MUST apply the canonical form requirement defined in § 4
 * MAY normalize whitespace, blank-line layout, Trait layout, and annotation
    whitespace
 
 Schema-less formatting is not validation. It exists to produce a consistent
 surface form without consulting schema meaning.
+
+## 2.2 Full Validation Pipeline (Normative)
+
+To validate a document under a schema, a conforming tool MUST follow this
+sequence:
+
+1. **Decode + Newline Normalization**
+2. **Formatting + Canonicalization (Mandatory)** — using the schema-less mode
+   defined in § 2.1
+3. **Schema Resolution** — obtain the governing schema for the document
+4. **Semantic Validation** — schema rule evaluation (constraints, cardinality,
+   identity, references)
+
+Schema resolution is required before semantic validation.
+See the **Schema Loading Specification**.
 
 ---
 
@@ -128,8 +135,13 @@ If canonicalization cannot be performed unambiguously, the document is invalid.
 
 Canonicalization includes, at minimum:
 
+* canonical encoding and newline normalization (see `spec/0.1/surface-form/index.md`)
 * deterministic indentation
+* no trailing whitespace on lines
+* no trailing blank lines at end of file
+* exactly one blank line between sibling Concepts
 * canonical spacing of Traits
+* canonical Trait layout (1–2 Traits on one line; 3+ Traits on separate lines)
 * canonical placement of self-closing markers
 * canonical inline-annotation whitespace collapse
 * canonical string escaping

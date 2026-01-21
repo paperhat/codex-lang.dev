@@ -102,14 +102,20 @@ by consulting the schema:
 * Schema says children mode (`ForbidsContent`) → parse `ChildrenBody`
 * Schema says content mode (`AllowsContent`) → parse `ContentBody`
 
-### 6.3 Meta-Schema Bootstrap
+### 6.3 Bootstrap Schema-of-Schemas
 
 When parsing a document whose root Concept is `Schema`, the parser MUST use
-the built-in meta-schema. This enables parsing schema documents without
-circular dependency.
+the schema-selection rules defined by the **Schema Loading Specification**.
+In particular, absent an explicitly provided schema, the parser uses the
+built-in **bootstrap schema-of-schemas**, enabling schema documents to be parsed
+without circular dependency.
 
 See the **Language Specification § Schema-First Parsing** and the
-**Schema Loading Specification** for details.
+**Schema Loading Specification** (`spec/0.1/schema-loading/index.md`) for details.
+
+The normative definition of the bootstrap schema-of-schemas itself is:
+
+* `spec/0.1/schema-loading/bootstrap-schema-of-schemas/index.md`
 
 ---
 
