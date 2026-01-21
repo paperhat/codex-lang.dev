@@ -87,28 +87,25 @@ surface form without consulting schema meaning.
 
 ### 3.1 Parse Errors
 
-Parse Errors occur when input cannot be read into a syntactic structure under
-the governing schema.
+This specification uses the `ParseError` class as defined by the **Validation
+Error Taxonomy** (`spec/0.1/validation-errors/index.md`).
 
-Examples:
-
-* unbalanced Concept markers
-* invalid string literal escaping
-* malformed Traits
-* unterminated Annotations
-
-Parse Errors are **fatal** and halt processing immediately.
+During formatting + canonicalization, a failure MUST be classified as
+`ParseError` when input cannot be read into the syntactic structure required to
+produce a parsed document model (AST) under the governing schema.
 
 ---
 
 ### 3.2 Formatting Errors
 
-Formatting Errors occur when:
+This specification uses the `FormattingError` class as defined by the
+**Validation Error Taxonomy** (`spec/0.1/validation-errors/index.md`).
 
-* input can be structurally read
-* but cannot be transformed into canonical surface form deterministically
+During formatting + canonicalization, a failure MUST be classified as
+`FormattingError` when input can be structurally read, but cannot be transformed
+into canonical surface form deterministically.
 
-Formatting Errors are **distinct** from schema or semantic errors.
+`FormattingError` is distinct from schema or semantic error classes.
 
 ---
 
@@ -197,7 +194,8 @@ A **canonicalization failure** occurs when:
 * whitespace cannot be normalized without changing meaning
 * structural inconsistencies prevent a unique surface form
 
-Canonicalization failures are **fatal formatting errors**.
+Canonicalization failures MUST be classified as `FormattingError` as defined by
+the **Validation Error Taxonomy** (`spec/0.1/validation-errors/index.md`).
 
 ---
 
@@ -265,7 +263,7 @@ This specification does **not**:
 
 * Canonical surface form is mandatory
 * Canonicalization is mechanical and deterministic
-* Formatting errors are fatal
+* Formatting failures are classified as `FormattingError` (see `spec/0.1/validation-errors/index.md`)
 * No heuristic or best-effort formatting is permitted
 * Formatting is separate from schema validation
 

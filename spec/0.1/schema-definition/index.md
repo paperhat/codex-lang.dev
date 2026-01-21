@@ -88,7 +88,7 @@ A `ConceptDefinition` is itself an Entity.
 
 * `id` (required; IRI reference)
 * `key` (optional; lookup token)
-* `name` (required; PascalCase string)
+* `name` (required; Concept name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `conceptKind` (required; `$Semantic | $Structural | $ValueLike`)
 * `entityEligibility` (required; `$MustBeEntity | $MayBeEntity | $MustNotBeEntity`)
 
@@ -157,19 +157,19 @@ Zero or more of:
 
 ##### Traits
 
-* `name` (required; camelCase string)
+* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 
 #### `AllowsTrait`
 
 ##### Traits
 
-* `name` (required; camelCase string)
+* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 
 #### `ForbidsTrait`
 
 ##### Traits
 
-* `name` (required; camelCase string)
+* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 
 #### Defaults
 
@@ -292,7 +292,7 @@ Trait that may be used across multiple Concepts.
 #### Traits (Normative)
 
 * `id` (optional; IRI reference)
-* `name` (required; camelCase string)
+* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `defaultValueType` (required; value type token)
 * `cardinality` (required; `$Single | $List`)
 * `itemValueType` (required if `cardinality=$List`; value type token)
@@ -384,10 +384,15 @@ Schemas MAY reference the following built-in value types:
 
 Defines a named value type with custom validation.
 
+#### Container
+
+`ValueTypeDefinitions` is a container Concept holding one or more
+`ValueTypeDefinition` children.
+
 #### Traits
 
 * `id` (optional; IRI reference)
-* `name` (required; PascalCase string)
+* `name` (required; Concept name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `baseValueType` (required; built-in value type token)
 * `validatorName` (optional; enumerated token identifying a validator)
 
@@ -408,7 +413,7 @@ Defines a named set of valid enumerated tokens.
 
 ##### Traits
 
-* `name` (required; PascalCase string)
+* `name` (required; Concept name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 
 ##### Children
 
@@ -605,7 +610,7 @@ If a condition holds, a consequent must hold.
 Constraints MAY reference data using paths:
 
 * `TraitPath` — references a Trait value
-  * `traitName` (required; camelCase string)
+	* `traitName` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `ChildPath` — references direct children
   * `conceptSelector` (required; Concept name)
 * `DescendantPath` — references descendants at any depth
@@ -640,7 +645,7 @@ Trait is present on the Concept.
 
 ##### Traits
 
-* `trait` (required; camelCase string)
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 
 #### `TraitMissing`
 
@@ -648,7 +653,7 @@ Trait is absent from the Concept.
 
 ##### Traits
 
-* `trait` (required; camelCase string)
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 
 #### `TraitEquals`
 
@@ -656,7 +661,7 @@ Trait has a specific value.
 
 ##### Traits
 
-* `trait` (required; camelCase string)
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `value` (required; the expected value)
 
 #### `TraitCardinality`
@@ -665,7 +670,7 @@ Trait value count is within bounds.
 
 ##### Traits
 
-* `trait` (required; camelCase string)
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `min` (optional; non-negative integer)
 * `max` (optional; positive integer)
 
@@ -675,7 +680,7 @@ Trait value matches expected type.
 
 ##### Traits
 
-* `trait` (required; camelCase string)
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `valueType` (required; value type token)
 
 ---
@@ -704,7 +709,7 @@ Trait value matches a regular expression.
 
 ##### Traits
 
-* `trait` (required; camelCase string)
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `pattern` (required; regex string)
 
 #### `ValueLength`
@@ -819,7 +824,7 @@ Trait values must be unique within a scope.
 
 ##### Traits
 
-* `trait` (required; camelCase string)
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `scope` (required; Concept name defining the uniqueness scope)
 
 ---

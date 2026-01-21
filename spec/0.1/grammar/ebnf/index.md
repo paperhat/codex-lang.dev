@@ -103,7 +103,7 @@ SelfClosingConcept = "<", ConceptName, [ Traits ], [ Whitespace ], "/>" ;
 ## 5. Concept Names
 
 ```ebnf
-(* Concept names are PascalCase *)
+(* Concept name casing is defined in spec/0.1/naming-and-values/index.md *)
 
 ConceptName = UppercaseLetter, { Letter | Digit } ;
 
@@ -126,6 +126,7 @@ Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 
 ```ebnf
 (* Traits are name=value pairs, separated by whitespace *)
+(* Trait name casing is defined in spec/0.1/naming-and-values/index.md *)
 
 Traits = Whitespace, Trait, { Whitespace, Trait } ;
 

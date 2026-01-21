@@ -97,7 +97,7 @@ SelfClosingConcept <- '<' ConceptName Traits? Whitespace? '/>'
 ## 5. Concept Names
 
 ```peg
-# Concept names are PascalCase
+# Concept name casing is defined in spec/0.1/naming-and-values/index.md
 
 ConceptName <- UppercaseLetter (Letter / Digit)*
 
@@ -113,6 +113,7 @@ Digit <- [0-9]
 
 ```peg
 # Traits are name=value pairs, separated by whitespace
+# Trait name casing is defined in spec/0.1/naming-and-values/index.md
 
 Traits <- (Whitespace Trait)+
 

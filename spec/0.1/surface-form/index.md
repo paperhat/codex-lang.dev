@@ -473,7 +473,8 @@ nor a general annotation is invalid.
 
 Rules:
 
-* `ConceptName` MUST be PascalCase
+* `ConceptName` MUST follow the **Naming and Value Specification**
+	(`spec/0.1/naming-and-values/index.md`)
 * Traits MAY appear inline
 * Trait order is preserved
 
@@ -528,7 +529,8 @@ Rules:
 * No whitespace is permitted around `=`
 * Traits are separated by whitespace (space or newline)
 * Trait order is preserved
-* Trait names MUST be camelCase
+* Trait names MUST follow the **Naming and Value Specification**
+	(`spec/0.1/naming-and-values/index.md`)
 
 ### 10.1 Trait Formatting (Canonical)
 

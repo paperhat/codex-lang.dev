@@ -39,6 +39,27 @@ Therefore:
 - Avoid “speculative edits”: if a change is not directly supported by the spec text or a concrete schema artifact, write a short decision record in Markdown instead of silently changing behavior.
 - If a file contains conflict markers (e.g., `<<<<<<<`), resolve them before claiming readiness.
 
+## Single Source of Truth (Required)
+
+To prevent permanent drift across sessions (human or automated), this repo
+requires a **single source of truth** for every normative definition.
+
+- A Concept, Trait, token set, rule, default, error classification, or other
+  normative construct MUST be **defined in exactly one place**.
+- Any other document that needs to mention that construct MUST:
+  - link to the single defining location, and
+  - avoid restating the definition (no “duplicate definitions”, even if the
+    wording is intended to be identical).
+
+If a document needs to summarize behavior for readability, it MUST do so using
+non-normative prose and a direct pointer to the defining clause.
+
+When we find duplicated definitions, the fix is always:
+
+1. Pick the canonical defining location.
+2. Delete the duplicate text.
+3. Replace it with a reference.
+
 ## Conformance Fixture Layout
 
 - Case directory name is the document “name”.
