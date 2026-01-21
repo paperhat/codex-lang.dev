@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -52,24 +53,28 @@ def _assert_trailing_newline(text: str, path: Path) -> None:
         _fail(f"missing trailing newline in {path}")
 
 
-def _load_manifest(path: Path) -> list[Case]:
-    data = json.loads(_read_text(path))
-    if not isinstance(data, dict):
-        _fail("manifest must be a JSON object")
+_ATTR_RE = re.compile(r'(\w+)=(\$[A-Za-z]+|"(?:\\.|[^"])*")')
 
-    cases_raw = data.get("cases")
-    if not isinstance(cases_raw, list):
-        _fail("manifest.cases must be an array")
 
-    manifest_dir = path.parent
+def _parse_cdx_attrs(tag_text: str) -> dict[str, str]:
+    attrs: dict[str, str] = {}
+    for m in _ATTR_RE.finditer(tag_text):
+        key = m.group(1)
+        raw = m.group(2)
+        if raw.startswith('$'):
+            value = raw[1:]
+        else:
+            # JSON string unescape is close enough for our controlled fixtures.
+            value = json.loads(raw)
+        attrs[key] = value
+    return attrs
 
+
+def _cases_from_manifest_entries(entries: Iterable[dict[str, Any]], manifest_dir: Path) -> list[Case]:
     cases: list[Case] = []
     seen_ids: set[str] = set()
 
-    for entry in cases_raw:
-        if not isinstance(entry, dict):
-            _fail("each manifest case must be an object")
-
+    for entry in entries:
         case_id = entry.get("id")
         if not isinstance(case_id, str) or not case_id.strip():
             _fail("each case must have a non-empty string id")
@@ -132,19 +137,102 @@ def _load_manifest(path: Path) -> list[Case]:
     return cases
 
 
-def _validate_error_payload(path: Path, expected_class: str) -> None:
-    payload = json.loads(_read_text(path))
-    if not isinstance(payload, dict):
-        _fail(f"error payload must be an object: {path}")
+def _load_manifest_json(path: Path) -> list[Case]:
+    data = json.loads(_read_text(path))
+    if not isinstance(data, dict):
+        _fail("manifest must be a JSON object")
 
-    primary = payload.get("primaryClass")
+    cases_raw = data.get("cases")
+    if not isinstance(cases_raw, list):
+        _fail("manifest.cases must be an array")
+
+    manifest_dir = path.parent
+    return _cases_from_manifest_entries(cases_raw, manifest_dir)
+
+
+def _load_manifest_cdx(path: Path) -> list[Case]:
+    text = _read_text(path)
+    _assert_lf_newlines(text, path)
+    _assert_trailing_newline(text, path)
+
+    # This is a fixture pack manifest, not a general Codex parser. We only accept
+    # a constrained surface form: a <ConformanceManifest> with <Case ... /> children.
+    case_entries: list[dict[str, Any]] = []
+    lines = text.splitlines()
+    line_index = 0
+    while line_index < len(lines):
+        line = lines[line_index].strip()
+        if not line.startswith("<Case"):
+            line_index += 1
+            continue
+
+        tag_text = line
+        while not tag_text.rstrip().endswith("/>"):
+            line_index += 1
+            if line_index >= len(lines):
+                _fail(f"unterminated <Case ... /> entry in manifest: {path}")
+            tag_text = f"{tag_text} {lines[line_index].strip()}"
+
+        attrs = _parse_cdx_attrs(tag_text)
+
+        entry: dict[str, Any] = {
+            "id": attrs.get("id"),
+            "input": attrs.get("input"),
+            "expectedCanonical": attrs.get("expectedCanonical"),
+            "expectedError": attrs.get("expectedError"),
+            "expectedPrimaryErrorClass": attrs.get("expectedPrimaryErrorClass"),
+        }
+
+        # normalize missing optional traits
+        if entry["expectedCanonical"] is None:
+            entry["expectedCanonical"] = None
+        if entry["expectedError"] is None:
+            entry["expectedError"] = None
+
+        case_entries.append(entry)
+
+        line_index += 1
+
+    if not case_entries:
+        _fail(f"no <Case ... /> entries found in manifest: {path}")
+
+    manifest_dir = path.parent.parent  # conformance/0.1
+    return _cases_from_manifest_entries(case_entries, manifest_dir)
+
+
+def _load_manifest(path: Path) -> list[Case]:
+    if path.suffix.lower() == ".json":
+        return _load_manifest_json(path)
+    if path.suffix.lower() == ".cdx":
+        return _load_manifest_cdx(path)
+    _fail("manifest must be .json or .cdx")
+
+
+def _validate_error_payload(path: Path, expected_class: str) -> None:
+    if path.suffix.lower() == ".json":
+        payload = json.loads(_read_text(path))
+        if not isinstance(payload, dict):
+            _fail(f"error payload must be an object: {path}")
+        primary = payload.get("primaryClass")
+        if primary != expected_class:
+            _fail(f"error payload {path} primaryClass={primary!r} does not match expected {expected_class!r}")
+        return
+
+    if path.suffix.lower() != ".cdx":
+        _fail(f"error payload must be .json or .cdx: {path}")
+
+    text = _read_text(path).strip()
+    if not text.startswith("<ErrorExpectation"):
+        _fail(f"error payload must start with <ErrorExpectation ... />: {path}")
+    attrs = _parse_cdx_attrs(text)
+    primary = attrs.get("primaryClass")
     if primary != expected_class:
         _fail(f"error payload {path} primaryClass={primary!r} does not match expected {expected_class!r}")
 
 
 def main(argv: list[str]) -> int:
     if len(argv) != 2:
-        print("usage: conformance_smokecheck.py <path/to/manifest.json>", file=sys.stderr)
+        print("usage: conformance_smokecheck.py <path/to/manifest.(json|cdx)>", file=sys.stderr)
         return 2
 
     manifest_path = Path(argv[1]).resolve()

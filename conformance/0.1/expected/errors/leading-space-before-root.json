@@ -1,4 +1,0 @@
-{
-  "primaryClass": "ParseError",
-  "notes": "Leading whitespace before the root concept is not part of any production at document start (only BlankLine* and Annotation* are permitted), so parsing fails."
-}

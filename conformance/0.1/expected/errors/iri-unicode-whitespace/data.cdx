@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$ParseError notes="IRI references allow Unicode (RFC 3987) in Codex surface form, but MUST NOT contain Unicode whitespace characters (e.g., U+00A0 NO-BREAK SPACE)." />

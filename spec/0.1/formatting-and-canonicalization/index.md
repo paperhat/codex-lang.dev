@@ -42,19 +42,44 @@ This specification governs **formatting and canonicalization only**.
 Codex processing follows this strict sequence:
 
 1. **Schema Resolution** — obtain the governing schema for the document
-2. **Input Normalization** — encoding detection, line ending normalization
-3. **Schema-Directed Parse** — syntactic analysis consulting the schema for
-   Concept structure (content mode)
-4. **Surface Form Validation** — structural validation per Surface Form Specification
-5. **Output Canonicalization** — deterministic canonical form generation
-6. **Semantic Validation** — constraint evaluation, cardinality checks, reference
-   resolution per schema
+2. **Decode + Newline Normalization** — determine encoding and normalize CRLF to LF
+3. **Formatting + Canonicalization (Mandatory)** — schema-directed structural read
+   that produces:
+   * a canonical surface form (text)
+   * a parsed document model (AST) suitable for validation
+4. **Semantic Validation** — schema rule evaluation (constraints, cardinality,
+   identity, references)
 
-Schema resolution MUST occur before parsing. A document cannot be parsed without
-its governing schema. See **Schema Loading Specification**.
+Schema resolution MUST occur before any schema-directed structural read.
+See **Schema Loading Specification**.
 
-Input normalization MUST occur before parsing. See **Surface Form Specification
-§§ 2-4** for normalization rules.
+Formatting is not optional. A conforming Codex tool MUST run formatting and
+canonicalization before semantic validation.
+
+Formatting + canonicalization MUST be performed in a way that does not require
+re-parsing. The parsed output produced during formatting is the parsed document
+used for subsequent semantic validation.
+
+---
+
+## 2.1 Schema-Less Formatting Mode (Optional) (Normative)
+
+Codex is schema-first: full parsing requires a governing schema.
+
+However, an implementation MAY provide a **schema-less formatter** mode intended
+only for document cleanup (lexical normalization).
+
+If provided, a schema-less formatter:
+
+* MUST NOT claim that its output is valid under any schema
+* MUST NOT report schema/semantic error classes (e.g., `SchemaError`,
+   `IdentityError`, `ReferenceError`, `ConstraintError`)
+* MAY normalize encoding and line endings
+* MAY normalize whitespace, blank-line layout, Trait layout, and annotation
+   whitespace
+
+Schema-less formatting is not validation. It exists to produce a consistent
+surface form without consulting schema meaning.
 
 ---
 
@@ -62,7 +87,8 @@ Input normalization MUST occur before parsing. See **Surface Form Specification
 
 ### 3.1 Parse Errors
 
-Parse Errors occur when input cannot be read into a syntactic structure.
+Parse Errors occur when input cannot be read into a syntactic structure under
+the governing schema.
 
 Examples:
 
@@ -79,8 +105,8 @@ Parse Errors are **fatal** and halt processing immediately.
 
 Formatting Errors occur when:
 
-* input parses successfully
-* but cannot be transformed into canonical surface form
+* input can be structurally read
+* but cannot be transformed into canonical surface form deterministically
 
 Formatting Errors are **distinct** from schema or semantic errors.
 
@@ -108,7 +134,7 @@ Canonicalization includes, at minimum:
 * deterministic indentation
 * canonical spacing of Traits
 * canonical placement of self-closing markers
-* canonical Annotation whitespace collapse
+* canonical inline-annotation whitespace collapse
 * canonical string escaping
 * preservation of Concept, Trait, and Content order
 
@@ -123,14 +149,42 @@ Canonicalization MUST NOT:
 
 ## 6. Annotation Canonicalization (Normative)
 
-Annotations MUST:
+Annotation canonicalization MUST follow the **Surface Form Specification**.
 
-* preserve attachment to the annotated Concept
-* preserve escaped characters
-* collapse internal whitespace to single spaces
-* trim leading and trailing whitespace
+In particular:
+
+* Inline annotations collapse internal whitespace to single spaces and trim
+   leading/trailing whitespace (as described in the Surface Form Specification)
+* Block annotations preserve internal line structure
+* Block annotations with `CODE:` or `MD:` directives are byte-preserving: tools
+   MUST NOT reindent, trim, strip trailing whitespace, wrap, or interpret escapes
+   within those blocks
 
 If attachment cannot be determined deterministically, canonicalization MUST fail.
+
+---
+
+## 6.1 Allowed vs Forbidden Changes (Normative)
+
+The formatter/canonicalizer exists to produce a single canonical surface form
+without changing meaning.
+
+Allowed changes (examples):
+
+* Normalize newlines to LF and ensure a trailing newline
+* Normalize structural indentation (tabs) for Concept markers and children bodies
+* Canonicalize trait layout/spacing without reordering traits
+* Canonicalize inline annotation whitespace (trim + internal collapse)
+* Canonicalize grouping-annotation labels by whitespace normalization
+* Normalize UUID spelling (e.g., hex lowercase) where explicitly specified
+
+Forbidden changes (examples):
+
+* Reorder Concepts or Traits
+* Change Content bytes
+* Change any bytes inside `CODE:` or `MD:` block annotations
+* Guess annotation attachment or reinterpret annotation kinds
+* Invent, remove, or rename Concepts/Traits/Values
 
 ---
 

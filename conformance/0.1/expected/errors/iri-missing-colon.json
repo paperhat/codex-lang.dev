@@ -1,4 +1,0 @@
-{
-  "primaryClass": "ParseError",
-  "notes": "IriReference requires scheme ':' body; without ':', no value literal form matches here, so parsing fails."
-}

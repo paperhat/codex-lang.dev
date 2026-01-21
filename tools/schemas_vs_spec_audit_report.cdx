@@ -1,0 +1,96 @@
+<SchemasVsSpecAuditReport version="0.1" kind="heuristic" schemaFileCount=15 schemasRoot="schemas" specRoot="spec/0.1">
+	<Notes>
+		<Note text="This is a heuristic: it only checks whether a token word appears anywhere in spec Markdown." />
+		<Note text="Items listed as missing are candidates for deeper review, not automatically spec bugs." />
+	</Notes>
+
+	<MissingSigils>
+		<Sigil value="AnyNumber" />
+		<Sigil value="Binary" />
+		<Sigil value="Blake2b" />
+		<Sigil value="Blake2s" />
+		<Sigil value="Blake3" />
+		<Sigil value="CaseInsensitive" />
+		<Sigil value="CaseSensitive" />
+		<Sigil value="ColorBurn" />
+		<Sigil value="ColorDodge" />
+		<Sigil value="Conjunction" />
+		<Sigil value="CoreSafeTransforms" />
+		<Sigil value="Darken" />
+		<Sigil value="DataShapes" />
+		<Sigil value="Days" />
+		<Sigil value="Difference" />
+		<Sigil value="Disjunction" />
+		<Sigil value="Exclusion" />
+		<Sigil value="FNV1a" />
+		<Sigil value="FNV1a64" />
+		<Sigil value="HSV" />
+		<Sigil value="HardLight" />
+		<Sigil value="Hours" />
+		<Sigil value="Large" />
+		<Sigil value="Lighten" />
+		<Sigil value="LinearRGB" />
+		<Sigil value="LocaleAware" />
+		<Sigil value="Long" />
+		<Sigil value="Math" />
+		<Sigil value="Microseconds" />
+		<Sigil value="Minutes" />
+		<Sigil value="Months" />
+		<Sigil value="Multiply" />
+		<Sigil value="Murmur3" />
+		<Sigil value="NFC" />
+		<Sigil value="NFD" />
+		<Sigil value="NFKC" />
+		<Sigil value="NFKD" />
+		<Sigil value="Nanoseconds" />
+		<Sigil value="Narrow" />
+		<Sigil value="Natural" />
+		<Sigil value="NonStrict" />
+		<Sigil value="Normal" />
+		<Sigil value="NumericRange" />
+		<Sigil value="Oklab" />
+		<Sigil value="Oklch" />
+		<Sigil value="Overlay" />
+		<Sigil value="Presence" />
+		<Sigil value="Primary" />
+		<Sigil value="Quaternary" />
+		<Sigil value="Relational" />
+		<Sigil value="SHA256" />
+		<Sigil value="SHA3" />
+		<Sigil value="SHA384" />
+		<Sigil value="SHA512" />
+		<Sigil value="Screen" />
+		<Sigil value="Seconds" />
+		<Sigil value="SoftLight" />
+		<Sigil value="Strict" />
+		<Sigil value="Ternary" />
+		<Sigil value="Text" />
+		<Sigil value="Unary" />
+		<Sigil value="Unit" />
+		<Sigil value="Variadic" />
+		<Sigil value="Weeks" />
+		<Sigil value="XXHash32" />
+		<Sigil value="XXHash64" />
+		<Sigil value="Years" />
+		<Sigil value="sRGB" />
+	</MissingSigils>
+
+	<MissingTraits>
+		<Trait value="defaultValueTypes" />
+		<Trait value="family" />
+		<Trait value="ordinal" />
+		<Trait value="priority" />
+		<Trait value="strictness" />
+		<Trait value="variadic" />
+	</MissingTraits>
+
+	<MissingConcepts>
+		<Concept value="CollectionConstraint" />
+		<Concept value="ConstantDefinition" />
+		<Concept value="DomainRule" />
+		<Concept value="EnumeratedValues" />
+		<Concept value="Parameter" />
+		<Concept value="SpecialCase" />
+		<Concept value="VocabularyDefinition" />
+	</MissingConcepts>
+</SchemasVsSpecAuditReport>

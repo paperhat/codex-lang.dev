@@ -12,7 +12,7 @@ It governs:
 
 * Schema provision mechanisms
 * Schema resolution order
-* Meta-schema bootstrapping
+* Bootstrap schema-of-schemas bootstrapping
 * Error handling when schema is unavailable
 
 This document is **Normative**.
@@ -71,16 +71,25 @@ Explicit provision always takes precedence.
 
 ---
 
-## 4. Meta-Schema Bootstrapping (Normative)
+## 4. Bootstrap Schema-of-Schemas (Normative)
 
-The **meta-schema** is the schema used to parse schema documents.
+The **bootstrap schema-of-schemas** is the built-in schema language required to
+parse and validate schema documents (root `Schema`) without circular dependency.
+
+This is distinct from ecosystem "meta-schemas" (e.g., data meta-schema, view
+meta-schema), which are ordinary schema documents authored in Codex and validated
+under the bootstrap schema-of-schemas.
 
 ### 4.1 Requirements
 
 Every conforming implementation MUST:
 
-* include the complete meta-schema as built-in data
-* use the meta-schema when parsing schema documents
+* include the complete bootstrap schema-of-schemas as built-in, hard-coded data
+* use the bootstrap schema-of-schemas when parsing and validating schema documents
+
+The normative definition of the bootstrap schema-of-schemas is:
+
+* `spec/0.1/schema-loading/bootstrap-schema-of-schemas/index.md`
 
 ### 4.2 Detection
 
@@ -89,12 +98,12 @@ A document is a schema document if its root Concept is `Schema`.
 When the parser encounters a root `Schema` Concept:
 
 1. If explicit schema was provided, use it (may be meta-schema or extension)
-2. Otherwise, use the built-in meta-schema
+2. Otherwise, use the built-in bootstrap schema-of-schemas
 
 ### 4.3 Rationale
 
-This enables parsing schema documents without circular dependency. The
-meta-schema is compiled into the implementation, not loaded at runtime.
+This enables parsing schema documents without circular dependency. The bootstrap
+schema-of-schemas is compiled into the implementation, not loaded at runtime.
 
 ---
 
@@ -129,7 +138,7 @@ If schema resolution succeeds but loading fails (network error, file not found):
 
 If the loaded schema is not valid Codex or not a valid schema:
 
-* Error class: ParseError
+* Error class: SchemaError
 * Message SHOULD indicate schema validation failed
 * Underlying schema errors SHOULD be reported
 
@@ -158,7 +167,7 @@ This specification does not define:
 
 * Parsers MUST support explicit schema provision
 * Parsers MAY support schema registries
-* Meta-schema is built-in for bootstrapping
+* Bootstrap schema-of-schemas is built-in for schema document validation
 * Parsing without schema is a ParseError
 
 ---

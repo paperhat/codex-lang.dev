@@ -81,11 +81,13 @@ Bare CR (`\r`) is forbidden and MUST cause a parse error.
 
 ### 4.1 Indentation Character
 
-Indentation MUST use **tabs only**. Spaces are forbidden for indentation.
+Indentation is a **canonical formatting requirement**.
+
+In canonical surface form, indentation MUST use **tabs only**.
 
 ### 4.2 Indentation Depth
 
-One tab character represents one level of nesting.
+In canonical surface form, one tab character represents one level of nesting.
 
 * Root Concept: no indentation (column 0)
 * Direct children of root: one tab
@@ -94,8 +96,15 @@ One tab character represents one level of nesting.
 
 ### 4.3 Formatter Enforcement
 
-A conforming formatter MUST normalize indentation before parsing.
-Incorrect indentation is a formatting error.
+A conforming Codex formatter MUST normalize indentation before semantic
+validation proceeds.
+
+Indentation is part of the **canonical surface form**. Conforming tooling MUST
+not treat author indentation as authoritative; it MUST be normalized by the
+formatter prior to downstream processing.
+
+If indentation cannot be normalized deterministically, the formatter MUST fail
+with a FormattingError.
 
 ---
 
@@ -103,11 +112,14 @@ Incorrect indentation is a formatting error.
 
 ### 5.1 Between Sibling Concepts
 
-There MUST be exactly **one blank line** between sibling Concepts.
+Blank lines are a **canonical formatting requirement**.
+
+In canonical surface form, there MUST be exactly **one blank line** between
+sibling Concepts.
 
 ### 5.2 Elsewhere
 
-Blank lines are forbidden elsewhere in Children Mode:
+In canonical surface form, blank lines are forbidden elsewhere in Children Mode:
 
 * No blank lines between a Concept's opening marker and its first child
 * No blank lines between a Concept's last child and its closing marker
@@ -120,12 +132,11 @@ Lines containing only whitespace are normalized to empty.
 
 ### 5.4 Exception: Annotations
 
-There MUST NOT be a blank line between an Annotation and the Concept it annotates.
-Annotations MAY contain blank lines internally.
+Annotation blank-line rules are defined in § 8.
 
 ### 5.5 Exception: Content
 
-Content is opaque and MAY contain blank lines.
+Content is opaque to semantics and MAY contain blank lines.
 
 Blank line restrictions in § 5.2 apply only to Children Mode structure.
 Content is not parsed or interpreted by Codex.
@@ -178,12 +189,15 @@ When schema specifies a Concept contains children (`ForbidsContent`):
 
 When schema specifies a Concept contains Content (`AllowsContent`):
 
-* The parser captures all text between the opening and closing markers as raw content
-* No parsing of the body occurs—angle brackets, square brackets, and all other
-  characters are literal text
-* The closing marker is identified by matching the Concept name at the correct
-  indentation level
-* Content is preserved exactly after indentation normalization
+* The parser captures all text between the opening and closing markers as Content
+* Content is **opaque to schema semantics** (it is not interpreted as Concepts,
+	Traits, Values, or Annotations)
+* Content is still read token-by-token and is subject to **content escaping**
+	rules (see § 12)
+* Because `<` is not permitted unescaped inside Content, the closing marker
+	`</ConceptName>` is always unambiguous
+* Content is preserved exactly (after required newline normalization and escape
+	decoding)
 
 ### 7.4 Empty Mode
 
@@ -208,16 +222,44 @@ Codex preserves them without interpretation.
 
 ### 8.1 Annotation Form
 
-An Annotation consists of all text from an opening `[` to a matching closing `]`.
+Codex defines two surface forms for annotations.
+
+#### 8.1.1 Inline Annotation
+
+An **inline annotation** uses `[` and `]` on the same line:
+
+```cdx
+[Short note]
+<Thing />
+```
+
+Inline annotations are intended for short notes, `GROUP`/`END` markers, and
+attached annotations.
+
+#### 8.1.2 Block Annotation
+
+A **block annotation** uses `[` and `]` on their own lines:
+
+```cdx
+[
+	A longer note.
+	It may include lists:
+
+	- red
+	- green
+	- blue
+]
+```
+
+Block annotations are intended for longer editorial notes.
 
 Annotations:
 
-* MAY span multiple lines
-* MAY contain arbitrary text (including blank lines)
-* MUST attach to the **next Concept**
-* MAY stack (multiple Annotations may attach to the same Concept)
-* MUST NOT be nested
+* MAY appear at top-level or within children-mode bodies
 * MUST NOT appear inside Concept markers
+* MAY contain arbitrary text (including blank lines)
+* MAY attach to a Concept (see § 8.6)
+* MAY be standalone (see § 8.6)
 
 Example (single annotation):
 
@@ -240,8 +282,14 @@ Both annotations attach to the Recipe Concept.
 ### 8.2 Structural Rules
 
 * The opening `[` MUST be the first non-whitespace character on its line
-* The closing `]` MUST terminate the annotation
-* There MUST NOT be a blank line between an Annotation and the Concept it annotates
+* For an inline annotation, the closing `]` MUST appear on the same line
+* For a block annotation:
+	* the line containing `[` MUST contain no other non-whitespace characters
+	* the closing `]` MUST appear as the first non-whitespace character on its
+		own line and the line MUST contain no other non-whitespace characters
+
+Whether an annotation attaches to a Concept (or is standalone) is determined by
+the rules in § 8.6.
 
 ### 8.3 Escaping
 
@@ -252,13 +300,165 @@ Within an Annotation:
 
 No other escape sequences are defined.
 
-### 8.4 Canonical Form
+### 8.4 Canonical Form (Normative)
 
-For canonical surface form:
+Canonicalization of annotations is **deterministic** and depends on the
+annotation form.
 
-* Leading and trailing whitespace is trimmed
+#### 8.4.1 Inline Annotation Canonicalization
+
+Inline annotations are canonicalized as follows:
+
+* Leading and trailing whitespace inside the brackets is trimmed
 * Internal runs of whitespace (spaces, tabs, newlines) are collapsed to a single space
 * Escaped characters remain escaped
+
+Canonical rendering uses no padding spaces just inside the brackets:
+
+* `[text]` (not `[ text ]`)
+
+#### 8.4.2 Block Annotation Canonicalization
+
+Block annotations preserve their internal line structure.
+
+Canonicalization of a block annotation MUST:
+
+* normalize line endings to LF
+* preserve the block annotation content according to its directive (see § 8.5)
+
+For a block annotation with no directive (verbatim note), canonicalization MUST:
+
+* remove trailing whitespace on each content line
+* normalize indentation so that the content lines are indented exactly one tab
+	deeper than the `[` / `]` lines
+
+Block annotations MAY declare a directive (see § 8.5) that controls additional
+canonicalization.
+
+### 8.5 Block Annotation Directives (Normative)
+
+In a **block annotation**, the first non-blank content line MAY be a directive
+line.
+
+The directive line MUST be exactly one of:
+
+* `FLOW:`
+* `CODE:`
+* `MD:`
+
+If present, the directive line MUST be preserved in canonical output.
+
+Directive behavior:
+
+* `CODE:` — preserve the block annotation bytes verbatim (except for global
+	newline normalization). Tools MUST NOT reindent, trim, strip trailing
+	whitespace, wrap, or interpret escapes within the block annotation.
+* `MD:` — preserve the block annotation bytes verbatim (except for global
+	newline normalization). Tools MUST NOT reindent, trim, strip trailing
+	whitespace, wrap, or interpret escapes within the block annotation.
+* `FLOW:` — treat the remaining content as flow text; tools MAY apply
+	deterministic wrapping to a fixed width without changing the flow-text value
+
+If no directive is present, the block annotation is treated as a verbatim note
+and MUST be canonicalized as described in § 8.4.2.
+
+For `FLOW:` blocks, the flow-text value is the remaining content with:
+
+* leading and trailing whitespace trimmed
+* internal runs of whitespace (spaces, tabs, newlines) collapsed to single spaces
+* escapes interpreted per § 8.3
+
+Canonical rendering for `FLOW:` blocks MUST:
+
+* split the remaining content into paragraphs separated by one or more blank
+	lines
+* for each paragraph, wrap words to lines of at most 80 Unicode scalar
+	characters using greedy packing (a word that would exceed 80 starts a new
+	line)
+* indent each wrapped line exactly one tab deeper than the `[` / `]` lines
+* separate paragraphs by exactly one blank line
+
+### 8.6 Annotation Kinds (Normative)
+
+Codex defines three kinds of annotations:
+
+1. **Attached annotations** — attach to a single Concept
+2. **Grouping annotations** — `GROUP` / `END` markers that bracket a region
+3. **General annotations** — standalone annotations (inline or block)
+
+#### 8.6.1 Attached Annotations
+
+An annotation is an **attached annotation** if and only if:
+
+* it is an **inline annotation**, and
+* it is not a grouping annotation, and
+* it is immediately followed (on the next line) by a Concept opening marker, and
+* there is **no blank line** between the annotation and that marker
+
+Multiple attached annotations MAY stack; an attached-annotation stack attaches
+to the next Concept opening marker.
+
+Attached annotations MUST NOT have blank lines separating them from each other.
+If a blank line appears, the annotations are not attached.
+
+#### 8.6.2 Grouping Annotations
+
+A grouping annotation is a **single-line** annotation whose **canonicalized**
+annotation text matches one of the following forms:
+
+* `GROUP: <label>`
+* `END: <label>`
+
+`<label>` is any non-empty string after trimming.
+
+Whitespace between `[` and `GROUP` / `END`, and between the label and `]`, is
+permitted. Grouping recognition is performed after applying the annotation
+canonicalization rules in § 8.4.1 (trim + internal whitespace collapse).
+
+Grouping annotations:
+
+* do not attach to Concepts
+* define a purely editorial grouping region
+* MAY nest
+
+Label comparison uses the canonical label form (trimmed, with internal
+whitespace collapsed to single spaces).
+
+#### 8.6.3 General Annotations
+
+An annotation is a **general annotation** if and only if:
+
+* it is surrounded by **exactly one blank line above and exactly one blank line
+	below**, where file boundaries count as blank-line boundaries, and
+* it is not a grouping annotation
+
+General annotations MAY be inline or block.
+
+General annotations do not attach to Concepts.
+
+### 8.7 Group Nesting and Matching (Normative)
+
+Grouping annotations form a properly nested stack.
+
+* `[GROUP: X]` pushes label `X`
+* `[END: X]` MUST match the most recent unmatched `[GROUP: X]`
+
+If an `END` label does not match the most recent open group label, or if an
+`END` appears with no open group, the document is invalid (ParseError).
+
+### 8.8 Canonical Blank Line Requirements (Normative)
+
+In canonical surface form:
+
+* **Attached annotations** appear directly above the annotated Concept opening
+  marker with no blank line
+* **Grouping annotations** MUST be surrounded by exactly one blank line above
+  and below (file boundaries count as blank-line boundaries)
+* **General annotations** MUST be surrounded by exactly one blank line above and
+  below (file boundaries count as blank-line boundaries)
+
+Any annotation that is neither an attached annotation, a grouping annotation,
+nor a general annotation is invalid.
 
 ---
 
@@ -388,7 +588,7 @@ Content exists for Concepts that the schema designates as content-mode via
 ```cdx
 <Description>
 	This is content. It is not parsed by Codex.
-	Angle brackets like <this> are literal text.
+	Angle brackets like \<this> are literal text.
 	So are [square brackets] and other characters.
 </Description>
 ```
@@ -396,26 +596,32 @@ Content exists for Concepts that the schema designates as content-mode via
 ### 12.2 Rules
 
 * Content is **not** a Value
-* Content is **not** parsed by Codex
-* Content MUST be indented one level relative to its Concept
-* Content MAY contain any characters without restriction
+* Content is **not** interpreted as Codex structure or Values
+* In canonical surface form, Content lines are indented one level relative to
+	their Concept (the formatter normalizes indentation)
+* Content MAY contain any characters, but MUST escape `<` and `\` (see § 12.4)
 * Content MAY contain blank lines
 * Content MAY span multiple lines
 
 ### 12.3 Content Termination
 
 The parser identifies the end of content by scanning for the closing marker
-that matches the opening Concept name at the expected indentation level.
+that matches the opening Concept name: `</ConceptName>`.
 
-Given `<Description>` at indentation level N, the parser scans for
-`</Description>` at indentation level N. Everything between is content.
+Because `<` is not permitted unescaped inside Content, `</ConceptName>` is
+unambiguous.
 
-### 12.4 No Escaping Required
+### 12.4 Content Escaping (Normative)
 
-Because the parser knows it is in content mode (from the schema), no characters
-require escaping within content. The literal text `</Description>` inside content
-is not ambiguous—the parser matches the closing marker by Concept name and
-indentation context.
+Within Content:
+
+* `\<` represents a literal `<`
+* `\\` represents a literal `\`
+
+All other uses of `\` are invalid (ParseError).
+
+A raw `<` character MUST NOT appear in Content.
+A raw `\` character MUST NOT appear in Content.
 
 Example of content containing markup-like text:
 
@@ -424,7 +630,7 @@ Example of content containing markup-like text:
 	<Section title="Writing Descriptions">
 		To write a description, use the Description Concept:
 
-		<Description>Your text here.</Description>
+		\<Description>Your text here.\</Description>
 
 		The text inside is opaque content.
 	</Section>
@@ -433,7 +639,7 @@ Example of content containing markup-like text:
 
 In this example:
 * `<Section>` is a child Concept (Section is children-mode per schema)
-* The lines inside Section including `<Description>Your text here.</Description>`
+* The lines inside Section including `\<Description>Your text here.\</Description>`
   are literal content text (if Section allows content per schema), or if Section
   is children-mode, then the inner Description is a nested Concept
 
@@ -441,8 +647,10 @@ The schema determines interpretation.
 
 ### 12.5 Indentation Normalization
 
-Content lines have their leading indentation stripped according to the
-Concept's nesting level. One tab per nesting level is removed.
+Content is stored and processed without its canonical leading indentation.
+In canonical form, Content lines are indented one level relative to their
+Concept; the logical Content value removes that indentation based on structural
+nesting depth.
 
 Given:
 
@@ -692,7 +900,7 @@ This specification does **not**:
 * Tabs only for indentation, one per level
 * Exactly one blank line between siblings
 * Concepts contain children OR content, never both (schema-defined)
-* Content is opaque; `\</` escapes closing markers
+* Content is opaque to semantics; Content escapes `<` as `\<` and `\\` as `\`
 * Annotations are `[...]`, multiline, whitespace-collapsed
 * Empty blocks `<X></X>` are invalid; use `<X />`
 * Strings `"..."`, characters `'...'`, backtick strings `` `...` ``

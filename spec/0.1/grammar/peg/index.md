@@ -36,7 +36,7 @@ This grammar uses standard PEG notation:
 ```peg
 # A Codex document contains exactly one root Concept
 
-Document <- BlankLine* Annotation* RootConcept BlankLine* EOF
+Document <- BlankLine* (Annotation BlankLine*)* RootConcept BlankLine* EOF
 
 RootConcept <- Concept
 
@@ -72,13 +72,16 @@ ContentBody <- ContentLine*
 
 ContentLine <- Newline Indentation ContentText
 
-ContentText <- (!Newline .)*
+ContentText <- ContentChar*
 
-# Content termination: the parser scans for </ConceptName> matching
-# the opening marker at the correct indentation. No escape sequences
-# are needed—content is truly opaque.
+ContentChar <- ContentEscape / ContentSafeChar
 
-ClosingMarkerLookahead <- Newline Indentation '</' ConceptName '>'
+ContentEscape <- '\\' ('<' / '\\')
+
+ContentSafeChar <- !Newline !('<' / '\\') .
+
+# Content termination is unambiguous because '<' is not permitted unescaped
+# inside content.
 ```
 
 ---
@@ -399,7 +402,7 @@ Milliseconds <- Digit+
 ## 19. List Values
 
 ```peg
-ListValue <- '[' ListItems? ']'
+ListValue <- '[' Whitespace? ListItems? Whitespace? ']'
 
 ListItems <- Value (',' Whitespace? Value)*
 ```
@@ -409,7 +412,7 @@ ListItems <- Value (',' Whitespace? Value)*
 ## 20. Set Values
 
 ```peg
-SetValue <- 'set[' SetItems? ']'
+SetValue <- 'set[' Whitespace? SetItems? Whitespace? ']'
 
 SetItems <- Value (',' Whitespace? Value)*
 ```
@@ -419,7 +422,7 @@ SetItems <- Value (',' Whitespace? Value)*
 ## 21. Map Values
 
 ```peg
-MapValue <- 'map[' MapItems? ']'
+MapValue <- 'map[' Whitespace? MapItems? Whitespace? ']'
 
 MapItems <- MapEntry (',' Whitespace? MapEntry)*
 
@@ -435,7 +438,7 @@ MapIdentifier <- [a-z] [A-Za-z0-9]*
 ## 22. Tuple Values
 
 ```peg
-TupleValue <- '(' TupleItems ')'
+TupleValue <- '(' Whitespace? TupleItems Whitespace? ')'
 
 TupleItems <- Value (',' Whitespace? Value)*
 ```

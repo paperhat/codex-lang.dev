@@ -19,20 +19,22 @@ These fixtures are intentionally stored **outside** `spec/0.1/` because the spec
 - The included runner (`conformance_smokecheck.py`) validates the fixture pack is internally consistent (files exist, expected outputs exist, newline conventions, etc.).
 - A real Codex implementation should use these fixtures to run: normalization → parse → surface-form validation → canonicalization → schema validation.
 
+This fixture pack is **Codex-first**. JSON is not used for normative fixture data.
+
 ## Layout
 
-- `manifest.json` — the index of cases.
-- `cases/valid/*.cdx` — syntactically + surface-form valid inputs.
-- `cases/invalid/*.cdx` — inputs expected to fail.
-- `expected/canonical/*.cdx` — expected canonical form for some valid inputs.
-- `expected/errors/*.json` — expected primary error class for invalid inputs.
+- `manifest/configuration.cdx` — the index of cases (Codex).
+- `cases/valid/<case-id>/data.cdx` — syntactically + surface-form valid inputs.
+- `cases/invalid/<case-id>/data.cdx` — inputs expected to fail.
+- `expected/canonical/<case-id>/data.cdx` — expected canonical form for some valid inputs.
+- `expected/errors/<case-id>/data.cdx` — expected primary error class for invalid inputs.
 
 ## Running the smoke check
 
 From the repo root:
 
 ```bash
-python3 codex-lang.dev/tools/conformance_smokecheck.py codex-lang.dev/conformance/0.1/manifest.json
+python3 codex-lang.dev/tools/conformance_smokecheck.py codex-lang.dev/conformance/0.1/manifest/configuration.cdx
 ```
 
 ## Spec references

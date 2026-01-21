@@ -35,6 +35,9 @@ Its goals are to:
 
 Schemas are the **sole authority on meaning** in Codex.
 
+The schema-language itself is bootstrapped by a built-in **bootstrap schema-of-schemas**.
+See `spec/0.1/schema-loading/bootstrap-schema-of-schemas/index.md`.
+
 ---
 
 ## 2. Core Principles (Normative)

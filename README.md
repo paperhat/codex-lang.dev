@@ -122,6 +122,18 @@ The authoritative specification is in [`spec/0.1/`](spec/0.1/).
 
 ---
 
+## Readiness (Repo Gate)
+
+This repo treats “production ready for implementation” as a **repeatable gate**:
+
+```bash
+python3 tools/readiness_check.py
+```
+
+See [READINESS.md](READINESS.md) and [AI_CONVENTIONS.md](AI_CONVENTIONS.md).
+
+---
+
 ## Governance
 
 Codex is maintained under editorial governance. Normative content is authoritative. Changes to locked documents are versioned.

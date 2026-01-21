@@ -67,7 +67,8 @@ A ParseError occurs when a `.cdx` file cannot be parsed into a syntactic structu
 
 * input is not structurally readable
 * parsing cannot continue
-* no schema is consulted
+* parsing is performed under the governing schema (Codex is schema-first)
+* schema is consulted for structural dispatch (e.g., children-mode vs content-mode)
 
 ### Examples (Illustrative)
 
@@ -76,6 +77,7 @@ A ParseError occurs when a `.cdx` file cannot be parsed into a syntactic structu
 * malformed Traits
 * unterminated Annotation (missing closing `]`)
 * structurally invalid nesting of markers
+* unknown Concept name under the governing schema
 
 ParseError is **fatal**.
 
@@ -92,14 +94,13 @@ A SurfaceFormError occurs when a file parses successfully but violates the
 
 * syntax is readable
 * surface requirements are violated
-* schema may not be consulted yet
+* schema is available, but this class concerns schema-independent surface rules
 
 ### Examples (Illustrative)
 
 * invalid casing in Concept or Trait names
 * multiple root Concepts in a file
 * forbidden whitespace around `=`
-* invalid indentation for Content
 * annotation opening `[` not at first non-whitespace position
 * annotation escape misuse (e.g. `\q` in an Annotation)
 
@@ -124,7 +125,7 @@ See the **Formatting and Canonicalization Specification** for canonicalization r
 ### Examples (Illustrative)
 
 * ambiguous annotation attachment
-* structural ambiguity preventing unique canonical indentation
+* non-deterministic blank-line/whitespace normalization that would change annotation kind
 * whitespace patterns that cannot be normalized without changing structure
 * any other canonicalization failure
 
@@ -146,7 +147,6 @@ A SchemaError occurs when parsed Codex violates schema-defined rules.
 
 ### Examples (Illustrative)
 
-* unknown Concept name
 * unauthorized Trait on a Concept
 * missing required Trait
 * invalid Trait value type

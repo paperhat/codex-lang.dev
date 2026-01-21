@@ -1,0 +1,140 @@
+<ConformanceManifest version="0.1" specRoot="../../spec/0.1">
+	<Case
+		id="valid/minimal-selfclosing"
+		input="cases/valid/minimal-selfclosing/data.cdx"
+		expectedCanonical="expected/canonical/minimal-selfclosing/data.cdx"
+	/>
+
+	<Case
+		id="valid/selfclosing-inline-traits"
+		input="cases/valid/selfclosing-inline-traits/data.cdx"
+		expectedCanonical="expected/canonical/selfclosing-inline-traits/data.cdx"
+	/>
+
+	<Case
+		id="valid/selfclosing-multiline-traits"
+		input="cases/valid/selfclosing-multiline-traits/data.cdx"
+		expectedCanonical="expected/canonical/selfclosing-multiline-traits/data.cdx"
+	/>
+
+	<Case
+		id="valid/root-annotation-stack"
+		input="cases/valid/root-annotation-stack/data.cdx"
+		expectedCanonical="expected/canonical/root-annotation-stack/data.cdx"
+	/>
+
+	<Case
+		id="valid/children-with-annotations"
+		input="cases/valid/children-with-annotations/data.cdx"
+		expectedCanonical="expected/canonical/children-with-annotations/data.cdx"
+	/>
+
+	<Case
+		id="valid/uuid-uppercase-normalizes"
+		input="cases/valid/uuid-uppercase-normalizes/data.cdx"
+		expectedCanonical="expected/canonical/uuid-uppercase-normalizes/data.cdx"
+	/>
+
+	<Case
+		id="valid/content-allows-blank-lines"
+		input="cases/valid/content-allows-blank-lines/data.cdx"
+		expectedCanonical="expected/canonical/content-allows-blank-lines/data.cdx"
+	/>
+
+	<Case
+		id="valid/content-escaped-closing-marker"
+		input="cases/valid/content-escaped-closing-marker/data.cdx"
+		expectedCanonical="expected/canonical/content-escaped-closing-marker/data.cdx"
+	/>
+
+	<Case
+		id="valid/schema-document-minimal"
+		input="cases/valid/schema-document-minimal/data.cdx"
+		expectedCanonical="expected/canonical/schema-document-minimal/data.cdx"
+	/>
+
+	<Case
+		id="valid/general-annotation-before-root"
+		input="cases/valid/general-annotation-before-root/data.cdx"
+		expectedCanonical="expected/canonical/general-annotation-before-root/data.cdx"
+	/>
+
+	<Case
+		id="valid/non-ascii-iri"
+		input="cases/valid/non-ascii-iri/data.cdx"
+		expectedCanonical="expected/canonical/non-ascii-iri/data.cdx"
+	/>
+
+	<Case
+		id="invalid/iri-missing-colon"
+		input="cases/invalid/iri-missing-colon/data.cdx"
+		expectedError="expected/errors/iri-missing-colon/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/iri-bidi-control"
+		input="cases/invalid/iri-bidi-control/data.cdx"
+		expectedError="expected/errors/iri-bidi-control/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/iri-unicode-whitespace"
+		input="cases/invalid/iri-unicode-whitespace/data.cdx"
+		expectedError="expected/errors/iri-unicode-whitespace/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/iri-private-use"
+		input="cases/invalid/iri-private-use/data.cdx"
+		expectedError="expected/errors/iri-private-use/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/empty-block-not-allowed"
+		input="cases/invalid/empty-block-not-allowed/data.cdx"
+		expectedError="expected/errors/empty-block-not-allowed/data.cdx"
+		expectedPrimaryErrorClass=$SurfaceFormError
+	/>
+
+	<Case
+		id="invalid/schema-document-missing-version"
+		input="cases/invalid/schema-document-missing-version/data.cdx"
+		expectedError="expected/errors/schema-document-missing-version/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="valid/block-annotation-code-directive"
+		input="cases/valid/block-annotation-code-directive/data.cdx"
+		expectedCanonical="expected/canonical/block-annotation-code-directive/data.cdx"
+	/>
+
+	<Case
+		id="valid/block-annotation-md-directive"
+		input="cases/valid/block-annotation-md-directive/data.cdx"
+		expectedCanonical="expected/canonical/block-annotation-md-directive/data.cdx"
+	/>
+
+	<Case
+		id="valid/grouping-annotations-whitespace"
+		input="cases/valid/grouping-annotations-whitespace/data.cdx"
+		expectedCanonical="expected/canonical/grouping-annotations-whitespace/data.cdx"
+	/>
+
+	<Case
+		id="invalid/annotation-kind-ambiguous"
+		input="cases/invalid/annotation-kind-ambiguous/data.cdx"
+		expectedError="expected/errors/annotation-kind-ambiguous/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="valid/leading-space-before-root"
+		input="cases/valid/leading-space-before-root/data.cdx"
+		expectedCanonical="expected/canonical/minimal-selfclosing/data.cdx"
+	/>
+</ConformanceManifest>

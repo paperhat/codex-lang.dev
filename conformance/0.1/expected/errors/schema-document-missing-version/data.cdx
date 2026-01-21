@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="Schema documents (root 'Schema') require the 'version' Trait per the bootstrap schema-of-schemas; a structurally readable schema document missing a required trait is a SchemaError." />

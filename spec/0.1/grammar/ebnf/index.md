@@ -41,7 +41,8 @@ Character classes use the following extensions:
 ```ebnf
 (* A Codex document contains exactly one root Concept *)
 
-Document = { BlankLine }, { Annotation }, RootConcept, { BlankLine } ;
+(* Annotations may appear with intervening blank lines; formatter normalizes. *)
+Document = { BlankLine }, { Annotation, { BlankLine } }, RootConcept, { BlankLine } ;
 
 RootConcept = Concept ;
 
@@ -78,12 +79,15 @@ ContentBody = { ContentLine } ;
 
 ContentLine = Newline, Indentation, ContentText ;
 
-ContentText = { AnyCharExceptNewline } ;
+ContentText = { ContentChar } ;
 
-(* Note: No escape sequences are required in content mode.
-   The parser knows it is in content mode from the schema
-   and scans for the closing marker by Concept name match
-   at the correct indentation level. *)
+ContentChar = ContentEscape | ContentSafeChar ;
+
+ContentEscape = "\\", ( "<" | "\\" ) ;
+
+(* Raw '<' and '\\' are not permitted in content.
+   They MUST be written as '\\<' and '\\\\' respectively. *)
+ContentSafeChar = AnyCharExceptNewline - "<" - "\\" ;
 ```
 
 ---
@@ -261,7 +265,9 @@ EnumeratedToken = "$", UppercaseLetter, { Letter | Digit } ;
 ```ebnf
 (* Codex IRI references allow RFC 3987 IRI-reference characters directly.
       Unicode characters MAY appear directly; percent-encoding remains valid.
-      Codex further forbids Unicode whitespace, control, bidi-control, and private-use characters. *)
+   Codex further forbids Unicode whitespace, control, bidi-control, and private-use characters.
+   These profile restrictions are enforced by surface-form validation; they are not fully
+   encoded in the UcsChar placeholder production below. *)
 
 IriReference = IriScheme, ":", IriBody ;
 
@@ -393,7 +399,7 @@ Milliseconds = Digit, { Digit } ;
 ## 19. List Values
 
 ```ebnf
-ListValue = "[", [ ListItems ], "]" ;
+ListValue = "[", [ Whitespace ], [ ListItems ], [ Whitespace ], "]" ;
 
 ListItems = Value, { ",", [ Whitespace ], Value } ;
 ```
@@ -403,7 +409,7 @@ ListItems = Value, { ",", [ Whitespace ], Value } ;
 ## 20. Set Values
 
 ```ebnf
-SetValue = "set[", [ SetItems ], "]" ;
+SetValue = "set[", [ Whitespace ], [ SetItems ], [ Whitespace ], "]" ;
 
 SetItems = Value, { ",", [ Whitespace ], Value } ;
 ```
@@ -413,7 +419,7 @@ SetItems = Value, { ",", [ Whitespace ], Value } ;
 ## 21. Map Values
 
 ```ebnf
-MapValue = "map[", [ MapItems ], "]" ;
+MapValue = "map[", [ Whitespace ], [ MapItems ], [ Whitespace ], "]" ;
 
 MapItems = MapEntry, { ",", [ Whitespace ], MapEntry } ;
 
@@ -429,7 +435,7 @@ MapIdentifier = LowercaseLetter, { Letter | Digit } ;
 ## 22. Tuple Values
 
 ```ebnf
-TupleValue = "(", TupleItems, ")" ;
+TupleValue = "(", [ Whitespace ], TupleItems, [ Whitespace ], ")" ;
 
 TupleItems = Value, { ",", [ Whitespace ], Value } ;
 ```
