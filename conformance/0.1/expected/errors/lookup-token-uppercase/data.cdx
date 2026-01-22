@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$ParseError notes="Lookup tokens require a '~' token of ASCII lowercase letters/digits; '~Chas' is not a valid lookup token." />

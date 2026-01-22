@@ -66,6 +66,30 @@
 	/>
 
 	<Case
+		id="valid/value-literal-kitchen-sink"
+		input="cases/valid/value-literal-kitchen-sink/data.cdx"
+		expectedCanonical="expected/canonical/value-literal-kitchen-sink/data.cdx"
+	/>
+
+	<Case
+		id="valid/content-escaped-angle-and-backslash"
+		input="cases/valid/content-escaped-angle-and-backslash/data.cdx"
+		expectedCanonical="expected/canonical/content-escaped-angle-and-backslash/data.cdx"
+	/>
+
+	<Case
+		id="valid/named-color-transparent"
+		input="cases/valid/named-color-transparent/data.cdx"
+		expectedCanonical="expected/canonical/named-color-transparent/data.cdx"
+	/>
+
+	<Case
+		id="valid/annotation-escaped-bracket"
+		input="cases/valid/annotation-escaped-bracket/data.cdx"
+		expectedCanonical="expected/canonical/annotation-escaped-bracket/data.cdx"
+	/>
+
+	<Case
 		id="invalid/iri-missing-colon"
 		input="cases/invalid/iri-missing-colon/data.cdx"
 		expectedError="expected/errors/iri-missing-colon/data.cdx"
@@ -98,6 +122,69 @@
 		input="cases/invalid/empty-block-not-allowed/data.cdx"
 		expectedError="expected/errors/empty-block-not-allowed/data.cdx"
 		expectedPrimaryErrorClass=$SurfaceFormError
+	/>
+
+	<Case
+		id="invalid/named-color-uppercase"
+		input="cases/invalid/named-color-uppercase/data.cdx"
+		expectedError="expected/errors/named-color-uppercase/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/lookup-token-uppercase"
+		input="cases/invalid/lookup-token-uppercase/data.cdx"
+		expectedError="expected/errors/lookup-token-uppercase/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/range-missing-end"
+		input="cases/invalid/range-missing-end/data.cdx"
+		expectedError="expected/errors/range-missing-end/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/range-missing-start"
+		input="cases/invalid/range-missing-start/data.cdx"
+		expectedError="expected/errors/range-missing-start/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/range-step-missing-value"
+		input="cases/invalid/range-step-missing-value/data.cdx"
+		expectedError="expected/errors/range-step-missing-value/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/list-trailing-comma"
+		input="cases/invalid/list-trailing-comma/data.cdx"
+		expectedError="expected/errors/list-trailing-comma/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/list-missing-comma"
+		input="cases/invalid/list-missing-comma/data.cdx"
+		expectedError="expected/errors/list-missing-comma/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/map-missing-colon"
+		input="cases/invalid/map-missing-colon/data.cdx"
+		expectedError="expected/errors/map-missing-colon/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/map-trailing-comma"
+		input="cases/invalid/map-trailing-comma/data.cdx"
+		expectedError="expected/errors/map-trailing-comma/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
 	/>
 
 	<Case

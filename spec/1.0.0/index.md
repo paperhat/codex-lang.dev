@@ -1,13 +1,13 @@
 Status: NORMATIVE  
 Lock State: UNLOCKED  
-Version: 0.1  
+Version: 1.0.0  
 Editor: Charles F. Munat
 
-# Codex Language Specification — Version 0.1
+# Codex Language Specification — Version 1.0.0
 
-This document is the authoritative language specification for Codex 0.1.
+This document is the authoritative language specification for Codex 1.0.0.
 
-All normative requirements for Codex 0.1 MUST appear exactly once in this document.
+All normative requirements for Codex 1.0.0 MUST appear exactly once in this document.
 
 ---
 
@@ -15,7 +15,7 @@ All normative requirements for Codex 0.1 MUST appear exactly once in this docume
 
 ### 1.1 Scope
 
-Codex 0.1 defines the Codex language.
+Codex 1.0.0 defines the Codex language.
 
 This specification governs:
 
@@ -29,13 +29,13 @@ This specification governs:
 - reference trait semantics
 - validation error classification
 
-Codex 0.1 does not define runtime behavior.
+Codex 1.0.0 does not define runtime behavior.
 
 ---
 
 ### 1.2 Non-Goals
 
-Codex 0.1 does not define:
+Codex 1.0.0 does not define:
 
 - a programming, scripting, or templating language
 - an execution model, runtime, or pipeline orchestration
@@ -2673,16 +2673,7 @@ This section does not:
 
 ## 11. Schema Definition Language
 
-This section normatively defines the schema definition language for Codex 0.1.
-
-Status: NORMATIVE
-Lock State: UNLOCKED
-Version: 0.1
-Editor: Charles F. Munat
-
-### Codex Schema Definition Specification — Version 0.1
-
-This document defines the **schema definition model** for the Codex language.
+This section normatively defines the schema definition language for Codex 1.0.0.
 
 It specifies how **schemas themselves are authored in Codex**, including:
 
