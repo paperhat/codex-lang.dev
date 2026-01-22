@@ -196,7 +196,7 @@ def _load_manifest_cdx(path: Path) -> list[Case]:
     if not case_entries:
         _fail(f"no <Case ... /> entries found in manifest: {path}")
 
-    manifest_dir = path.parent.parent  # conformance/0.1
+    manifest_dir = path.parent.parent  # conformance/<version>
     return _cases_from_manifest_entries(case_entries, manifest_dir)
 
 

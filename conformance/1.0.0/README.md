@@ -1,11 +1,11 @@
 Status: INFORMATIVE
-Version: 0.1
+Version: 1.0.0
 
-# Codex 0.1 Conformance Fixtures
+# Codex 1.0.0 Conformance Fixtures
 
-This directory contains **versioned conformance fixtures** for Codex Language Specification v0.1.
+This directory contains **versioned conformance fixtures** for Codex Language Specification v1.0.0.
 
-These fixtures are intentionally stored **outside** `spec/0.1/` because the spec tree is frozen/locked.
+These fixtures are intentionally stored **outside** `spec/1.0.0/`.
 
 ## Goals
 
@@ -34,11 +34,11 @@ This fixture pack is **Codex-first**. JSON is not used for normative fixture dat
 From the repo root:
 
 ```bash
-python3 codex-lang.dev/tools/conformance_smokecheck.py codex-lang.dev/conformance/0.1/manifest/configuration.cdx
+python3 codex-lang.dev/tools/conformance_smokecheck.py codex-lang.dev/conformance/1.0.0/manifest/configuration.cdx
 ```
 
 ## Spec references
 
-- Canonical error classes: `codex-lang.dev/spec/0.1/validation-errors/`
-- Surface form: `codex-lang.dev/spec/0.1/surface-form/`
-- Formal grammar (EBNF normative): `codex-lang.dev/spec/0.1/grammar/`
+- Canonical error classes: `codex-lang.dev/spec/1.0.0/index.md` (Validation Errors)
+- Surface form: `codex-lang.dev/spec/1.0.0/index.md` (Surface Form)
+- Formal grammar (EBNF normative): `codex-lang.dev/spec/1.0.0/index.md` (Appendix A)

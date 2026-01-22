@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SPEC_ROOT = ROOT / "spec" / "0.1"
+SPEC_ROOT = ROOT / "spec" / "1.0.0"
 DEFAULT_SCHEMAS_ROOT_CANDIDATES = [
     # historical mono-repo layout (schemas folder beside codex-lang.dev)
     ROOT.parent / "schemas",
@@ -34,7 +34,7 @@ def _read_all_spec_text() -> str:
 
 
 def _read_unified_spec_text() -> str:
-    return (SPEC_ROOT / "codex-language-specification.md").read_text(encoding="utf-8")
+    return (SPEC_ROOT / "index.md").read_text(encoding="utf-8")
 
 
 def _collect_schema_tokens(*, schemas_root: Path) -> dict[str, list[str]]:
@@ -144,7 +144,7 @@ def main() -> int:
         choices=["unified", "all"],
         default="unified",
         help=(
-            "Which spec markdown to scan for token appearances. 'unified' scans only spec/0.1/codex-language-specification.md "
+            "Which spec markdown to scan for token appearances. 'unified' scans only spec/1.0.0/index.md "
             "(recommended after consolidation). 'all' scans all markdown under spec/0.1/."
         ),
     )
@@ -157,7 +157,7 @@ def main() -> int:
         spec_root_label = str(SPEC_ROOT.relative_to(ROOT))
     else:
         spec_text = _read_unified_spec_text()
-        spec_root_label = str((SPEC_ROOT / "codex-language-specification.md").relative_to(ROOT))
+        spec_root_label = str((SPEC_ROOT / "index.md").relative_to(ROOT))
 
     spec_words = set(re.findall(r"\b[A-Za-z][A-Za-z0-9]*\b", spec_text))
 

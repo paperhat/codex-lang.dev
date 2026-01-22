@@ -1,11 +1,11 @@
 Status: NORMATIVE  
 Lock State: UNLOCKED  
-Version: 1.0.0  
+Version: 1.0.0 BETA  
 Editor: Charles F. Munat
 
-# Codex Language Specification — Version 1.0.0
+# Codex Language Specification — Version 1.0.0 BETA
 
-This document is the authoritative language specification for Codex 1.0.0.
+This document is the authoritative language specification for Codex 1.0.0 BETA.
 
 All normative requirements for Codex 1.0.0 MUST appear exactly once in this document.
 
@@ -3167,61 +3167,61 @@ Declares Trait value cardinality.
 
 ---
 
-#### 7. Constraint Model
+### 11.7. Constraint Model
 
-##### 7.1 `ConstraintDefinitions`
+#### 11.7.1 `ConstraintDefinitions`
 
 Container for constraint definitions within a schema.
 
-###### Children
+##### Children
 
 One or more `ConstraintDefinition` children.
 
 ---
 
-##### 7.2 `ConstraintDefinition`
+#### 11.7.2 `ConstraintDefinition`
 
 Defines a reusable, named constraint.
 
-###### Traits (Normative)
+##### Traits (Normative)
 
 * `id` (required; IRI reference)
 * `title` (optional; string)
 * `description` (optional; string)
 
-###### Children (Normative)
+##### Children (Normative)
 
 * `Targets` (required) — what the constraint applies to
 * `Rule` (required) — the constraint logic
 
 ---
 
-##### 7.3 `Targets`
+#### 11.7.3 `Targets`
 
 Declares what a constraint applies to.
 
-###### Children (Normative)
+##### Children (Normative)
 
 One or more of:
 
 * `TargetConcept` — constraint applies to instances of a Concept
 * `TargetContext` — constraint applies within a context
 
-###### `TargetConcept`
+##### `TargetConcept`
 
-####### Traits
+###### Traits
 
 * `conceptSelector` (required; Concept name as string)
 
-###### `TargetContext`
+##### `TargetContext`
 
-####### Traits
+###### Traits
 
 * `contextSelector` (required; Concept name or `"Document"`)
 
 ---
 
-##### 7.4 `Rule`
+#### 11.7.4 `Rule`
 
 Contains the constraint logic.
 
@@ -3229,21 +3229,21 @@ A `Rule` MUST contain exactly one constraint or composition element.
 
 ---
 
-#### 8. Rule Algebra (Normative)
+### 11.8. Rule Algebra (Normative)
 
-##### 8.1 Composition Rules
+#### 11.8.1 Composition Rules
 
 Composition rules combine other rules.
 
-###### `AllOf`
+##### `AllOf`
 
 All child rules must hold.
 
-####### Children
+###### Children
 
 Two or more `Rule` children.
 
-###### `AnyOf`
+##### `AnyOf`
 
 At least one child rule must hold.
 
@@ -3255,7 +3255,7 @@ Two or more `Rule` children.
 
 The child rule must not hold.
 
-####### Children
+###### Children
 
 Exactly one `Rule` child.
 
@@ -3263,16 +3263,16 @@ Exactly one `Rule` child.
 
 If a condition holds, a consequent must hold.
 
-####### Children
+###### Children
 
 * `When` — contains the condition (one `Rule` child)
 * `Then` — contains the consequent (one `Rule` child)
 
 ---
 
-#### 9. Paths and Quantifiers
+### 11.9. Paths and Quantifiers
 
-##### 9.1 Paths
+#### 11.9.1 Paths
 
 Constraints MAY reference data using paths:
 
@@ -3286,7 +3286,7 @@ Constraints MAY reference data using paths:
 
 ---
 
-##### 9.2 Quantifiers
+#### 11.9.2 Quantifiers
 
 Quantifiers scope constraints over collections.
 
@@ -3300,237 +3300,237 @@ Quantifiers are structural and deterministic.
 
 ---
 
-#### 10. Atomic Constraints (Normative)
+### 11.10. Atomic Constraints (Normative)
 
 Atomic constraints are the leaves of the rule algebra.
 
-##### 10.1 Trait Constraints
+#### 11.10.1 Trait Constraints
 
-###### `TraitExists`
+##### `TraitExists`
 
 Trait is present on the Concept.
 
-####### Traits
+###### Traits
 
 * `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 
-###### `TraitMissing`
+##### `TraitMissing`
 
 Trait is absent from the Concept.
 
-####### Traits
+###### Traits
 
 * `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 
-###### `TraitEquals`
+##### `TraitEquals`
 
 Trait has a specific value.
 
-####### Traits
+###### Traits
 
 * `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `value` (required; the expected value)
 
-###### `TraitCardinality`
+##### `TraitCardinality`
 
 Trait value count is within bounds.
 
-####### Traits
+###### Traits
 
 * `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `min` (optional; non-negative integer)
 * `max` (optional; positive integer)
 
-###### `TraitValueType`
+##### `TraitValueType`
 
 Trait value matches expected type.
 
-####### Traits
+###### Traits
 
 * `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `valueType` (required; value type token)
 
 ---
 
-##### 10.2 Value Constraints
+#### 11.10.2 Value Constraints
 
-###### `ValueIsOneOf`
+##### `ValueIsOneOf`
 
 Value is in an explicit list.
 
-####### Traits
+###### Traits
 
 * `values` (required; list of allowed values)
 
-###### `ValueMatchesPattern`
+##### `ValueMatchesPattern`
 
 Value matches a regular expression.
 
-####### Traits
+###### Traits
 
 * `pattern` (required; regex string)
 
-###### `PatternConstraint`
+##### `PatternConstraint`
 
 Trait value matches a regular expression.
 
-####### Traits
+###### Traits
 
 * `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `pattern` (required; regex string)
 
-###### `ValueLength`
+##### `ValueLength`
 
 String value length is within bounds.
 
-####### Traits
+###### Traits
 
 * `min` (optional; non-negative integer)
 * `max` (optional; positive integer)
 
-###### `ValueInNumericRange`
+##### `ValueInNumericRange`
 
 Numeric value is within bounds.
 
-####### Traits
+###### Traits
 
 * `min` (optional; number, inclusive)
 * `max` (optional; number, inclusive)
 
-###### `ValueIsNonEmpty`
+##### `ValueIsNonEmpty`
 
 Value is present and non-empty.
 
 No traits.
 
-###### `ValueIsValid`
+##### `ValueIsValid`
 
 Value passes custom validation.
 
-####### Traits
+###### Traits
 
 * `validatorName` (required; enumerated token)
 
 ---
 
-##### 10.3 Child Constraints
+#### 11.10.3 Child Constraints
 
-###### `ChildConstraint`
+##### `ChildConstraint`
 
 Generic child constraint using type dispatch.
 
-####### Traits
+###### Traits
 
 * `type` (required; `RequiresChildConcept | AllowsChildConcept | ForbidsChildConcept`)
 * `conceptSelector` (required; Concept name)
 
-###### `ChildSatisfies`
+##### `ChildSatisfies`
 
 Child Concepts satisfy a nested rule.
 
-####### Traits
+###### Traits
 
 * `conceptSelector` (required; Concept name)
 
-####### Children
+###### Children
 
 One `Rule` child.
 
 ---
 
-##### 10.4 Collection Constraints
+#### 11.10.4 Collection Constraints
 
-###### `CollectionOrdering`
+##### `CollectionOrdering`
 
 Declares expected ordering.
 
-####### Traits
+###### Traits
 
 * `ordering` (required; `$Ordered | $Unordered`)
 
-###### `CollectionAllowsEmpty`
+##### `CollectionAllowsEmpty`
 
 Collection may be empty.
 
-####### Traits
+###### Traits
 
 * `allowed` (required; boolean)
 
-###### `CollectionAllowsDuplicates`
+##### `CollectionAllowsDuplicates`
 
 Collection may contain duplicates.
 
-####### Traits
+###### Traits
 
 * `allowed` (required; boolean)
 
-###### `MemberCount`
+##### `MemberCount`
 
 Collection member count is within bounds.
 
-####### Traits
+###### Traits
 
 * `min` (optional; non-negative integer)
 * `max` (optional; positive integer)
 
-###### `EachMemberSatisfies`
+##### `EachMemberSatisfies`
 
 Each collection member satisfies a nested rule.
 
-####### Children
+###### Children
 
 One `Rule` child.
 
-###### `CollectionConstraint`
+##### `CollectionConstraint`
 
 Generic collection constraint using type dispatch.
 
-####### Traits
+###### Traits
 
 * `type` (required; one of the following)
 
-####### Types
+###### Types
 
 * `CollectionOrderingDeclared` — the applicable collection ordering MUST be explicitly declared in schema definitions (typically via `CollectionRules ordering=...`).
 
 ---
 
-##### 10.5 Uniqueness Constraints
+#### 11.10.5 Uniqueness Constraints
 
-###### `UniqueConstraint`
+##### `UniqueConstraint`
 
 Trait values must be unique within a scope.
 
-####### Traits
+###### Traits
 
 * `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 * `scope` (required; Concept name defining the uniqueness scope)
 
 ---
 
-##### 10.6 Order Constraints
+#### 11.10.6 Order Constraints
 
-###### `OrderConstraint`
+##### `OrderConstraint`
 
 Positional rules for ordered collections.
 
-####### Traits
+###### Traits
 
 * `type` (required; e.g., `VariadicMustBeLast`)
 
 ---
 
-##### 10.7 Reference Constraints
+#### 11.10.7 Reference Constraints
 
-###### `ReferenceConstraint`
+##### `ReferenceConstraint`
 
 Validates reference Trait usage.
 
-####### Traits
+###### Traits
 
 * `type` (required; one of the following)
 
-####### Types
+###### Types
 
 * `ReferenceTargetsEntity` — referenced Concept must be an Entity
 * `ReferenceMustResolve` — reference must resolve to existing Concept
@@ -3541,17 +3541,17 @@ Validates reference Trait usage.
 
 ---
 
-##### 10.8 Identity Constraints
+#### 11.10.8 Identity Constraints
 
-###### `IdentityConstraint`
+##### `IdentityConstraint`
 
 Validates Entity identity rules.
 
-####### Traits
+###### Traits
 
 * `type` (required; one of the following)
 
-####### Types
+###### Types
 
 * `MustBeEntity` — Concept instance must have `id`
 * `MustNotBeEntity` — Concept instance must not have `id`
@@ -3560,35 +3560,35 @@ Validates Entity identity rules.
 
 ---
 
-##### 10.9 Context Constraints
+#### 11.10.9 Context Constraints
 
-###### `ContextConstraint`
+##### `ContextConstraint`
 
 Validates parent or context rules.
 
-####### Traits
+##### Traits
 
 * `type` (required; one of the following)
 * `contextSelector` (required for most types; Concept name)
 
-####### Types
+###### Types
 
 * `OnlyValidUnderParent` — Concept may only appear as direct child of specified parent
 * `OnlyValidUnderContext` — Concept may only appear within specified ancestor
 
 ---
 
-##### 10.10 Content Constraints
+#### 11.10.10 Content Constraints
 
-###### `ContentConstraint`
+##### `ContentConstraint`
 
 Validates content rules.
 
-####### Traits
+###### Traits
 
 * `type` (required; one of the following)
 
-####### Types
+###### Types
 
 * `ContentForbiddenUnlessAllowed` — content forbidden unless explicitly allowed
 * `ContentRequired` — content must be present and non-empty
@@ -3597,7 +3597,7 @@ Validates content rules.
 
 ---
 
-#### 11. Complete Constraint Example
+### 11.11. Complete Constraint Example
 
 ```cdx
 <ConstraintDefinition
@@ -3636,7 +3636,7 @@ Validates content rules.
 
 ---
 
-#### 12. Relationship to External Systems (Normative)
+### 11.12. Relationship to External Systems (Normative)
 
 * Codex schemas are **authoritative**
 * SHACL or OWL representations MAY be derived
@@ -3644,7 +3644,7 @@ Validates content rules.
 
 ---
 
-#### 13. Summary
+### 11.13. Summary
 
 * Schemas are first-class Codex data
 * Content mode is declared via `ContentRules`

@@ -75,7 +75,7 @@ def _gate_required_docs() -> None:
 
 
 def _gate_conformance_smokecheck() -> None:
-    manifest = ROOT / "conformance" / "0.1" / "manifest" / "configuration.cdx"
+    manifest = ROOT / "conformance" / "1.0.0" / "manifest" / "configuration.cdx"
     if not manifest.exists():
         _fail(f"missing conformance manifest: {manifest.relative_to(ROOT)}")
     _run(["python3", "tools/conformance_smokecheck.py", str(manifest.relative_to(ROOT))])

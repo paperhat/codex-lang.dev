@@ -1,4 +1,4 @@
-<ConformanceManifest version="0.1" specRoot="../../spec/0.1">
+<ConformanceManifest version="1.0.0" specRoot="../../spec/1.0.0">
 	<Case
 		id="valid/minimal-selfclosing"
 		input="cases/valid/minimal-selfclosing/data.cdx"
