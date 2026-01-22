@@ -1225,7 +1225,19 @@ A conforming implementation MUST provide schema-directed parsing and validation.
 
 The authoritative model for schema authoring, schema-to-instance-graph interpretation, and deterministic projection to derived validation artifacts is defined in the normative annex [SCHEMAS.md](SCHEMAS.md).
 
-### 9.1 Schema-Directed Dispatch
+### 9.1 Scope and Inputs
+
+Schema-first means that semantic meaning and semantic validation are defined by a governing schema.
+
+Given the same required inputs, a conforming implementation MUST produce the same parsing, validation, and canonicalization results.
+
+The required inputs for schema-directed processing are:
+
+- the Codex document bytes
+- the governing schema
+- any other external inputs explicitly required by this specification or by the governing schema
+
+If any required input is missing, schema-directed processing MUST fail.
 
 Given a Codex document and a governing schema, a conforming implementation MUST dispatch parsing and validation according to that schema.
 
@@ -1235,11 +1247,397 @@ An implementation MAY perform purely syntactic parsing and formatting checks wit
 
 If an implementation performs schema-less checks, it MUST limit those checks to rules that are explicitly defined by this specification as independent of schema semantics.
 
+Schema-less checks MAY include:
+
+- determining whether the input bytes can be decoded as a permitted file encoding
+- determining whether the input matches the surface-form grammar
+- enforcing surface-form structural well-formedness (including marker nesting/matching)
+- enforcing surface-form canonicalization rules defined by this specification
+
+Schema-less checks MUST NOT include any schema-driven semantic interpretation.
+
+In particular, without a governing schema, an implementation MUST NOT:
+
+- interpret content mode versus child mode for a concept beyond what is mechanically implied by the surface form
+- interpret whether a concept instance is an Entity beyond the presence or absence of an `id` trait spelling
+- evaluate trait meaning, trait authorization, value typing beyond surface-form Value recognition, or constraint logic
+- resolve or validate reference traits beyond their surface-form value type constraints
+
 ### 9.3 Schema-Required Semantic Validation
 
 An implementation MUST NOT perform semantic validation without a governing schema.
 
+Given a governing schema, an implementation MUST perform semantic validation as defined by that schema.
+
+Schema-driven semantic validation MUST be deterministic and MUST be explainable in terms of the specific schema rule(s) applied.
+
+Schema-driven semantic validation MUST include evaluation of all schema-defined authorizations and constraints, including at least:
+
+- concept authorization and required/forbidden structure
+- content mode versus child mode requirements
+- trait authorization and required/forbidden traits
+- value type constraints beyond surface-form recognition
+- entity eligibility and any schema-defined identity constraints
+- schema-defined constraints over children, descendants, and collections
+- schema-defined reference semantics and any schema-defined resolution requirements
+
+If the governing schema requires any external inputs (for example, inputs needed to interpret lookup token bindings or to construct derived validation artifacts), those inputs MUST be explicit and machine-checkable.
+
 The required semantics for schema-driven validation and any required derived artifacts are defined in [SCHEMAS.md](SCHEMAS.md).
+
+### 9.4 Authoring Profiles (Guardrail)
+
+A schema document MUST be validated under exactly one authoring profile.
+
+Codex defines two authoring profiles:
+
+- **Profile A**: Layer A schema authoring only
+- **Profile B**: Layer B schema authoring only
+
+A schema document MUST NOT mix profiles.
+
+The authoring profile MUST be selected by an explicit declaration in the schema document.
+
+The schema document's root `Schema` concept MUST have an `authoringProfile` trait.
+
+`authoringProfile` MUST be exactly one of:
+
+- `$ProfileA`
+- `$ProfileB`
+
+If `authoringProfile` is missing or has any other value, schema processing MUST fail.
+
+### 9.5 Layer A (Codex-Native Schema Authoring)
+
+Layer A is the Codex-native schema authoring model defined by the schema-definition specification.
+
+Layer A schema authoring MUST satisfy the Codex language invariants, including closed-world semantics, determinism, and prohibition of heuristics.
+
+Layer A authoring is the required authoring form for Profile A.
+
+To support a total, deterministic projection to derived validation artifacts, Profile A schema authoring MUST additionally support the following extensions.
+
+#### 9.5.1 Pattern Flags
+
+The following atomic constraints MUST support an optional `flags` trait whose value is a string:
+
+- `ValueMatchesPattern`
+- `PatternConstraint`
+- `ContentMatchesPattern`
+
+If `flags` is omitted, it MUST be treated as the empty string.
+
+The `pattern` and `flags` semantics MUST be SPARQL 1.1 `REGEX` semantics.
+
+#### 9.5.2 Explicit Validator Definitions
+
+Layer A MUST support explicit validator definitions that make `ValueIsValid` deterministic.
+
+The derived validation embedding mechanism is defined in [SCHEMAS.md](SCHEMAS.md).
+
+#### 9.5.3 Explicit Path and Quantifier Rule Forms
+
+Layer A MUST provide explicit rule forms that bind exactly one path to exactly one nested rule, so that path and quantifier semantics are total and deterministic.
+
+The required rule forms and their semantics are defined in [SCHEMAS.md](SCHEMAS.md).
+
+#### 9.5.4 Collection and Order Constraint Scoping
+
+For each of the following constraint nodes:
+
+- `CollectionOrdering`
+- `CollectionAllowsEmpty`
+- `CollectionAllowsDuplicates`
+- `MemberCount`
+- `EachMemberSatisfies`
+- `OrderConstraint`
+
+the constraint node MUST have exactly one `Path` child that selects the collection members the constraint applies to.
+
+That member-selection path MUST be either `ChildPath` or `DescendantPath`.
+
+If the member-selection path is not one of these, expansion MUST fail.
+
+For `CollectionAllowsDuplicates` with `allowed=false`, the constraint node MUST include a required `keyTrait` trait whose value is a trait name string.
+
+If `keyTrait` is `id`, it MUST refer to the declared identifier as specified by the instance-graph identity rules.
+
+### 9.6 Layer B (RDF / SHACL Representation)
+
+Layer B is the canonical, fully general schema representation used to derive validation artifacts.
+
+Layer B MUST be representable as an RDF 1.1 graph.
+
+Layer B MAY be further expressed as SHACL shapes.
+
+Layer B MUST be deterministic and canonical:
+
+- Layer B MUST NOT contain RDF blank nodes.
+- Any node that would otherwise be a blank node MUST be assigned a deterministic skolem IRI.
+- Layer B MUST be treated as a set of RDF triples.
+- Layer B MUST NOT contain duplicate triples.
+
+Any algorithm that derives Layer B or derives SHACL shapes from Layer B MUST fail rather than guess when required semantics are not explicitly defined.
+
+The canonicalization and projection rules for Layer B are defined in [SCHEMAS.md](SCHEMAS.md).
+
+### 9.7 Codex→RDF Instance Graph Mapping
+
+To support deterministic derived validation artifacts (including SHACL), Codex defines a canonical mapping from a parsed Codex document to an RDF instance graph.
+
+The mapping MUST be deterministic and MUST NOT use RDF blank nodes.
+
+The mapping requires an explicit `documentBaseIri` external input.
+
+If `documentBaseIri` is missing, the mapping MUST fail.
+
+#### 9.7.1 Document Node
+
+The instance graph MUST include a single document node derived from `documentBaseIri`.
+
+#### 9.7.2 Node Identity and Declared Identifiers
+
+Each Concept instance in the Codex document MUST map to exactly one RDF node whose identity is a deterministic skolem IRI derived from its structural position within the document.
+
+The RDF node IRI MUST NOT be derived from the Concept instance's declared `id` trait value.
+
+If a Concept instance declares an `id` trait, that declared identifier MUST be represented as data via a dedicated predicate `codex:declaredId`.
+
+#### 9.7.3 Entity Marker
+
+If and only if a Concept instance is an Entity, the mapped RDF node MUST be marked as an Entity using a dedicated predicate `codex:isEntity`.
+
+#### 9.7.4 Parent Link and Ordered Children
+
+For each non-root Concept instance, the instance graph MUST include a parent link using a dedicated predicate `codex:parentNode`.
+
+Where a Concept instance contains child Concepts, the instance graph MUST represent the ordered child sequence using explicit edge nodes that carry a stable numeric index.
+
+#### 9.7.5 Reserved Predicates
+
+For the purposes of this section, let `schemaIri` be the governing schema's `Schema.id` value.
+
+The following reserved predicates are used by the instance graph mapping:
+
+- `codex:parent`
+- `codex:child`
+- `codex:index`
+- `codex:parentNode`
+- `codex:isEntity`
+- `codex:declaredId`
+- `codex:lookupToken`
+- `codex:lookupIri`
+- `codex:content`
+
+Their IRIs MUST be deterministically derived from `schemaIri` as follows:
+
+- `codex:parent` MUST be `schemaIri + "#codex/parent"`
+- `codex:child` MUST be `schemaIri + "#codex/child"`
+- `codex:index` MUST be `schemaIri + "#codex/index"`
+- `codex:parentNode` MUST be `schemaIri + "#codex/parentNode"`
+- `codex:isEntity` MUST be `schemaIri + "#codex/isEntity"`
+- `codex:declaredId` MUST be `schemaIri + "#codex/declaredId"`
+- `codex:lookupToken` MUST be `schemaIri + "#codex/lookupToken"`
+- `codex:lookupIri` MUST be `schemaIri + "#codex/lookupIri"`
+- `codex:content` MUST be `schemaIri + "#codex/content"`
+
+#### 9.7.6 Ordered Children Encoding
+
+This section defines the canonical ordered-children encoding used when an ordered view is required.
+
+For each parent Concept instance `C` and each direct child Concept instance `D` in children order, let:
+
+- `p = nodeIri(C)`
+- `d = nodeIri(D)`
+- `i = 0..n-1` be the ordinal position of `D` among the direct children of `C`, in source order
+
+When an ordered view is required, the mapping MUST emit an edge node `e` and three triples:
+
+- `(e, codex:parent, p)`
+- `(e, codex:child, d)`
+- `(e, codex:index, "i"^^xsd:integer)`
+
+The edge node IRI MUST be deterministic and injective.
+
+One conforming derivation is:
+
+- `e = p + "/__childEdge/" + i`
+
+`codex:parentNode` is distinct from `codex:parent`:
+
+- `codex:parentNode` links a concept instance node to its parent concept instance node.
+- `codex:parent` links an ordered-child edge node to the parent concept instance node.
+
+#### 9.7.7 Traits and Value Terms
+
+For each trait `t=v` on a concept instance `C`, the instance graph MUST emit exactly one triple:
+
+- `(nodeIri(C), traitPredicateIri(t), valueTerm(v))`
+
+Exception:
+
+- If `t` is `id`, the mapping MUST NOT emit a `traitPredicateIri("id")` triple.
+- Instead, `id` MUST be represented only by `codex:declaredId`.
+
+`valueTerm(v)` MUST be:
+
+- an IRI when `v` is an IRI Reference Value
+- otherwise a typed literal
+
+In this section, `xsd:*` refers to the XML Schema datatypes namespace.
+
+For typed literals, the datatype IRI MUST be computed by `valueDatatypeIri(v)` and the lexical form MUST be computed by `valueLex(v)`.
+
+Both `valueDatatypeIri(v)` and `valueLex(v)` MUST be derived by parsing `v` according to the Codex value catalog.
+
+`valueDatatypeIri(v)` MUST be:
+
+- `xsd:string` for String Values
+- `xsd:string` for Character Values
+- `xsd:boolean` for Boolean Values
+- `xsd:integer` for Integer Values
+
+For all other value types, `valueDatatypeIri(v)` MUST be the deterministic URN:
+
+- `urn:cdx:value-type:<T>`
+
+where `<T>` is the Codex value type token name (for example, `Uuid`, `Color`, `Temporal`, `List`, `Map`).
+
+`valueLex(v)` MUST be:
+
+- the decoded Unicode string value for String Values
+- the single Unicode scalar value as a Unicode string for Character Values
+- `"true"` or `"false"` for Boolean Values
+- a base-10 integer string for Integer Values
+
+For all other value types, `valueLex(v)` MUST be the canonical surface spelling of `v`.
+
+Lookup Token Values MUST be represented as typed literals with:
+
+- datatype: `urn:cdx:value-type:LookupToken`
+- lexical form: the canonical surface spelling (for example, `~myToken`)
+
+If a schema constraint requires an interpreted value (for example, numeric comparisons or string length), schema processing MUST either provide the interpreted value in a deterministic RDF representation or fail.
+
+#### 9.7.8 Content
+
+If a concept instance is in content mode, the mapping MUST emit:
+
+- `(nodeIri(C), codex:content, contentString)`
+
+`contentString` MUST be an `xsd:string` literal containing the concept's content after applying the Codex content escaping rules.
+
+#### 9.7.9 Deterministic Predicate IRIs
+
+For the purposes of this section, let `schemaIri` be the governing schema's `Schema.id` value.
+
+Trait predicate IRIs MUST be derived as follows.
+
+For a trait name `t`:
+
+- If the governing schema contains exactly one `TraitDefinition` for `t` and that `TraitDefinition` has an `id`, `traitPredicateIri(t)` MUST be that `id`.
+- Otherwise, `traitPredicateIri(t)` MUST be `schemaIri + "#trait/" + t`.
+
+Child predicate IRIs MUST be derived as follows.
+
+Let the governing schema's `ConceptDefinition.id` for the parent concept name be `P` and for the child concept name be `Q`.
+
+- `childPredicateIri(P,Q)` MUST be `P + "#child/" + percentEncode(Q)`.
+
+`percentEncode` MUST be RFC 3987 percent-encoding over the Unicode string form.
+
+#### 9.7.10 RDF Types
+
+Each Concept instance MUST emit an RDF type triple:
+
+- `(nodeIri(C), rdf:type, conceptClassIri(C.name))`
+
+`conceptClassIri(X)` MUST be the `ConceptDefinition.id` for concept name `X` in the governing schema.
+
+If `conceptClassIri(X)` cannot be resolved to exactly one `ConceptDefinition`, schema-driven validation MUST fail.
+
+Other aspects of the instance graph mapping not defined in this section (including the exact `nodeIri(...)` derivation) are defined in [SCHEMAS.md](SCHEMAS.md).
+
+### 9.8 Lookup Binding Table
+
+Lookup Token Values (see §5.10) are never resolved implicitly.
+
+If a governing schema requires lookup tokens to be resolved for any validation rule, the schema-driven validation process MUST construct and use an explicit lookup binding table.
+
+Each lookup binding MUST map exactly one lookup token name to exactly one IRI.
+
+If a lookup token is required to be resolved and the binding table does not contain exactly one binding for that token, schema-driven validation MUST fail.
+
+#### 9.8.1 Representation in the Instance Graph
+
+The schema-driven validation process MAY incorporate a lookup binding table.
+
+Each binding entry associates one Lookup Token Value with one IRI.
+
+Lookup Token Values MUST be represented as typed literals with:
+
+- datatype: `urn:cdx:value-type:LookupToken`
+- lexical form: the canonical surface spelling (for example, `~myToken`)
+
+Binding entries MUST be represented in the instance graph using the reserved predicates:
+
+- `codex:lookupToken` (object MUST be a Lookup Token typed literal)
+- `codex:lookupIri` (object MUST be an IRI)
+
+The mapping MUST accept bindings from any source that is explicit and deterministic.
+
+One conforming source is: a document-level section that is parsed into a list of bindings in source order.
+
+For each binding entry at ordinal position `i`, the mapping MUST emit a binding node `b` and two triples:
+
+- `(b, codex:lookupToken, tokenLiteral)`
+- `(b, codex:lookupIri, targetIri)`
+
+The binding node IRI MUST be deterministic and injective within a document.
+
+One conforming derivation is:
+
+- `b = documentBaseIri + "/__lookupBinding/" + i`
+
+#### 9.8.2 Binding Table Well-Formedness
+
+Additional binding table well-formedness rules:
+
+- If two binding entries have the same `tokenLiteral`, schema-driven validation MUST fail.
+- If any binding entry lacks either `tokenLiteral` or `targetIri`, schema-driven validation MUST fail.
+- If any binding entry provides multiple `targetIri` values for the same `tokenLiteral`, schema-driven validation MUST fail.
+
+### 9.9 Deterministic Projection to Derived Validation Artifacts
+
+A conforming implementation MAY derive validation artifacts from a governing schema.
+
+If an implementation derives validation artifacts, it MUST do so deterministically.
+
+Any derived validation artifact MUST be a pure function of:
+
+- the governing schema
+- the explicitly required external inputs, if any
+
+Derived validation artifact generation MUST fail rather than guess if any required semantic rule is not explicitly defined.
+
+Codex permits derived validation artifacts expressed as SHACL.
+
+If SHACL is used as a derived validation artifact format, the generated shapes MAY use SHACL-SPARQL.
+
+The canonical projection algorithms and canonicalization rules for derived artifacts are defined in [SCHEMAS.md](SCHEMAS.md).
+
+### 9.10 Failure Rules (No Guessing)
+
+Schema processing, schema-driven validation, instance-graph mapping, and derived-artifact projection MUST fail rather than guess when required information is missing or ambiguous.
+
+At minimum, processing MUST fail in any of the following cases:
+
+- the schema authoring profile is missing, invalid, or mixed (see §9.4)
+- a schema rule requires semantics not explicitly defined by this specification, the governing schema, or the schema-definition specification
+- a required external input is missing
+- an algorithm would require nondeterministic choice (including heuristic inference or “best effort”)
+- a lookup token is required to resolve but does not have exactly one binding
+- a derived validation artifact cannot be constructed without inventing missing definitions
 
 ---
 
