@@ -2689,7 +2689,7 @@ This content is **Normative**.
 
 ---
 
-#### 1. Purpose
+### 11.1. Purpose
 
 This specification defines the **authoritative ontology for Codex schemas**.
 
@@ -2709,7 +2709,7 @@ See §12.4.
 
 ---
 
-#### 2. Core Principles (Normative)
+### 11.2. Core Principles (Normative)
 
 * Schemas are **declarative data**, not executable programs
 * All authorization is **explicit**
@@ -2718,13 +2718,13 @@ See §12.4.
 
 ---
 
-#### 3. Schema
+### 11.3. Schema
 
-##### 3.1 `Schema`
+#### 11.3.1 `Schema`
 
 A `Schema` Concept defines a schema.
 
-###### Traits (Normative)
+##### Traits (Normative)
 
 * `id` (required; IRI reference)
 * `version` (required; string)
@@ -2732,7 +2732,7 @@ A `Schema` Concept defines a schema.
 * `title` (optional; string)
 * `description` (optional; string)
 
-###### Children (Normative)
+##### Children (Normative)
 
 A `Schema` MAY contain, in any order:
 
@@ -2744,15 +2744,15 @@ A `Schema` MAY contain, in any order:
 
 ---
 
-#### 4. Concept Definitions
+### 11.4. Concept Definitions
 
-##### 4.1 `ConceptDefinition`
+#### 11.4.1 `ConceptDefinition`
 
 Defines a Codex Concept.
 
 A `ConceptDefinition` is itself an Entity.
 
-###### Traits (Normative)
+##### Traits (Normative)
 
 * `id` (required; IRI reference)
 * `key` (optional; lookup token)
@@ -2760,7 +2760,7 @@ A `ConceptDefinition` is itself an Entity.
 * `conceptKind` (required; `$Semantic | $Structural | $ValueLike`)
 * `entityEligibility` (required; `$MustBeEntity | $MayBeEntity | $MustNotBeEntity`)
 
-###### Children (Normative)
+##### Children (Normative)
 
 * `ContentRules` (optional)
 * `TraitRules` (optional)
@@ -2769,29 +2769,29 @@ A `ConceptDefinition` is itself an Entity.
 
 ---
 
-##### 4.2 `ContentRules`
+#### 11.4.2 `ContentRules`
 
 Declares whether a Concept allows content.
 
 A Concept's content mode determines how the parser handles its body. This is essential for schema-first parsing.
 
-###### Children (Normative)
+##### Children (Normative)
 
 Exactly one of:
 
 * `AllowsContent` — Concept body is opaque content (content mode)
 * `ForbidsContent` — Concept body contains children or is empty (children mode)
 
-###### Defaults
+##### Defaults
 
 If `ContentRules` is omitted, `ForbidsContent` is assumed.
 
-###### Parser Implication
+##### Parser Implication
 
 The parser MUST consult `ContentRules` to determine content mode before parsing
 the Concept body. See §12.
 
-###### Example
+##### Example
 
 ```cdx
 <ConceptDefinition
@@ -2808,11 +2808,11 @@ the Concept body. See §12.
 
 ---
 
-##### 4.3 `TraitRules`
+#### 11.4.3 `TraitRules`
 
 Declares which Traits a Concept allows, requires, or forbids.
 
-###### Children (Normative)
+##### Children (Normative)
 
 Zero or more of:
 
@@ -2820,29 +2820,29 @@ Zero or more of:
 * `AllowsTrait` — Trait MAY be present
 * `ForbidsTrait` — Trait MUST NOT be present
 
-###### `RequiresTrait`
+##### `RequiresTrait`
 
-####### Traits
-
-* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
-
-###### `AllowsTrait`
-
-####### Traits
+###### Traits
 
 * `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 
-###### `ForbidsTrait`
+##### `AllowsTrait`
 
-####### Traits
+###### Traits
 
 * `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 
-###### Defaults
+##### `ForbidsTrait`
+
+###### Traits
+
+* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+
+##### Defaults
 
 Traits not listed are forbidden by default. A Concept with no `TraitRules` allows no Traits (except `id` and `key` which are governed by `entityEligibility`).
 
-###### Example
+##### Example
 
 ```cdx
 <TraitRules>
@@ -2854,11 +2854,11 @@ Traits not listed are forbidden by default. A Concept with no `TraitRules` allow
 
 ---
 
-##### 4.4 `ChildRules`
+#### 11.4.4 `ChildRules`
 
 Declares which child Concepts are allowed under a Concept.
 
-###### Children (Normative)
+##### Children (Normative)
 
 Zero or more of:
 
@@ -2866,17 +2866,17 @@ Zero or more of:
 * `RequiresChildConcept` — child Concept MUST appear (alias for min=1)
 * `ForbidsChildConcept` — child Concept MUST NOT appear
 
-###### `AllowsChildConcept`
+##### `AllowsChildConcept`
 
-####### Traits
+###### Traits
 
 * `conceptSelector` (required; Concept name as string)
 * `min` (optional; non-negative integer, default 0)
 * `max` (optional; positive integer, omit for unbounded)
 
-###### `RequiresChildConcept`
+##### `RequiresChildConcept`
 
-####### Traits
+###### Traits
 
 * `conceptSelector` (required; Concept name as string)
 * `min` (optional; positive integer, default 1)
@@ -2884,17 +2884,17 @@ Zero or more of:
 
 Note: `RequiresChildConcept` is semantically equivalent to `AllowsChildConcept` with `min=1`. It exists for clarity.
 
-###### `ForbidsChildConcept`
+##### `ForbidsChildConcept`
 
-####### Traits
+###### Traits
 
 * `conceptSelector` (required; Concept name as string)
 
-###### Defaults
+##### Defaults
 
 Child Concepts not listed are forbidden by default.
 
-###### Example
+##### Example
 
 ```cdx
 <ChildRules>
@@ -2907,22 +2907,22 @@ Child Concepts not listed are forbidden by default.
 
 ---
 
-##### 4.5 `CollectionRules`
+#### 11.4.5 `CollectionRules`
 
 Declares collection semantics for a Concept that acts as a container.
 
 `CollectionRules` is used when a Concept's children represent a logical collection (e.g., a list of ingredients, a set of tags). The semantics inform validation and graph compilation.
 
-###### Traits (Normative)
+##### Traits (Normative)
 
 * `ordering` (required; `$Ordered | $Unordered`)
 * `allowsDuplicates` (required; boolean)
 
-###### Form
+##### Form
 
 `CollectionRules` is self-closing (no children).
 
-###### Example
+##### Example
 
 ```cdx
 <ConceptDefinition
@@ -2943,9 +2943,9 @@ Declares collection semantics for a Concept that acts as a container.
 
 ---
 
-#### 5. Trait Definitions
+### 11.5. Trait Definitions
 
-##### 5.1 `TraitDefinition`
+#### 11.5.1 `TraitDefinition`
 
 Defines a Trait independently of any Concept.
 
@@ -2966,11 +2966,11 @@ If both `defaultValueType` and `defaultValueTypes` are provided, the implementat
 
 `priority` is a meta-schema concern. Implementations MUST NOT use `priority` to change validation or compilation semantics. Meta-schemas MAY constrain allowed `priority` values (e.g., `$Primary`, `$Secondary`).
 
-###### Children (Optional)
+##### Children (Optional)
 
 * `AllowedValues` — constrains the set of valid values
 
-###### Example
+##### Example
 
 ```cdx
 <TraitDefinition
@@ -2992,34 +2992,34 @@ If both `defaultValueType` and `defaultValueTypes` are provided, the implementat
 
 ---
 
-##### 5.2 `AllowedValues`
+#### 11.5.2 `AllowedValues`
 
 Constrains the values a Trait may accept.
 
-###### Children (Normative)
+##### Children (Normative)
 
 One or more value constraints:
 
 * `ValueIsOneOf` — value must be in explicit list
 * `EnumeratedConstraint` — value must be member of named enumeration
 
-###### `ValueIsOneOf`
+##### `ValueIsOneOf`
 
-####### Traits
+###### Traits
 
 * `values` (required; list of allowed values)
 
-###### `EnumeratedConstraint`
+##### `EnumeratedConstraint`
 
-####### Traits
+###### Traits
 
 * `set` (required; name of an `EnumeratedValueSet`)
 
 ---
 
-#### 6. Value Types
+#### 11.6. Value Types
 
-##### 6.1 Built-in Value Type Tokens (Normative)
+##### 11.6.1 Built-in Value Type Tokens (Normative)
 
 Schemas MAY reference the following built-in value types:
 
@@ -3050,15 +3050,15 @@ Schemas MAY also define additional value type tokens via `ValueTypeDefinition` (
 
 ---
 
-##### 6.2 `ValueTypeDefinition` (Optional)
+#### 11.6.2 `ValueTypeDefinition` (Optional)
 
 Defines a named value type with custom validation.
 
-###### Container
+##### Container
 
 `ValueTypeDefinitions` is a container Concept holding one or more `ValueTypeDefinition` children.
 
-###### Traits
+##### Traits
 
 * `id` (optional; IRI reference)
 * `name` (required; Concept name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
@@ -3067,37 +3067,37 @@ Defines a named value type with custom validation.
 
 ---
 
-##### 6.3 Enumerated Value Sets
+#### 11.6.3 Enumerated Value Sets
 
 Schemas MAY define named sets of enumerated values.
 
-###### Container
+##### Container
 
 `EnumeratedValueSets` is a container Concept holding one or more `EnumeratedValueSet` children.
 
-###### `EnumeratedValueSet`
+##### `EnumeratedValueSet`
 
 Defines a named set of valid enumerated tokens.
 
-####### Traits
+###### Traits
 
 * `name` (required; Concept name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
 
-####### Children
+###### Children
 
 One or more `Member` children.
 
-###### `Member`
+##### `Member`
 
 Defines a single member of an enumerated value set.
 
-####### Traits
+###### Traits
 
 * `value` (required; string matching the token name without `$` prefix)
 * `label` (optional; human-readable display string)
 * `description` (optional; explanatory string)
 
-###### Example
+##### Example
 
 ```cdx
 <EnumeratedValueSets>
@@ -3123,11 +3123,11 @@ Usage:
 
 ---
 
-##### 6.4 Built-in Enumerated Value Sets (Normative)
+#### 11.6.4 Built-in Enumerated Value Sets (Normative)
 
 The following enumerated value sets are defined by the language and MUST be recognized by all implementations.
 
-###### ConceptKind
+##### ConceptKind
 
 Describes the semantic role of a Concept.
 
@@ -3135,7 +3135,7 @@ Describes the semantic role of a Concept.
 * `$Structural` — organizes or groups other Concepts; typically not graph nodes
 * `$ValueLike` — represents a value-like construct
 
-###### EntityEligibility
+##### EntityEligibility
 
 Governs whether Concept instances may or must have identity.
 
@@ -3143,7 +3143,7 @@ Governs whether Concept instances may or must have identity.
 * `$MayBeEntity` — instances MAY declare an `id` Trait
 * `$MustNotBeEntity` — instances MUST NOT declare an `id` Trait
 
-###### CompatibilityClass
+##### CompatibilityClass
 
 Declares schema version compatibility.
 
@@ -3151,14 +3151,14 @@ Declares schema version compatibility.
 * `$ForwardCompatible` — data authored for new version may validate under older
 * `$Breaking` — migration required; existing data may become invalid
 
-###### Ordering
+##### Ordering
 
 Declares collection ordering semantics.
 
 * `$Ordered` — child order is significant and preserved
 * `$Unordered` — child order is not significant
 
-###### Cardinality
+##### Cardinality
 
 Declares Trait value cardinality.
 
