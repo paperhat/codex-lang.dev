@@ -1223,7 +1223,7 @@ Codex is schema-first.
 
 A conforming implementation MUST provide schema-directed parsing and validation.
 
-The authoritative model for schema authoring, schema-to-instance-graph interpretation, and deterministic projection to derived validation artifacts is defined in the normative annex [SCHEMAS.md](SCHEMAS.md).
+This specification defines the authoritative model for schema authoring, schema-to-instance-graph interpretation, and deterministic projection to derived validation artifacts.
 
 ### 9.1 Scope and Inputs
 
@@ -1283,7 +1283,7 @@ Schema-driven semantic validation MUST include evaluation of all schema-defined 
 
 If the governing schema requires any external inputs (for example, inputs needed to interpret lookup token bindings or to construct derived validation artifacts), those inputs MUST be explicit and machine-checkable.
 
-The required semantics for schema-driven validation and any required derived artifacts are defined in [SCHEMAS.md](SCHEMAS.md).
+The required semantics for schema-driven validation and any required derived artifacts are defined by this specification (notably §9.5–§9.11) and by the schema-definition specification.
 
 ### 9.4 Authoring Profiles (Guardrail)
 
@@ -1306,6 +1306,13 @@ The schema document's root `Schema` concept MUST have an `authoringProfile` trai
 - `$ProfileB`
 
 If `authoringProfile` is missing or has any other value, schema processing MUST fail.
+
+Additional guardrails MUST hold:
+
+- Profile A schemas MUST NOT contain `RdfGraph`.
+- Profile B schemas MUST contain exactly one `RdfGraph` and MUST NOT contain Layer A schema-definition concepts.
+- Layer A expansion MUST generate a canonical Layer B graph; different Layer A spellings that are semantically identical MUST expand to byte-identical Layer B graphs.
+- Layer B canonicalization MUST make semantically identical graphs byte-identical.
 
 ### 9.5 Layer A (Codex-Native Schema Authoring)
 
@@ -1333,13 +1340,57 @@ The `pattern` and `flags` semantics MUST be SPARQL 1.1 `REGEX` semantics.
 
 Layer A MUST support explicit validator definitions that make `ValueIsValid` deterministic.
 
-The derived validation embedding mechanism is defined in [SCHEMAS.md](SCHEMAS.md).
+`ValidatorDefinitions` is a container concept.
+
+`ValidatorDefinition` defines one validator.
+
+Each `ValidatorDefinition` MUST have these traits:
+
+- `name` (required; Enumerated Token Value)
+- `message` (optional; String Value)
+
+Each `ValidatorDefinition` MUST be in content mode.
+
+The content of `ValidatorDefinition` MUST be a SPARQL `SELECT` query string.
+
+The `SELECT` results MUST follow the SHACL-SPARQL convention (returning one row per violation with `?this` bound to the focus node).
+
+If a derived validation artifact is expressed using SHACL-SPARQL, the embedding contract for `ValueIsValid validatorName=$X` MUST be:
+
+1. Resolve `$X` to exactly one `ValidatorDefinition` in the governing schema.
+2. Emit a SHACL-SPARQL constraint whose `sh:select` string is exactly the `ValidatorDefinition` content.
+
+If `$X` cannot be resolved to exactly one `ValidatorDefinition`, schema processing MUST fail.
 
 #### 9.5.3 Explicit Path and Quantifier Rule Forms
 
 Layer A MUST provide explicit rule forms that bind exactly one path to exactly one nested rule, so that path and quantifier semantics are total and deterministic.
 
-The required rule forms and their semantics are defined in [SCHEMAS.md](SCHEMAS.md).
+The schema-definition specification defines paths (`TraitPath`, `ChildPath`, `DescendantPath`, `ContentPath`) and quantifiers (`Exists`, `ForAll`, `Count`) but does not, by itself, define a concrete rule-node form that composes them with rules.
+
+To produce a total, deterministic mapping, Layer A MUST include explicit rule-node forms that bind a path and scope a nested rule.
+
+Layer A MUST provide the following rule nodes:
+
+- `OnPathExists`
+- `OnPathForAll`
+- `OnPathCount`
+
+Each of these MUST have exactly one `Path` child and exactly one `Rule` child.
+
+`OnPathCount` MUST additionally have:
+
+- `minCount` (optional; non-negative integer)
+- `maxCount` (optional; positive integer)
+
+The `Path` child MUST be exactly one of:
+
+- `TraitPath`
+- `ChildPath`
+- `DescendantPath`
+- `ContentPath`
+
+For schema rules that express the common “every direct child of type X satisfies R” pattern, `ChildSatisfies(conceptSelector=X, Rule=R)` MUST be interpreted as equivalent to `OnPathForAll(Path=ChildPath(X), Rule=R)`.
 
 #### 9.5.4 Collection and Order Constraint Scoping
 
@@ -1370,16 +1421,106 @@ Layer B MUST be representable as an RDF 1.1 graph.
 
 Layer B MAY be further expressed as SHACL shapes.
 
+Layer B MUST be able to represent any SHACL graph, including SHACL-SPARQL constraints.
+
+This specification does not define namespace prefixes; Layer B uses IRIs directly.
+
 Layer B MUST be deterministic and canonical:
 
 - Layer B MUST NOT contain RDF blank nodes.
-- Any node that would otherwise be a blank node MUST be assigned a deterministic skolem IRI.
+- All RDF nodes in Layer B MUST be IRIs.
+- Where SHACL commonly uses blank nodes (for example, `sh:property` values and RDF lists), Layer B MUST use deterministically derived skolem IRIs instead.
 - Layer B MUST be treated as a set of RDF triples.
 - Layer B MUST NOT contain duplicate triples.
 
+#### 9.6.1 Canonical Triple Form
+
+When Layer B is authored as a Codex graph form, it MUST use:
+
+- `RdfGraph` — container for triples
+- `RdfTriple` — a single RDF triple
+
+`RdfGraph` MUST be in children mode.
+
+`RdfGraph` children MUST be one or more `RdfTriple`.
+
+Each `RdfTriple` MUST have these traits:
+
+- `s` (required; IRI Reference Value) — subject
+- `p` (required; IRI Reference Value) — predicate
+
+And exactly one of:
+
+- `o` (required; IRI Reference Value) — object IRI
+- `lex` (required; String Value) — object literal lexical form
+
+If `lex` is present, `RdfTriple` MAY have:
+
+- `datatype` (optional; IRI Reference Value) — RDF datatype IRI
+- `language` (optional; String Value) — RDF language tag
+
+If `language` is present, `datatype` MUST be absent.
+
+If `datatype` is absent and `language` is absent, the literal datatype MUST be `xsd:string`.
+
+#### 9.6.2 Canonical Ordering and Duplicate Removal
+
+In canonical Layer B, `RdfTriple` children MUST be sorted in ascending lexicographic order of `(s, p, oKey)`.
+
+`oKey` MUST be:
+
+- `o` when the object is an IRI, and
+- the pair `(datatypeOrDefault, lex)` when the object is a literal.
+
+If two triples are identical after this normalization, duplicates MUST be removed.
+
 Any algorithm that derives Layer B or derives SHACL shapes from Layer B MUST fail rather than guess when required semantics are not explicitly defined.
 
-The canonicalization and projection rules for Layer B are defined in [SCHEMAS.md](SCHEMAS.md).
+#### 9.6.3 RDF List Encoding (No Blank Nodes)
+
+If Layer B includes an RDF list (for example, as the object of `sh:in`), it MUST be encoded using the standard RDF list vocabulary (`rdf:first`, `rdf:rest`, `rdf:nil`).
+
+All RDF list nodes MUST be IRIs.
+
+Where the RDF list encoding would otherwise use blank nodes, Layer B MUST use deterministically derived skolem IRIs instead.
+
+#### 9.6.4 Deterministic Derived IRIs (One Way To Say It)
+
+To preserve “one way to say it”, every derived IRI used by schema processing, instance graph mapping, and derived validation artifact generation MUST be computed by a single deterministic algorithm.
+
+If a derivation is underspecified such that multiple incompatible algorithms could conform, processing MUST fail rather than guess.
+
+#### 9.6.5 Node Shape IRIs
+
+If derived validation artifacts use node shapes (for example, SHACL `sh:NodeShape` resources), the node shape IRI for a concept class IRI `K` MUST be deterministically derived as:
+
+- `nodeShapeIri(K) = K + "#shape"`
+
+#### 9.6.6 Property Shape IRIs
+
+If derived validation artifacts use property shapes (for example, SHACL `sh:PropertyShape` resources), each property shape MUST have a deterministic IRI.
+
+For a node shape IRI `S` and a trait name `t`:
+
+- `propertyShapeIri(S,t) = S + "/property/trait/" + t`
+
+For a node shape IRI `S` and a child class IRI `Q`:
+
+- `propertyShapeIri(S,Q) = S + "/property/child/" + percentEncode(Q)`
+
+`percentEncode` MUST be RFC 3987 percent-encoding over the Unicode string form.
+
+For a node shape IRI `S` and an RDF predicate IRI `p` used as a SHACL path (for example, `codex:content` or `codex:isEntity`):
+
+- `predicatePropertyShapeIri(S,p) = S + "/property/predicate/" + percentEncode(p)`
+
+#### 9.6.7 Document Node Shape IRI
+
+If derived validation artifacts include a node shape targeting the document node, its node shape IRI MUST be deterministically derived as:
+
+- `documentNodeShapeIri = schemaIri + "#shape/Document"`
+
+All canonicalization and projection rules for Layer B required by this specification are defined in this section.
 
 ### 9.7 Codex→RDF Instance Graph Mapping
 
@@ -1393,25 +1534,77 @@ If `documentBaseIri` is missing, the mapping MUST fail.
 
 #### 9.7.1 Document Node
 
-The instance graph MUST include a single document node derived from `documentBaseIri`.
+The instance graph MUST include a single document node.
+
+The RDF node IRI for the Document context MUST be exactly `documentBaseIri`.
 
 #### 9.7.2 Node Identity and Declared Identifiers
 
 Each Concept instance in the Codex document MUST map to exactly one RDF node whose identity is a deterministic skolem IRI derived from its structural position within the document.
 
+##### 9.7.2.1 Skolem IRI Derivation (`nodeIri`)
+
+This section defines a conforming deterministic skolem IRI derivation for concept instance nodes.
+
+Let `C` be a Concept instance.
+
+Let `C.name` be the concept name of `C`.
+
+Let `parent(C)` be the direct parent Concept instance of `C`, or the Document context if `C` is a root Concept instance.
+
+Let `siblings(C)` be:
+
+- the ordered list of all top-level Concept instances in the document (in source order) if `parent(C)` is the Document context, or
+- the ordered list of all direct child Concept instances of `parent(C)` (in source order) otherwise.
+
+Let `ordinalIndex(C)` be the unique integer `i` such that `siblings(C)[i]` is `C`.
+
+`ordinalIndex(C)` MUST be zero-based.
+
+`ordinalIndex(C)` MUST be expressed in base-10 with no leading zeros (except that `0` is permitted).
+
+Let `percentEncode` be RFC 3987 percent-encoding over the Unicode string form.
+
+Define `addressSegments(C)` as the ordered list of segments obtained by walking from the document root to `C` (inclusive), where each segment for a visited node `X` is:
+
+- `percentEncode(X.name) + "/" + ordinalIndex(X)`
+
+Define `nodeIri(C)` as:
+
+- `documentBaseIri + "/__node/" + join("/", addressSegments(C))`
+
+`nodeIri(C)` MUST be stable and injective within a document.
+
 The RDF node IRI MUST NOT be derived from the Concept instance's declared `id` trait value.
 
 If a Concept instance declares an `id` trait, that declared identifier MUST be represented as data via a dedicated predicate `codex:declaredId`.
+
+If a concept instance `C` declares an `id` trait with value `v`, the mapping MUST emit:
+
+- `(nodeIri(C), codex:declaredId, valueTerm(v))`
 
 #### 9.7.3 Entity Marker
 
 If and only if a Concept instance is an Entity, the mapped RDF node MUST be marked as an Entity using a dedicated predicate `codex:isEntity`.
 
+To support identity constraints without guessing, the mapping MUST emit an entity marker for every Concept instance node:
+
+- If the concept instance is an Entity, emit `(nodeIri(C), codex:isEntity, "true"^^xsd:boolean)`.
+- Otherwise, emit `(nodeIri(C), codex:isEntity, "false"^^xsd:boolean)`.
+
 #### 9.7.4 Parent Link and Ordered Children
 
 For each non-root Concept instance, the instance graph MUST include a parent link using a dedicated predicate `codex:parentNode`.
 
-Where a Concept instance contains child Concepts, the instance graph MUST represent the ordered child sequence using explicit edge nodes that carry a stable numeric index.
+For each parent Concept instance `C` and each direct child Concept instance `D`, the instance graph MUST emit:
+
+- `(nodeIri(D), codex:parentNode, nodeIri(C))`
+
+For each child Concept instance `D` of parent Concept instance `C`, the instance graph MUST emit the structural child triple:
+
+- `(nodeIri(C), childPredicateIri(C,D), nodeIri(D))`
+
+If an ordered view is required, the instance graph MUST additionally represent the ordered child sequence using explicit edge nodes that carry a stable numeric index (see §9.7.6).
 
 #### 9.7.5 Reserved Predicates
 
@@ -1556,7 +1749,7 @@ Each Concept instance MUST emit an RDF type triple:
 
 If `conceptClassIri(X)` cannot be resolved to exactly one `ConceptDefinition`, schema-driven validation MUST fail.
 
-Other aspects of the instance graph mapping not defined in this section (including the exact `nodeIri(...)` derivation) are defined in [SCHEMAS.md](SCHEMAS.md).
+All aspects of the instance graph mapping required by this specification are defined in this section.
 
 ### 9.8 Lookup Binding Table
 
@@ -1620,11 +1813,279 @@ Any derived validation artifact MUST be a pure function of:
 
 Derived validation artifact generation MUST fail rather than guess if any required semantic rule is not explicitly defined.
 
+Derived validation artifact generation MUST fail if any of the following hold:
+
+- the governing schema is not valid under the schema-of-schemas
+- any `ConceptDefinition` lacks an `id`
+- any required selector (concept name, trait name) cannot be resolved to a unique definition
+- any schema rule produces a semantic constraint that cannot be expressed under the chosen Codex→RDF instance graph mapping
+
 Codex permits derived validation artifacts expressed as SHACL.
 
 If SHACL is used as a derived validation artifact format, the generated shapes MAY use SHACL-SPARQL.
 
-The canonical projection algorithms and canonicalization rules for derived artifacts are defined in [SCHEMAS.md](SCHEMAS.md).
+If the governing schema includes constraint definitions with explicit targets, a derived SHACL artifact MUST apply each constraint to the target node shape(s) determined as follows:
+
+- For `TargetConcept conceptSelector="X"`, the constraint MUST be applied to the node shape derived from the `ConceptDefinition` whose `name` is `X`.
+- For `TargetContext contextSelector="Document"`, the constraint MUST be applied to a special node shape with IRI `schemaIri + "#shape/Document"` and MUST include at least:
+	- `(schemaIri + "#shape/Document", rdf:type, sh:NodeShape)`
+	- `(schemaIri + "#shape/Document", sh:targetNode, documentBaseIri)`
+	If `documentBaseIri` is not available as an external input, derived validation artifact generation MUST fail.
+- If `contextSelector` is a concept name (not `Document`), the constraint MUST be applied to the node shape for that concept.
+
+If a derived validation artifact is produced as a SHACL graph, it MUST be canonical and MUST include the following structural shape triples:
+
+- For each `ConceptDefinition` in the governing schema with concept name `X`, let `K = conceptClassIri(X)` and let `S = nodeShapeIri(K)`. The derived artifact MUST include:
+	- `(S, rdf:type, sh:NodeShape)`
+	- `(S, sh:targetClass, K)`
+- If the derived artifact includes any constraint expressed on a property shape `PS`, it MUST include:
+	- `(S, sh:property, PS)` where `S` is the owning node shape
+	- `(PS, rdf:type, sh:PropertyShape)`
+	and `PS` MUST be deterministically derived as follows:
+	- for a trait name `t`: `PS = propertyShapeIri(S,t)` and the artifact MUST include `(PS, sh:path, traitPredicateIri(t))`
+	- for a child class IRI `Q`: `PS = propertyShapeIri(S,Q)` and the artifact MUST include `(PS, sh:path, childPredicateIri(K,Q))`
+	- for a predicate IRI `p`: `PS = predicatePropertyShapeIri(S,p)` and the artifact MUST include `(PS, sh:path, p)`
+
+If a derived validation artifact expresses any constraint using SHACL-SPARQL, the `sh:select` string MUST be a SPARQL 1.1 `SELECT` query that returns one row per violating focus node using the SHACL-SPARQL convention:
+
+- the focus node variable MUST be `?this`
+- a row returned by the query MUST indicate a violation
+
+To keep derived artifacts canonical and avoid accidental variable capture, internal SPARQL variables introduced during constraint translation MUST be allocated deterministically.
+
+One conforming approach is:
+
+- Walk the constraint's rule tree in pre-order.
+- For the $k$-th visited node (1-indexed), allocate a node-local suffix $k$.
+- Any internal variable introduced while translating that node MUST append suffix $k$ to a base name.
+- Variables introduced for one rule node MUST NOT be referenced outside the `EXISTS { ... }` block created for that node.
+
+#### 9.9.1 Enumerated Value Sets (`sh:in`)
+
+If a derived SHACL artifact encodes an enumerated value-set constraint using `sh:in` on a property shape `PS`, it MUST emit a triple `(PS, sh:in, listHead)`.
+
+This rule applies whenever the governing schema constrains a value to a fixed enumerated set and that constraint is projected into SHACL.
+
+`listHead` MUST be an IRI and MUST be a deterministically derived skolem IRI (no blank nodes).
+
+The list structure MUST be encoded as an RDF list as specified in §9.6.3.
+
+#### 9.9.2 Pattern Constraints (`sh:pattern`, `sh:flags`)
+
+If a derived SHACL artifact encodes a pattern constraint using `sh:pattern` on a property shape `PS`, it MUST emit a triple `(PS, sh:pattern, p)`.
+
+If `flags` is present and non-empty, it MUST emit a triple `(PS, sh:flags, f)`.
+
+This rule applies to derived SHACL constraints corresponding to schema constraints such as `ValueMatchesPattern` and `PatternConstraint`.
+
+The `pattern` and `flags` semantics MUST be SPARQL 1.1 `REGEX` semantics (see §9.5.1).
+
+#### 9.9.3 SHACL Core Value Constraints
+
+If a derived SHACL artifact encodes a value-length constraint on a property shape `PS`, it MUST emit:
+
+- `(PS, sh:minLength, "a"^^xsd:integer)` when a minimum length `a` is present
+- `(PS, sh:maxLength, "b"^^xsd:integer)` when a maximum length `b` is present
+
+If a derived SHACL artifact encodes a non-empty constraint on a property shape `PS`, it MUST emit:
+
+- `(PS, sh:minLength, "1"^^xsd:integer)`
+
+If a derived SHACL artifact encodes a numeric-range constraint on a property shape `PS`, it MUST use SHACL Core numeric bounds only when the active value datatype is `xsd:integer`.
+
+If the active datatype is not `xsd:integer`, derived validation artifact generation MUST fail.
+
+When permitted, it MUST emit:
+
+- `(PS, sh:minInclusive, "u"^^xsd:integer)` when a minimum value `u` is present
+- `(PS, sh:maxInclusive, "v"^^xsd:integer)` when a maximum value `v` is present
+
+#### 9.9.4 Child Constraints
+
+For child constraints projected onto a property shape `PS`, let `P` be the concept class IRI (RDF class) targeted by the owning node shape.
+
+If a derived SHACL artifact encodes a required-child constraint for a child concept selector `X` on a property shape `PS`, it MUST emit:
+
+- `(PS, sh:path, childPredicateIri(P, conceptClassIri(X)))`
+- `(PS, sh:minCount, "1"^^xsd:integer)`
+- `(PS, sh:class, conceptClassIri(X))`
+
+If a derived SHACL artifact encodes a forbidden-child constraint for a child concept selector `X` on a property shape `PS`, it MUST emit:
+
+- `(PS, sh:path, childPredicateIri(P, conceptClassIri(X)))`
+- `(PS, sh:maxCount, "0"^^xsd:integer)`
+
+If a schema rule permits a child relationship (allows without requiring), the derived SHACL artifact MUST NOT emit a constraint.
+
+#### 9.9.5 Content Constraints
+
+If a derived SHACL artifact encodes a content-required constraint on a property shape `PS`, it MUST emit:
+
+- Let `S` be the owning node shape for the constraint. The property shape IRI MUST be `PS = predicatePropertyShapeIri(S, codex:content)`.
+- `(PS, sh:path, codex:content)`
+- `(PS, sh:minLength, "1"^^xsd:integer)`
+
+If a derived SHACL artifact encodes a content pattern constraint on a property shape `PS`, it MUST emit:
+
+- Let `S` be the owning node shape for the constraint. The property shape IRI MUST be `PS = predicatePropertyShapeIri(S, codex:content)`.
+- `(PS, sh:path, codex:content)`
+- `(PS, sh:pattern, p)`
+
+If `flags` is present and non-empty, it MUST emit:
+
+- `(PS, sh:flags, f)`
+
+The `pattern` and `flags` semantics MUST be SPARQL 1.1 `REGEX` semantics (see §9.5.1).
+
+#### 9.9.6 Identity Constraints (`codex:isEntity`)
+
+If a derived SHACL artifact encodes an identity constraint requiring an entity, it MUST emit:
+
+- Let `S` be the owning node shape for the constraint. The property shape IRI MUST be `PS = predicatePropertyShapeIri(S, codex:isEntity)`.
+- `(PS, sh:path, codex:isEntity)`
+- `(PS, sh:hasValue, "true"^^xsd:boolean)`
+
+If a derived SHACL artifact encodes an identity constraint requiring a non-entity, it MUST emit:
+
+- Let `S` be the owning node shape for the constraint. The property shape IRI MUST be `PS = predicatePropertyShapeIri(S, codex:isEntity)`.
+- `(PS, sh:path, codex:isEntity)`
+- `(PS, sh:hasValue, "false"^^xsd:boolean)`
+
+#### 9.9.7 Uniqueness Constraints
+
+Derived validation artifacts MUST support the following uniqueness constraints.
+
+For both constraints, the identity of a trait is determined by the instance-graph trait mapping (see §9.7.7).
+
+If a uniqueness constraint refers to `t = id`, it MUST refer to the declared identifier as represented by `codex:declaredId`.
+
+For nearest-scope uniqueness, `UniqueConstraint(trait=t, scope=S)` MUST mean:
+
+- within the nearest ancestor (including self) of concept type `S`, no two nodes may share the same value for trait `t`.
+
+For purposes of this constraint, the nearest scope node is the unique node `scopeK` such that:
+
+- `focusVar <codex:parentNode>* scopeK`
+- `scopeK rdf:type <conceptClassIri(S)>`
+- and there is no other node `midK` where:
+	- `focusVar <codex:parentNode>* midK`
+	- `midK rdf:type <conceptClassIri(S)>`
+	- `midK <codex:parentNode>+ scopeK`
+	- `midK != scopeK`
+
+Derived validation artifact generation MUST fail if no nearest scope node exists.
+
+For document-wide uniqueness, `UniqueInDocument(trait=t)` MUST mean:
+
+- no two nodes in the Document may share the same value for trait `t`.
+
+#### 9.9.8 Context Constraints
+
+Context constraints are expressible using the deterministic parent links in the instance graph (see §9.7.4).
+
+`ContextConstraint(type=OnlyValidUnderParent, contextSelector=P)` MUST be expressible in derived validation artifacts.
+
+If projected into a SHACL-derived artifact, it MUST map to SHACL-SPARQL and MUST report a violation when the focus node has no direct parent of type `P`.
+
+One conforming boolean condition for the SHACL-SPARQL constraint is:
+
+```
+EXISTS {
+	focusVar <codex:parentNode> ?pK .
+	?pK rdf:type <conceptClassIri(P)> .
+}
+```
+
+`ContextConstraint(type=OnlyValidUnderContext, contextSelector=A)` MUST be expressible in derived validation artifacts.
+
+If projected into a SHACL-derived artifact, it MUST map to SHACL-SPARQL and MUST report a violation when the focus node has no ancestor (via one or more parent links) of type `A`.
+
+One conforming boolean condition for the SHACL-SPARQL constraint is:
+
+```
+EXISTS {
+	focusVar <codex:parentNode>+ ?aK .
+	?aK rdf:type <conceptClassIri(A)> .
+}
+```
+
+#### 9.9.9 Reference Constraints (Reference Trait Predicates)
+
+Reference constraints are expressible without external resolution if identifiers are represented by `codex:declaredId` and lookup tokens are resolvable via the lookup binding table (see §9.8).
+
+For the purposes of reference constraints, the set of reference-trait predicates MUST be exactly:
+
+- `traitPredicateIri("reference")`
+- `traitPredicateIri("target")`
+- `traitPredicateIri("for")`
+
+If a governing schema uses different reference trait names, derived validation artifact generation MUST fail.
+
+`ReferenceConstraint(type=ReferenceSingleton)` MUST be expressible in derived validation artifacts.
+
+If projected into a SHACL-derived artifact, it MUST be expressible (for example, via SHACL-SPARQL or equivalent core constraints) and MUST report a violation when more than one reference-trait predicate is present on the same focus node.
+
+`ReferenceConstraint(type=ReferenceTraitAllowed)` is underspecified unless the constraint specifies which reference trait is allowed.
+
+Therefore, derived validation artifact generation MUST fail for `ReferenceTraitAllowed` unless the constraint provides an additional trait `traitName` whose value is one of `reference`, `target`, or `for`.
+
+#### 9.9.10 Reference Constraints (Deterministic Resolution and Targets)
+
+Some reference constraints require deterministically resolving reference values to an IRI.
+
+For the purposes of reference constraints, a reference value `v` MUST be one of:
+
+- an IRI (RDF IRI term), or
+- a Lookup Token typed literal with datatype `urn:cdx:value-type:LookupToken`.
+
+Given a reference value `v`, its resolved IRI `r` MUST be computed as follows:
+
+- If `v` is an IRI, then `r = v`.
+- If `v` is a Lookup Token typed literal, then:
+	- If there exists exactly one binding entry in the lookup binding table such that the binding entry's `tokenLiteral` is `v`, and the binding entry's `targetIri` is `r`, then `r` is that bound `targetIri`.
+	- Otherwise, `v` MUST be treated as unresolved.
+- Otherwise, `v` MUST be treated as unresolved.
+
+Derived validation artifacts MUST NOT guess a resolution for an unresolved reference value.
+
+Derived validation artifacts MUST support `ReferenceConstraint(type=ReferenceTargetsEntity)`.
+
+`ReferenceTargetsEntity` MUST mean:
+
+- For each reference-trait predicate `p` in the reference-trait predicate set and for each value `v` on the focus node where `(focusVar, p, v)` holds, compute the resolved IRI `r`.
+- A violation MUST be reported if `v` is treated as unresolved.
+- A violation MUST be reported unless there exists a node `n` in the same Document such that:
+	- `(n, codex:declaredId, r)` holds, and
+	- `(n, codex:isEntity, "true"^^xsd:boolean)` holds.
+
+#### 9.9.11 Reference Constraints (Targets a Concept)
+
+Derived validation artifacts MUST support `ReferenceConstraint(type=ReferenceTargetsConcept, conceptSelector=X)`.
+
+`ReferenceTargetsConcept` MUST mean:
+
+- For each reference-trait predicate `p` in the reference-trait predicate set and for each value `v` on the focus node where `(focusVar, p, v)` holds, compute the resolved IRI `r`.
+- A violation MUST be reported if `v` is treated as unresolved.
+- A violation MUST be reported unless there exists a node `n` in the same Document such that:
+	- `(n, codex:declaredId, r)` holds, and
+	- `(n, rdf:type, conceptClassIri(X))` holds.
+
+#### 9.9.12 Reference Constraints (Must Resolve)
+
+Derived validation artifacts MUST support `ReferenceConstraint(type=ReferenceMustResolve)`.
+
+`ReferenceMustResolve` MUST mean:
+
+- For each reference-trait predicate `p` in the reference-trait predicate set and for each value `v` on the focus node where `(focusVar, p, v)` holds, compute the resolved IRI `r`.
+- A violation MUST be reported if `v` is treated as unresolved.
+- A violation MUST be reported unless there exists a node `n` in the same Document such that `(n, codex:declaredId, r)` holds.
+
+If a derived validation artifact is produced as an RDF graph (including a SHACL graph), the projection to a concrete RDF syntax MUST be exactly:
+
+1. Validate the derived `RdfGraph` against the derived-artifact structural rules.
+2. Emit the triples in a chosen RDF concrete syntax (for example, Turtle).
+
+The projection MUST NOT change the set of triples.
 
 ### 9.10 Failure Rules (No Guessing)
 
@@ -1657,21 +2118,25 @@ At minimum, processing MUST fail in any of the following cases:
 
 ## 11. Schema Definition Language
 
-The schema definition language is defined by the Codex schema-definition model and its schema-to-validation projection.
+The schema definition language is defined by the Codex Schema Definition Specification:
 
-The authoritative schema authoring profile rules and projection requirements are defined in [SCHEMAS.md](SCHEMAS.md).
+- [schema-definition/index.md](schema-definition/index.md)
 
 ---
 
 ## 12. Schema Loading and Bootstrapping
 
-Schema loading and bootstrapping requirements are defined by the normative schema system described in [SCHEMAS.md](SCHEMAS.md).
+Schema loading and bootstrapping requirements are defined by the Codex Schema Loading Specification:
+
+- [schema-loading/index.md](schema-loading/index.md)
 
 ---
 
 ## 13. Schema Versioning
 
-Schema versioning requirements are defined by the normative schema system described in [SCHEMAS.md](SCHEMAS.md).
+Schema versioning requirements are defined by the Codex Schema Versioning Specification:
+
+- [schema-versioning/index.md](schema-versioning/index.md)
 
 ---
 
