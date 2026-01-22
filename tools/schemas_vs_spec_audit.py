@@ -2,12 +2,20 @@
 
 from __future__ import annotations
 
+import argparse
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC_ROOT = ROOT / "spec" / "0.1"
-SCHEMAS_ROOT = ROOT.parent / "schemas"
+DEFAULT_SCHEMAS_ROOT_CANDIDATES = [
+    # historical mono-repo layout (schemas folder beside codex-lang.dev)
+    ROOT.parent / "schemas",
+    # current mono-repo layout for Paperhat
+    ROOT.parent / "paperhat.dev" / "DRAFT" / "schemas",
+    # fall back: local to codex-lang.dev (if present)
+    ROOT / "schemas",
+]
 
 SIGIL_RE = re.compile(r"\$[A-Za-z][A-Za-z0-9]*")
 TRAIT_RE = re.compile(r"\b([a-z][A-Za-z0-9]*)=")
@@ -25,8 +33,12 @@ def _read_all_spec_text() -> str:
     return "\n".join(parts)
 
 
-def _collect_schema_tokens() -> dict[str, list[str]]:
-    schema_files = sorted(SCHEMAS_ROOT.rglob("*.cdx"))
+def _read_unified_spec_text() -> str:
+    return (SPEC_ROOT / "codex-language-specification.md").read_text(encoding="utf-8")
+
+
+def _collect_schema_tokens(*, schemas_root: Path) -> dict[str, list[str]]:
+    schema_files = sorted(schemas_root.rglob("*.cdx"))
 
     sigils: set[str] = set()
     traits: set[str] = set()
@@ -51,6 +63,25 @@ def _collect_schema_tokens() -> dict[str, list[str]]:
         "concepts": sorted(concepts),
         "boolLiterals": sorted(bool_literals),
     }
+
+
+def _resolve_schemas_root(arg: str | None) -> Path:
+    if arg:
+        p = Path(arg)
+        if not p.is_absolute():
+            p = (ROOT.parent / p).resolve()
+        if not p.exists():
+            raise SystemExit(f"schemas root not found at {p}")
+        return p
+
+    for candidate in DEFAULT_SCHEMAS_ROOT_CANDIDATES:
+        if candidate.exists():
+            return candidate
+
+    joined = "\n".join(f"- {c}" for c in DEFAULT_SCHEMAS_ROOT_CANDIDATES)
+    raise SystemExit(
+        "schemas root not found. Tried:\n" + joined + "\n\n" + "Pass --schemas-root to set it explicitly."
+    )
 
 
 def _write_report_cdx(
@@ -100,13 +131,37 @@ def _write_report_cdx(
 
 
 def main() -> int:
-    if not SCHEMAS_ROOT.exists():
-        raise SystemExit(f"schemas root not found at {SCHEMAS_ROOT}")
+    parser = argparse.ArgumentParser(description="Heuristic audit: schema tokens vs spec markdown")
+    parser.add_argument(
+        "--schemas-root",
+        help=(
+            "Directory to scan for *.cdx schema files. May be absolute or relative to the repo root. "
+            "If omitted, tries common mono-repo locations."
+        ),
+    )
+    parser.add_argument(
+        "--spec-scope",
+        choices=["unified", "all"],
+        default="unified",
+        help=(
+            "Which spec markdown to scan for token appearances. 'unified' scans only spec/0.1/codex-language-specification.md "
+            "(recommended after consolidation). 'all' scans all markdown under spec/0.1/."
+        ),
+    )
+    args = parser.parse_args()
 
-    spec_text = _read_all_spec_text()
+    schemas_root = _resolve_schemas_root(args.schemas_root)
+
+    if args.spec_scope == "all":
+        spec_text = _read_all_spec_text()
+        spec_root_label = str(SPEC_ROOT.relative_to(ROOT))
+    else:
+        spec_text = _read_unified_spec_text()
+        spec_root_label = str((SPEC_ROOT / "codex-language-specification.md").relative_to(ROOT))
+
     spec_words = set(re.findall(r"\b[A-Za-z][A-Za-z0-9]*\b", spec_text))
 
-    schema = _collect_schema_tokens()
+    schema = _collect_schema_tokens(schemas_root=schemas_root)
 
     missing_sigils = sorted(s[1:] for s in schema["sigils"] if s[1:] not in spec_words)
     missing_traits = sorted(t for t in schema["traits"] if t not in spec_words)
@@ -116,8 +171,8 @@ def main() -> int:
     _write_report_cdx(
         out_path=out_path,
         schema_file_count=len(schema["schemaFiles"]),
-        schemas_root=str(SCHEMAS_ROOT.relative_to(ROOT.parent)),
-        spec_root=str(SPEC_ROOT.relative_to(ROOT)),
+        schemas_root=str(schemas_root.relative_to(ROOT.parent)),
+        spec_root=spec_root_label,
         missing_sigils=missing_sigils,
         missing_traits=missing_traits,
         missing_concepts=missing_concepts,

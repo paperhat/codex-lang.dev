@@ -11,12 +11,9 @@ The authoritative normative content is consolidated into `spec/0.1/codex-languag
 
 ## Entry Point and Table of Contents
 
-This document is the **authoritative entry point** for the Codex Language
-Specification, version 0.1.
+This document was the entry point for the Codex Language Specification, version 0.1, prior to consolidation.
 
-It defines the **scope, structure, authority, and stability conventions** of the
-specification and enumerates the **Normative documents** that together define the
-Codex language.
+It describes the scope, structure, authority, and stability conventions and historically enumerated multiple documents.
 
 This document does **not** itself define language rules.
 
@@ -30,7 +27,7 @@ This document exists to:
 * declare which documents are Normative
 * provide a stable table of contents for implementers, auditors, and tooling
 
-All language rules are defined in the documents listed below.
+All normative language rules are now consolidated into `spec/0.1/codex-language-specification.md`.
 
 ---
 
@@ -58,10 +55,9 @@ Those concerns belong to consuming systems.
 
 ---
 
-## Included Normative Documents
+## Included Documents (Historical)
 
-The Codex 0.1 Language Specification consists of the following **Normative**
-documents. All are required for a complete and compliant implementation.
+This section is historical. The authoritative normative content is consolidated into `spec/0.1/codex-language-specification.md`.
 
 ### Core Language Definition
 

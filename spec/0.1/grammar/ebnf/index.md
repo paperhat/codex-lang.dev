@@ -11,7 +11,7 @@ The authoritative normative grammar is consolidated into `spec/0.1/codex-languag
 
 This document defines the **formal grammar** of the Codex surface form using Extended Backus-Naur Form (EBNF).
 
-This grammar is **normative**. A conforming parser MUST accept all documents that match this grammar and MUST reject all documents that do not.
+This grammar was normative for syntax prior to consolidation.
 
 ---
 

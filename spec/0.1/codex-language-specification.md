@@ -2465,15 +2465,209 @@ The derived `sh:select` string MUST be exactly the validator content.
 
 ## 10. Formatting and Canonicalization
 
-### 10.1 Processing Phases
+### 10.1 Purpose
 
-### 10.2 Canonical Form Requirement
+This section defines how Codex documents are:
 
-### 10.3 Canonicalization Rules
+- formatted
+- canonicalized
+- rejected when canonicalization is not possible
 
-### 10.4 Allowed vs Forbidden Transformations
+Its goals are to:
 
-### 10.5 Canonicalization Failures
+- ensure exactly one canonical surface form
+- ensure formatting/canonicalization conforms to the language invariants (§2), including the prohibition of heuristics
+- enable mechanical, explainable normalization
+- support lossless round-tripping
+
+This section governs formatting and canonicalization only.
+
+### 10.2 Processing Phases (Normative)
+
+Codex supports two related pipelines:
+
+1. Schema-less formatting / well-formedness check (no schema required)
+2. Semantic validation (schema required)
+
+Formatting and canonicalization are not optional in the full pipeline.
+However, schema availability is required only for semantic validation.
+
+#### 10.2.1 Schema-Less Formatting Mode (Required) (Normative)
+
+An implementation MUST provide a schema-less formatting / canonicalization mode that can be run without a governing schema.
+
+This mode exists to support well-formedness and formatting checks (gofmt-like), independent of semantic validation.
+
+If provided, a schema-less formatter:
+
+- MUST NOT claim that its output is valid under any schema
+- MUST NOT report schema/semantic error classes (e.g., `SchemaError`, `IdentityError`, `ReferenceError`, `ConstraintError`)
+- MUST normalize encoding and line endings as defined by the surface form requirements (§8)
+- MUST apply the canonical form requirement defined in §10.4
+- MAY normalize whitespace, blank-line layout, trait layout, and annotation whitespace
+
+Schema-less formatting is not validation. It exists to produce a consistent surface form without consulting schema meaning.
+
+#### 10.2.2 Full Validation Pipeline (Normative)
+
+To validate a document under a schema, a conforming tool MUST follow this sequence:
+
+1. Decode + newline normalization
+2. Formatting + canonicalization (mandatory) — using the schema-less mode defined in §10.2.1
+3. Schema resolution — obtain the governing schema for the document (§12)
+4. Semantic validation — schema rule evaluation (constraints, cardinality, identity, references)
+
+Schema resolution is required before semantic validation.
+
+### 10.3 Parse Errors vs Formatting Errors (Normative)
+
+#### 10.3.1 Parse Errors
+
+During formatting + canonicalization, a failure MUST be classified as `ParseError` (§14) when input cannot be read into the syntactic structure required to produce a parsed document model (AST) under the governing schema.
+
+#### 10.3.2 Formatting Errors
+
+During formatting + canonicalization, a failure MUST be classified as `FormattingError` (§14) when input can be structurally read, but cannot be transformed into canonical surface form deterministically.
+
+`FormattingError` is distinct from schema or semantic error classes.
+
+### 10.4 Canonical Form Requirement (Normative)
+
+Every valid Codex document MUST normalize to exactly one canonical textual form.
+
+Canonicalization:
+
+- is deterministic
+- is mechanical
+- preserves meaning and Content
+- never guesses author intent
+
+If canonicalization cannot be performed unambiguously, the document is invalid.
+
+### 10.5 Canonicalization Rules (Normative)
+
+Canonicalization includes, at minimum:
+
+- canonical encoding and newline normalization (§8)
+- deterministic indentation
+- no trailing whitespace on lines
+- no trailing blank lines at end of file
+- exactly one blank line between sibling Concepts
+- canonical spacing of Traits
+- canonical Trait layout (1–2 Traits on one line; 3+ Traits on separate lines)
+- canonical placement of self-closing markers
+- canonical inline-annotation whitespace collapse
+- canonical string escaping
+- preservation of Concept, Trait, and Content order
+
+Canonicalization MUST NOT:
+
+- reorder Concepts
+- reorder Traits
+- invent or remove Concepts, Traits, or Content
+- infer missing structure
+
+### 10.6 Annotation Canonicalization (Normative)
+
+Annotation canonicalization MUST follow the surface form requirements (§8).
+
+In particular:
+
+- Inline annotations collapse internal whitespace to single spaces and trim leading/trailing whitespace (as described in §8)
+- Block annotations preserve internal line structure
+- Block annotations with `CODE:` or `MARKDOWN:` directives are byte-preserving: tools MUST NOT reindent, trim, strip trailing whitespace, wrap, or interpret escapes within those blocks
+
+If attachment cannot be determined deterministically, canonicalization MUST fail.
+
+### 10.7 Allowed vs Forbidden Changes (Normative)
+
+The formatter/canonicalizer exists to produce a single canonical surface form without changing meaning.
+
+Allowed changes (examples):
+
+- Normalize newlines to LF and ensure a trailing newline
+- Normalize structural indentation (tabs) for Concept markers and children bodies
+- Canonicalize trait layout/spacing without reordering traits
+- Canonicalize inline annotation whitespace (trim + internal collapse)
+- Canonicalize grouping-annotation labels by whitespace normalization
+- Normalize UUID spelling (e.g., hex lowercase) where explicitly specified
+
+Forbidden changes (examples):
+
+- Reorder Concepts or Traits
+- Change Content bytes
+- Change any bytes inside `CODE:` or `MARKDOWN:` block annotations
+- Guess annotation attachment or reinterpret annotation kinds
+- Invent, remove, or rename Concepts/Traits/Values
+
+### 10.8 Normalization Failures (Normative)
+
+A canonicalization failure occurs when:
+
+- indentation is ambiguous
+- annotation attachment is ambiguous
+- whitespace cannot be normalized without changing meaning
+- structural inconsistencies prevent a unique surface form
+
+Canonicalization failures MUST be classified as `FormattingError` (§14).
+
+### 10.9 Formatting vs Schema Errors (Normative)
+
+Mandatory distinction:
+
+- Formatting errors concern how Codex is written
+- Schema errors concern what Codex means
+
+Tools MUST NOT report schema errors when the root cause is a formatting failure.
+
+### 10.10 Error Classification (Normative)
+
+Formatting and canonicalization failures MUST be classified as:
+
+```
+FormattingError
+```
+
+They MUST NOT be downgraded to warnings.
+
+### 10.11 Prohibited Behaviors (Normative)
+
+Codex tools MUST NOT:
+
+- silently normalize invalid input
+- auto-correct formatting errors without reporting them
+- accept multiple canonical forms
+- discard or rewrite Content
+- depend on source offsets or editor state
+
+### 10.12 Reporting Requirements
+
+Formatting error reports SHOULD include:
+
+- error class (`FormattingError`)
+- violated rule
+- location (line number or Concept path)
+- explanation of canonicalization failure
+
+Exact wording is tool-defined.
+
+### 10.13 Non-Goals
+
+This section does not:
+
+- define editor behavior
+- prescribe auto-format-on-save policies
+- define diff or patch semantics
+- define schema validation rules
+- define rendering or execution behavior
+
+### 10.14 Summary
+
+- Canonical surface form is mandatory
+- Canonicalization is mechanical and deterministic
+- Formatting failures are classified as `FormattingError` (§14)
+- No heuristic or best-effort formatting is permitted
+- Formatting is separate from schema validation
 
 ---
 
@@ -2770,10 +2964,16 @@ Trait definitions establish the value type, cardinality, and constraints for a T
 
 * `id` (optional; IRI reference)
 * `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
-* `defaultValueType` (required; value type token)
+* `defaultValueType` (required unless `defaultValueTypes` is provided; value type token)
+* `defaultValueTypes` (required unless `defaultValueType` is provided; list of one or more value type tokens)
 * `cardinality` (required; `$Single | $List`)
 * `itemValueType` (required if `cardinality=$List`; value type token)
 * `isReferenceTrait` (optional; boolean)
+* `priority` (optional; enumerated token; presentation hint)
+
+If both `defaultValueType` and `defaultValueTypes` are provided, the implementation MUST treat that as a schema error.
+
+`priority` is a meta-schema concern. Implementations MUST NOT use `priority` to change validation or compilation semantics. Meta-schemas MAY constrain allowed `priority` values (e.g., `$Primary`, `$Secondary`).
 
 ###### Children (Optional)
 
@@ -2854,6 +3054,8 @@ Schemas MAY reference the following built-in value types:
 * `$Map`
 * `$Tuple`
 * `$Range`
+
+Schemas MAY also define additional value type tokens via `ValueTypeDefinition` (see §6.2). These schema-defined value type tokens are referenced as enumerated tokens using the `name` (e.g., a `ValueTypeDefinition name="NumericRange" ...` is referenced as `$NumericRange`).
 
 ---
 
@@ -3287,6 +3489,18 @@ Each collection member satisfies a nested rule.
 ####### Children
 
 One `Rule` child.
+
+###### `CollectionConstraint`
+
+Generic collection constraint using type dispatch.
+
+####### Traits
+
+* `type` (required; one of the following)
+
+####### Types
+
+* `CollectionOrderingDeclared` — the applicable collection ordering MUST be explicitly declared in schema definitions (typically via `CollectionRules ordering=...`).
 
 ---
 
@@ -3730,29 +3944,1315 @@ Tooling MUST NOT silently reinterpret data across schema versions.
 
 ## 14. Validation Errors
 
-### 14.1 Primary Error Class Requirement
+### 14.1 Purpose
 
-### 14.2 Closed Set of Error Classes
+This section defines a canonical taxonomy of validation errors in Codex.
 
-### 14.3 Error Class Definitions
+Its goals are to:
 
-### 14.4 Fatality
+- make failures precise and predictable
+- ensure consistent classification across tools
+- avoid vague reporting and classification approaches that violate the language invariants (§2)
+- separate parsing, surface form, formatting/canonicalization, and schema failures cleanly
 
-### 14.5 Reporting Expectations
+This section governs error classification only, not wording, UI presentation, or recovery behavior.
+
+### 14.2 Primary Error Class Requirement (Normative)
+
+Every Codex failure MUST belong to exactly one primary error class.
+
+Secondary information MAY be attached, but the primary class MUST be unambiguous.
+
+### 14.3 Closed Set of Error Classes (Top Level) (Normative)
+
+Codex defines the following closed set of top-level error classes:
+
+1. ParseError
+2. SurfaceFormError
+3. FormattingError
+4. SchemaError
+5. IdentityError
+6. ReferenceError
+7. CollectionError
+8. ContextError
+9. ConstraintError
+
+No other top-level error classes are permitted.
+
+### 14.4 Error Class Definitions
+
+#### 14.4.1 ParseError
+
+Definition: a `.cdx` file cannot be parsed into a syntactic structure.
+
+Characteristics:
+
+- input is not structurally readable
+- parsing cannot continue
+- parsing MAY be performed without a governing schema for well-formedness checks
+
+Examples (illustrative):
+
+- unbalanced Concept markers
+- invalid string literal escaping
+- malformed Traits
+- unterminated Annotation (missing closing `]`)
+- structurally invalid nesting of markers
+
+`ParseError` is fatal.
+
+#### 14.4.2 SurfaceFormError
+
+Definition: a file parses successfully but violates the surface form requirements (§8).
+
+Characteristics:
+
+- syntax is readable
+- surface requirements are violated
+- schema is available, but this class concerns schema-independent surface rules
+
+Examples (illustrative):
+
+- invalid casing in Concept or Trait names
+- multiple root Concepts in a file
+- forbidden whitespace around `=`
+- annotation opening `[` not at first non-whitespace position
+- annotation escape misuse (e.g., `\q` in an Annotation)
+
+`SurfaceFormError` is fatal.
+
+#### 14.4.3 FormattingError
+
+Definition: input parses and passes surface-form requirements but cannot be transformed into canonical surface form.
+
+See §10 for canonicalization rules.
+
+Characteristics:
+
+- canonicalization is deterministic or must fail
+- tools MUST NOT guess or “best-effort” normalize
+
+Examples (illustrative):
+
+- ambiguous annotation attachment
+- non-deterministic blank-line/whitespace normalization that would change annotation kind
+- whitespace patterns that cannot be normalized without changing structure
+- any other canonicalization failure
+
+`FormattingError` is fatal.
+
+#### 14.4.4 SchemaError
+
+Definition: parsed Codex violates schema-defined rules.
+
+Characteristics:
+
+- schema is consulted
+- Concepts or Traits are invalid under the active schema
+- meaning cannot be assigned
+
+Examples (illustrative):
+
+- unauthorized Trait on a Concept
+- missing required Trait
+- invalid Trait value type
+
+`SchemaError` is fatal.
+
+#### 14.4.5 IdentityError
+
+Definition: identity rules are violated.
+
+See §6 for identifier rules.
+
+Characteristics:
+
+- concerns Entity eligibility and identifier use
+- compromises stable identity or uniqueness
+
+Examples (illustrative):
+
+- `id` declared on a Concept that MUST NOT be an Entity
+- missing required `id` where schema requires an Entity
+- duplicate identifiers within a schema-defined scope
+- identifier form invalid under schema constraints
+
+`IdentityError` is fatal.
+
+#### 14.4.6 ReferenceError
+
+Definition: reference Traits are invalid or inconsistent.
+
+See §7 for reference trait semantics.
+
+Characteristics:
+
+- involves `reference`, `target`, or `for`
+- relates to graph linkage and intent
+
+Examples (illustrative):
+
+- violation of the reference singleton rule (unless schema permits)
+- reference to a non-existent Entity (where resolution is required)
+- reference to an Entity of an unauthorized Concept type
+
+`ReferenceError` is fatal.
+
+#### 14.4.7 CollectionError
+
+Definition: schema-defined collection rules are violated.
+
+Characteristics:
+
+- concerns domain collection Concepts
+- membership and ordering semantics are incorrect
+
+Examples (illustrative):
+
+- mixed member Concept types in a collection
+- missing required members
+- duplicate membership where forbidden
+- member count outside required bounds
+
+`CollectionError` is fatal.
+
+#### 14.4.8 ContextError
+
+Definition: a Concept or Trait is used outside its schema-defined context.
+
+Characteristics:
+
+- the name may be valid
+- but it is misapplied due to containment or scope rules
+
+Examples (illustrative):
+
+- Concept permitted only under a specific parent appears elsewhere
+- Trait permitted only in a particular context appears outside it
+
+`ContextError` is fatal.
+
+#### 14.4.9 ConstraintError
+
+Definition: schema-defined declarative constraints are violated beyond basic structure and authorization.
+
+Characteristics:
+
+- logical or semantic invariants fail
+- constraints are schema-defined and mechanically enforceable
+
+Examples (illustrative):
+
+- mutually exclusive Traits both present
+- invalid combinations of Traits
+- value range violations
+- domain-specific invariant failures
+
+`ConstraintError` is fatal.
+
+### 14.5 Error Severity (Normative)
+
+Codex errors are not warnings.
+
+- any failure halts compilation or processing
+- no best-effort recovery is permitted
+- tools MUST NOT silently reinterpret invalid data
+
+### 14.6 Reporting Requirements
+
+Tools SHOULD report failures with:
+
+- primary error class
+- Concept name
+- Trait name (if applicable)
+- violated rule reference
+- precise location (line number or Concept path)
+
+Classification is mandatory. Wording and presentation are tool-defined.
+
+### 14.7 Non-Goals
+
+This section does not:
+
+- define message wording
+- mandate UX
+- define recovery strategies
+- prescribe exception hierarchies
+- define logging formats
+
+It defines what kind of error occurred, not how it is presented.
+
+### 14.8 Summary
+
+- every failure has exactly one primary error class
+- error classes are finite and closed
+- parsing, surface form, formatting/canonicalization, and schema are separated
+- failures are fatal within their primary error class
 
 ---
 
 ## Appendix A. Formal Grammar
 
+This appendix defines the formal grammar of the Codex surface form.
+
+Two grammar notations are provided:
+
+- EBNF (Normative) — ISO/IEC 14977 Extended Backus-Naur Form
+- PEG (Informative) — Parsing Expression Grammar for implementation
+
 ### A.1 EBNF (Normative)
 
+#### A.1.1 Notation
+
+This grammar uses ISO/IEC 14977 EBNF notation:
+
+* `=` defines a production
+* `,` concatenation
+* `|` alternation
+* `[ ... ]` optional (zero or one)
+* `{ ... }` repetition (zero or more)
+* `( ... )` grouping
+* `" ... "` terminal string
+* `' ... '` terminal string (alternative)
+* `(* ... *)` comment
+* `- ` exception
+* `;` end of production
+
+Character classes use the following extensions:
+
+* `#x0000` Unicode code point
+* `[a-z]` character range
+* `\t` tab (U+0009)
+* `\n` line feed (U+000A)
+
+---
+
+#### A.1.2 Document Structure
+
+```ebnf
+(* A Codex document contains exactly one root Concept *)
+
+(* Annotations may appear with intervening blank lines; formatter normalizes. *)
+Document = { BlankLine }, { Annotation, { BlankLine } }, RootConcept, { BlankLine } ;
+
+RootConcept = Concept ;
+
+Concept = BlockConcept | SelfClosingConcept ;
+```
+
+---
+
+#### A.1.3 Block Concepts
+
+```ebnf
+(* Block concepts contain either children or content.
+	The parser consults the schema to determine which.
+	This is schema-directed dispatch, not syntactic ambiguity. *)
+
+BlockConcept = OpeningMarker, Body, ClosingMarker ;
+
+OpeningMarker = "<", ConceptName, [ Traits ], [ Whitespace ], ">" ;
+
+ClosingMarker = "</", ConceptName, ">" ;
+
+(* Body production is selected by schema lookup on ConceptName:
+	- If schema indicates children mode (ForbidsContent): ChildrenBody
+	- If schema indicates content mode (AllowsContent): ContentBody *)
+
+Body = ChildrenBody | ContentBody ;
+
+ChildrenBody = { ChildEntry } ;
+
+ChildEntry = Newline, Indentation, { Annotation, Newline, Indentation }, Concept, [ BlankLine ] ;
+
+ContentBody = { ContentLine } ;
+
+ContentLine = Newline, Indentation, ContentText ;
+
+ContentText = { ContentChar } ;
+
+ContentChar = ContentEscape | ContentSafeChar ;
+
+ContentEscape = "\\", ( "<" | "\\" ) ;
+
+(* Raw '<' and '\\' are not permitted in content.
+	They MUST be written as '\\<' and '\\\\' respectively. *)
+ContentSafeChar = AnyCharExceptNewline - "<" - "\\" ;
+```
+
+---
+
+#### A.1.4 Self-Closing Concepts
+
+```ebnf
+SelfClosingConcept = "<", ConceptName, [ Traits ], [ Whitespace ], "/>" ;
+```
+
+---
+
+#### A.1.5 Concept Names
+
+```ebnf
+ConceptName = UppercaseLetter, { Letter | Digit } ;
+
+UppercaseLetter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
+					 | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T"
+					 | "U" | "V" | "W" | "X" | "Y" | "Z" ;
+
+LowercaseLetter = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j"
+					 | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t"
+					 | "u" | "v" | "w" | "x" | "y" | "z" ;
+
+Letter = UppercaseLetter | LowercaseLetter ;
+
+Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+```
+
+---
+
+#### A.1.6 Traits
+
+```ebnf
+Traits = Whitespace, Trait, { Whitespace, Trait } ;
+
+Trait = TraitName, "=", Value ;
+
+TraitName = LowercaseLetter, { Letter | Digit } ;
+```
+
+---
+
+#### A.1.7 Values
+
+```ebnf
+Value = StringValue
+		| CharValue
+		| BacktickString
+		| BooleanValue
+		| NumericValue
+		| EnumeratedToken
+		| IriReference
+		| LookupToken
+		| UuidValue
+		| ColorValue
+		| TemporalValue
+		| ListValue
+		| SetValue
+		| MapValue
+		| TupleValue
+		| RangeValue ;
+```
+
+---
+
+#### A.1.8 String Values
+
+```ebnf
+StringValue = '"', { StringChar }, '"' ;
+
+StringChar = UnescapedStringChar | EscapeSequence ;
+
+UnescapedStringChar = AnyCharExceptQuoteBackslashNewline ;
+
+EscapeSequence = "\\", ( '"' | "\\" | "n" | "r" | "t" | UnicodeEscape ) ;
+
+UnicodeEscape = "u", HexDigit, HexDigit, HexDigit, HexDigit
+				  | "u{", HexDigit, { HexDigit }, "}" ;
+
+HexDigit = Digit | "a" | "b" | "c" | "d" | "e" | "f"
+					  | "A" | "B" | "C" | "D" | "E" | "F" ;
+```
+
+---
+
+#### A.1.9 Character Values
+
+```ebnf
+CharValue = "'", CharContent, "'" ;
+
+CharContent = UnescapedChar | CharEscapeSequence ;
+
+UnescapedChar = AnyCharExceptApostropheBackslashNewline ;
+
+CharEscapeSequence = "\\", ( "'" | "\\" | "n" | "r" | "t" | UnicodeEscape ) ;
+```
+
+---
+
+#### A.1.10 Backtick Strings
+
+```ebnf
+(* Backtick strings collapse whitespace to single spaces *)
+
+BacktickString = "`", { BacktickChar }, "`" ;
+
+BacktickChar = UnescapedBacktickChar | BacktickEscape ;
+
+UnescapedBacktickChar = AnyCharExceptBacktickBackslash ;
+
+BacktickEscape = "\\", ( "`" | "\\" ) ;
+```
+
+---
+
+#### A.1.11 Boolean Values
+
+```ebnf
+BooleanValue = "true" | "false" ;
+```
+
+---
+
+#### A.1.12 Numeric Values
+
+```ebnf
+NumericValue = ComplexNumber
+				 | ImaginaryNumber
+				 | Fraction
+				 | Infinity
+				 | PrecisionNumber
+				 | ScientificNumber
+				 | DecimalNumber
+				 | Integer ;
+
+Sign = "+" | "-" ;
+
+Integer = [ Sign ], DigitSequence ;
+
+DecimalNumber = [ Sign ], DigitSequence, ".", DigitSequence ;
+
+ScientificNumber = ( Integer | DecimalNumber ), ( "e" | "E" ), [ Sign ], DigitSequence ;
+
+PrecisionNumber = DecimalNumber, "p", [ DigitSequence ] ;
+
+Infinity = [ Sign ], "Infinity" ;
+
+Fraction = Integer, "/", DigitSequence ;
+
+ImaginaryNumber = ( Integer | DecimalNumber ), "i" ;
+
+ComplexNumber = ( Integer | DecimalNumber ), ( "+" | "-" ), ( Integer | DecimalNumber ), "i" ;
+
+DigitSequence = Digit, { Digit } ;
+```
+
+---
+
+#### A.1.13 Enumerated Tokens
+
+```ebnf
+EnumeratedToken = "$", UppercaseLetter, { Letter | Digit } ;
+```
+
+---
+
+#### A.1.14 IRI References
+
+```ebnf
+(* Codex IRI references allow RFC 3987 IRI-reference characters directly.
+		Unicode characters MAY appear directly; percent-encoding remains valid.
+	Codex further forbids Unicode whitespace, control, bidi-control, and private-use characters.
+	These profile restrictions are enforced by surface-form validation; they are not fully
+	encoded in the UcsChar placeholder production below. *)
+
+IriReference = IriScheme, ":", IriBody ;
+
+IriScheme = Letter, { Letter | Digit | "+" | "-" | "." } ;
+
+IriBody = { IriChar } ;
+
+IriChar = IriAsciiChar | UcsChar ;
+
+IriAsciiChar = Letter | Digit | "-" | "." | "_" | "~" | ":" | "/" | "?" | "#"
+			 | "[" | "]" | "@" | "!" | "$" | "&" | "'" | "(" | ")"
+			 | "*" | "+" | "," | ";" | "=" | "%" ;
+
+(* RFC 3987 character classes (descriptive):
+	UcsChar  = %xA0-D7FF / %xF900-FDCF / %xFDF0-FFEF / %x10000-1FFFD
+			 / %x20000-2FFFD / %x30000-3FFFD / %x40000-4FFFD / %x50000-5FFFD
+			 / %x60000-6FFFD / %x70000-7FFFD / %x80000-8FFFD / %x90000-9FFFD
+			 / %xA0000-AFFFD / %xB0000-BFFFD / %xC0000-CFFFD / %xD0000-DFFFD
+			 / %xE1000-EFFFD
+*)
+UcsChar = ? any Unicode scalar value in the RFC 3987 ucschar ranges ? ;
+```
+
+---
+
+#### A.1.15 Lookup Tokens
+
+```ebnf
+LookupToken = "~", LowercaseLetter, { Letter | Digit } ;
+```
+
+---
+
+#### A.1.16 UUID Values
+
+```ebnf
+UuidValue = HexOctet, HexOctet, HexOctet, HexOctet, "-",
+				HexOctet, HexOctet, "-",
+				HexOctet, HexOctet, "-",
+				HexOctet, HexOctet, "-",
+				HexOctet, HexOctet, HexOctet, HexOctet, HexOctet, HexOctet ;
+
+HexOctet = HexDigit, HexDigit ;
+```
+
+---
+
+#### A.1.17 Color Values
+
+```ebnf
+ColorValue = HexColor | RgbColor | HslColor | LabColor | LchColor
+			  | OklabColor | OklchColor | ColorFunction | NamedColor ;
+
+HexColor = "#", HexDigit, HexDigit, HexDigit, [ HexDigit ]
+			| "#", HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, [ HexDigit, HexDigit ] ;
+
+RgbColor = ( "rgb" | "rgba" ), "(", ColorArgs, ")" ;
+
+HslColor = ( "hsl" | "hsla" ), "(", ColorArgs, ")" ;
+
+LabColor = "lab", "(", ColorArgs, ")" ;
+
+LchColor = "lch", "(", ColorArgs, ")" ;
+
+OklabColor = "oklab", "(", ColorArgs, ")" ;
+
+OklchColor = "oklch", "(", ColorArgs, ")" ;
+
+ColorFunction = "color", "(", ColorSpace, Whitespace, ColorArgs, ")" ;
+
+ColorSpace = "srgb" | "srgb-linear" | "display-p3" | "a98-rgb"
+			  | "prophoto-rgb" | "rec2020" | "xyz" | "xyz-d50" | "xyz-d65" ;
+
+ColorArgs = ColorArg, { ( Whitespace | "," ), ColorArg }, [ ( Whitespace, "/" | "," ), AlphaArg ] ;
+
+ColorArg = NumericValue | Percentage ;
+
+AlphaArg = NumericValue | Percentage ;
+
+Percentage = NumericValue, "%" ;
+
+NamedColor = "&", LowercaseLetter, { LowercaseLetter } ;
+```
+
+---
+
+#### A.1.18 Temporal Values
+
+```ebnf
+TemporalValue = "{", TemporalBody, "}" ;
+
+TemporalBody = ZonedDateTime | LocalDateTime | Date | YearMonth | MonthDay | Time | Duration | ReservedTemporal ;
+
+Date = Year, "-", Month, "-", Day ;
+
+YearMonth = Year, "-", Month ;
+
+MonthDay = Month, "-", Day ;
+
+LocalDateTime = Date, "T", Time ;
+
+ZonedDateTime = LocalDateTime, TimeZoneOffset, [ TimeZoneId ] ;
+
+TimeZoneOffset = "Z" | ( ( "+" | "-" ), Hour, ":", Minute ) ;
+
+TimeZoneId = "[", TimeZoneIdChar, { TimeZoneIdChar }, "]" ;
+
+TimeZoneIdChar = Letter | Digit | "/" | "_" | "-" ;
+
+Time = Hour, ":", Minute, [ ":", Second, [ ".", Milliseconds ] ] ;
+
+Duration = "P", { DurationComponent }, [ "T", { TimeDurationComponent } ] ;
+
+DurationComponent = DigitSequence, ( "Y" | "M" | "W" | "D" ) ;
+
+TimeDurationComponent = DigitSequence, [ ".", DigitSequence ], ( "H" | "M" | "S" ) ;
+
+ReservedTemporal = "now" | "today" ;
+
+Year = Digit, Digit, Digit, Digit ;
+Month = Digit, Digit ;
+Day = Digit, Digit ;
+Hour = Digit, Digit ;
+Minute = Digit, Digit ;
+Second = Digit, Digit ;
+Milliseconds = Digit, { Digit } ;
+```
+
+---
+
+#### A.1.19 List Values
+
+```ebnf
+ListValue = "[", [ Whitespace ], [ ListItems ], [ Whitespace ], "]" ;
+
+ListItems = Value, { ",", [ Whitespace ], Value } ;
+```
+
+---
+
+#### A.1.20 Set Values
+
+```ebnf
+SetValue = "set[", [ Whitespace ], [ SetItems ], [ Whitespace ], "]" ;
+
+SetItems = Value, { ",", [ Whitespace ], Value } ;
+```
+
+---
+
+#### A.1.21 Map Values
+
+```ebnf
+MapValue = "map[", [ Whitespace ], [ MapItems ], [ Whitespace ], "]" ;
+
+MapItems = MapEntry, { ",", [ Whitespace ], MapEntry } ;
+
+MapEntry = MapKey, ":", [ Whitespace ], Value ;
+
+MapKey = MapIdentifier | StringValue | CharValue | Integer | EnumeratedToken ;
+
+MapIdentifier = LowercaseLetter, { Letter | Digit } ;
+```
+
+---
+
+#### A.1.22 Tuple Values
+
+```ebnf
+TupleValue = "(", [ Whitespace ], TupleItems, [ Whitespace ], ")" ;
+
+TupleItems = Value, { ",", [ Whitespace ], Value } ;
+```
+
+---
+
+#### A.1.23 Range Values
+
+```ebnf
+RangeValue = RangeStart, "..", RangeEnd, [ "s", StepValue ] ;
+
+RangeStart = NumericValue | TemporalValue | CharValue ;
+
+RangeEnd = NumericValue | TemporalValue | CharValue ;
+
+StepValue = NumericValue | TemporalValue ;
+```
+
+---
+
+#### A.1.24 Annotations
+
+```ebnf
+Annotation = "[", { AnnotationChar }, "]" ;
+
+AnnotationChar = UnescapedAnnotationChar | AnnotationEscape ;
+
+UnescapedAnnotationChar = AnyCharExceptBracketBackslash ;
+
+AnnotationEscape = "\\", ( "]" | "\\" ) ;
+```
+
+---
+
+#### A.1.25 Whitespace and Structural Elements
+
+```ebnf
+Whitespace = WhitespaceChar, { WhitespaceChar } ;
+
+WhitespaceChar = " " | "\t" | Newline ;
+
+Newline = "\n" ;
+
+BlankLine = Newline, { " " | "\t" }, Newline ;
+
+Indentation = { "\t" } ;
+
+Tab = "\t" ;
+```
+
+---
+
+#### A.1.26 Character Classes (Informative)
+
+The following character classes are used but not fully enumerated:
+
+* `AnyCharExceptNewline` — any Unicode scalar except U+000A
+* `AnyCharExceptQuoteBackslashNewline` — any Unicode scalar except `"`, `\\`, U+000A
+* `AnyCharExceptApostropheBackslashNewline` — any Unicode scalar except `'`, `\\`, U+000A
+* `AnyCharExceptBacktickBackslash` — any Unicode scalar except `` ` ``, `\\`
+* `AnyCharExceptBracketBackslash` — any Unicode scalar except `]`, `\\`
+
+---
+
+#### A.1.27 Precedence and Disambiguation
+
+When parsing Values, the following precedence applies (highest first):
+
+1. String, Character, Backtick (delimited)
+2. Boolean keywords (`true`, `false`)
+3. Enumerated tokens (`$...`)
+4. Lookup tokens (`~...`)
+5. Temporal values (`{...}`)
+6. Set values (`set[...]`)
+7. Map values (`map[...]`)
+8. List values (`[...]`)
+9. Tuple values (`(...)`)
+10. Color functions (`rgb(...)`, etc.)
+11. Hex colors (`#...`)
+12. UUID (pattern match: 8-4-4-4-12)
+13. Range (contains `..`)
+14. Complex/Imaginary (contains `i`)
+15. Fraction (contains `/`)
+16. Precision (contains `p`)
+17. Scientific (contains `e` or `E`)
+18. Decimal (contains `.`)
+19. Integer
+20. IRI reference (fallback)
+
+---
+
 ### A.2 PEG (Informative)
+
+The PEG grammar is informative. It provides an implementation-ready, unambiguous grammar.
+
+In case of discrepancy between EBNF and PEG, the EBNF grammar in §A.1 takes precedence.
+
+#### A.2.1 Notation
+
+This grammar uses standard PEG notation:
+
+* `<-` defines a rule
+* `/` ordered choice (try left first)
+* `*` zero or more
+* `+` one or more
+* `?` optional (zero or one)
+* `&` positive lookahead
+* `!` negative lookahead
+* `( ... )` grouping
+* `" ... "` literal string
+* `' ... '` literal string (alternative)
+* `[ ... ]` character class
+* `.` any character
+* `#` comment to end of line
+
+---
+
+#### A.2.2 Document Structure
+
+```peg
+# A Codex document contains exactly one root Concept
+
+Document <- BlankLine* (Annotation BlankLine*)* RootConcept BlankLine* EOF
+
+RootConcept <- Concept
+
+Concept <- BlockConcept / SelfClosingConcept
+```
+
+---
+
+#### A.2.3 Block Concepts
+
+```peg
+# Block concepts contain either children or content.
+# The parser consults the schema to determine which.
+# This is schema-directed dispatch, not syntactic ambiguity.
+
+BlockConcept <- OpeningMarker Body ClosingMarker
+
+OpeningMarker <- '<' ConceptName Traits? Whitespace? '>'
+
+ClosingMarker <- '</' ConceptName '>'
+
+# Body parsing is schema-directed:
+# - Children mode (ForbidsContent): parse as ChildrenBody
+# - Content mode (AllowsContent): parse as ContentBody
+# Implementation selects the appropriate production at runtime.
+
+ChildrenBody <- (Newline Indentation ChildEntry)*
+
+ChildEntry <- (Annotation Newline Indentation)* Concept
+
+ContentBody <- ContentLine*
+
+ContentLine <- Newline Indentation ContentText
+
+ContentText <- ContentChar*
+
+ContentChar <- ContentEscape / ContentSafeChar
+
+ContentEscape <- '\\' ('<' / '\\')
+
+ContentSafeChar <- !Newline !('<' / '\\') .
+
+# Content termination is unambiguous because '<' is not permitted unescaped
+# inside content.
+```
+
+---
+
+#### A.2.4 Self-Closing Concepts
+
+```peg
+SelfClosingConcept <- '<' ConceptName Traits? Whitespace? '/>'
+```
+
+---
+
+#### A.2.5 Concept Names
+
+```peg
+ConceptName <- UppercaseLetter (Letter / Digit)*
+
+UppercaseLetter <- [A-Z]
+LowercaseLetter <- [a-z]
+Letter <- [A-Za-z]
+Digit <- [0-9]
+```
+
+---
+
+#### A.2.6 Traits
+
+```peg
+Traits <- (Whitespace Trait)+
+
+Trait <- TraitName '=' Value
+
+TraitName <- LowercaseLetter (Letter / Digit)*
+```
+
+---
+
+#### A.2.7 Values
+
+```peg
+# Values are tried in precedence order
+# Delimited values first, then keywords, then pattern-matched
+
+Value <- StringValue
+		 / CharValue
+		 / BacktickString
+		 / BooleanValue
+		 / EnumeratedToken
+		 / LookupToken
+		 / TemporalValue
+		 / SetValue
+		 / MapValue
+		 / ListValue
+		 / TupleValue
+		 / ColorFunction
+		 / HexColor
+		 / NamedColor
+		 / UuidValue
+		 / RangeValue
+		 / ComplexNumber
+		 / ImaginaryNumber
+		 / Fraction
+		 / Infinity
+		 / PrecisionNumber
+		 / ScientificNumber
+		 / DecimalNumber
+		 / Integer
+		 / IriReference
+```
+
+---
+
+#### A.2.8 String Values
+
+```peg
+StringValue <- '"' StringChar* '"'
+
+StringChar <- EscapeSequence / (!["\\\n] .)
+
+EscapeSequence <- '\\' ( ["\\nrt] / UnicodeEscape )
+
+UnicodeEscape <- 'u' HexDigit HexDigit HexDigit HexDigit
+					/ 'u{' HexDigit+ '}'
+
+HexDigit <- [0-9A-Fa-f]
+```
+
+---
+
+#### A.2.9 Character Values
+
+```peg
+CharValue <- "'" CharContent "'"
+
+CharContent <- CharEscapeSequence / (!['\\\n] .)
+
+CharEscapeSequence <- '\\' ( ['\\/nrt] / UnicodeEscape )
+```
+
+---
+
+#### A.2.10 Backtick Strings
+
+```peg
+# Backtick strings span multiple lines; whitespace collapses to single space
+
+BacktickString <- '`' BacktickChar* '`'
+
+BacktickChar <- BacktickEscape / (![`\\] .)
+
+BacktickEscape <- '\\' [`\\]
+```
+
+---
+
+#### A.2.11 Boolean Values
+
+```peg
+BooleanValue <- 'true' / 'false'
+```
+
+---
+
+#### A.2.12 Numeric Values
+
+```peg
+# Ordered by specificity: complex before imaginary, precision before decimal
+
+ComplexNumber <- Sign? Digits ('.' Digits)? Sign Digits ('.' Digits)? 'i'
+
+ImaginaryNumber <- Sign? Digits ('.' Digits)? 'i'
+
+Fraction <- Sign? Digits '/' Digits
+
+Infinity <- Sign? 'Infinity'
+
+PrecisionNumber <- Sign? Digits '.' Digits 'p' Digits?
+
+ScientificNumber <- Sign? Digits ('.' Digits)? [eE] Sign? Digits
+
+DecimalNumber <- Sign? Digits '.' Digits
+
+Integer <- Sign? Digits
+
+Sign <- [+-]
+Digits <- Digit+
+```
+
+---
+
+#### A.2.13 Enumerated Tokens
+
+```peg
+EnumeratedToken <- '$' UppercaseLetter (Letter / Digit)*
+```
+
+---
+
+#### A.2.14 IRI References
+
+```peg
+IriReference <- IriScheme ':' IriBody
+
+IriScheme <- Letter (Letter / Digit / [+.-])*
+
+IriBody <- IriChar*
+
+# In surface form, unquoted values are delimited by structural characters
+# (whitespace, '>', '/>', etc.). This PEG defines a conservative tokenization:
+IriChar <- !WhitespaceChar !'>' .
+
+# ---
+
+LookupToken <- '~' LowercaseLetter (Letter / Digit)*
+
+# ---
+
+TemporalValue <- '{' TemporalBody '}'
+
+TemporalBody <- ZonedDateTime / LocalDateTime / Date / YearMonth / MonthDay / Time / Duration / ReservedTemporal
+
+Date <- Year '-' Month '-' Day
+YearMonth <- Year '-' Month
+MonthDay <- Month '-' Day
+
+LocalDateTime <- Date 'T' Time
+ZonedDateTime <- LocalDateTime TimeZoneOffset TimeZoneId?
+
+TimeZoneOffset <- 'Z' / ([+-] Hour ':' Minute)
+TimeZoneId <- '[' TimeZoneIdChar+ ']'
+TimeZoneIdChar <- Letter / Digit / '/' / '_' / '-'
+
+Time <- Hour ':' Minute (':' Second ('.' Milliseconds)?)?
+
+Duration <- 'P' DurationComponent* ('T' TimeDurationComponent*)?
+DurationComponent <- Digits ([YMWD])
+TimeDurationComponent <- Digits ('.' Digits)? ([HMS])
+
+ReservedTemporal <- 'now' / 'today'
+
+Year <- Digit Digit Digit Digit
+Month <- Digit Digit
+Day <- Digit Digit
+Hour <- Digit Digit
+Minute <- Digit Digit
+Second <- Digit Digit
+Milliseconds <- Digit+
+
+# ---
+
+ListValue <- '[' Whitespace? ListItems? Whitespace? ']'
+ListItems <- Value (',' Whitespace? Value)*
+
+SetValue <- 'set[' Whitespace? SetItems? Whitespace? ']'
+SetItems <- Value (',' Whitespace? Value)*
+
+MapValue <- 'map[' Whitespace? MapItems? Whitespace? ']'
+MapItems <- MapEntry (',' Whitespace? MapEntry)*
+MapEntry <- MapKey ':' Whitespace? Value
+MapKey <- MapIdentifier / StringValue / CharValue / Integer / EnumeratedToken
+MapIdentifier <- LowercaseLetter (Letter / Digit)*
+
+TupleValue <- '(' Whitespace? TupleItems Whitespace? ')'
+TupleItems <- Value (',' Whitespace? Value)*
+
+# ---
+
+UuidValue <- Hex8 '-' Hex4 '-' Hex4 '-' Hex4 '-' Hex12
+Hex8 <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+Hex4 <- HexDigit HexDigit HexDigit HexDigit
+Hex12 <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+
+# ---
+
+RangeValue <- RangeStart '..' RangeEnd ('s' StepValue)?
+RangeStart <- TemporalValue / CharValue / NumericAtom
+RangeEnd <- TemporalValue / CharValue / NumericAtom
+StepValue <- TemporalValue / NumericAtom
+
+NumericAtom <- ComplexNumber / ImaginaryNumber / Fraction / Infinity / PrecisionNumber / ScientificNumber / DecimalNumber / Integer
+
+# ---
+
+HexColor <- '#' (Hex3 / Hex4 / Hex6 / Hex8Color)
+Hex3 <- HexDigit HexDigit HexDigit
+Hex4 <- HexDigit HexDigit HexDigit HexDigit
+Hex6 <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+Hex8Color <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+
+NamedColor <- '&' [a-z]+
+
+ColorFunction <- RgbFunc / HslFunc / LabFunc / LchFunc / OklabFunc / OklchFunc / ColorSpaceFunc
+
+RgbFunc <- ('rgb' / 'rgba') '(' ColorArgs ')'
+HslFunc <- ('hsl' / 'hsla') '(' ColorArgs ')'
+LabFunc <- 'lab' '(' ColorArgs ')'
+LchFunc <- 'lch' '(' ColorArgs ')'
+OklabFunc <- 'oklab' '(' ColorArgs ')'
+OklchFunc <- 'oklch' '(' ColorArgs ')'
+ColorSpaceFunc <- 'color' '(' ColorSpace Whitespace ColorArgs ')'
+
+ColorSpace <- 'srgb' / 'srgb-linear' / 'display-p3' / 'a98-rgb'
+		   / 'prophoto-rgb' / 'rec2020' / 'xyz' / 'xyz-d50' / 'xyz-d65'
+
+ColorArgs <- ColorArg ((Whitespace / ',') ColorArg)* (Whitespace? ('/' / ',') Whitespace? AlphaArg)?
+ColorArg <- Percentage / NumericAtom
+AlphaArg <- Percentage / NumericAtom
+Percentage <- NumericAtom '%'
+
+# ---
+
+Annotation <- '[' AnnotationChar* ']'
+AnnotationChar <- AnnotationEscape / (!(']' / '\\') .)
+AnnotationEscape <- '\\' (']' / '\\')
+
+Newline <- '\n'
+
+WhitespaceChar <- [ \t\n]
+Whitespace <- WhitespaceChar+
+
+BlankLine <- Newline [ \t]* Newline
+
+Indentation <- '\t'*
+
+EOF <- !.
+```
 
 ---
 
 ## Appendix B. CSS Named Colors (Informative)
 
-The normative definition of CSS named color keywords is in the CSS Color Module specifications.
+This appendix provides an informative list of CSS named color keywords and their sRGB hex values.
+
+This list exists for convenience only.
+
+- The normative definition of CSS color keywords is in the CSS Color Module specifications.
+- Codex-conforming tools MUST NOT validate, normalize, or convert Color Values (see §5.7).
+- Named colors in Codex are written with a leading `&` sigil and an ASCII-lowercase keyword (see §5.7.1).
+
+### B.1 Named Color Keyword Table
+
+Each entry maps a Codex Named Color Value (`&name`) to its sRGB hex form.
+
+| Named color | sRGB hex |
+|---|---:|
+| `&aliceblue` | `#f0f8ff` |
+| `&antiquewhite` | `#faebd7` |
+| `&aqua` | `#00ffff` |
+| `&aquamarine` | `#7fffd4` |
+| `&azure` | `#f0ffff` |
+| `&beige` | `#f5f5dc` |
+| `&bisque` | `#ffe4c4` |
+| `&black` | `#000000` |
+| `&blanchedalmond` | `#ffebcd` |
+| `&blue` | `#0000ff` |
+| `&blueviolet` | `#8a2be2` |
+| `&brown` | `#a52a2a` |
+| `&burlywood` | `#deb887` |
+| `&cadetblue` | `#5f9ea0` |
+| `&chartreuse` | `#7fff00` |
+| `&chocolate` | `#d2691e` |
+| `&coral` | `#ff7f50` |
+| `&cornflowerblue` | `#6495ed` |
+| `&cornsilk` | `#fff8dc` |
+| `&crimson` | `#dc143c` |
+| `&cyan` | `#00ffff` |
+| `&darkblue` | `#00008b` |
+| `&darkcyan` | `#008b8b` |
+| `&darkgoldenrod` | `#b8860b` |
+| `&darkgray` | `#a9a9a9` |
+| `&darkgrey` | `#a9a9a9` |
+| `&darkgreen` | `#006400` |
+| `&darkkhaki` | `#bdb76b` |
+| `&darkmagenta` | `#8b008b` |
+| `&darkolivegreen` | `#556b2f` |
+| `&darkorange` | `#ff8c00` |
+| `&darkorchid` | `#9932cc` |
+| `&darkred` | `#8b0000` |
+| `&darksalmon` | `#e9967a` |
+| `&darkseagreen` | `#8fbc8f` |
+| `&darkslateblue` | `#483d8b` |
+| `&darkslategray` | `#2f4f4f` |
+| `&darkslategrey` | `#2f4f4f` |
+| `&darkturquoise` | `#00ced1` |
+| `&darkviolet` | `#9400d3` |
+| `&deeppink` | `#ff1493` |
+| `&deepskyblue` | `#00bfff` |
+| `&dimgray` | `#696969` |
+| `&dimgrey` | `#696969` |
+| `&dodgerblue` | `#1e90ff` |
+| `&firebrick` | `#b22222` |
+| `&floralwhite` | `#fffaf0` |
+| `&forestgreen` | `#228b22` |
+| `&fuchsia` | `#ff00ff` |
+| `&gainsboro` | `#dcdcdc` |
+| `&ghostwhite` | `#f8f8ff` |
+| `&gold` | `#ffd700` |
+| `&goldenrod` | `#daa520` |
+| `&gray` | `#808080` |
+| `&grey` | `#808080` |
+| `&green` | `#008000` |
+| `&greenyellow` | `#adff2f` |
+| `&honeydew` | `#f0fff0` |
+| `&hotpink` | `#ff69b4` |
+| `&indianred` | `#cd5c5c` |
+| `&indigo` | `#4b0082` |
+| `&ivory` | `#fffff0` |
+| `&khaki` | `#f0e68c` |
+| `&lavender` | `#e6e6fa` |
+| `&lavenderblush` | `#fff0f5` |
+| `&lawngreen` | `#7cfc00` |
+| `&lemonchiffon` | `#fffacd` |
+| `&lightblue` | `#add8e6` |
+| `&lightcoral` | `#f08080` |
+| `&lightcyan` | `#e0ffff` |
+| `&lightgoldenrodyellow` | `#fafad2` |
+| `&lightgray` | `#d3d3d3` |
+| `&lightgrey` | `#d3d3d3` |
+| `&lightgreen` | `#90ee90` |
+| `&lightpink` | `#ffb6c1` |
+| `&lightsalmon` | `#ffa07a` |
+| `&lightseagreen` | `#20b2aa` |
+| `&lightskyblue` | `#87cefa` |
+| `&lightslategray` | `#778899` |
+| `&lightslategrey` | `#778899` |
+| `&lightsteelblue` | `#b0c4de` |
+| `&lightyellow` | `#ffffe0` |
+| `&lime` | `#00ff00` |
+| `&limegreen` | `#32cd32` |
+| `&linen` | `#faf0e6` |
+| `&magenta` | `#ff00ff` |
+| `&maroon` | `#800000` |
+| `&mediumaquamarine` | `#66cdaa` |
+| `&mediumblue` | `#0000cd` |
+| `&mediumorchid` | `#ba55d3` |
+| `&mediumpurple` | `#9370db` |
+| `&mediumseagreen` | `#3cb371` |
+| `&mediumslateblue` | `#7b68ee` |
+| `&mediumspringgreen` | `#00fa9a` |
+| `&mediumturquoise` | `#48d1cc` |
+| `&mediumvioletred` | `#c71585` |
+| `&midnightblue` | `#191970` |
+| `&mintcream` | `#f5fffa` |
+| `&mistyrose` | `#ffe4e1` |
+| `&moccasin` | `#ffe4b5` |
+| `&navajowhite` | `#ffdead` |
+| `&navy` | `#000080` |
+| `&oldlace` | `#fdf5e6` |
+| `&olive` | `#808000` |
+| `&olivedrab` | `#6b8e23` |
+| `&orange` | `#ffa500` |
+| `&orangered` | `#ff4500` |
+| `&orchid` | `#da70d6` |
+| `&palegoldenrod` | `#eee8aa` |
+| `&palegreen` | `#98fb98` |
+| `&paleturquoise` | `#afeeee` |
+| `&palevioletred` | `#db7093` |
+| `&papayawhip` | `#ffefd5` |
+| `&peachpuff` | `#ffdab9` |
+| `&peru` | `#cd853f` |
+| `&pink` | `#ffc0cb` |
+| `&plum` | `#dda0dd` |
+| `&powderblue` | `#b0e0e6` |
+| `&purple` | `#800080` |
+| `&rebeccapurple` | `#663399` |
+| `&red` | `#ff0000` |
+| `&rosybrown` | `#bc8f8f` |
+| `&royalblue` | `#4169e1` |
+| `&saddlebrown` | `#8b4513` |
+| `&salmon` | `#fa8072` |
+| `&sandybrown` | `#f4a460` |
+| `&seagreen` | `#2e8b57` |
+| `&seashell` | `#fff5ee` |
+| `&sienna` | `#a0522d` |
+| `&silver` | `#c0c0c0` |
+| `&skyblue` | `#87ceeb` |
+| `&slateblue` | `#6a5acd` |
+| `&slategray` | `#708090` |
+| `&slategrey` | `#708090` |
+| `&snow` | `#fffafa` |
+| `&springgreen` | `#00ff7f` |
+| `&steelblue` | `#4682b4` |
+| `&tan` | `#d2b48c` |
+| `&teal` | `#008080` |
+| `&thistle` | `#d8bfd8` |
+| `&tomato` | `#ff6347` |
+| `&turquoise` | `#40e0d0` |
+| `&violet` | `#ee82ee` |
+| `&wheat` | `#f5deb3` |
+| `&white` | `#ffffff` |
+| `&whitesmoke` | `#f5f5f5` |
+| `&yellow` | `#ffff00` |
+| `&yellowgreen` | `#9acd32` |
+
+### B.2 Context-Dependent Keywords
+
+The following keywords are accepted as Codex named colors, but do not have a single fixed sRGB value in all contexts:
+
+| Named color | Notes |
+|---|---|
+| `&transparent` | Equivalent to fully transparent black in CSS; informative sRGB hex form: `#00000000`. |
+| `&currentcolor` | Context-dependent; resolves to the current text color in CSS. |
 
 ---
 
