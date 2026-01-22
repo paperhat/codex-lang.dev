@@ -7,9 +7,7 @@ Editor: Charles F. Munat
 
 This document is the authoritative language specification for Codex 0.1.
 
-The Codex 0.1 normative specification set includes this document, its normative annexes, and any additional documents under `spec/0.1/` that are explicitly marked `Status: NORMATIVE`.
-
-All normative requirements for Codex 0.1 MUST appear exactly once across the normative specification set.
+All normative requirements for Codex 0.1 MUST appear exactly once in this document.
 
 ---
 
@@ -2100,6 +2098,369 @@ At minimum, processing MUST fail in any of the following cases:
 - a lookup token is required to resolve but does not have exactly one binding
 - a derived validation artifact cannot be constructed without inventing missing definitions
 
+### 9.11 Layer A → Layer B Expansion Algorithm (Total)
+
+This section defines a deterministic, total expansion algorithm from Profile A (Layer A) schema authoring to canonical Layer B (`RdfGraph`) suitable for derived validation artifacts (including SHACL and SHACL-SPARQL).
+
+The expansion algorithm is normative.
+
+#### 9.11.1 Inputs and Output
+
+Input: a Layer A schema document `S`.
+
+Output: a Layer B `RdfGraph` containing a SHACL graph.
+
+#### 9.11.2 Preconditions
+
+The expansion MUST fail if any of the following hold:
+
+- The schema is not valid under the schema-of-schemas.
+- Any `ConceptDefinition` lacks an `id`.
+- Any required selector (concept name, trait name, validator name) cannot be resolved to a unique definition.
+- Any rule produces a semantic constraint that cannot be expressed under the instance graph mapping defined in §9.7.
+
+#### 9.11.3 Expansion Steps
+
+1. Compute `schemaIri` as the governing schema's `Schema.id` value.
+2. For each `ConceptDefinition` in `S`, compute:
+	- `K = conceptClassIri(X)` where `X` is the concept name
+	- `NS = nodeShapeIri(K)`
+3. Emit SHACL node shape triples for each concept definition:
+	- `(NS, rdf:type, sh:NodeShape)`
+	- `(NS, sh:targetClass, K)`
+4. Expand TraitRules into property shapes (§9.11.4).
+5. Expand ChildRules into property shapes (§9.11.5).
+6. Expand ConstraintDefinitions into SHACL constraints (§9.11.6).
+7. Canonicalize the resulting `RdfGraph` (§9.6).
+
+#### 9.11.4 TraitRules → SHACL Property Shapes
+
+For each trait rule attached to a concept definition with node shape IRI `NS`, let `t` be the trait name string.
+
+The expansion MUST emit one SHACL property shape node `PS` with:
+
+- `(NS, sh:property, PS)`
+- `(PS, rdf:type, sh:PropertyShape)`
+- `(PS, sh:path, traitPredicateIri(t))`
+
+`PS` MUST be `propertyShapeIri(NS, t)`.
+
+Cardinality mapping:
+
+- `RequiresTrait` MUST emit `(PS, sh:minCount, "1"^^xsd:integer)`.
+- `ForbidsTrait` MUST emit `(PS, sh:maxCount, "0"^^xsd:integer)`.
+
+Value type mapping:
+
+- If Layer A declares a value type token that maps to an RDF datatype IRI, the expansion MUST emit `(PS, sh:datatype, datatypeIri)`.
+- If Layer A constrains by enumerated set, the expansion MUST emit `(PS, sh:in, listNodeIri)` and MUST emit the RDF list structure using deterministic skolem IRIs (see §9.6.3).
+
+Any value-type token without a defined mapping MUST cause expansion failure.
+
+#### 9.11.5 ChildRules → SHACL Property Shapes
+
+For each allowed/required/forbidden child relationship declared on a concept definition with node shape IRI `NS` and concept class IRI `K`, let `Q = conceptClassIri(X)` for the selected child concept name `X`.
+
+The expansion MUST emit one SHACL property shape node `PS` with:
+
+- `(NS, sh:property, PS)`
+- `(PS, rdf:type, sh:PropertyShape)`
+- `(PS, sh:path, childPredicateIri(K, Q))`
+
+`PS` MUST be `propertyShapeIri(NS, Q)`.
+
+Child presence mapping:
+
+- `RequiresChildConcept` MUST emit `(PS, sh:minCount, "1"^^xsd:integer)`.
+- `ForbidsChildConcept` MUST emit `(PS, sh:maxCount, "0"^^xsd:integer)`.
+
+If Layer A restricts child type, the expansion MUST emit `(PS, sh:class, Q)`.
+
+#### 9.11.6 ConstraintDefinitions → SHACL Constraints
+
+ConstraintDefinitions MUST expand to SHACL constraints.
+
+##### 9.11.6.1 General Rule
+
+Each Codex constraint type permitted by the schema-definition specification MUST map to either:
+
+- a SHACL Core constraint expression, or
+- a SHACL-SPARQL constraint (`sh:sparql`).
+
+If a constraint type cannot be expressed without inventing semantics not defined by this specification and the schema-definition specification, expansion MUST fail.
+
+Atomic constraint mappings that are defined by this specification MUST follow §9.9.
+
+##### 9.11.6.2 Rule Algebra → SHACL-SPARQL (Total)
+
+This section defines a total mapping for the rule algebra elements:
+
+- `AllOf`
+- `AnyOf`
+- `Not`
+- `ConditionalConstraint` (`When` / `Then`)
+
+This mapping is total in the sense that it provides a deterministic SHACL-SPARQL construction for any rule algebra tree.
+
+If the rule algebra tree contains an atomic constraint whose required mapping is undefined, expansion MUST fail.
+
+###### 9.11.6.2.1 Canonical SPARQL Form
+
+For any `ConstraintDefinition`, expansion MUST emit exactly one SHACL-SPARQL constraint query per target shape.
+
+The query MUST be a `SELECT` query that returns one row per violating focus node using the SHACL-SPARQL convention:
+
+- The focus node variable MUST be `?this`.
+- A row returned by the query MUST indicate a violation.
+
+The query MUST have the following canonical structure:
+
+```
+SELECT DISTINCT ?this
+WHERE {
+	<TARGET_BINDING>
+	FILTER( !( <HOLD_EXPR> ) )
+}
+```
+
+`<TARGET_BINDING>` MUST bind `?this` to the set of focus nodes implied by the constraint's targets.
+
+One conforming target binding is:
+
+- For a concept target with concept name `X`: `?this rdf:type <conceptClassIri(X)> .`
+- For `TargetContext contextSelector="Document"`: `FILTER( ?this = <documentBaseIri> ) .`
+
+`<documentBaseIri>` denotes the IRI term whose value is the required external input `documentBaseIri`.
+
+If target binding cannot be expressed without ambiguity (for example, the target selector is not resolvable), expansion MUST fail.
+
+`<HOLD_EXPR>` MUST be computed by the function `H(rule, ctx, focusVar)` defined below, with `focusVar` set to `?this`.
+
+###### 9.11.6.2.2 Deterministic Variable Allocation
+
+Atomic constraints and path/quantifier expressions often require internal SPARQL variables.
+
+To avoid accidental capture and to make the output canonical, expansion MUST allocate internal variable names deterministically.
+
+Expansion MUST walk the rule tree in pre-order.
+
+For the k-th node visited (1-indexed), the expansion context `ctx` MUST define a node-local suffix `k`.
+
+Any internal variable introduced while translating that node MUST be named by appending `k` to a base name.
+
+Examples:
+
+- `?v1`, `?v2`, ... for values
+- `?c1`, `?c2`, ... for child nodes
+
+Variables introduced for one rule node MUST NOT be referenced outside the `EXISTS { ... }` block created for that node.
+
+###### 9.11.6.2.3 The `H(rule, ctx, focusVar)` Function
+
+`H(rule, ctx, focusVar)` returns a SPARQL boolean expression that evaluates to true exactly when the rule holds for the current focus node.
+
+If `focusVar` is omitted, it MUST be `?this`.
+
+`H(rule, ctx, focusVar)` MUST be computed as follows.
+
+**AllOf**
+
+If `rule` is `AllOf` with child rules `r1..rn`, then:
+
+- `H(rule, ctx, focusVar) = H(r1, ctx1, focusVar) && H(r2, ctx2, focusVar) && ... && H(rn, ctxn, focusVar)`
+
+where `ctxi` are derived by continuing the deterministic pre-order traversal.
+
+**AnyOf**
+
+If `rule` is `AnyOf` with child rules `r1..rn`, then:
+
+- `H(rule, ctx, focusVar) = H(r1, ctx1, focusVar) || H(r2, ctx2, focusVar) || ... || H(rn, ctxn, focusVar)`
+
+**Not**
+
+If `rule` is `Not` with exactly one child rule `r`, then:
+
+- `H(rule, ctx, focusVar) = !H(r, ctx1, focusVar)`
+
+**ConditionalConstraint**
+
+If `rule` is `ConditionalConstraint` with condition rule `w` (under `When`) and consequent rule `t` (under `Then`), then:
+
+- `H(rule, ctx, focusVar) = (!H(w, ctxW, focusVar)) || H(t, ctxT, focusVar)`
+
+This is logically equivalent to: if the condition holds, the consequent must hold.
+
+###### 9.11.6.2.4 Atomic Rules as `EXISTS` Blocks
+
+If `rule` is atomic, `H(rule, ctx, focusVar)` MUST be a SPARQL `EXISTS { ... }` form or an `EXISTS`-free boolean constant.
+
+For atomic rules whose SHACL Core mapping is defined in §9.9, expansion MUST ALSO define `H(rule, ctx, focusVar)` using only SPARQL 1.1 constructs.
+
+If an atomic rule cannot be expressed as a SPARQL boolean expression without inventing additional semantics, expansion MUST fail.
+
+For atomic rules mapped in §9.9, a conforming `H` translation includes at minimum:
+
+- `TraitExists(trait=t)`: `EXISTS { focusVar <traitPredicateIri(t)> ?vK }`
+- `TraitMissing(trait=t)`: `!EXISTS { focusVar <traitPredicateIri(t)> ?vK }`
+- `TraitEquals(trait=t, value=v)`: `EXISTS { focusVar <traitPredicateIri(t)> <valueTerm(v)> }`
+
+Here `?vK` MUST follow the deterministic variable allocation rule in §9.11.6.2.2.
+
+###### 9.11.6.2.5 One-Way Representation Rule
+
+When a `ConstraintDefinition` uses rule algebra (i.e., contains `AllOf`, `AnyOf`, `Not`, or `ConditionalConstraint` anywhere in its rule tree), expansion MUST express that constraint definition using SHACL-SPARQL only.
+
+Expansion MUST NOT additionally emit independent SHACL Core constraints for the same `ConstraintDefinition`.
+
+Rationale: emitting both creates multiple ways to say the same thing and risks divergence between engines.
+
+##### 9.11.6.3 Paths and Quantifiers → SHACL-SPARQL (Total)
+
+This section defines a total mapping for:
+
+- `TraitPath`, `ChildPath`, `DescendantPath`, `ContentPath`
+- `OnPathExists`, `OnPathForAll`, `OnPathCount`
+
+These operators MUST be expressed using SHACL-SPARQL.
+
+###### 9.11.6.3.1 Path Binding Function
+
+Define a function `B(path, focusVar, outVar)` that emits a SPARQL graph pattern which binds `outVar` to each element selected by `path` from `focusVar`.
+
+`B` MUST be computed as follows.
+
+**TraitPath**
+
+For `TraitPath traitName=t`:
+
+```
+focusVar <traitPredicateIri(t)> outVar .
+```
+
+**ChildPath**
+
+For `ChildPath conceptSelector=X`:
+
+```
+outVar <codex:parentNode> focusVar .
+outVar rdf:type <conceptClassIri(X)> .
+```
+
+**DescendantPath**
+
+For `DescendantPath conceptSelector=X`:
+
+```
+outVar <codex:parentNode>+ focusVar .
+outVar rdf:type <conceptClassIri(X)> .
+```
+
+**ContentPath**
+
+For `ContentPath`:
+
+```
+focusVar <codex:content> outVar .
+```
+
+If `conceptSelector` cannot be resolved to a unique `ConceptDefinition`, expansion MUST fail.
+
+###### 9.11.6.3.2 Quantifier Semantics
+
+Each `OnPath*` node scopes a nested rule over the set of elements produced by `B`.
+
+Let `path` be its `Path` child.
+
+Let `r` be its nested `Rule` child.
+
+Let `xVar` be the deterministically allocated variable for the bound element.
+
+The nested rule MUST be evaluated with `focusVar` set to `xVar`.
+
+**OnPathExists**
+
+`OnPathExists(path, r)` MUST translate to:
+
+```
+EXISTS {
+	B(path, focusVar, xVar)
+	FILTER( H(r, ctxChild, xVar) )
+}
+```
+
+**OnPathForAll**
+
+`OnPathForAll(path, r)` MUST translate to:
+
+```
+!EXISTS {
+	B(path, focusVar, xVar)
+	FILTER( !H(r, ctxChild, xVar) )
+}
+```
+
+**OnPathCount**
+
+`OnPathCount(path, r, minCount=m?, maxCount=n?)` MUST translate to a COUNT aggregate over elements that satisfy `r`.
+
+If both `minCount` and `maxCount` are absent, expansion MUST fail.
+
+It MUST translate to a boolean expression of the form:
+
+```
+(
+	SELECT (COUNT(?xVar) AS ?countK)
+	WHERE {
+		B(path, focusVar, xVar)
+		FILTER( H(r, ctxChild, xVar) )
+	}
+)
+```
+
+combined with comparisons:
+
+- if `minCount` is present: `?countK >= m`
+- if `maxCount` is present: `?countK <= n`
+
+`?countK` MUST follow the deterministic variable allocation rule in §9.11.6.2.2.
+
+##### 9.11.6.4 SPARQL Constraint Shape
+
+When a constraint is expressed using SHACL-SPARQL, the expansion MUST emit:
+
+Let `targetShapeIri` be the node shape IRI the constraint is applied to (for example, `nodeShapeIri(conceptClassIri(X))` for a concept target or `documentNodeShapeIri` for the Document context).
+
+- `(targetShapeIri, sh:sparql, sparqlConstraintIri)`
+- `(sparqlConstraintIri, sh:select, selectTextLiteral)`
+
+If the source constraint has a `title` or `description`, the expansion MAY emit `sh:message`.
+
+The SPARQL query MUST be deterministic given the source constraint.
+
+##### 9.11.6.5 Pattern Constraints (SPARQL 1.1 REGEX)
+
+For the pattern-bearing constraints (`ValueMatchesPattern`, `PatternConstraint`, `ContentMatchesPattern`), the expansion MUST use SPARQL 1.1 `REGEX` semantics.
+
+If `flags` is present, it MUST be projected to `sh:flags` when using `sh:pattern`, and it MUST be passed as the third argument to `REGEX` when using `sh:sparql`.
+
+##### 9.11.6.6 `ValueIsValid` via Explicit `ValidatorDefinition`
+
+For `ValueIsValid validatorName=$X`, expansion MUST:
+
+1. Resolve `$X` to exactly one `ValidatorDefinition` in the schema.
+2. Embed the `ValidatorDefinition` content into a SHACL-SPARQL constraint.
+
+If the validator cannot be resolved uniquely, expansion MUST fail.
+
+The embedding contract MUST be purely textual and deterministic.
+
+One conforming contract is:
+
+- The validator content MUST be a SPARQL `SELECT` query string whose results follow the SHACL-SPARQL convention (returning a row per violation with `?this`).
+
+The derived `sh:select` string MUST be exactly the validator content.
+
 ---
 
 ## 10. Formatting and Canonicalization
@@ -2118,25 +2479,1252 @@ At minimum, processing MUST fail in any of the following cases:
 
 ## 11. Schema Definition Language
 
-The schema definition language is defined by the Codex Schema Definition Specification:
+This section normatively defines the schema definition language for Codex 0.1.
 
-- [schema-definition/index.md](schema-definition/index.md)
+Status: NORMATIVE
+Lock State: UNLOCKED
+Version: 0.1
+Editor: Charles F. Munat
+
+### Codex Schema Definition Specification — Version 0.1
+
+This document defines the **schema definition model** for the Codex language.
+
+It specifies how **schemas themselves are authored in Codex**, including:
+
+* Concept definitions
+* Trait definitions
+* Content, child, trait, and collection rules
+* Enumerated value sets
+* Entity eligibility
+* Declarative constraints
+* Schema versioning and compatibility
+
+This content is **Normative**.
+
+---
+
+#### 1. Purpose
+
+This specification defines the **authoritative ontology for Codex schemas**.
+
+Its goals are to:
+
+* make schemas **first-class Codex data**
+* enable validation consistent with the Codex language invariants
+* allow schemas to validate other schemas (bootstrapping)
+* ensure interoperability across tools and implementations
+* support compilation to external validation systems (e.g., SHACL)
+
+The Codex language invariants governing meaning, closed-world semantics,
+determinism, and prohibition of heuristics are defined by this specification (see §9).
+
+The schema-language itself is bootstrapped by a built-in **bootstrap schema-of-schemas**.
+See §12.4.
+
+---
+
+#### 2. Core Principles (Normative)
+
+* Schemas are **declarative data**, not executable programs
+* All authorization is **explicit**
+* All constraints are **mechanically enforceable**
+* Schema validation semantics MUST satisfy the Codex language invariants (see §9)
+
+---
+
+#### 3. Schema
+
+##### 3.1 `Schema`
+
+A `Schema` Concept defines a schema.
+
+###### Traits (Normative)
+
+* `id` (required; IRI reference)
+* `version` (required; string)
+* `compatibilityClass` (required; `$BackwardCompatible | $ForwardCompatible | $Breaking`)
+* `title` (optional; string)
+* `description` (optional; string)
+
+###### Children (Normative)
+
+A `Schema` MAY contain, in any order:
+
+* `ConceptDefinitions`
+* `TraitDefinitions`
+* `EnumeratedValueSets`
+* `ConstraintDefinitions`
+* `ValueTypeDefinitions` (optional)
+
+---
+
+#### 4. Concept Definitions
+
+##### 4.1 `ConceptDefinition`
+
+Defines a Codex Concept.
+
+A `ConceptDefinition` is itself an Entity.
+
+###### Traits (Normative)
+
+* `id` (required; IRI reference)
+* `key` (optional; lookup token)
+* `name` (required; Concept name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `conceptKind` (required; `$Semantic | $Structural | $ValueLike`)
+* `entityEligibility` (required; `$MustBeEntity | $MayBeEntity | $MustNotBeEntity`)
+
+###### Children (Normative)
+
+* `ContentRules` (optional)
+* `TraitRules` (optional)
+* `ChildRules` (optional)
+* `CollectionRules` (optional)
+
+---
+
+##### 4.2 `ContentRules`
+
+Declares whether a Concept allows content.
+
+A Concept's content mode determines how the parser handles its body. This is essential for schema-first parsing.
+
+###### Children (Normative)
+
+Exactly one of:
+
+* `AllowsContent` — Concept body is opaque content (content mode)
+* `ForbidsContent` — Concept body contains children or is empty (children mode)
+
+###### Defaults
+
+If `ContentRules` is omitted, `ForbidsContent` is assumed.
+
+###### Parser Implication
+
+The parser MUST consult `ContentRules` to determine content mode before parsing
+the Concept body. See §12.
+
+###### Example
+
+```cdx
+<ConceptDefinition
+	id=example:concept:Description
+	name="Description"
+	conceptKind=$Semantic
+	entityEligibility=$MustNotBeEntity
+>
+	<ContentRules>
+		<AllowsContent />
+	</ContentRules>
+</ConceptDefinition>
+```
+
+---
+
+##### 4.3 `TraitRules`
+
+Declares which Traits a Concept allows, requires, or forbids.
+
+###### Children (Normative)
+
+Zero or more of:
+
+* `RequiresTrait` — Trait MUST be present
+* `AllowsTrait` — Trait MAY be present
+* `ForbidsTrait` — Trait MUST NOT be present
+
+###### `RequiresTrait`
+
+####### Traits
+
+* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+
+###### `AllowsTrait`
+
+####### Traits
+
+* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+
+###### `ForbidsTrait`
+
+####### Traits
+
+* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+
+###### Defaults
+
+Traits not listed are forbidden by default. A Concept with no `TraitRules` allows no Traits (except `id` and `key` which are governed by `entityEligibility`).
+
+###### Example
+
+```cdx
+<TraitRules>
+	<RequiresTrait name="amount" />
+	<AllowsTrait name="unit" />
+	<AllowsTrait name="optional" />
+</TraitRules>
+```
+
+---
+
+##### 4.4 `ChildRules`
+
+Declares which child Concepts are allowed under a Concept.
+
+###### Children (Normative)
+
+Zero or more of:
+
+* `AllowsChildConcept` — child Concept MAY appear
+* `RequiresChildConcept` — child Concept MUST appear (alias for min=1)
+* `ForbidsChildConcept` — child Concept MUST NOT appear
+
+###### `AllowsChildConcept`
+
+####### Traits
+
+* `conceptSelector` (required; Concept name as string)
+* `min` (optional; non-negative integer, default 0)
+* `max` (optional; positive integer, omit for unbounded)
+
+###### `RequiresChildConcept`
+
+####### Traits
+
+* `conceptSelector` (required; Concept name as string)
+* `min` (optional; positive integer, default 1)
+* `max` (optional; positive integer, omit for unbounded)
+
+Note: `RequiresChildConcept` is semantically equivalent to `AllowsChildConcept` with `min=1`. It exists for clarity.
+
+###### `ForbidsChildConcept`
+
+####### Traits
+
+* `conceptSelector` (required; Concept name as string)
+
+###### Defaults
+
+Child Concepts not listed are forbidden by default.
+
+###### Example
+
+```cdx
+<ChildRules>
+	<AllowsChildConcept conceptSelector="Title" />
+	<AllowsChildConcept conceptSelector="Description" />
+	<RequiresChildConcept conceptSelector="Ingredients" />
+	<AllowsChildConcept conceptSelector="Instructions" min=1 />
+</ChildRules>
+```
+
+---
+
+##### 4.5 `CollectionRules`
+
+Declares collection semantics for a Concept that acts as a container.
+
+`CollectionRules` is used when a Concept's children represent a logical collection (e.g., a list of ingredients, a set of tags). The semantics inform validation and graph compilation.
+
+###### Traits (Normative)
+
+* `ordering` (required; `$Ordered | $Unordered`)
+* `allowsDuplicates` (required; boolean)
+
+###### Form
+
+`CollectionRules` is self-closing (no children).
+
+###### Example
+
+```cdx
+<ConceptDefinition
+	id=example:concept:Ingredients
+	name="Ingredients"
+	conceptKind=$Structural
+	entityEligibility=$MustNotBeEntity
+>
+	<ContentRules>
+		<ForbidsContent />
+	</ContentRules>
+	<ChildRules>
+		<AllowsChildConcept conceptSelector="Ingredient" />
+	</ChildRules>
+	<CollectionRules ordering=$Unordered allowsDuplicates=true />
+</ConceptDefinition>
+```
+
+---
+
+#### 5. Trait Definitions
+
+##### 5.1 `TraitDefinition`
+
+Defines a Trait independently of any Concept.
+
+Trait definitions establish the value type, cardinality, and constraints for a Trait that may be used across multiple Concepts.
+
+###### Traits (Normative)
+
+* `id` (optional; IRI reference)
+* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `defaultValueType` (required; value type token)
+* `cardinality` (required; `$Single | $List`)
+* `itemValueType` (required if `cardinality=$List`; value type token)
+* `isReferenceTrait` (optional; boolean)
+
+###### Children (Optional)
+
+* `AllowedValues` — constrains the set of valid values
+
+###### Example
+
+```cdx
+<TraitDefinition
+	name="amount"
+	defaultValueType=$Number
+	cardinality=$Single
+/>
+
+<TraitDefinition
+	name="unit"
+	defaultValueType=$EnumeratedToken
+	cardinality=$Single
+>
+	<AllowedValues>
+		<ValueIsOneOf values=[$Grams, $Kilograms, $Milliliters, $Liters, $Units] />
+	</AllowedValues>
+</TraitDefinition>
+```
+
+---
+
+##### 5.2 `AllowedValues`
+
+Constrains the values a Trait may accept.
+
+###### Children (Normative)
+
+One or more value constraints:
+
+* `ValueIsOneOf` — value must be in explicit list
+* `EnumeratedConstraint` — value must be member of named enumeration
+
+###### `ValueIsOneOf`
+
+####### Traits
+
+* `values` (required; list of allowed values)
+
+###### `EnumeratedConstraint`
+
+####### Traits
+
+* `set` (required; name of an `EnumeratedValueSet`)
+
+---
+
+#### 6. Value Types
+
+##### 6.1 Built-in Value Type Tokens (Normative)
+
+Schemas MAY reference the following built-in value types:
+
+* `$String`
+* `$Char`
+* `$Boolean`
+* `$Number`
+* `$Integer`
+* `$EnumeratedToken`
+* `$IriReference`
+* `$LookupToken`
+* `$Uuid`
+* `$Color`
+* `$Temporal`
+* `$Date`
+* `$YearMonth`
+* `$MonthDay`
+* `$LocalDateTime`
+* `$ZonedDateTime`
+* `$Duration`
+* `$List`
+* `$Set`
+* `$Map`
+* `$Tuple`
+* `$Range`
+
+---
+
+##### 6.2 `ValueTypeDefinition` (Optional)
+
+Defines a named value type with custom validation.
+
+###### Container
+
+`ValueTypeDefinitions` is a container Concept holding one or more `ValueTypeDefinition` children.
+
+###### Traits
+
+* `id` (optional; IRI reference)
+* `name` (required; Concept name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `baseValueType` (required; built-in value type token)
+* `validatorName` (optional; enumerated token identifying a validator)
+
+---
+
+##### 6.3 Enumerated Value Sets
+
+Schemas MAY define named sets of enumerated values.
+
+###### Container
+
+`EnumeratedValueSets` is a container Concept holding one or more `EnumeratedValueSet` children.
+
+###### `EnumeratedValueSet`
+
+Defines a named set of valid enumerated tokens.
+
+####### Traits
+
+* `name` (required; Concept name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+
+####### Children
+
+One or more `Member` children.
+
+###### `Member`
+
+Defines a single member of an enumerated value set.
+
+####### Traits
+
+* `value` (required; string matching the token name without `$` prefix)
+* `label` (optional; human-readable display string)
+* `description` (optional; explanatory string)
+
+###### Example
+
+```cdx
+<EnumeratedValueSets>
+	<EnumeratedValueSet name="MeasurementUnit">
+		<Member value="Grams" label="Grams" />
+		<Member value="Kilograms" label="Kilograms" />
+		<Member value="Milliliters" label="Milliliters" />
+		<Member value="Liters" label="Liters" />
+		<Member value="Units" label="Units" description="Countable items" />
+	</EnumeratedValueSet>
+</EnumeratedValueSets>
+```
+
+Usage:
+
+```cdx
+<TraitDefinition name="unit" defaultValueType=$EnumeratedToken cardinality=$Single>
+	<AllowedValues>
+		<EnumeratedConstraint set="MeasurementUnit" />
+	</AllowedValues>
+</TraitDefinition>
+```
+
+---
+
+##### 6.4 Built-in Enumerated Value Sets (Normative)
+
+The following enumerated value sets are defined by the language and MUST be recognized by all implementations.
+
+###### ConceptKind
+
+Describes the semantic role of a Concept.
+
+* `$Semantic` — carries domain meaning; may become graph nodes
+* `$Structural` — organizes or groups other Concepts; typically not graph nodes
+* `$ValueLike` — represents a value-like construct
+
+###### EntityEligibility
+
+Governs whether Concept instances may or must have identity.
+
+* `$MustBeEntity` — instances MUST declare an `id` Trait
+* `$MayBeEntity` — instances MAY declare an `id` Trait
+* `$MustNotBeEntity` — instances MUST NOT declare an `id` Trait
+
+###### CompatibilityClass
+
+Declares schema version compatibility.
+
+* `$BackwardCompatible` — existing valid data remains valid
+* `$ForwardCompatible` — data authored for new version may validate under older
+* `$Breaking` — migration required; existing data may become invalid
+
+###### Ordering
+
+Declares collection ordering semantics.
+
+* `$Ordered` — child order is significant and preserved
+* `$Unordered` — child order is not significant
+
+###### Cardinality
+
+Declares Trait value cardinality.
+
+* `$Single` — exactly one value
+* `$List` — zero or more values
+
+---
+
+#### 7. Constraint Model
+
+##### 7.1 `ConstraintDefinitions`
+
+Container for constraint definitions within a schema.
+
+###### Children
+
+One or more `ConstraintDefinition` children.
+
+---
+
+##### 7.2 `ConstraintDefinition`
+
+Defines a reusable, named constraint.
+
+###### Traits (Normative)
+
+* `id` (required; IRI reference)
+* `title` (optional; string)
+* `description` (optional; string)
+
+###### Children (Normative)
+
+* `Targets` (required) — what the constraint applies to
+* `Rule` (required) — the constraint logic
+
+---
+
+##### 7.3 `Targets`
+
+Declares what a constraint applies to.
+
+###### Children (Normative)
+
+One or more of:
+
+* `TargetConcept` — constraint applies to instances of a Concept
+* `TargetContext` — constraint applies within a context
+
+###### `TargetConcept`
+
+####### Traits
+
+* `conceptSelector` (required; Concept name as string)
+
+###### `TargetContext`
+
+####### Traits
+
+* `contextSelector` (required; Concept name or `"Document"`)
+
+---
+
+##### 7.4 `Rule`
+
+Contains the constraint logic.
+
+A `Rule` MUST contain exactly one constraint or composition element.
+
+---
+
+#### 8. Rule Algebra (Normative)
+
+##### 8.1 Composition Rules
+
+Composition rules combine other rules.
+
+###### `AllOf`
+
+All child rules must hold.
+
+####### Children
+
+Two or more `Rule` children.
+
+###### `AnyOf`
+
+At least one child rule must hold.
+
+####### Children
+
+Two or more `Rule` children.
+
+###### `Not`
+
+The child rule must not hold.
+
+####### Children
+
+Exactly one `Rule` child.
+
+###### `ConditionalConstraint`
+
+If a condition holds, a consequent must hold.
+
+####### Children
+
+* `When` — contains the condition (one `Rule` child)
+* `Then` — contains the consequent (one `Rule` child)
+
+---
+
+#### 9. Paths and Quantifiers
+
+##### 9.1 Paths
+
+Constraints MAY reference data using paths:
+
+* `TraitPath` — references a Trait value
+	* `traitName` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `ChildPath` — references direct children
+  * `conceptSelector` (required; Concept name)
+* `DescendantPath` — references descendants at any depth
+  * `conceptSelector` (required; Concept name)
+* `ContentPath` — references Content (no traits)
+
+---
+
+##### 9.2 Quantifiers
+
+Quantifiers scope constraints over collections.
+
+* `Exists` — at least one element satisfies the rule
+* `ForAll` — all elements satisfy the rule
+* `Count` — count of elements satisfies bounds
+  * `minCount` (optional; non-negative integer)
+  * `maxCount` (optional; positive integer)
+
+Quantifiers are structural and deterministic.
+
+---
+
+#### 10. Atomic Constraints (Normative)
+
+Atomic constraints are the leaves of the rule algebra.
+
+##### 10.1 Trait Constraints
+
+###### `TraitExists`
+
+Trait is present on the Concept.
+
+####### Traits
+
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+
+###### `TraitMissing`
+
+Trait is absent from the Concept.
+
+####### Traits
+
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+
+###### `TraitEquals`
+
+Trait has a specific value.
+
+####### Traits
+
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `value` (required; the expected value)
+
+###### `TraitCardinality`
+
+Trait value count is within bounds.
+
+####### Traits
+
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `min` (optional; non-negative integer)
+* `max` (optional; positive integer)
+
+###### `TraitValueType`
+
+Trait value matches expected type.
+
+####### Traits
+
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `valueType` (required; value type token)
+
+---
+
+##### 10.2 Value Constraints
+
+###### `ValueIsOneOf`
+
+Value is in an explicit list.
+
+####### Traits
+
+* `values` (required; list of allowed values)
+
+###### `ValueMatchesPattern`
+
+Value matches a regular expression.
+
+####### Traits
+
+* `pattern` (required; regex string)
+
+###### `PatternConstraint`
+
+Trait value matches a regular expression.
+
+####### Traits
+
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `pattern` (required; regex string)
+
+###### `ValueLength`
+
+String value length is within bounds.
+
+####### Traits
+
+* `min` (optional; non-negative integer)
+* `max` (optional; positive integer)
+
+###### `ValueInNumericRange`
+
+Numeric value is within bounds.
+
+####### Traits
+
+* `min` (optional; number, inclusive)
+* `max` (optional; number, inclusive)
+
+###### `ValueIsNonEmpty`
+
+Value is present and non-empty.
+
+No traits.
+
+###### `ValueIsValid`
+
+Value passes custom validation.
+
+####### Traits
+
+* `validatorName` (required; enumerated token)
+
+---
+
+##### 10.3 Child Constraints
+
+###### `ChildConstraint`
+
+Generic child constraint using type dispatch.
+
+####### Traits
+
+* `type` (required; `RequiresChildConcept | AllowsChildConcept | ForbidsChildConcept`)
+* `conceptSelector` (required; Concept name)
+
+###### `ChildSatisfies`
+
+Child Concepts satisfy a nested rule.
+
+####### Traits
+
+* `conceptSelector` (required; Concept name)
+
+####### Children
+
+One `Rule` child.
+
+---
+
+##### 10.4 Collection Constraints
+
+###### `CollectionOrdering`
+
+Declares expected ordering.
+
+####### Traits
+
+* `ordering` (required; `$Ordered | $Unordered`)
+
+###### `CollectionAllowsEmpty`
+
+Collection may be empty.
+
+####### Traits
+
+* `allowed` (required; boolean)
+
+###### `CollectionAllowsDuplicates`
+
+Collection may contain duplicates.
+
+####### Traits
+
+* `allowed` (required; boolean)
+
+###### `MemberCount`
+
+Collection member count is within bounds.
+
+####### Traits
+
+* `min` (optional; non-negative integer)
+* `max` (optional; positive integer)
+
+###### `EachMemberSatisfies`
+
+Each collection member satisfies a nested rule.
+
+####### Children
+
+One `Rule` child.
+
+---
+
+##### 10.5 Uniqueness Constraints
+
+###### `UniqueConstraint`
+
+Trait values must be unique within a scope.
+
+####### Traits
+
+* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `scope` (required; Concept name defining the uniqueness scope)
+
+---
+
+##### 10.6 Order Constraints
+
+###### `OrderConstraint`
+
+Positional rules for ordered collections.
+
+####### Traits
+
+* `type` (required; e.g., `VariadicMustBeLast`)
+
+---
+
+##### 10.7 Reference Constraints
+
+###### `ReferenceConstraint`
+
+Validates reference Trait usage.
+
+####### Traits
+
+* `type` (required; one of the following)
+
+####### Types
+
+* `ReferenceTargetsEntity` — referenced Concept must be an Entity
+* `ReferenceMustResolve` — reference must resolve to existing Concept
+* `ReferenceTargetsConcept` — reference must target specified Concept type
+  * `conceptSelector` (additional trait; Concept name)
+* `ReferenceSingleton` — only one reference Trait may be present
+* `ReferenceTraitAllowed` — specific reference Trait is permitted
+
+---
+
+##### 10.8 Identity Constraints
+
+###### `IdentityConstraint`
+
+Validates Entity identity rules.
+
+####### Traits
+
+* `type` (required; one of the following)
+
+####### Types
+
+* `MustBeEntity` — Concept instance must have `id`
+* `MustNotBeEntity` — Concept instance must not have `id`
+* `IdentifierUniqueness` — identifier must be unique within scope
+* `IdentifierForm` — identifier must match pattern
+
+---
+
+##### 10.9 Context Constraints
+
+###### `ContextConstraint`
+
+Validates parent or context rules.
+
+####### Traits
+
+* `type` (required; one of the following)
+* `contextSelector` (required for most types; Concept name)
+
+####### Types
+
+* `OnlyValidUnderParent` — Concept may only appear as direct child of specified parent
+* `OnlyValidUnderContext` — Concept may only appear within specified ancestor
+
+---
+
+##### 10.10 Content Constraints
+
+###### `ContentConstraint`
+
+Validates content rules.
+
+####### Traits
+
+* `type` (required; one of the following)
+
+####### Types
+
+* `ContentForbiddenUnlessAllowed` — content forbidden unless explicitly allowed
+* `ContentRequired` — content must be present and non-empty
+* `ContentMatchesPattern` — content matches regex pattern
+  * `pattern` (additional trait; regex string)
+
+---
+
+#### 11. Complete Constraint Example
+
+```cdx
+<ConstraintDefinition
+	id=example:constraint:recipe-requires-title
+	title="Recipe requires Title"
+>
+	<Targets>
+		<TargetConcept conceptSelector="Recipe" />
+	</Targets>
+	<Rule>
+		<ChildConstraint type="RequiresChildConcept" conceptSelector="Title" />
+	</Rule>
+</ConstraintDefinition>
+
+<ConstraintDefinition
+	id=example:constraint:non-nullary-requires-parameters
+	title="Non-nullary operators require parameters"
+>
+	<Targets>
+		<TargetConcept conceptSelector="OperatorDefinition" />
+	</Targets>
+	<Rule>
+		<ConditionalConstraint>
+			<When>
+				<Not>
+					<TraitEquals trait="arity" value=$Nullary />
+				</Not>
+			</When>
+			<Then>
+				<ChildConstraint type="RequiresChildConcept" conceptSelector="Parameters" />
+			</Then>
+		</ConditionalConstraint>
+	</Rule>
+</ConstraintDefinition>
+```
+
+---
+
+#### 12. Relationship to External Systems (Normative)
+
+* Codex schemas are **authoritative**
+* SHACL or OWL representations MAY be derived
+* Derived artifacts MUST NOT override Codex validation semantics
+
+---
+
+#### 13. Summary
+
+* Schemas are first-class Codex data
+* Content mode is declared via `ContentRules`
+* Trait, child, and collection rules are explicit
+* Constraints are declarative and compositional
+* Enumerated value sets may be defined per-schema or built-in
+* This ontology enables self-hosting schema validation
+
+Validation semantics, including closed-world behavior and determinism, are governed by this specification (see §9).
+
+---
+
+**End of Codex Schema Definition Specification v0.1**
 
 ---
 
 ## 12. Schema Loading and Bootstrapping
 
-Schema loading and bootstrapping requirements are defined by the Codex Schema Loading Specification:
+This section defines how schemas are associated with documents for schema-first parsing and validation.
 
-- [schema-loading/index.md](schema-loading/index.md)
+### 12.1 Purpose
+
+Codex is a schema-first language. A document cannot be semantically validated without its governing schema.
+
+Codex permits schema-less formatting and well-formedness checks that do not require a governing schema (see §9.2).
+
+This section defines how parsers obtain the governing schema for a document.
+
+Its goals are to:
+
+- ensure every validation operation has a schema
+- support multiple schema provision mechanisms
+- enable schema-document bootstrapping via a built-in bootstrap schema-of-schemas
+- provide clear errors when schema is unavailable
+
+### 12.2 Schema Provision Mechanisms (Normative)
+
+A conforming parser MUST support explicit schema provision.
+
+A conforming parser MAY support additional mechanisms.
+
+#### 12.2.1 Explicit Provision (Required)
+
+The caller provides the schema directly to the parser.
+
+`parse(document, schema) → AST`
+
+This is the baseline mechanism. All conforming implementations MUST support it.
+
+#### 12.2.2 Schema Registry (Optional)
+
+The parser MAY consult a registry to resolve schema identifiers.
+
+Registry implementation details are outside this specification.
+
+### 12.3 Resolution Order (Normative)
+
+When a parser supports multiple provision mechanisms, it MUST follow this order:
+
+1. Explicit provision — if caller provides schema, use it.
+2. Registry lookup — if implementation supports registry, consult it.
+3. Failure — if no schema is obtained, fail with `ParseError`.
+
+Explicit provision always takes precedence.
+
+### 12.4 Bootstrap Schema-of-Schemas (Normative)
+
+The bootstrap schema-of-schemas is the built-in schema language required to parse and validate schema documents (root `Schema`) without circular dependency.
+
+This is distinct from ecosystem meta-schemas (for example, a domain meta-schema), which are ordinary schema documents authored in Codex and validated under the bootstrap schema-of-schemas.
+
+#### 12.4.1 Requirements
+
+Every conforming implementation MUST:
+
+- include the complete bootstrap schema-of-schemas as built-in, hard-coded data
+- use the bootstrap schema-of-schemas when parsing and validating schema documents
+
+#### 12.4.2 Detection
+
+A document is a schema document if its root Concept is `Schema`.
+
+When the parser encounters a root `Schema` Concept:
+
+1. If explicit schema was provided, use it (it MAY be a meta-schema or an extension).
+2. Otherwise, use the built-in bootstrap schema-of-schemas.
+
+#### 12.4.3 Error Classification (Normative)
+
+- If a schema document is not structurally readable (for example, malformed markers), the failure is a `ParseError`.
+- If a schema document is structurally readable but violates the bootstrap schema-of-schemas rules, the failure is a `SchemaError`.
+
+#### 12.4.4 Canonical Schema-Language Definition (Normative)
+
+All schema-language constructs that appear inside schema documents are defined normatively in exactly one place:
+
+- the schema definition language defined by §11 of this specification
+
+The bootstrap schema-of-schemas MUST accept exactly the schema documents that conform to §11.
+
+### 12.5 Schema Caching (Informative)
+
+Schemas are immutable within a version. Implementations SHOULD cache parsed schemas to avoid redundant parsing.
+
+Cache invalidation strategies are implementation-defined.
+
+### 12.6 Error Handling (Normative)
+
+#### 12.6.1 Schema Unavailable
+
+If no schema can be obtained through any supported mechanism:
+
+- Error class: `ParseError`
+- Message SHOULD indicate schema was unavailable.
+- Parsing MUST NOT proceed.
+
+#### 12.6.2 Schema Load Failure
+
+If schema resolution succeeds but loading fails (network error, file not found):
+
+- Error class: `ParseError`
+- Message SHOULD indicate schema could not be loaded.
+- Message SHOULD include the schema identifier.
+
+#### 12.6.3 Invalid Schema
+
+If the loaded schema is not valid Codex or not a valid schema:
+
+- Error class: `SchemaError`
+- Message SHOULD indicate schema validation failed.
+- Underlying schema errors SHOULD be reported.
+
+### 12.7 Relationship to Other Specifications
+
+- This specification defines schema-first processing (§9) and schema provision and bootstrapping (§12).
+- The schema definition language is defined in §11.
 
 ---
 
 ## 13. Schema Versioning
 
-Schema versioning requirements are defined by the Codex Schema Versioning Specification:
+This section defines how schemas are versioned and evolved.
 
-- [schema-versioning/index.md](schema-versioning/index.md)
+Schema versioning rules are part of the Codex language and are governed by this section.
+
+### 13.1 Purpose
+
+This section defines how Codex schemas are versioned and evolved.
+
+Its goals are to:
+
+- allow schemas to change without breaking existing data
+- make compatibility explicit and inspectable
+- prevent silent semantic drift
+- support long-lived data and tooling stability
+
+This section governs schema evolution semantics, not data migration mechanisms.
+
+### 13.2 Core Principles
+
+Codex schema versioning is governed by the following principles:
+
+1. Schemas evolve; data persists.
+2. Compatibility is explicit, not inferred.
+3. Breaking changes are deliberate.
+4. Validation is version-aware and conforms to the determinism invariant.
+
+Schemas MUST make their versioning intent explicit.
+
+### 13.3 Schema Identity
+
+Every Codex schema MUST declare:
+
+- a stable schema identifier
+- an explicit version designation
+
+The schema identifier defines what schema this is.
+
+The version defines which rules apply.
+
+Schemas without explicit version information are invalid.
+
+### 13.4 Version Semantics
+
+Schemas MUST use monotonic versioning.
+
+Versions MAY be expressed as:
+
+- semantic versions (for example, `1.2.0`)
+- date-based versions (for example, `2026-01`)
+- another documented, totally ordered scheme
+
+The specific format is schema-defined, but ordering MUST be unambiguous.
+
+### 13.5 Compatibility Classes (Normative)
+
+Each schema version MUST declare its compatibility class relative to the previous version.
+
+Exactly one of the following MUST be specified.
+
+#### 13.5.1 Backward-Compatible
+
+A backward-compatible version guarantees:
+
+- existing valid Codex data remains valid
+- meaning of existing Concepts and Traits is preserved
+- new Concepts or Traits MAY be added
+- new constraints MAY be added only if they do not invalidate existing data
+
+#### 13.5.2 Forward-Compatible
+
+A forward-compatible version guarantees:
+
+- Codex data authored for the new version MAY validate under older versions
+- older tools can safely ignore newer constructs
+- new constructs are optional and additive
+
+Forward compatibility is typically used for extension-oriented evolution.
+
+#### 13.5.3 Breaking
+
+A breaking version declares that:
+
+- existing valid Codex data MAY become invalid
+- semantics of existing Concepts or Traits MAY change
+- migration is required
+
+Breaking versions MUST be explicitly marked.
+
+### 13.6 What Constitutes a Breaking Change
+
+The following changes are breaking:
+
+- removing a Concept
+- removing a Trait
+- changing Entity eligibility
+- changing reference semantics
+- changing collection semantics
+- tightening constraints that invalidate existing data
+- changing the meaning of a Concept or Trait
+
+Breaking changes MUST NOT be introduced silently.
+
+### 13.7 Non-Breaking Changes
+
+The following changes are non-breaking when properly declared:
+
+- adding new Concepts
+- adding optional Traits
+- adding new Structural Concepts
+- clarifying documentation
+- adding new constraints that apply only to newly introduced Concepts
+
+### 13.8 Schema Validation Behavior
+
+When validating Codex data:
+
+- the applicable schema version MUST be known
+- validation MUST use that version's rules
+- tools MUST NOT infer or guess schema intent
+
+If schema version information is missing, ambiguous, or incompatible, validation MUST fail.
+
+### 13.9 Relationship to Data Migration
+
+This section does not define migration mechanisms.
+
+However:
+
+- breaking schema changes imply migration is required
+- migration tooling MUST be explicit and MUST NOT rely on heuristics
+- migrated data MUST validate cleanly under the target schema version
+
+Schemas define what changed, not how to migrate.
+
+### 13.10 Tooling Responsibilities
+
+Codex tooling SHOULD:
+
+- surface schema identifiers and versions clearly
+- surface declared compatibility classes
+- warn when data targets a newer schema version
+- refuse to validate data against incompatible schema versions
+
+Tooling MUST NOT silently reinterpret data across schema versions.
 
 ---
 

@@ -1,9 +1,13 @@
-Status: NORMATIVE
+Status: NON-NORMATIVE (Historical; incorporated into codex-language-specification.md §11)
 Lock State: UNLOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
 # Codex Schema Definition Specification — Version 0.1
+
+This document is retained for historical/reference purposes.
+
+The authoritative normative content is incorporated into `spec/0.1/codex-language-specification.md` §11.
 
 This document defines the **schema definition model** for the Codex language.
 
@@ -16,8 +20,6 @@ It specifies how **schemas themselves are authored in Codex**, including:
 * Entity eligibility
 * Declarative constraints
 * Schema versioning and compatibility
-
-This document is **Normative**.
 
 ---
 

@@ -1,9 +1,13 @@
-Status: NORMATIVE  
+Status: NON-NORMATIVE (Historical; consolidated into codex-language-specification.md §§4–5)  
 Lock State: UNLOCKED    
 Version: 0.1  
 Editor: Charles F. Munat
 
 # Codex Naming and Value Specification — Version 0.1
+
+This document is retained for historical/reference purposes.
+
+The authoritative normative content is consolidated into `spec/0.1/codex-language-specification.md` (see §§4–5).
 
 This specification defines the **core surface vocabulary**, **naming rules**, and
 **literal value spellings** of the Codex language.

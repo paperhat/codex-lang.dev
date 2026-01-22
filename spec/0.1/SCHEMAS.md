@@ -1,10 +1,14 @@
 # Codex 0.1 — Schema Layers and SHACL Projection
 
-Status: NORMATIVE (Annex)
+Status: NON-NORMATIVE (Historical; migrated)
 
-This document is a normative annex to [codex-language-specification.md](codex-language-specification.md).
+This document is retained for historical context and as a migration record.
 
-This annex defines a disciplined, fully algorithmic mapping from Codex schemas to derived validation artifacts.
+All requirement keywords (MUST/MUST NOT/MAY) in this document are historical and are not normative for Codex 0.1.
+
+The normative definition of schema-driven validation projection, including the total Layer A → Layer B expansion algorithm and SHACL-SPARQL rule algebra mapping, is now in:
+
+- [codex-language-specification.md](codex-language-specification.md) (§9)
 
 ---
 

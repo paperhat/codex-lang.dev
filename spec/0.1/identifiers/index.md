@@ -1,16 +1,18 @@
-Status: NORMATIVE  
+Status: NON-NORMATIVE (Historical; consolidated into codex-language-specification.md §6)  
 Lock State: UNLOCKED    
 Version: 0.1  
 Editor: Charles F. Munat
 
 # **Codex Identifier Specification — Version 0.1**
 
+This document is retained for historical/reference purposes.
+
+The authoritative normative content is consolidated into `spec/0.1/codex-language-specification.md` §6.
+
 This specification defines **identifiers (`id`)** in the Codex language.
 
 Identifiers are part of the Codex language model and are governed by this
 specification.
-
-This document is **Normative**.
 
 ---
 

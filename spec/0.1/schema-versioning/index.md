@@ -1,17 +1,19 @@
-Status: NORMATIVE  
+Status: NON-NORMATIVE (Historical; incorporated into codex-language-specification.md §13)  
 Lock State: UNLOCKED    
 Version: 0.1  
 Editor: Charles F. Munat
 
 # **Codex Schema Versioning Specification — Version 0.1**
 
+This document is retained for historical/reference purposes.
+
+The authoritative normative content is incorporated into `spec/0.1/codex-language-specification.md` §13.
+
 This document defines **how schemas are versioned and evolved** in the Codex
 language.
 
 Schema versioning rules are part of the Codex language specification and are
 governed by this document.
-
-This document is **Normative**.
 
 ---
 

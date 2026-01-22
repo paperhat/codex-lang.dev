@@ -1,9 +1,13 @@
-Status: NORMATIVE
+Status: NON-NORMATIVE (Historical; incorporated into codex-language-specification.md §12.4)
 Lock State: UNLOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
 # Codex Bootstrap Schema-of-Schemas Definition — Version 0.1
+
+This document is retained for historical/reference purposes.
+
+The authoritative normative content is incorporated into `spec/0.1/codex-language-specification.md` §12.4.
 
 This document defines the **bootstrap schema-of-schemas** required by Codex.
 
@@ -19,8 +23,6 @@ specifying:
 - the bootstrapping requirement (built-in, hard-coded)
 - which specification is the single source of truth for schema-language constructs
 - required error classification when a schema is bootstrap-invalid
-
-This document is **Normative**.
 
 ---
 
@@ -51,7 +53,7 @@ A conforming Codex implementation MUST embed a bootstrap schema-of-schemas that
 is functionally equivalent to:
 
 * the bootstrapping requirements in this document, and
-* the schema-language definition in `spec/0.1/schema-definition/index.md`.
+* the schema-language definition in `spec/0.1/codex-language-specification.md` §11.
 
 Equivalence is defined by behavior:
 
@@ -70,7 +72,7 @@ This document defines **bootstrapping requirements** and error classification.
 All schema-language constructs that appear inside schema documents are defined
 normatively in exactly one place:
 
-* `spec/0.1/schema-definition/index.md`
+* `spec/0.1/codex-language-specification.md` §11
 
 That specification is the single source of truth for:
 

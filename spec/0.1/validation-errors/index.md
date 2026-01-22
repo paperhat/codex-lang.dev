@@ -1,17 +1,19 @@
-Status: NORMATIVE  
+Status: NON-NORMATIVE (Historical; consolidated into codex-language-specification.md §14)  
 Lock State: UNLOCKED    
 Version: 0.1  
 Editor: Charles F. Munat
 
 # Codex Validation Error Taxonomy — Version 0.1
 
+This document is retained for historical/reference purposes.
+
+The authoritative normative content is consolidated into `spec/0.1/codex-language-specification.md` §14.
+
 This document defines the **canonical taxonomy of validation errors** in the Codex
 language.
 
 Validation error taxonomy is part of the Codex language specification and is
 governed by this document.
-
-This document is **Normative**.
 
 ---
 

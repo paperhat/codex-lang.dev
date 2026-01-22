@@ -1,16 +1,18 @@
-Status: NORMATIVE  
+Status: NON-NORMATIVE (Historical; consolidated into codex-language-specification.md §7)  
 Lock State: UNLOCKED    
 Version: 0.1  
 Editor: Charles F. Munat
 
 # **Codex Reference Traits Specification — Version 0.1 (FINAL, CORE)**
 
+This document is retained for historical/reference purposes.
+
+The authoritative normative content is consolidated into `spec/0.1/codex-language-specification.md` §7.
+
 This specification defines the **reference Traits** used in the Codex language.
 
 Reference Traits are part of the **core Codex language model** and are governed by
 this specification.
-
-This document is **Normative**.
 
 ---
 

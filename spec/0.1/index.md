@@ -1,9 +1,13 @@
-Status: NORMATIVE
+Status: NON-NORMATIVE (Historical index; consolidated into codex-language-specification.md)
 Lock State: UNLOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
 # Codex Language Specification — Version 0.1
+
+This document is retained for historical/reference purposes.
+
+The authoritative normative content is consolidated into `spec/0.1/codex-language-specification.md`.
 
 ## Entry Point and Table of Contents
 

@@ -1,9 +1,13 @@
-Status: NORMATIVE
+Status: NON-NORMATIVE (Historical; consolidated into codex-language-specification.md §§2–7)
 Lock State: UNLOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
 # Codex Language Specification — Version 0.1
+
+This document is retained for historical/reference purposes.
+
+The authoritative normative content is consolidated into `spec/0.1/codex-language-specification.md`.
 
 ## Language Definition
 
@@ -11,8 +15,6 @@ This document defines the **Codex language itself**.
 
 It specifies the **foundational language model, semantics, and invariants** that
 apply to all Codex documents, schemas, and tooling.
-
-This document is **Normative**.
 
 ---
 
@@ -330,7 +332,7 @@ In case of conflict, this document defines the **language invariants**.
 
 ## Stability
 
-This document is **Normative** but not immutable by itself.
+This document is retained for historical/reference purposes and was Normative prior to consolidation.
 
 Changes are governed by repository governance and editorial control.
 

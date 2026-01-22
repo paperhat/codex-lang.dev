@@ -1,9 +1,13 @@
-Status: NORMATIVE
+Status: NON-NORMATIVE (Historical; incorporated into codex-language-specification.md §12)
 Lock State: UNLOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
 # Codex Schema Loading Specification — Version 0.1
+
+This document is retained for historical/reference purposes.
+
+The authoritative normative content is incorporated into `spec/0.1/codex-language-specification.md` §12.
 
 This specification defines **how schemas are associated with documents** for
 parsing.
@@ -14,8 +18,6 @@ It governs:
 * Schema resolution order
 * Bootstrap schema-of-schemas bootstrapping
 * Error handling when schema is unavailable
-
-This document is **Normative**.
 
 ---
 

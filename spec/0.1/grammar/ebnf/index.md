@@ -1,9 +1,13 @@
-Status: NORMATIVE
+Status: NON-NORMATIVE (Historical; consolidated into codex-language-specification.md Appendix A.1)
 Lock State: UNLOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
 # Codex Formal Grammar — EBNF (Normative)
+
+This document is retained for historical/reference purposes.
+
+The authoritative normative grammar is consolidated into `spec/0.1/codex-language-specification.md` Appendix A.1.
 
 This document defines the **formal grammar** of the Codex surface form using Extended Backus-Naur Form (EBNF).
 

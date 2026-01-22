@@ -1,9 +1,13 @@
-Status: NORMATIVE
+Status: NON-NORMATIVE (Historical; consolidated into codex-language-specification.md §8)
 Lock State: UNLOCKED
 Version: 0.1
 Editor: Charles F. Munat
 
 # Codex Surface Form Specification — Version 0.1
+
+This document is retained for historical/reference purposes.
+
+The authoritative normative content is consolidated into `spec/0.1/codex-language-specification.md` §8.
 
 This specification defines the **surface form** of Codex documents: the concrete
 spellings authors write and tools parse.
