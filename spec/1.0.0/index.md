@@ -15,9 +15,7 @@ All normative requirements for Codex 1.0.0 MUST appear exactly once in this docu
 
 ### 1.1 Scope
 
-Codex 1.0.0 defines the Codex language.
-
-This specification governs:
+This specification normatively defines:
 
 - the core language model (Concepts, Traits, Values, Content, and Entities)
 - naming and identifier constraints
@@ -349,7 +347,15 @@ Enumerated Token Values MUST NOT be evaluated.
 
 ### 5.6 Temporal Values
 
+A Temporal Value represents a declarative temporal literal.
+
 In the Surface Form, Temporal Values MUST be spelled using `{...}`.
+
+The braced payload of a Temporal Value is syntactically opaque to Codex.
+
+Codex itself defines no temporal grammar, evaluation, normalization, ordering, or interpretation for Temporal Values.
+
+Codex-conforming tools MUST treat the braced payload as opaque and MUST NOT derive temporal meaning, perform evaluation, or apply defaults except as explicitly defined by the governing schema or consuming system.
 
 Temporal Values MUST NOT be treated as Enumerated Token Values, even when the braced payload is a reserved literal such as `now` or `today`.
 
@@ -940,6 +946,20 @@ Within a Concept marker, a Value MUST terminate at the first of the following:
 While scanning for Value termination, Codex-conforming tools MUST respect balanced delimiters as required by the Value spellings and the grammar, including `[]`, `{}`, `()`, `''`, and `""`.
 
 Except where permitted by a Value spelling (for example, within string and character literals), leading and trailing whitespace MUST NOT be treated as part of a Value.
+
+### 8.7.1 Multiline Value Literals
+
+Value literals whose surface spelling uses balanced delimiters — including list (`[...]`), set (`{...}`), map (`{...}`), tuple (`(...)`), and range forms — MAY span multiple lines in the Surface Form.
+
+Within a balanced Value literal:
+
+* Line breaks are treated as whitespace.
+* Whitespace MAY appear freely between elements, entries, or delimiters.
+* Whitespace MUST NOT terminate the Value.
+
+Outside of balanced delimiters, a Value literal MUST be fully contained on a single line.
+
+Codex-conforming tools MUST determine Value boundaries solely by balanced delimiter matching and MUST NOT treat line boundaries as semantically significant within a Value literal.
 
 ### 8.8 Content Blocks
 
@@ -2366,7 +2386,7 @@ focusVar <codex:content> outVar .
 
 If `conceptSelector` cannot be resolved to a unique `ConceptDefinition`, expansion MUST fail.
 
-###### 9.11.6.3.2 Quantifier Semantics
+###### 9.11.6.3.2 Quantifier Semantics (Revised — `OnPathCount`)
 
 Each `OnPath*` node scopes a nested rule over the set of elements produced by `B`.
 
@@ -2402,28 +2422,37 @@ EXISTS {
 
 **OnPathCount**
 
-`OnPathCount(path, r, minCount=m?, maxCount=n?)` MUST translate to a COUNT aggregate over elements that satisfy `r`.
+`OnPathCount(path, r, minCount=m?, maxCount=n?)` MUST translate to a COUNT-based boolean condition.
 
 If both `minCount` and `maxCount` are absent, expansion MUST fail.
 
-It MUST translate to a boolean expression of the form:
+The expansion MUST introduce a subquery that binds a single variable `?countK` and MUST then apply all required comparisons to `?countK` using a `FILTER` expression.
+
+A conforming translation MUST have the following canonical form:
 
 ```
-(
+{
 	SELECT (COUNT(?xVar) AS ?countK)
 	WHERE {
 		B(path, focusVar, xVar)
 		FILTER( H(r, ctxChild, xVar) )
 	}
+}
+FILTER(
+	(minCountPresent ? (?countK >= m) : true)
+	&&
+	(maxCountPresent ? (?countK <= n) : true)
 )
 ```
 
-combined with comparisons:
+Where:
 
-- if `minCount` is present: `?countK >= m`
-- if `maxCount` is present: `?countK <= n`
+* `?countK` MUST be deterministically allocated according to §9.11.6.2.2.
+* The subquery MUST appear in the same `WHERE` block as the enclosing constraint.
+* The `FILTER` expression applying the count comparisons MUST appear immediately after the subquery.
+* No other bindings or filters MAY intervene between the subquery and its associated `FILTER`.
 
-`?countK` MUST follow the deterministic variable allocation rule in §9.11.6.2.2.
+The resulting boolean condition MUST evaluate to true if and only if the count constraints hold.
 
 ##### 9.11.6.4 SPARQL Constraint Shape
 
@@ -2523,7 +2552,7 @@ Schema resolution is required before semantic validation.
 
 #### 10.3.1 Parse Errors
 
-During formatting + canonicalization, a failure MUST be classified as `ParseError` (§14) when input cannot be read into the syntactic structure required to produce a parsed document model (AST) under the governing schema.
+During formatting + canonicalization, a failure MUST be classified as `ParseError` (§14) when input cannot be read into the syntactic structure required to produce a parsed document model (AST) as defined by the Codex surface form.
 
 #### 10.3.2 Formatting Errors
 
@@ -2689,52 +2718,85 @@ This content is **Normative**.
 
 ---
 
-### 11.1. Purpose
+### 11.1 Purpose
 
-This specification defines the **authoritative ontology for Codex schemas**.
+This section normatively defines the **schema definition language for Codex**.
 
-Its goals are to:
+It specifies how **schemas themselves are authored in Codex**, using the same surface form, parsing rules, and language invariants as instance documents.
+
+The purposes of the schema definition language are to:
 
 * make schemas **first-class Codex data**
-* enable validation consistent with the Codex language invariants
-* allow schemas to validate other schemas (bootstrapping)
-* ensure interoperability across tools and implementations
-* support compilation to external validation systems (e.g., SHACL)
+* define all schema semantics **declaratively**
+* ensure schema validation satisfies the Codex language invariants, including closed-world semantics, determinism, and prohibition of heuristics
+* enable schemas to validate other schemas (bootstrapping)
+* support deterministic expansion to derived validation artifacts (including SHACL)
 
-The Codex language invariants governing meaning, closed-world semantics,
-determinism, and prohibition of heuristics are defined by this specification (see §9).
+Schemas authored using this language are authoritative.
 
-The schema-language itself is bootstrapped by a built-in **bootstrap schema-of-schemas**.
-See §12.4.
+Derived representations (for example, SHACL or RDF graphs) MUST NOT introduce semantics not explicitly defined by the schema definition language and this specification.
 
----
+The Codex language invariants governing schema-first processing, determinism, and failure rules are defined in §9.
 
-### 11.2. Core Principles (Normative)
-
-* Schemas are **declarative data**, not executable programs
-* All authorization is **explicit**
-* All constraints are **mechanically enforceable**
-* Schema validation semantics MUST satisfy the Codex language invariants (see §9)
+The schema definition language is bootstrapped by a built-in **schema-of-schemas**, which itself is expressed using this language. See §12.4.
 
 ---
 
-### 11.3. Schema
+### 11.2 Core Principles
 
-#### 11.3.1 `Schema`
+The schema definition language obeys the same language invariants as Codex instance documents.
 
-A `Schema` Concept defines a schema.
+The following principles are normative:
 
-##### Traits (Normative)
+* Schemas are **declarative data**, not executable programs.
+* All authorization is **explicit**; nothing is implied or inferred.
+* All constraints are **mechanically enforceable**.
+* Schema semantics MUST be **closed-world**, **deterministic**, and **free of heuristics**.
+* Any schema rule whose semantics cannot be expressed deterministically under this specification MUST cause schema processing to fail.
 
-* `id` (required; IRI reference)
-* `version` (required; string)
-* `compatibilityClass` (required; `$BackwardCompatible | $ForwardCompatible | $Breaking`)
-* `title` (optional; string)
-* `description` (optional; string)
+Schema validation, schema expansion, and derived-artifact generation MUST satisfy the schema-first requirements defined in §9.
 
-##### Children (Normative)
+Schemas MUST NOT rely on tool-specific behavior, implicit defaults, or external interpretation beyond what is explicitly defined by this specification and the governing schema-of-schemas.
 
-A `Schema` MAY contain, in any order:
+---
+
+### 11.3 Schema
+
+A `Schema` Concept defines a governing Codex schema.
+
+A `Schema` document is the authoritative source of semantic meaning, authorization, and validation rules for Codex documents validated under it.
+
+A schema itself is validated as Codex data under the schema-of-schemas.
+
+#### Traits (Normative)
+
+A `Schema` Concept MUST declare the following Traits:
+
+* `id` (required; IRI Reference Value)
+  The globally unique identifier for the schema. This value is used as `schemaIri` throughout schema processing, instance-graph mapping, and derived-artifact generation.
+
+* `version` (required; String Value)
+  A human-readable version identifier. This value is opaque to Codex semantics.
+
+* `compatibilityClass` (required; Enumerated Token Value)
+  One of:
+
+  * `$BackwardCompatible`
+  * `$ForwardCompatible`
+  * `$Breaking`
+
+The following Traits are optional:
+
+* `title` (optional; String Value)
+* `description` (optional; String Value)
+
+The `Schema` Concept MUST declare exactly one authoring profile via the `authoringProfile` Trait, as defined in §9.4.
+
+If `authoringProfile` is missing, invalid, or mixed, schema processing MUST fail.
+
+#### Children (Normative)
+
+A `Schema` MAY contain the following child Concepts, in any order:
 
 * `ConceptDefinitions`
 * `TraitDefinitions`
@@ -2742,176 +2804,163 @@ A `Schema` MAY contain, in any order:
 * `ConstraintDefinitions`
 * `ValueTypeDefinitions` (optional)
 
+No other child Concepts are permitted.
+
+Each container Concept listed above MUST obey the structural, identity, and content rules defined by this specification and the schema-of-schemas.
+
+#### Semantic Requirements
+
+* A `Schema` Concept is an Entity and therefore MUST declare an `id`.
+* All Concept, Trait, ValueType, and Constraint identifiers used within the schema MUST be resolvable and unique where required.
+* A schema MUST be self-contained except for explicitly declared external inputs permitted by this specification.
+* A schema MUST be valid under exactly one authoring profile (see §9.4).
+* Any schema whose structure or semantics cannot be interpreted deterministically under this specification MUST be rejected.
+
+The `Schema` Concept defines the boundary within which schema-first parsing, validation, instance-graph mapping, and derived-artifact generation occur, as specified in §9.
+
 ---
 
-### 11.4. Concept Definitions
+### 11.4 Concept Definitions
+
+This section defines how Codex Concepts are declared in schemas.
 
 #### 11.4.1 `ConceptDefinition`
 
-Defines a Codex Concept.
+A `ConceptDefinition` declares a Concept class and its structural, semantic, and identity rules.
 
-A `ConceptDefinition` is itself an Entity.
+A `ConceptDefinition` is an Entity.
 
 ##### Traits (Normative)
 
-* `id` (required; IRI reference)
-* `key` (optional; lookup token)
-* `name` (required; Concept name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `id` (required; IRI Reference Value)
+* `key` (optional; Lookup Token Value)
+* `name` (required; Concept name string, per §4 Naming Rules)
 * `conceptKind` (required; `$Semantic | $Structural | $ValueLike`)
 * `entityEligibility` (required; `$MustBeEntity | $MayBeEntity | $MustNotBeEntity`)
 
 ##### Children (Normative)
+
+A `ConceptDefinition` MAY contain, in any order:
 
 * `ContentRules` (optional)
 * `TraitRules` (optional)
 * `ChildRules` (optional)
 * `CollectionRules` (optional)
 
+No other children are permitted.
+
+If a child section is omitted, its default behavior applies as defined below.
+
 ---
 
 #### 11.4.2 `ContentRules`
 
-Declares whether a Concept allows content.
+`ContentRules` declares whether instances of the Concept are in content mode or children mode.
 
-A Concept's content mode determines how the parser handles its body. This is essential for schema-first parsing.
+This declaration is schema-authoritative and MUST be consulted before parsing Concept bodies in schema-directed processing (§9).
 
 ##### Children (Normative)
 
 Exactly one of:
 
-* `AllowsContent` — Concept body is opaque content (content mode)
-* `ForbidsContent` — Concept body contains children or is empty (children mode)
+* `AllowsContent` — instances are in content mode
+* `ForbidsContent` — instances are in children mode
 
 ##### Defaults
 
-If `ContentRules` is omitted, `ForbidsContent` is assumed.
-
-##### Parser Implication
-
-The parser MUST consult `ContentRules` to determine content mode before parsing
-the Concept body. See §12.
-
-##### Example
-
-```cdx
-<ConceptDefinition
-	id=example:concept:Description
-	name="Description"
-	conceptKind=$Semantic
-	entityEligibility=$MustNotBeEntity
->
-	<ContentRules>
-		<AllowsContent />
-	</ContentRules>
-</ConceptDefinition>
-```
+If `ContentRules` is omitted, `ForbidsContent` applies.
 
 ---
 
 #### 11.4.3 `TraitRules`
 
-Declares which Traits a Concept allows, requires, or forbids.
+`TraitRules` declares which Traits are permitted, required, or forbidden on instances of the Concept.
 
 ##### Children (Normative)
 
 Zero or more of:
 
-* `RequiresTrait` — Trait MUST be present
-* `AllowsTrait` — Trait MAY be present
-* `ForbidsTrait` — Trait MUST NOT be present
+* `RequiresTrait`
+* `AllowsTrait`
+* `ForbidsTrait`
 
-##### `RequiresTrait`
+Each rule applies to exactly one trait name.
 
-###### Traits
+###### `RequiresTrait`
 
-* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+Traits:
 
-##### `AllowsTrait`
+* `name` (required; Trait name string, per §4)
 
-###### Traits
+###### `AllowsTrait`
 
-* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+Traits:
 
-##### `ForbidsTrait`
+* `name` (required; Trait name string, per §4)
 
-###### Traits
+###### `ForbidsTrait`
 
-* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+Traits:
+
+* `name` (required; Trait name string, per §4)
 
 ##### Defaults
 
-Traits not listed are forbidden by default. A Concept with no `TraitRules` allows no Traits (except `id` and `key` which are governed by `entityEligibility`).
+* Traits not explicitly allowed or required are forbidden.
+* If `TraitRules` is omitted, no Traits are permitted except:
 
-##### Example
-
-```cdx
-<TraitRules>
-	<RequiresTrait name="amount" />
-	<AllowsTrait name="unit" />
-	<AllowsTrait name="optional" />
-</TraitRules>
-```
+  * `id`, when permitted or required by `entityEligibility`
+  * `key`, when applicable by schema rules
 
 ---
 
 #### 11.4.4 `ChildRules`
 
-Declares which child Concepts are allowed under a Concept.
+`ChildRules` declares which child Concepts are permitted, required, or forbidden beneath instances of the Concept.
 
 ##### Children (Normative)
 
 Zero or more of:
 
-* `AllowsChildConcept` — child Concept MAY appear
-* `RequiresChildConcept` — child Concept MUST appear (alias for min=1)
-* `ForbidsChildConcept` — child Concept MUST NOT appear
+* `AllowsChildConcept`
+* `RequiresChildConcept`
+* `ForbidsChildConcept`
 
-##### `AllowsChildConcept`
+###### `AllowsChildConcept`
 
-###### Traits
+Traits:
 
-* `conceptSelector` (required; Concept name as string)
-* `min` (optional; non-negative integer, default 0)
-* `max` (optional; positive integer, omit for unbounded)
+* `conceptSelector` (required; Concept name string)
+* `min` (optional; non-negative integer; default `0`)
+* `max` (optional; positive integer; omitted means unbounded)
 
-##### `RequiresChildConcept`
+###### `RequiresChildConcept`
 
-###### Traits
+Traits:
 
-* `conceptSelector` (required; Concept name as string)
-* `min` (optional; positive integer, default 1)
-* `max` (optional; positive integer, omit for unbounded)
+* `conceptSelector` (required; Concept name string)
+* `min` (optional; positive integer; default `1`)
+* `max` (optional; positive integer; omitted means unbounded)
 
-Note: `RequiresChildConcept` is semantically equivalent to `AllowsChildConcept` with `min=1`. It exists for clarity.
+`RequiresChildConcept` is semantically equivalent to `AllowsChildConcept` with `min = 1`.
 
-##### `ForbidsChildConcept`
+###### `ForbidsChildConcept`
 
-###### Traits
+Traits:
 
-* `conceptSelector` (required; Concept name as string)
+* `conceptSelector` (required; Concept name string)
 
 ##### Defaults
 
-Child Concepts not listed are forbidden by default.
-
-##### Example
-
-```cdx
-<ChildRules>
-	<AllowsChildConcept conceptSelector="Title" />
-	<AllowsChildConcept conceptSelector="Description" />
-	<RequiresChildConcept conceptSelector="Ingredients" />
-	<AllowsChildConcept conceptSelector="Instructions" min=1 />
-</ChildRules>
-```
+Child Concepts not explicitly allowed or required are forbidden.
 
 ---
 
 #### 11.4.5 `CollectionRules`
 
-Declares collection semantics for a Concept that acts as a container.
+`CollectionRules` declares collection semantics for Concepts whose children form a logical collection.
 
-`CollectionRules` is used when a Concept's children represent a logical collection (e.g., a list of ingredients, a set of tags). The semantics inform validation and graph compilation.
+These semantics inform schema validation and deterministic graph mapping (§9).
 
 ##### Traits (Normative)
 
@@ -2920,26 +2969,20 @@ Declares collection semantics for a Concept that acts as a container.
 
 ##### Form
 
-`CollectionRules` is self-closing (no children).
+`CollectionRules` MUST be self-closing and MUST NOT have children.
 
-##### Example
+##### Applicability
 
-```cdx
-<ConceptDefinition
-	id=example:concept:Ingredients
-	name="Ingredients"
-	conceptKind=$Structural
-	entityEligibility=$MustNotBeEntity
->
-	<ContentRules>
-		<ForbidsContent />
-	</ContentRules>
-	<ChildRules>
-		<AllowsChildConcept conceptSelector="Ingredient" />
-	</ChildRules>
-	<CollectionRules ordering=$Unordered allowsDuplicates=true />
-</ConceptDefinition>
-```
+If `CollectionRules` is present:
+
+* Child ordering and duplication semantics MUST be enforced as declared.
+* Any schema rule that depends on collection semantics MUST refer to this declaration.
+
+If `CollectionRules` is absent, no collection semantics are assumed.
+
+---
+
+This section is normative.
 
 ---
 
@@ -3017,11 +3060,17 @@ One or more value constraints:
 
 ---
 
-#### 11.6. Value Types
+### 11.6 Value Types
 
-##### 11.6.1 Built-in Value Type Tokens (Normative)
+This section defines how schemas constrain the **Value types** permitted for Trait values.
 
-Schemas MAY reference the following built-in value types:
+Value types in schemas are **classifiers**, not evaluators. They constrain which surface-form Value spellings (§5) are permitted and how those values may participate in schema-defined constraints.
+
+#### 11.6.1 Built-In Value Type Tokens (Normative)
+
+Schemas MAY reference the following built-in value type tokens.
+
+Each token corresponds to a Value category defined in §5 (Value Literal Catalog).
 
 * `$String`
 * `$Char`
@@ -3034,42 +3083,51 @@ Schemas MAY reference the following built-in value types:
 * `$Uuid`
 * `$Color`
 * `$Temporal`
-* `$Date`
-* `$YearMonth`
-* `$MonthDay`
-* `$LocalDateTime`
-* `$ZonedDateTime`
-* `$Duration`
 * `$List`
 * `$Set`
 * `$Map`
 * `$Tuple`
 * `$Range`
 
-Schemas MAY also define additional value type tokens via `ValueTypeDefinition` (see §6.2). These schema-defined value type tokens are referenced as enumerated tokens using the `name` (e.g., a `ValueTypeDefinition name="NumericRange" ...` is referenced as `$NumericRange`).
+A built-in value type token constrains only **surface-form validity and structural classification**.
+It MUST NOT imply evaluation, normalization, or conversion beyond what is defined in §5.
+
+If a schema constrains a value using a built-in value type token, and a Trait value does not match that Value type’s surface grammar, schema-driven validation MUST fail.
 
 ---
 
 #### 11.6.2 `ValueTypeDefinition` (Optional)
 
-Defines a named value type with custom validation.
+A `ValueTypeDefinition` defines a **schema-specific named value type** with additional validation semantics.
+
+Schema-defined value types are referenced using Enumerated Token Values whose name matches the `ValueTypeDefinition.name`.
 
 ##### Container
 
 `ValueTypeDefinitions` is a container Concept holding one or more `ValueTypeDefinition` children.
 
-##### Traits
+##### Traits (Normative)
 
-* `id` (optional; IRI reference)
-* `name` (required; Concept name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `id` (optional; IRI Reference Value)
+* `name` (required; Concept name string per §4 Naming Rules)
 * `baseValueType` (required; built-in value type token)
-* `validatorName` (optional; enumerated token identifying a validator)
+* `validatorName` (optional; Enumerated Token Value identifying a `ValidatorDefinition`)
+
+The `baseValueType` defines the surface-form Value category.
+
+If `validatorName` is present, schema-driven validation MUST apply the referenced validator as specified in §9.5.2 and §9.11.6.6.
+
+If `validatorName` cannot be resolved to exactly one `ValidatorDefinition`, schema processing MUST fail.
+
+A `ValueTypeDefinition` MUST NOT change the surface grammar of its `baseValueType`.
 
 ---
 
 #### 11.6.3 Enumerated Value Sets
 
-Schemas MAY define named sets of enumerated values.
+Schemas MAY define named sets of Enumerated Token Values.
+
+Enumerated value sets are used exclusively by constraints and Trait definitions; they do not introduce new Value types.
 
 ##### Container
 
@@ -3077,421 +3135,687 @@ Schemas MAY define named sets of enumerated values.
 
 ##### `EnumeratedValueSet`
 
-Defines a named set of valid enumerated tokens.
+Defines a closed set of enumerated tokens.
 
-###### Traits
+###### Traits (Normative)
 
-* `name` (required; Concept name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `name` (required; Concept name string per §4 Naming Rules)
 
-###### Children
+###### Children (Normative)
 
 One or more `Member` children.
 
 ##### `Member`
 
-Defines a single member of an enumerated value set.
+Defines one member of an enumerated value set.
 
-###### Traits
+###### Traits (Normative)
 
-* `value` (required; string matching the token name without `$` prefix)
-* `label` (optional; human-readable display string)
-* `description` (optional; explanatory string)
+* `value` (required; token name without `$`)
+* `label` (optional; String Value)
+* `description` (optional; String Value)
 
-##### Example
-
-```cdx
-<EnumeratedValueSets>
-	<EnumeratedValueSet name="MeasurementUnit">
-		<Member value="Grams" label="Grams" />
-		<Member value="Kilograms" label="Kilograms" />
-		<Member value="Milliliters" label="Milliliters" />
-		<Member value="Liters" label="Liters" />
-		<Member value="Units" label="Units" description="Countable items" />
-	</EnumeratedValueSet>
-</EnumeratedValueSets>
-```
-
-Usage:
-
-```cdx
-<TraitDefinition name="unit" defaultValueType=$EnumeratedToken cardinality=$Single>
-	<AllowedValues>
-		<EnumeratedConstraint set="MeasurementUnit" />
-	</AllowedValues>
-</TraitDefinition>
-```
+Each `value` MUST be unique within its `EnumeratedValueSet`.
 
 ---
 
-#### 11.6.4 Built-in Enumerated Value Sets (Normative)
+#### 11.6.4 Built-In Enumerated Value Sets (Normative)
 
-The following enumerated value sets are defined by the language and MUST be recognized by all implementations.
+The following enumerated value sets are defined by the Codex language itself and MUST be recognized by all conforming implementations.
 
-##### ConceptKind
+##### `ConceptKind`
 
-Describes the semantic role of a Concept.
+* `$Semantic`
+* `$Structural`
+* `$ValueLike`
 
-* `$Semantic` — carries domain meaning; may become graph nodes
-* `$Structural` — organizes or groups other Concepts; typically not graph nodes
-* `$ValueLike` — represents a value-like construct
+##### `EntityEligibility`
 
-##### EntityEligibility
+* `$MustBeEntity`
+* `$MayBeEntity`
+* `$MustNotBeEntity`
 
-Governs whether Concept instances may or must have identity.
+##### `CompatibilityClass`
 
-* `$MustBeEntity` — instances MUST declare an `id` Trait
-* `$MayBeEntity` — instances MAY declare an `id` Trait
-* `$MustNotBeEntity` — instances MUST NOT declare an `id` Trait
+* `$BackwardCompatible`
+* `$ForwardCompatible`
+* `$Breaking`
 
-##### CompatibilityClass
+##### `Ordering`
 
-Declares schema version compatibility.
+* `$Ordered`
+* `$Unordered`
 
-* `$BackwardCompatible` — existing valid data remains valid
-* `$ForwardCompatible` — data authored for new version may validate under older
-* `$Breaking` — migration required; existing data may become invalid
+##### `Cardinality`
 
-##### Ordering
+* `$Single`
+* `$List`
 
-Declares collection ordering semantics.
-
-* `$Ordered` — child order is significant and preserved
-* `$Unordered` — child order is not significant
-
-##### Cardinality
-
-Declares Trait value cardinality.
-
-* `$Single` — exactly one value
-* `$List` — zero or more values
+These enumerated sets are authoritative and MUST NOT be redefined by schemas.
 
 ---
 
-### 11.7. Constraint Model
+### 11.7 Constraint Model
+
+This section defines the **schema constraint model** used to express semantic validation rules.
+
+Constraints are **declarative**, **closed-world**, and **deterministic**.
+They describe conditions that MUST hold for a document to be valid under a governing schema.
+
+Constraints:
+
+* MUST NOT execute code
+* MUST NOT depend on implicit inference
+* MUST be mechanically translatable to the schema-first validation model defined in §9
+
+---
 
 #### 11.7.1 `ConstraintDefinitions`
 
-Container for constraint definitions within a schema.
+`ConstraintDefinitions` is a container Concept that groups named, reusable constraints.
 
-##### Children
+##### Children (Normative)
 
 One or more `ConstraintDefinition` children.
+
+The order of `ConstraintDefinition` children MUST be preserved but MUST NOT affect semantics.
 
 ---
 
 #### 11.7.2 `ConstraintDefinition`
 
-Defines a reusable, named constraint.
+A `ConstraintDefinition` defines a single named constraint that may be applied to one or more targets.
+
+A `ConstraintDefinition` is itself an Entity.
 
 ##### Traits (Normative)
 
-* `id` (required; IRI reference)
-* `title` (optional; string)
-* `description` (optional; string)
+* `id` (required; IRI Reference Value)
+* `title` (optional; String Value)
+* `description` (optional; String Value)
 
 ##### Children (Normative)
 
-* `Targets` (required) — what the constraint applies to
-* `Rule` (required) — the constraint logic
+Exactly two children, in any order:
+
+* `Targets` — declares what the constraint applies to
+* `Rule` — declares the constraint logic
+
+If either child is missing or appears more than once, schema processing MUST fail.
 
 ---
 
 #### 11.7.3 `Targets`
 
-Declares what a constraint applies to.
+`Targets` declares the focus set for a constraint.
+
+A constraint MAY target multiple Concepts and/or contexts.
 
 ##### Children (Normative)
 
 One or more of:
 
-* `TargetConcept` — constraint applies to instances of a Concept
-* `TargetContext` — constraint applies within a context
+* `TargetConcept`
+* `TargetContext`
 
-##### `TargetConcept`
+If `Targets` contains no children, schema processing MUST fail.
 
-###### Traits
+---
 
-* `conceptSelector` (required; Concept name as string)
+##### 11.7.3.1 `TargetConcept`
 
-##### `TargetContext`
+Applies the constraint to instances of a specific Concept.
 
-###### Traits
+###### Traits (Normative)
 
-* `contextSelector` (required; Concept name or `"Document"`)
+* `conceptSelector` (required; Concept name string)
+
+The selector MUST resolve to exactly one `ConceptDefinition`.
+Otherwise, schema processing MUST fail.
+
+---
+
+##### 11.7.3.2 `TargetContext`
+
+Applies the constraint relative to a context.
+
+###### Traits (Normative)
+
+* `contextSelector` (required; Concept name string or the literal string `"Document"`)
+
+If `contextSelector` is not `"Document"`, it MUST resolve to exactly one `ConceptDefinition`.
+Otherwise, schema processing MUST fail.
 
 ---
 
 #### 11.7.4 `Rule`
 
-Contains the constraint logic.
+`Rule` contains the constraint logic.
 
-A `Rule` MUST contain exactly one constraint or composition element.
+##### Children (Normative)
+
+Exactly one child, which MUST be one of:
+
+* a **composition rule** (§11.8)
+* an **atomic constraint** (§11.10)
+* a **path-scoped rule** (§11.9 with quantifier)
+
+If `Rule` contains zero or more than one child, schema processing MUST fail.
+
+`Rule` nodes are purely structural and MUST NOT carry Traits.
 
 ---
 
-### 11.8. Rule Algebra (Normative)
+### 11.8 Rule Algebra (Normative)
 
-#### 11.8.1 Composition Rules
+This section defines the **rule algebra** used to compose constraints.
 
-Composition rules combine other rules.
+Rule algebra nodes are **purely declarative**, **structural**, and **deterministic**.
+They define how atomic constraints are combined, without introducing new semantics.
 
-##### `AllOf`
+Rule algebra MUST be interpreted according to the schema-first validation model defined in §9.
+Rule algebra MUST be translatable to a total, deterministic validation form (for example, SHACL-SPARQL).
 
-All child rules must hold.
+---
 
-###### Children
+#### 11.8.1 General Rules
+
+* Rule algebra nodes MUST NOT carry Traits.
+* Rule algebra nodes MUST contain only other `Rule` nodes as children.
+* Rule algebra MUST NOT introduce side effects, inference, or execution semantics.
+* Any rule tree MUST be finite and acyclic.
+
+If a rule algebra structure cannot be translated deterministically, schema processing MUST fail.
+
+---
+
+#### 11.8.2 `AllOf`
+
+`AllOf` requires that **all** child rules hold.
+
+##### Children (Normative)
 
 Two or more `Rule` children.
 
-##### `AnyOf`
+##### Semantics
 
-At least one child rule must hold.
+The rule holds if and only if **every** child rule holds for the same focus node.
 
-####### Children
+---
+
+#### 11.8.3 `AnyOf`
+
+`AnyOf` requires that **at least one** child rule holds.
+
+##### Children (Normative)
 
 Two or more `Rule` children.
 
-###### `Not`
+##### Semantics
 
-The child rule must not hold.
+The rule holds if and only if **one or more** child rules hold for the same focus node.
 
-###### Children
+---
+
+#### 11.8.4 `Not`
+
+`Not` negates a rule.
+
+##### Children (Normative)
 
 Exactly one `Rule` child.
 
-###### `ConditionalConstraint`
+##### Semantics
 
-If a condition holds, a consequent must hold.
-
-###### Children
-
-* `When` — contains the condition (one `Rule` child)
-* `Then` — contains the consequent (one `Rule` child)
+The rule holds if and only if the child rule does **not** hold for the same focus node.
 
 ---
 
-### 11.9. Paths and Quantifiers
+#### 11.8.5 `ConditionalConstraint`
+
+`ConditionalConstraint` expresses implication: *if a condition holds, then a consequent must hold*.
+
+##### Children (Normative)
+
+Exactly two children:
+
+* `When` — contains exactly one `Rule` child (the condition)
+* `Then` — contains exactly one `Rule` child (the consequent)
+
+##### Semantics
+
+The rule holds if and only if:
+
+* the condition does **not** hold, **or**
+* the condition holds and the consequent holds
+
+This is logically equivalent to:
+`¬When ∨ Then`.
+
+---
+
+#### 11.8.6 Determinism Requirement
+
+Rule algebra evaluation MUST be:
+
+* order-independent (except where explicitly scoped by paths or quantifiers)
+* free of heuristic interpretation
+* reducible to a single boolean outcome per focus node
+
+If rule algebra composition would require guessing, short-circuit heuristics, or undefined evaluation order, schema processing MUST fail.
+
+---
+
+### 11.9 Paths and Quantifiers (Normative)
+
+This section defines **paths** and **quantifiers** used to scope constraint evaluation over structured data.
+
+Paths and quantifiers are **structural selectors**, not semantic operators.
+They MUST be interpreted deterministically and MUST NOT introduce inference or implicit traversal rules.
+
+All path and quantifier semantics MUST be compatible with the instance-graph mapping defined in §9.7 and the rule-to-SPARQL translation defined in §9.11.
+
+---
 
 #### 11.9.1 Paths
 
-Constraints MAY reference data using paths:
+A path selects zero or more elements relative to a focus node.
 
-* `TraitPath` — references a Trait value
-	* `traitName` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
-* `ChildPath` — references direct children
-  * `conceptSelector` (required; Concept name)
-* `DescendantPath` — references descendants at any depth
-  * `conceptSelector` (required; Concept name)
-* `ContentPath` — references Content (no traits)
+Paths MUST be explicit and MUST NOT depend on implicit defaults, ordering assumptions, or heuristic traversal.
+
+Codex defines the following path types:
+
+* `TraitPath`
+* `ChildPath`
+* `DescendantPath`
+* `ContentPath`
+
+Each path node MUST declare exactly the traits required for its form.
+
+##### `TraitPath`
+
+Selects values of a Trait on the focus Concept instance.
+
+###### Traits (Normative)
+
+* `traitName` (required; Trait name string per the Naming Rules in §4)
+
+##### Semantics
+
+Selects each value bound to the named Trait on the focus node.
+
+---
+
+##### `ChildPath`
+
+Selects direct child Concept instances of a given Concept type.
+
+###### Traits (Normative)
+
+* `conceptSelector` (required; Concept name string)
+
+##### Semantics
+
+Selects each direct child of the focus node whose Concept type matches `conceptSelector`.
+
+---
+
+##### `DescendantPath`
+
+Selects descendant Concept instances at any depth of a given Concept type.
+
+###### Traits (Normative)
+
+* `conceptSelector` (required; Concept name string)
+
+##### Semantics
+
+Selects each descendant (via one or more parent links) of the focus node whose Concept type matches `conceptSelector`.
+
+---
+
+##### `ContentPath`
+
+Selects the content of the focus Concept instance.
+
+###### Traits
+
+None.
+
+##### Semantics
+
+Selects the content string if and only if the focus Concept instance is in content mode.
 
 ---
 
 #### 11.9.2 Quantifiers
 
-Quantifiers scope constraints over collections.
+Quantifiers scope a nested rule over the set of elements selected by a Path.
 
-* `Exists` — at least one element satisfies the rule
-* `ForAll` — all elements satisfy the rule
-* `Count` — count of elements satisfies bounds
-  * `minCount` (optional; non-negative integer)
-  * `maxCount` (optional; positive integer)
+Quantifiers MUST be explicit and MUST NOT introduce implicit cardinality assumptions.
 
-Quantifiers are structural and deterministic.
+Codex defines the following quantifiers:
+
+* `Exists`
+* `ForAll`
+* `Count`
+
+Quantifiers MUST appear only in rule nodes that explicitly bind a Path to a nested Rule (see §9.5.3).
 
 ---
 
-### 11.10. Atomic Constraints (Normative)
+##### `Exists`
 
-Atomic constraints are the leaves of the rule algebra.
+At least one selected element MUST satisfy the nested rule.
+
+###### Semantics
+
+The rule holds if and only if there exists at least one path-selected element for which the nested rule holds.
+
+---
+
+##### `ForAll`
+
+All selected elements MUST satisfy the nested rule.
+
+###### Semantics
+
+The rule holds if and only if no path-selected element violates the nested rule.
+
+---
+
+##### `Count`
+
+Constrains the number of selected elements that satisfy the nested rule.
+
+###### Traits (Normative)
+
+* `minCount` (optional; non-negative integer)
+* `maxCount` (optional; positive integer)
+
+At least one of `minCount` or `maxCount` MUST be present.
+
+###### Semantics
+
+The rule holds if and only if the number of path-selected elements that satisfy the nested rule is within the specified bounds.
+
+---
+
+#### 11.9.3 Determinism and Totality
+
+* Paths MUST select a well-defined set of elements.
+* Quantifiers MUST evaluate to a single boolean outcome.
+* If a path selector cannot be resolved uniquely, schema processing MUST fail.
+* If a quantifier cannot be evaluated without guessing, schema processing MUST fail.
+
+Paths and quantifiers MUST NOT be evaluated outside the schema-driven validation pipeline defined in §9.
+
+---
+
+### 11.10 Atomic Constraints (Normative)
+
+Atomic constraints are the **leaves** of the rule algebra.
+Each atomic constraint defines a single, declarative validation predicate with no internal composition.
+
+Atomic constraints:
+
+* MUST be deterministic
+* MUST be mechanically enforceable
+* MUST be evaluable without inference or heuristics
+* MUST be translatable to the schema-driven validation model defined in §9
+
+If an atomic constraint cannot be expressed under the instance-graph mapping (§9.7) and the constraint-to-artifact rules (§9.9–§9.11), schema processing MUST fail.
+
+---
 
 #### 11.10.1 Trait Constraints
 
+Trait constraints apply to Traits declared on the focus Concept instance.
+
 ##### `TraitExists`
 
-Trait is present on the Concept.
+The named Trait MUST be present.
 
-###### Traits
+###### Traits (Normative)
 
-* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `trait` (required; Trait name string per §4)
+
+---
 
 ##### `TraitMissing`
 
-Trait is absent from the Concept.
+The named Trait MUST be absent.
 
-###### Traits
+###### Traits (Normative)
 
-* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `trait` (required; Trait name string per §4)
+
+---
 
 ##### `TraitEquals`
 
-Trait has a specific value.
+The named Trait MUST have at least one value equal to the specified value.
 
-###### Traits
+###### Traits (Normative)
 
-* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
-* `value` (required; the expected value)
+* `trait` (required; Trait name string per §4)
+* `value` (required; Value)
+
+---
 
 ##### `TraitCardinality`
 
-Trait value count is within bounds.
+Constrains the number of values bound to a Trait.
 
-###### Traits
+###### Traits (Normative)
 
-* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `trait` (required; Trait name string per §4)
 * `min` (optional; non-negative integer)
 * `max` (optional; positive integer)
 
+At least one of `min` or `max` MUST be present.
+
+---
+
 ##### `TraitValueType`
 
-Trait value matches expected type.
+Constrains the value type of a Trait.
 
-###### Traits
+###### Traits (Normative)
 
-* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `trait` (required; Trait name string per §4)
 * `valueType` (required; value type token)
 
 ---
 
 #### 11.10.2 Value Constraints
 
+Value constraints apply to values selected by paths or Traits.
+
 ##### `ValueIsOneOf`
 
-Value is in an explicit list.
+The value MUST be one of the explicitly listed values.
 
-###### Traits
+###### Traits (Normative)
 
-* `values` (required; list of allowed values)
+* `values` (required; list of Values)
+
+---
 
 ##### `ValueMatchesPattern`
 
-Value matches a regular expression.
+The value MUST match a regular expression.
 
-###### Traits
+###### Traits (Normative)
 
 * `pattern` (required; regex string)
+* `flags` (optional; string; SPARQL 1.1 `REGEX` flags)
+
+---
 
 ##### `PatternConstraint`
 
-Trait value matches a regular expression.
+Constrains a specific Trait value to match a regular expression.
 
-###### Traits
+###### Traits (Normative)
 
-* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `trait` (required; Trait name string per §4)
 * `pattern` (required; regex string)
+* `flags` (optional; string; SPARQL 1.1 `REGEX` flags)
+
+---
 
 ##### `ValueLength`
 
-String value length is within bounds.
+Constrains the length of a string value.
 
-###### Traits
+###### Traits (Normative)
 
 * `min` (optional; non-negative integer)
 * `max` (optional; positive integer)
 
+At least one of `min` or `max` MUST be present.
+
+---
+
 ##### `ValueInNumericRange`
 
-Numeric value is within bounds.
+Constrains a numeric value to an inclusive range.
 
-###### Traits
+###### Traits (Normative)
 
-* `min` (optional; number, inclusive)
-* `max` (optional; number, inclusive)
+* `min` (optional; number)
+* `max` (optional; number)
+
+At least one of `min` or `max` MUST be present.
+
+This constraint MUST apply only to numeric value types that support ordered comparison.
+If comparison semantics are not explicitly defined for the active value type, schema processing MUST fail.
+
+---
 
 ##### `ValueIsNonEmpty`
 
-Value is present and non-empty.
+The value MUST be present and non-empty.
 
-No traits.
+This constraint applies to string-like values only.
+If applied to an incompatible value type, schema processing MUST fail.
+
+---
 
 ##### `ValueIsValid`
 
-Value passes custom validation.
+The value MUST satisfy a named validator.
 
-###### Traits
+###### Traits (Normative)
 
 * `validatorName` (required; enumerated token)
+
+The validator MUST resolve to exactly one `ValidatorDefinition` in the governing schema.
+If resolution fails, schema processing MUST fail.
 
 ---
 
 #### 11.10.3 Child Constraints
 
+Child constraints apply to child Concept instances.
+
 ##### `ChildConstraint`
 
-Generic child constraint using type dispatch.
+Generic child constraint using explicit type dispatch.
 
-###### Traits
+###### Traits (Normative)
 
-* `type` (required; `RequiresChildConcept | AllowsChildConcept | ForbidsChildConcept`)
-* `conceptSelector` (required; Concept name)
+* `type` (required; one of `RequiresChildConcept | AllowsChildConcept | ForbidsChildConcept`)
+* `conceptSelector` (required; Concept name string)
+
+This form is provided for compatibility and normalization.
+Its semantics MUST be equivalent to the corresponding explicit child-rule form defined in §11.4.4.
+
+---
 
 ##### `ChildSatisfies`
 
-Child Concepts satisfy a nested rule.
+Constrains child Concept instances using a nested rule.
 
-###### Traits
+###### Traits (Normative)
 
-* `conceptSelector` (required; Concept name)
+* `conceptSelector` (required; Concept name string)
 
-###### Children
+###### Children (Normative)
 
-One `Rule` child.
+* Exactly one `Rule` child
+
+The rule MUST be evaluated for each matching child Concept instance.
 
 ---
 
 #### 11.10.4 Collection Constraints
 
+Collection constraints apply only where a Concept’s children form a logical collection.
+
 ##### `CollectionOrdering`
 
-Declares expected ordering.
+Constrains the ordering semantics of a collection.
 
-###### Traits
+###### Traits (Normative)
 
 * `ordering` (required; `$Ordered | $Unordered`)
 
+---
+
 ##### `CollectionAllowsEmpty`
 
-Collection may be empty.
+Constrains whether a collection may be empty.
 
-###### Traits
+###### Traits (Normative)
 
 * `allowed` (required; boolean)
+
+---
 
 ##### `CollectionAllowsDuplicates`
 
-Collection may contain duplicates.
+Constrains whether a collection may contain duplicate members.
 
-###### Traits
+###### Traits (Normative)
 
 * `allowed` (required; boolean)
 
+---
+
 ##### `MemberCount`
 
-Collection member count is within bounds.
+Constrains the number of collection members.
 
-###### Traits
+###### Traits (Normative)
 
 * `min` (optional; non-negative integer)
 * `max` (optional; positive integer)
 
+At least one of `min` or `max` MUST be present.
+
+---
+
 ##### `EachMemberSatisfies`
 
-Each collection member satisfies a nested rule.
+Each collection member MUST satisfy a nested rule.
 
-###### Children
+###### Children (Normative)
 
-One `Rule` child.
+* Exactly one `Rule` child
+
+---
 
 ##### `CollectionConstraint`
 
-Generic collection constraint using type dispatch.
+Generic collection constraint using explicit type dispatch.
 
-###### Traits
+###### Traits (Normative)
 
-* `type` (required; one of the following)
+* `type` (required; enumerated token)
 
-###### Types
-
-* `CollectionOrderingDeclared` — the applicable collection ordering MUST be explicitly declared in schema definitions (typically via `CollectionRules ordering=...`).
+This form MUST NOT introduce semantics beyond those explicitly defined by the corresponding concrete collection constraint.
 
 ---
 
@@ -3499,12 +3823,14 @@ Generic collection constraint using type dispatch.
 
 ##### `UniqueConstraint`
 
-Trait values must be unique within a scope.
+Constrains Trait values to be unique within a scope.
 
-###### Traits
+###### Traits (Normative)
 
-* `trait` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
-* `scope` (required; Concept name defining the uniqueness scope)
+* `trait` (required; Trait name string per §4)
+* `scope` (required; Concept name string defining the uniqueness scope)
+
+Uniqueness semantics MUST follow the deterministic scope rules defined in §9.9.7.
 
 ---
 
@@ -3512,11 +3838,14 @@ Trait values must be unique within a scope.
 
 ##### `OrderConstraint`
 
-Positional rules for ordered collections.
+Defines positional rules for ordered collections.
 
-###### Traits
+###### Traits (Normative)
 
-* `type` (required; e.g., `VariadicMustBeLast`)
+* `type` (required; enumerated token identifying the order rule)
+
+Order constraint semantics MUST be explicitly defined by the schema-definition specification.
+If a rule cannot be translated deterministically, schema processing MUST fail.
 
 ---
 
@@ -3524,20 +3853,25 @@ Positional rules for ordered collections.
 
 ##### `ReferenceConstraint`
 
-Validates reference Trait usage.
+Constrains usage of reference Traits.
 
-###### Traits
+###### Traits (Normative)
 
-* `type` (required; one of the following)
+* `type` (required; one of the reference constraint types defined below)
 
-###### Types
+###### Types (Normative)
 
-* `ReferenceTargetsEntity` — referenced Concept must be an Entity
-* `ReferenceMustResolve` — reference must resolve to existing Concept
-* `ReferenceTargetsConcept` — reference must target specified Concept type
-  * `conceptSelector` (additional trait; Concept name)
-* `ReferenceSingleton` — only one reference Trait may be present
-* `ReferenceTraitAllowed` — specific reference Trait is permitted
+* `ReferenceTargetsEntity`
+* `ReferenceMustResolve`
+* `ReferenceTargetsConcept`
+
+  * requires additional trait `conceptSelector`
+* `ReferenceSingleton`
+* `ReferenceTraitAllowed`
+
+  * requires additional trait `traitName`
+
+Reference constraint semantics MUST follow §9.9.9–§9.9.12 exactly.
 
 ---
 
@@ -3545,18 +3879,20 @@ Validates reference Trait usage.
 
 ##### `IdentityConstraint`
 
-Validates Entity identity rules.
+Constrains entity and identifier semantics.
 
-###### Traits
+###### Traits (Normative)
 
-* `type` (required; one of the following)
+* `type` (required; one of the identity constraint types defined below)
 
-###### Types
+###### Types (Normative)
 
-* `MustBeEntity` — Concept instance must have `id`
-* `MustNotBeEntity` — Concept instance must not have `id`
-* `IdentifierUniqueness` — identifier must be unique within scope
-* `IdentifierForm` — identifier must match pattern
+* `MustBeEntity`
+* `MustNotBeEntity`
+* `IdentifierUniqueness`
+* `IdentifierForm`
+
+Identity constraint semantics MUST follow the entity and identity model defined in §§3.5 and 6.
 
 ---
 
@@ -3564,17 +3900,19 @@ Validates Entity identity rules.
 
 ##### `ContextConstraint`
 
-Validates parent or context rules.
+Constrains the structural context in which a Concept instance may appear.
 
-##### Traits
+###### Traits (Normative)
 
-* `type` (required; one of the following)
-* `contextSelector` (required for most types; Concept name)
+* `type` (required; one of the context constraint types defined below)
+* `contextSelector` (required for applicable types; Concept name string)
 
-###### Types
+###### Types (Normative)
 
-* `OnlyValidUnderParent` — Concept may only appear as direct child of specified parent
-* `OnlyValidUnderContext` — Concept may only appear within specified ancestor
+* `OnlyValidUnderParent`
+* `OnlyValidUnderContext`
+
+Context constraint semantics MUST follow §9.9.8.
 
 ---
 
@@ -3582,22 +3920,45 @@ Validates parent or context rules.
 
 ##### `ContentConstraint`
 
-Validates content rules.
+Constrains content presence or structure.
 
-###### Traits
+###### Traits (Normative)
 
-* `type` (required; one of the following)
+* `type` (required; one of the content constraint types defined below)
 
-###### Types
+###### Types (Normative)
 
-* `ContentForbiddenUnlessAllowed` — content forbidden unless explicitly allowed
-* `ContentRequired` — content must be present and non-empty
-* `ContentMatchesPattern` — content matches regex pattern
-  * `pattern` (additional trait; regex string)
+* `ContentForbiddenUnlessAllowed`
+* `ContentRequired`
+* `ContentMatchesPattern`
+
+  * requires additional trait `pattern`
+  * optional `flags` trait MAY be present
+
+Content constraint semantics MUST follow the content model defined in §3.4 and the validation rules defined in §9.9.5.
 
 ---
 
-### 11.11. Complete Constraint Example
+#### 11.10.11 Failure Rules
+
+If any atomic constraint:
+
+* lacks required traits
+* references an unresolved selector
+* applies to an incompatible value or structure
+* requires semantics not explicitly defined
+
+schema processing MUST fail rather than guess.
+
+---
+
+### 11.11 Complete Constraint Example (Informative)
+
+This section provides illustrative examples of constraint definitions authored using the schema definition language.
+
+Examples in this section are **informative** and do not introduce additional normative requirements.
+
+---
 
 ```cdx
 <ConstraintDefinition
@@ -3608,10 +3969,17 @@ Validates content rules.
 		<TargetConcept conceptSelector="Recipe" />
 	</Targets>
 	<Rule>
-		<ChildConstraint type="RequiresChildConcept" conceptSelector="Title" />
+		<ChildConstraint
+			type="RequiresChildConcept"
+			conceptSelector="Title"
+		/>
 	</Rule>
 </ConstraintDefinition>
+```
 
+---
+
+```cdx
 <ConstraintDefinition
 	id=example:constraint:non-nullary-requires-parameters
 	title="Non-nullary operators require parameters"
@@ -3627,7 +3995,10 @@ Validates content rules.
 				</Not>
 			</When>
 			<Then>
-				<ChildConstraint type="RequiresChildConcept" conceptSelector="Parameters" />
+				<ChildConstraint
+					type="RequiresChildConcept"
+					conceptSelector="Parameters"
+				/>
 			</Then>
 		</ConditionalConstraint>
 	</Rule>
@@ -3636,30 +4007,54 @@ Validates content rules.
 
 ---
 
-### 11.12. Relationship to External Systems (Normative)
+These examples demonstrate:
 
-* Codex schemas are **authoritative**
-* SHACL or OWL representations MAY be derived
-* Derived artifacts MUST NOT override Codex validation semantics
-
----
-
-### 11.13. Summary
-
-* Schemas are first-class Codex data
-* Content mode is declared via `ContentRules`
-* Trait, child, and collection rules are explicit
-* Constraints are declarative and compositional
-* Enumerated value sets may be defined per-schema or built-in
-* This ontology enables self-hosting schema validation
-
-Validation semantics, including closed-world behavior and determinism, are governed by this specification (see §9).
+* targeting constraints to specific Concepts
+* use of rule algebra (`Not`, `ConditionalConstraint`)
+* reuse of atomic constraints
+* deterministic, schema-first validation intent
 
 ---
 
-**End of Codex Schema Definition Specification v0.1**
+### 11.12 Relationship to External Systems (Normative)
+
+Codex schemas are **authoritative** with respect to meaning and validation.
+
+External representations MAY be derived from Codex schemas, subject to the following constraints:
+
+* Any derived representation (including SHACL, SHACL-SPARQL, or OWL) MUST be a pure, deterministic projection of the Codex schema.
+* Derived artifacts MUST NOT introduce semantics, defaults, inference rules, or interpretation not explicitly defined by:
+
+  * this specification, and
+  * the governing Codex schema.
+* Derived artifacts MUST NOT override, weaken, or contradict Codex validation semantics.
+* If a Codex constraint or rule cannot be expressed faithfully in the chosen external system, derivation MUST fail rather than approximate.
+
+Codex does not defer to external systems for meaning.
+
+External systems are consumers or validation backends only; they are not normative authorities.
 
 ---
+
+### 11.13 Summary
+
+* The schema definition language is itself Codex.
+* Schemas are declarative, closed-world, and deterministic.
+* All authorization, structure, and constraints are explicit.
+* Content mode, traits, children, collections, and references are schema-defined.
+* Constraint logic is compositional and total.
+* Schemas may validate other schemas via the bootstrap schema-of-schemas.
+* External validation artifacts are optional, derived, and non-authoritative.
+
+All schema semantics are governed by this specification and by the schema-first architecture defined in §9.
+
+---
+
+
+
+
+
+
 
 ## 12. Schema Loading and Bootstrapping
 
@@ -3667,120 +4062,145 @@ This section defines how schemas are associated with documents for schema-first 
 
 ### 12.1 Purpose
 
-Codex is a schema-first language. A document cannot be semantically validated without its governing schema.
+Codex is a schema-first language.
 
-Codex permits schema-less formatting and well-formedness checks that do not require a governing schema (see §9.2).
+A Codex document MUST NOT be semantically validated without an explicit governing schema.
 
-This section defines how parsers obtain the governing schema for a document.
+Codex permits schema-less formatting and well-formedness checks that do not require a governing schema, but such checks MUST NOT perform semantic interpretation or validation (see §9.2 and §10.2.1).
+
+This section normatively defines how a conforming implementation obtains the governing schema for a document.
 
 Its goals are to:
 
-- ensure every validation operation has a schema
-- support multiple schema provision mechanisms
-- enable schema-document bootstrapping via a built-in bootstrap schema-of-schemas
-- provide clear errors when schema is unavailable
-
+* ensure that every semantic validation operation has an explicit governing schema
+* define a clear and deterministic schema resolution order
+* support bootstrapping of the schema language itself via a built-in schema-of-schemas
+* ensure failures are reported clearly and classified correctly when a schema is unavailable or invalid
 ### 12.2 Schema Provision Mechanisms (Normative)
 
-A conforming parser MUST support explicit schema provision.
+A conforming implementation MUST support explicit provision of a governing schema.
 
-A conforming parser MAY support additional mechanisms.
+A conforming implementation MAY support additional schema provision mechanisms, provided they do not override or weaken explicit provision.
+
+Schema provision mechanisms determine **which schema is supplied** to the schema-first processing pipeline; they MUST NOT alter parsing, validation, or canonicalization semantics.
 
 #### 12.2.1 Explicit Provision (Required)
 
-The caller provides the schema directly to the parser.
+The governing schema is provided directly by the caller as an explicit input.
 
-`parse(document, schema) → AST`
+```
+parse(documentBytes, governingSchema) → parsedDocument
+```
 
-This is the baseline mechanism. All conforming implementations MUST support it.
+This is the baseline mechanism.
 
-#### 12.2.2 Schema Registry (Optional)
+All conforming implementations MUST support explicit schema provision.
 
-The parser MAY consult a registry to resolve schema identifiers.
+If an explicit schema is provided, the implementation MUST use that schema and MUST NOT attempt to substitute, infer, or override it.
 
-Registry implementation details are outside this specification.
+#### 12.2.2 Registry-Based Resolution (Optional)
 
-### 12.3 Resolution Order (Normative)
+An implementation MAY support resolving a governing schema via a schema registry.
 
-When a parser supports multiple provision mechanisms, it MUST follow this order:
+Registry lookup mechanisms, identifiers, transport protocols, caching behavior, and trust models are outside the scope of this specification.
 
-1. Explicit provision — if caller provides schema, use it.
-2. Registry lookup — if implementation supports registry, consult it.
-3. Failure — if no schema is obtained, fail with `ParseError`.
+If supported, registry-based resolution MUST be explicit, deterministic, and fail-fast.
 
-Explicit provision always takes precedence.
+Registry-based resolution MUST NOT be attempted unless explicit provision did not occur.
+
+### 12.3 Schema Resolution Order (Normative)
+
+If an implementation supports more than one schema provision mechanism, it MUST resolve the governing schema using the following strict precedence order:
+
+1. **Explicit provision** — if a governing schema is provided directly by the caller, it MUST be used.
+2. **Registry-based resolution** — if supported and no explicit schema was provided, the implementation MAY attempt registry lookup.
+3. **Failure** — if no governing schema is obtained, processing MUST fail.
+
+Explicit provision always takes precedence over all other mechanisms.
+
+An implementation MUST NOT infer, guess, or substitute a governing schema.
 
 ### 12.4 Bootstrap Schema-of-Schemas (Normative)
 
-The bootstrap schema-of-schemas is the built-in schema language required to parse and validate schema documents (root `Schema`) without circular dependency.
+Codex defines a built-in **bootstrap schema-of-schemas** used to parse and validate schema documents authored in Codex.
 
-This is distinct from ecosystem meta-schemas (for example, a domain meta-schema), which are ordinary schema documents authored in Codex and validated under the bootstrap schema-of-schemas.
+The bootstrap schema-of-schemas exists to eliminate circular dependency during schema loading and to make the schema definition language self-hosting.
+
+The bootstrap schema-of-schemas is distinct from domain schemas and from ecosystem meta-schemas.
+It governs **only** documents whose root Concept is `Schema`.
 
 #### 12.4.1 Requirements
 
 Every conforming implementation MUST:
 
-- include the complete bootstrap schema-of-schemas as built-in, hard-coded data
-- use the bootstrap schema-of-schemas when parsing and validating schema documents
+* include the complete bootstrap schema-of-schemas as built-in, immutable data
+* use the bootstrap schema-of-schemas to parse and validate schema documents
+* ensure the bootstrap schema-of-schemas is applied deterministically and without extension unless an explicit governing schema is provided
 
-#### 12.4.2 Detection
+An explicitly provided governing schema for a schema document MUST either be the bootstrap schema-of-schemas itself or a schema that is valid under the bootstrap schema-of-schemas. Partial extension, modification, or augmentation of the bootstrap schema-of-schemas is forbidden.
 
-A document is a schema document if its root Concept is `Schema`.
+The bootstrap schema-of-schemas MUST itself conform to the Codex language invariants (§2) and the schema-first architecture (§9).
 
-When the parser encounters a root `Schema` Concept:
+#### 12.4.2 Schema Document Detection
 
-1. If explicit schema was provided, use it (it MAY be a meta-schema or an extension).
-2. Otherwise, use the built-in bootstrap schema-of-schemas.
+A document is a schema document if and only if its root Concept is `Schema`.
 
-#### 12.4.3 Error Classification (Normative)
+A document whose root Concept is `Schema` MUST be treated as a schema document and MUST NOT be parsed as an instance document under any schema other than the bootstrap schema-of-schemas or an explicitly provided governing schema.
 
-- If a schema document is not structurally readable (for example, malformed markers), the failure is a `ParseError`.
-- If a schema document is structurally readable but violates the bootstrap schema-of-schemas rules, the failure is a `SchemaError`.
+When a parser encounters a root `Schema` Concept:
 
-#### 12.4.4 Canonical Schema-Language Definition (Normative)
+1. If an explicit governing schema was provided by the caller, that schema MUST be used.
+2. Otherwise, the built-in bootstrap schema-of-schemas MUST be used.
 
-All schema-language constructs that appear inside schema documents are defined normatively in exactly one place:
+No other detection, inference, or fallback mechanisms are permitted.
 
-- the schema definition language defined by §11 of this specification
+#### 12.4.3 Validation and Error Classification
 
-The bootstrap schema-of-schemas MUST accept exactly the schema documents that conform to §11.
+When processing a schema document:
+
+* If the document cannot be decoded, tokenized, or structurally parsed, the failure MUST be classified as `ParseError`.
+* If the document is structurally readable but violates the bootstrap schema-of-schemas or an explicitly provided governing schema, the failure MUST be classified as `SchemaError`.
+
+Implementations MUST NOT attempt partial validation, recovery, or best-effort interpretation.
+
+#### 12.4.4 Canonical Authority
+
+All schema-language constructs that appear in schema documents are defined **exactly once**:
+
+* in the schema definition language specified in §11 of this document
+
+The bootstrap schema-of-schemas MUST accept exactly those schema documents that conform to §11, and MUST reject all others.
+
+The bootstrap schema-of-schemas MUST NOT introduce additional constructs, defaults, or semantics beyond those defined in §11.
 
 ### 12.5 Schema Caching (Informative)
 
-Schemas are immutable within a version. Implementations SHOULD cache parsed schemas to avoid redundant parsing.
+Schemas are immutable within a declared version.
 
-Cache invalidation strategies are implementation-defined.
+Implementations MAY cache parsed and validated schemas to avoid redundant processing.
 
-### 12.6 Error Handling (Normative)
+Caching behavior, eviction policy, persistence, and invalidation strategies are implementation-defined.
 
-#### 12.6.1 Schema Unavailable
+Caching MUST NOT change observable parsing, validation, or error-reporting behavior.
 
-If no schema can be obtained through any supported mechanism:
+### 12.5 Schema Caching (Informative)
 
-- Error class: `ParseError`
-- Message SHOULD indicate schema was unavailable.
-- Parsing MUST NOT proceed.
+Schemas are immutable within a declared version.
 
-#### 12.6.2 Schema Load Failure
+Implementations MAY cache parsed and validated schemas to avoid redundant processing.
 
-If schema resolution succeeds but loading fails (network error, file not found):
+Caching behavior, eviction policy, persistence, and invalidation strategies are implementation-defined.
 
-- Error class: `ParseError`
-- Message SHOULD indicate schema could not be loaded.
-- Message SHOULD include the schema identifier.
-
-#### 12.6.3 Invalid Schema
-
-If the loaded schema is not valid Codex or not a valid schema:
-
-- Error class: `SchemaError`
-- Message SHOULD indicate schema validation failed.
-- Underlying schema errors SHOULD be reported.
+Caching MUST NOT change observable parsing, validation, or error-reporting behavior.
 
 ### 12.7 Relationship to Other Specifications
 
-- This specification defines schema-first processing (§9) and schema provision and bootstrapping (§12).
-- The schema definition language is defined in §11.
+* This specification defines schema-first processing semantics (§9).
+* This section defines how governing schemas are obtained and bootstrapped (§12).
+* The schema definition language itself is defined normatively in §11.
+* Formatting and canonicalization rules apply uniformly to both schema documents and non-schema documents (§10).
+
+No other specification may override or weaken these rules.
 
 ---
 
@@ -3814,122 +4234,199 @@ Codex schema versioning is governed by the following principles:
 
 Schemas MUST make their versioning intent explicit.
 
-### 13.3 Schema Identity
+### 13.3 Schema Identity (Normative)
 
-Every Codex schema MUST declare:
+Every Codex schema MUST declare its identity and version explicitly.
 
-- a stable schema identifier
-- an explicit version designation
+Schema identity and versioning are defined exclusively by the root `Schema` Concept as specified in §11.
 
-The schema identifier defines what schema this is.
+Accordingly:
 
-The version defines which rules apply.
+* The `id` Trait of the root `Schema` Concept defines the **stable schema identifier**.
+* The `version` Trait of the root `Schema` Concept defines the **schema version**.
 
-Schemas without explicit version information are invalid.
+The schema identifier (`Schema id`) identifies the schema lineage.
+All versions of the same schema MUST share the same schema identifier.
 
-### 13.4 Version Semantics
+The schema version (`Schema version`) identifies the specific set of rules that apply.
 
-Schemas MUST use monotonic versioning.
+A schema document that omits either the `id` Trait or the `version` Trait on the root `Schema` Concept is invalid.
 
-Versions MAY be expressed as:
+A schema document MUST NOT declare more than one schema identifier.
 
-- semantic versions (for example, `1.2.0`)
-- date-based versions (for example, `2026-01`)
-- another documented, totally ordered scheme
+A schema document MUST NOT redefine or alias the schema identifier across versions.
 
-The specific format is schema-defined, but ordering MUST be unambiguous.
+Schema identity and version information MUST be treated as authoritative and MUST NOT be inferred, synthesized, or substituted by tooling.
+
+### 13.4 Version Semantics (Normative)
+
+Schemas MUST use monotonic versioning within a schema lineage.
+
+Schema versions MAY be expressed using any schema-defined format, including:
+
+* semantic versions (for example, `1.2.0`)
+* date-based versions (for example, `2026-01`)
+* any other explicitly documented scheme
+
+Regardless of format, schema versions MUST form a **total, unambiguous ordering**.
+
+If two schema versions cannot be ordered deterministically, the schema is invalid.
+
+A schema whose version ordering is ambiguous or non-comparable MUST be rejected with a `SchemaError`.
+
+Tools MUST compare schema versions mechanically according to the schema-defined ordering and MUST NOT apply heuristics, coercion, or fallback rules.
 
 ### 13.5 Compatibility Classes (Normative)
 
-Each schema version MUST declare its compatibility class relative to the previous version.
+Each schema version MUST declare exactly one compatibility class relative to the immediately preceding version in the same schema lineage.
 
-Exactly one of the following MUST be specified.
+The compatibility class is declared via the `compatibilityClass` Trait on the root `Schema` Concept as defined in §11.
+
+The declared compatibility class is **normative and enforceable**.
+
+If a schema version’s declared compatibility class is contradicted by its actual effects on validation semantics, the schema is invalid and MUST be rejected with a `SchemaError`.
+
+Exactly one of the following compatibility classes MUST be specified.
 
 #### 13.5.1 Backward-Compatible
 
-A backward-compatible version guarantees:
+A backward-compatible schema version guarantees that:
 
-- existing valid Codex data remains valid
-- meaning of existing Concepts and Traits is preserved
-- new Concepts or Traits MAY be added
-- new constraints MAY be added only if they do not invalidate existing data
+* all Codex data that validated under the immediately preceding version MUST also validate under this version
+* the meaning of existing Concepts and Traits MUST be preserved
+* new Concepts or Traits MAY be added
+* new constraints MAY be added only if they do not invalidate any data that was valid under the preceding version
+
+If any previously valid data becomes invalid under a schema version declared as backward-compatible, the schema is invalid.
 
 #### 13.5.2 Forward-Compatible
 
-A forward-compatible version guarantees:
+A forward-compatible schema version guarantees that:
 
-- Codex data authored for the new version MAY validate under older versions
-- older tools can safely ignore newer constructs
-- new constructs are optional and additive
+* Codex data authored for this version MAY validate under the immediately preceding version
+* newly introduced constructs are optional and additive
+* existing Concepts, Traits, and constraints remain unchanged in meaning
 
-Forward compatibility is typically used for extension-oriented evolution.
+Forward compatibility is intended for extension-oriented evolution where older tools can safely ignore newer constructs.
+
+If data authored for a forward-compatible version cannot validate under the preceding version without loss of meaning, the schema is invalid.
 
 #### 13.5.3 Breaking
 
-A breaking version declares that:
+A breaking schema version declares that:
 
-- existing valid Codex data MAY become invalid
-- semantics of existing Concepts or Traits MAY change
-- migration is required
+* Codex data valid under the preceding version MAY become invalid
+* the meaning or constraints of existing Concepts or Traits MAY change
+* explicit migration is required
 
-Breaking versions MUST be explicitly marked.
+Breaking schema versions MUST be explicitly declared.
 
-### 13.6 What Constitutes a Breaking Change
+Any schema version that introduces a breaking change MUST be marked as breaking.
 
-The following changes are breaking:
+### 13.6 What Constitutes a Breaking Change (Normative)
 
-- removing a Concept
-- removing a Trait
-- changing Entity eligibility
-- changing reference semantics
-- changing collection semantics
-- tightening constraints that invalidate existing data
-- changing the meaning of a Concept or Trait
+A schema version introduces a breaking change if and only if it violates any guarantee required by the `BackwardCompatible` or `ForwardCompatible` compatibility classes with respect to the immediately preceding version.
 
-Breaking changes MUST NOT be introduced silently.
+The following changes are breaking and MUST require `compatibilityClass=$Breaking`:
 
-### 13.7 Non-Breaking Changes
+* removing a `ConceptDefinition`
+* renaming a Concept
+* removing a `TraitDefinition`
+* renaming a Trait
+* changing the value type, cardinality, or reference semantics of an existing Trait
+* changing `entityEligibility` for any Concept
+* changing collection semantics, including ordering or duplicate allowance
+* changing identity, reference, or uniqueness semantics
+* tightening constraints in a way that causes any previously valid data to become invalid
+* changing the meaning or interpretation of any existing Concept or Trait
 
-The following changes are non-breaking when properly declared:
+A schema version that introduces any breaking change without declaring `compatibilityClass=$Breaking` is invalid and MUST be rejected with a `SchemaError`.
 
-- adding new Concepts
-- adding optional Traits
-- adding new Structural Concepts
-- clarifying documentation
-- adding new constraints that apply only to newly introduced Concepts
+Documentation-only changes, comments, or purely presentational metadata that do not affect validation or meaning do not constitute breaking changes.
 
-### 13.8 Schema Validation Behavior
+### 13.7 Non-Breaking Changes (Normative)
 
-When validating Codex data:
+A schema version MAY be declared as non-breaking only if it preserves all validation and semantic guarantees required by its declared compatibility class.
 
-- the applicable schema version MUST be known
-- validation MUST use that version's rules
-- tools MUST NOT infer or guess schema intent
+The following changes are non-breaking **only when they do not invalidate any data that was valid under the immediately preceding version**:
 
-If schema version information is missing, ambiguous, or incompatible, validation MUST fail.
+* adding new `ConceptDefinition` entries
+* adding new `TraitDefinition` entries
+* adding optional Traits to existing Concepts
+* adding new Structural Concepts that do not alter existing structure
+* adding new constraints that apply **only** to newly introduced Concepts or Traits
+* adding documentation, labels, or descriptive metadata with no semantic effect
 
-### 13.9 Relationship to Data Migration
+Non-breaking changes MUST NOT:
 
-This section does not define migration mechanisms.
+* alter the interpretation of any existing Concept, Trait, or Value Type
+* restrict previously allowed structures, values, or relationships
+* introduce new required Traits, Children, or Content on existing Concepts
 
-However:
+If any change classified as non-breaking would cause previously valid data to fail validation, the schema version MUST instead be declared as `compatibilityClass=$Breaking`.
 
-- breaking schema changes imply migration is required
-- migration tooling MUST be explicit and MUST NOT rely on heuristics
-- migrated data MUST validate cleanly under the target schema version
+### 13.8 Schema Validation Behavior (Normative)
 
-Schemas define what changed, not how to migrate.
+When validating a Codex document, the governing schema version MUST be explicitly known.
 
-### 13.10 Tooling Responsibilities
+Validation MUST be performed strictly according to the rules of that schema version.
 
-Codex tooling SHOULD:
+A conforming implementation MUST:
 
-- surface schema identifiers and versions clearly
-- surface declared compatibility classes
-- warn when data targets a newer schema version
-- refuse to validate data against incompatible schema versions
+* use exactly the rules defined by the declared schema version
+* treat schema identifier and version as part of the validation input
+* fail validation if the schema version is missing, ambiguous, or cannot be resolved
+* fail validation if the declared compatibility class does not permit validation in the requested context
 
-Tooling MUST NOT silently reinterpret data across schema versions.
+A conforming implementation MUST NOT:
+
+* infer schema version intent
+* substitute a different schema version
+* relax or tighten validation rules across versions
+* silently reinterpret data authored under a different schema version
+
+If schema version resolution fails for any reason, validation MUST fail.
+
+### 13.9 Relationship to Data Migration (Normative)
+
+This specification defines schema evolution semantics, not data migration mechanisms.
+
+A breaking schema version declaration MUST be treated as a statement that migration is required for existing data to validate under the new schema version.
+
+Codex schemas MUST:
+
+* explicitly declare when a version is breaking
+* define what semantic rules have changed between versions
+* NOT imply or embed migration behavior
+
+Codex tooling MUST:
+
+* NOT perform implicit or heuristic data migration
+* NOT alter data to make it validate under a different schema version
+* treat migration as an explicit, external process
+
+Any migrated data MUST validate cleanly under the target schema version using ordinary schema validation rules.
+
+Migration tooling, if provided, is outside the scope of this specification and MUST be explicit, deterministic, and non-heuristic.
+
+### 13.10 Tooling Responsibilities (Normative)
+
+Codex tooling MUST:
+
+* surface the governing schema identifier and version as explicit inputs to validation
+* surface the declared compatibility class for the schema version
+* refuse to validate data against a schema version whose compatibility class does not permit such validation
+* refuse to validate data when schema identifier, version, or compatibility class is missing or ambiguous
+* treat schema identifier, version, and compatibility class as part of the validation contract
+
+Codex tooling MUST NOT:
+
+* silently reinterpret data across schema versions
+* infer compatibility or intent beyond what is explicitly declared
+* downgrade or upgrade schema versions implicitly
+* validate data against an incompatible schema version
+
+All version handling MUST be explicit, deterministic, and free of heuristics.
 
 ---
 
@@ -4149,17 +4646,19 @@ Codex errors are not warnings.
 - no best-effort recovery is permitted
 - tools MUST NOT silently reinterpret invalid data
 
-### 14.6 Reporting Requirements
+### 14.6 Reporting Requirements (Normative)
 
-Tools SHOULD report failures with:
+Tools MUST report validation failures with:
 
-- primary error class
-- Concept name
-- Trait name (if applicable)
-- violated rule reference
-- precise location (line number or Concept path)
+* the primary error class
+* the Concept name
+* the Trait name (if applicable)
+* a reference to the violated rule or constraint
+* a precise location (line number or Concept path)
 
-Classification is mandatory. Wording and presentation are tool-defined.
+If any of the above information is not applicable, the tool MUST omit it explicitly rather than infer or guess.
+
+Error wording, formatting, and presentation are tool-defined, but classification and attribution MUST be precise and deterministic.
 
 ### 14.7 Non-Goals
 
@@ -4188,8 +4687,8 @@ This appendix defines the formal grammar of the Codex surface form.
 
 Two grammar notations are provided:
 
-- EBNF (Normative) — ISO/IEC 14977 Extended Backus-Naur Form
-- PEG (Informative) — Parsing Expression Grammar for implementation
+* EBNF (Normative) — ISO/IEC 14977 Extended Backus-Naur Form
+* PEG (Informative) — Parsing Expression Grammar for implementation
 
 ### A.1 EBNF (Normative)
 
@@ -4206,7 +4705,7 @@ This grammar uses ISO/IEC 14977 EBNF notation:
 * `" ... "` terminal string
 * `' ... '` terminal string (alternative)
 * `(* ... *)` comment
-* `- ` exception
+* `-` exception
 * `;` end of production
 
 Character classes use the following extensions:
@@ -4221,14 +4720,48 @@ Character classes use the following extensions:
 #### A.1.2 Document Structure
 
 ```ebnf
-(* A Codex document contains exactly one root Concept *)
+(* A Codex document contains exactly one root Concept. *)
 
-(* Annotations may appear with intervening blank lines; formatter normalizes. *)
-Document = { BlankLine }, { Annotation, { BlankLine } }, RootConcept, { BlankLine } ;
+Document
+	= OptionalLeadingAnnotations, RootConcept, OptionalTrailingBlankLines
+	;
 
-RootConcept = Concept ;
+OptionalLeadingAnnotations
+	= { GeneralOrGroupingAnnotationBlock }
+	;
 
-Concept = BlockConcept | SelfClosingConcept ;
+OptionalTrailingBlankLines
+	= { BlankLine }
+	;
+
+RootConcept
+	= ConceptAtColumn0
+	;
+
+ConceptAtColumn0
+	= ConceptLineStart0, Concept, [ ConceptLineEnd ]
+	;
+
+ConceptLineStart0
+	= (* beginning of file or immediately after Newline *)
+	  [ Newline ]
+	;
+
+ConceptLineEnd
+	= (* a structural line ends with a newline *)
+	  Newline
+	;
+
+(* A general or grouping annotation block may appear before the root concept.
+	This grammar admits them structurally; their kind/attachment rules are validated
+	by the surface-form rules. *)
+GeneralOrGroupingAnnotationBlock
+	= { BlankLine }, Annotation, { BlankLine }
+	;
+
+Concept
+	= BlockConcept | SelfClosingConcept
+	;
 ```
 
 ---
@@ -4237,38 +4770,88 @@ Concept = BlockConcept | SelfClosingConcept ;
 
 ```ebnf
 (* Block concepts contain either children or content.
-	The parser consults the schema to determine which.
+	The parser consults the governing schema (ContentRules) to select the Body production.
 	This is schema-directed dispatch, not syntactic ambiguity. *)
 
-BlockConcept = OpeningMarker, Body, ClosingMarker ;
+BlockConcept
+	= OpeningMarkerLine, Body, ClosingMarkerLine
+	;
 
-OpeningMarker = "<", ConceptName, [ Traits ], [ Whitespace ], ">" ;
+OpeningMarkerLine
+	= Indentation, OpeningMarker, Newline
+	;
 
-ClosingMarker = "</", ConceptName, ">" ;
+ClosingMarkerLine
+	= Indentation, ClosingMarker, Newline
+	;
 
-(* Body production is selected by schema lookup on ConceptName:
+OpeningMarker
+	= "<", ConceptName, [ Traits ], ">"
+	;
+
+ClosingMarker
+	= "</", ConceptName, ">"
+	;
+
+(* Body is selected by schema lookup on ConceptName:
 	- If schema indicates children mode (ForbidsContent): ChildrenBody
 	- If schema indicates content mode (AllowsContent): ContentBody *)
+Body
+	= ChildrenBody | ContentBody
+	;
 
-Body = ChildrenBody | ContentBody ;
+ChildrenBody
+	= { ChildItem }
+	;
 
-ChildrenBody = { ChildEntry } ;
+(* A ChildItem is either:
+	- an annotation line/block, or
+	- a child concept (block or self-closing), each on its own structural line.
+	Blank-line legality is enforced by surface-form rules; the grammar admits both. *)
+ChildItem
+	= ( BlankLine
+	  | AnnotationLine
+	  | AnnotationBlock
+	  | ConceptLine
+	  )
+	;
 
-ChildEntry = Newline, Indentation, { Annotation, Newline, Indentation }, Concept, [ BlankLine ] ;
+ConceptLine
+	= Indentation, ConceptMarkerOrConcept, Newline
+	;
 
-ContentBody = { ContentLine } ;
+(* Within a children body, a child concept begins on a line and is either:
+	- a self-closing marker, or
+	- an opening marker line followed by its body and closing marker line. *)
+ConceptMarkerOrConcept
+	= SelfClosingMarker
+	| OpeningMarker (* followed by Body and ClosingMarkerLine in BlockConcept *)
+	;
 
-ContentLine = Newline, Indentation, ContentText ;
+ContentBody
+	= { ContentLine }
+	;
 
-ContentText = { ContentChar } ;
+ContentLine
+	= Indentation, ContentText, Newline
+	;
 
-ContentChar = ContentEscape | ContentSafeChar ;
+ContentText
+	= { ContentChar }
+	;
 
-ContentEscape = "\\", ( "<" | "\\" ) ;
+ContentChar
+	= ContentEscape | ContentSafeChar
+	;
 
-(* Raw '<' and '\\' are not permitted in content.
-	They MUST be written as '\\<' and '\\\\' respectively. *)
-ContentSafeChar = AnyCharExceptNewline - "<" - "\\" ;
+ContentEscape
+	= "\\", ( "<" | "\\" )
+	;
+
+(* Raw '<' and '\' are forbidden in content. *)
+ContentSafeChar
+	= AnyCharExceptNewline - "<" - "\\"
+	;
 ```
 
 ---
@@ -4276,7 +4859,13 @@ ContentSafeChar = AnyCharExceptNewline - "<" - "\\" ;
 #### A.1.4 Self-Closing Concepts
 
 ```ebnf
-SelfClosingConcept = "<", ConceptName, [ Traits ], [ Whitespace ], "/>" ;
+SelfClosingConcept
+	= SelfClosingMarker
+	;
+
+SelfClosingMarker
+	= "<", ConceptName, [ Traits ], "/>"
+	;
 ```
 
 ---
@@ -4284,19 +4873,32 @@ SelfClosingConcept = "<", ConceptName, [ Traits ], [ Whitespace ], "/>" ;
 #### A.1.5 Concept Names
 
 ```ebnf
-ConceptName = UppercaseLetter, { Letter | Digit } ;
+(* Naming rule details beyond basic lexical form (e.g., no runs of uppercase)
+	are enforced by surface-form validation. *)
 
-UppercaseLetter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
-					 | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T"
-					 | "U" | "V" | "W" | "X" | "Y" | "Z" ;
+ConceptName
+	= UppercaseLetter, { Letter | Digit }
+	;
 
-LowercaseLetter = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j"
-					 | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t"
-					 | "u" | "v" | "w" | "x" | "y" | "z" ;
+UppercaseLetter
+	= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
+	| "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T"
+	| "U" | "V" | "W" | "X" | "Y" | "Z"
+	;
 
-Letter = UppercaseLetter | LowercaseLetter ;
+LowercaseLetter
+	= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j"
+	| "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t"
+	| "u" | "v" | "w" | "x" | "y" | "z"
+	;
 
-Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+Letter
+	= UppercaseLetter | LowercaseLetter
+	;
+
+Digit
+	= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+	;
 ```
 
 ---
@@ -4304,11 +4906,18 @@ Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 #### A.1.6 Traits
 
 ```ebnf
-Traits = Whitespace, Trait, { Whitespace, Trait } ;
+Traits
+	= WhitespaceNoNewline, Trait, { Whitespace, Trait }
+	;
 
-Trait = TraitName, "=", Value ;
+Trait
+	= TraitName, "=", Value
+	;
 
-TraitName = LowercaseLetter, { Letter | Digit } ;
+(* Naming rule details beyond basic lexical form are enforced by surface-form validation. *)
+TraitName
+	= LowercaseLetter, { Letter | Digit }
+	;
 ```
 
 ---
@@ -4316,22 +4925,24 @@ TraitName = LowercaseLetter, { Letter | Digit } ;
 #### A.1.7 Values
 
 ```ebnf
-Value = StringValue
-		| CharValue
-		| BacktickString
-		| BooleanValue
-		| NumericValue
-		| EnumeratedToken
-		| IriReference
-		| LookupToken
-		| UuidValue
-		| ColorValue
-		| TemporalValue
-		| ListValue
-		| SetValue
-		| MapValue
-		| TupleValue
-		| RangeValue ;
+Value
+	= StringValue
+	| CharValue
+	| BacktickString
+	| BooleanValue
+	| NumericValue
+	| EnumeratedToken
+	| TemporalValue
+	| ColorValue
+	| UuidValue
+	| LookupToken
+	| IriReference
+	| ListValue
+	| SetValue
+	| MapValue
+	| TupleValue
+	| RangeValue
+	;
 ```
 
 ---
@@ -4339,19 +4950,32 @@ Value = StringValue
 #### A.1.8 String Values
 
 ```ebnf
-StringValue = '"', { StringChar }, '"' ;
+StringValue
+	= '"', { StringChar }, '"'
+	;
 
-StringChar = UnescapedStringChar | EscapeSequence ;
+StringChar
+	= UnescapedStringChar | EscapeSequence
+	;
 
-UnescapedStringChar = AnyCharExceptQuoteBackslashNewline ;
+UnescapedStringChar
+	= AnyCharExceptQuoteBackslashNewline
+	;
 
-EscapeSequence = "\\", ( '"' | "\\" | "n" | "r" | "t" | UnicodeEscape ) ;
+EscapeSequence
+	= "\\", ( '"' | "\\" | "n" | "r" | "t" | UnicodeEscape )
+	;
 
-UnicodeEscape = "u", HexDigit, HexDigit, HexDigit, HexDigit
-				  | "u{", HexDigit, { HexDigit }, "}" ;
+UnicodeEscape
+	= "u", HexDigit, HexDigit, HexDigit, HexDigit
+	| "u{", HexDigit, { HexDigit }, "}"
+	;
 
-HexDigit = Digit | "a" | "b" | "c" | "d" | "e" | "f"
-					  | "A" | "B" | "C" | "D" | "E" | "F" ;
+HexDigit
+	= Digit
+	| "a" | "b" | "c" | "d" | "e" | "f"
+	| "A" | "B" | "C" | "D" | "E" | "F"
+	;
 ```
 
 ---
@@ -4359,13 +4983,21 @@ HexDigit = Digit | "a" | "b" | "c" | "d" | "e" | "f"
 #### A.1.9 Character Values
 
 ```ebnf
-CharValue = "'", CharContent, "'" ;
+CharValue
+	= "'", CharContent, "'"
+	;
 
-CharContent = UnescapedChar | CharEscapeSequence ;
+CharContent
+	= UnescapedChar | CharEscapeSequence
+	;
 
-UnescapedChar = AnyCharExceptApostropheBackslashNewline ;
+UnescapedChar
+	= AnyCharExceptApostropheBackslashNewline
+	;
 
-CharEscapeSequence = "\\", ( "'" | "\\" | "n" | "r" | "t" | UnicodeEscape ) ;
+CharEscapeSequence
+	= "\\", ( "'" | "\\" | "n" | "r" | "t" | UnicodeEscape )
+	;
 ```
 
 ---
@@ -4373,15 +5005,21 @@ CharEscapeSequence = "\\", ( "'" | "\\" | "n" | "r" | "t" | UnicodeEscape ) ;
 #### A.1.10 Backtick Strings
 
 ```ebnf
-(* Backtick strings collapse whitespace to single spaces *)
+BacktickString
+	= "`", { BacktickChar }, "`"
+	;
 
-BacktickString = "`", { BacktickChar }, "`" ;
+BacktickChar
+	= UnescapedBacktickChar | BacktickEscape
+	;
 
-BacktickChar = UnescapedBacktickChar | BacktickEscape ;
+UnescapedBacktickChar
+	= AnyCharExceptBacktickBackslash
+	;
 
-UnescapedBacktickChar = AnyCharExceptBacktickBackslash ;
-
-BacktickEscape = "\\", ( "`" | "\\" ) ;
+BacktickEscape
+	= "\\", ( "`" | "\\" )
+	;
 ```
 
 ---
@@ -4389,7 +5027,9 @@ BacktickEscape = "\\", ( "`" | "\\" ) ;
 #### A.1.11 Boolean Values
 
 ```ebnf
-BooleanValue = "true" | "false" ;
+BooleanValue
+	= "true" | "false"
+	;
 ```
 
 ---
@@ -4397,34 +5037,56 @@ BooleanValue = "true" | "false" ;
 #### A.1.12 Numeric Values
 
 ```ebnf
-NumericValue = ComplexNumber
-				 | ImaginaryNumber
-				 | Fraction
-				 | Infinity
-				 | PrecisionNumber
-				 | ScientificNumber
-				 | DecimalNumber
-				 | Integer ;
+NumericValue
+	= ComplexNumber
+	| ImaginaryNumber
+	| Fraction
+	| Infinity
+	| PrecisionNumber
+	| ScientificNumber
+	| DecimalNumber
+	| Integer
+	;
 
-Sign = "+" | "-" ;
+Sign
+	= "+" | "-"
+	;
 
-Integer = [ Sign ], DigitSequence ;
+Integer
+	= [ Sign ], DigitSequence
+	;
 
-DecimalNumber = [ Sign ], DigitSequence, ".", DigitSequence ;
+DecimalNumber
+	= [ Sign ], DigitSequence, ".", DigitSequence
+	;
 
-ScientificNumber = ( Integer | DecimalNumber ), ( "e" | "E" ), [ Sign ], DigitSequence ;
+ScientificNumber
+	= ( Integer | DecimalNumber ), ( "e" | "E" ), [ Sign ], DigitSequence
+	;
 
-PrecisionNumber = DecimalNumber, "p", [ DigitSequence ] ;
+PrecisionNumber
+	= DecimalNumber, "p", [ DigitSequence ]
+	;
 
-Infinity = [ Sign ], "Infinity" ;
+Infinity
+	= [ Sign ], "Infinity"
+	;
 
-Fraction = Integer, "/", DigitSequence ;
+Fraction
+	= Integer, "/", DigitSequence
+	;
 
-ImaginaryNumber = ( Integer | DecimalNumber ), "i" ;
+ImaginaryNumber
+	= ( Integer | DecimalNumber ), "i"
+	;
 
-ComplexNumber = ( Integer | DecimalNumber ), ( "+" | "-" ), ( Integer | DecimalNumber ), "i" ;
+ComplexNumber
+	= ( Integer | DecimalNumber ), ( "+" | "-" ), ( Integer | DecimalNumber ), "i"
+	;
 
-DigitSequence = Digit, { Digit } ;
+DigitSequence
+	= Digit, { Digit }
+	;
 ```
 
 ---
@@ -4432,48 +5094,219 @@ DigitSequence = Digit, { Digit } ;
 #### A.1.13 Enumerated Tokens
 
 ```ebnf
-EnumeratedToken = "$", UppercaseLetter, { Letter | Digit } ;
+EnumeratedToken
+	= "$", UppercaseLetter, { Letter | Digit }
+	;
 ```
 
 ---
 
-#### A.1.14 IRI References
+#### A.1.14 Temporal Values
 
 ```ebnf
-(* Codex IRI references allow RFC 3987 IRI-reference characters directly.
-		Unicode characters MAY appear directly; percent-encoding remains valid.
-	Codex further forbids Unicode whitespace, control, bidi-control, and private-use characters.
-	These profile restrictions are enforced by surface-form validation; they are not fully
-	encoded in the UcsChar placeholder production below. *)
+TemporalValue
+	= "{", TemporalBody, "}"
+	;
 
-IriReference = IriScheme, ":", IriBody ;
+TemporalBody
+	= ZonedDateTime
+	| LocalDateTime
+	| Date
+	| YearMonth
+	| MonthDay
+	| Time
+	| Duration
+	| ReservedTemporal
+	;
 
-IriScheme = Letter, { Letter | Digit | "+" | "-" | "." } ;
+Date
+	= Year, "-", Month, "-", Day
+	;
 
-IriBody = { IriChar } ;
+YearMonth
+	= Year, "-", Month
+	;
 
-IriChar = IriAsciiChar | UcsChar ;
+MonthDay
+	= Month, "-", Day
+	;
 
-IriAsciiChar = Letter | Digit | "-" | "." | "_" | "~" | ":" | "/" | "?" | "#"
-			 | "[" | "]" | "@" | "!" | "$" | "&" | "'" | "(" | ")"
-			 | "*" | "+" | "," | ";" | "=" | "%" ;
+LocalDateTime
+	= Date, "T", Time
+	;
 
-(* RFC 3987 character classes (descriptive):
-	UcsChar  = %xA0-D7FF / %xF900-FDCF / %xFDF0-FFEF / %x10000-1FFFD
-			 / %x20000-2FFFD / %x30000-3FFFD / %x40000-4FFFD / %x50000-5FFFD
-			 / %x60000-6FFFD / %x70000-7FFFD / %x80000-8FFFD / %x90000-9FFFD
-			 / %xA0000-AFFFD / %xB0000-BFFFD / %xC0000-CFFFD / %xD0000-DFFFD
-			 / %xE1000-EFFFD
-*)
-UcsChar = ? any Unicode scalar value in the RFC 3987 ucschar ranges ? ;
+ZonedDateTime
+	= LocalDateTime, TimeZoneOffset, [ TimeZoneId ]
+	;
+
+TimeZoneOffset
+	= "Z" | ( ( "+" | "-" ), Hour, ":", Minute )
+	;
+
+TimeZoneId
+	= "[", TimeZoneIdChar, { TimeZoneIdChar }, "]"
+	;
+
+TimeZoneIdChar
+	= Letter | Digit | "/" | "_" | "-"
+	;
+
+Time
+	= Hour, ":", Minute, [ ":", Second, [ ".", Milliseconds ] ]
+	;
+
+Duration
+	= "P", { DurationComponent }, [ "T", { TimeDurationComponent } ]
+	;
+
+DurationComponent
+	= DigitSequence, ( "Y" | "M" | "W" | "D" )
+	;
+
+TimeDurationComponent
+	= DigitSequence, [ ".", DigitSequence ], ( "H" | "M" | "S" )
+	;
+
+ReservedTemporal
+	= "now" | "today"
+	;
+
+Year
+	= Digit, Digit, Digit, Digit
+	;
+
+Month
+	= Digit, Digit
+	;
+
+Day
+	= Digit, Digit
+	;
+
+Hour
+	= Digit, Digit
+	;
+
+Minute
+	= Digit, Digit
+	;
+
+Second
+	= Digit, Digit
+	;
+
+Milliseconds
+	= Digit, { Digit }
+	;
 ```
 
 ---
 
-#### A.1.15 Lookup Tokens
+#### A.1.15 Color Values
 
 ```ebnf
-LookupToken = "~", LowercaseLetter, { Letter | Digit } ;
+(* Color values are accepted as declarative spellings; tools MUST NOT validate,
+	normalize, or convert them. This grammar admits the permitted surface spellings. *)
+
+ColorValue
+	= HexColor
+	| FunctionColor
+	| NamedColor
+	;
+
+HexColor
+	= "#", HexDigit, HexDigit, HexDigit, [ HexDigit ]
+	| "#", HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, [ HexDigit, HexDigit ]
+	;
+
+NamedColor
+	= "&", LowercaseLetter, { LowercaseLetter }
+	;
+
+FunctionColor
+	= RgbFunc
+	| HslFunc
+	| HwbFunc
+	| LabFunc
+	| LchFunc
+	| OklabFunc
+	| OklchFunc
+	| ColorFunc
+	| ColorMixFunc
+	| RelativeColorFunc
+	| DeviceCmykFunc
+	;
+
+RgbFunc
+	= ( "rgb" | "rgba" ), "(", ColorFuncPayload, ")"
+	;
+
+HslFunc
+	= ( "hsl" | "hsla" ), "(", ColorFuncPayload, ")"
+	;
+
+HwbFunc
+	= "hwb", "(", ColorFuncPayload, ")"
+	;
+
+LabFunc
+	= "lab", "(", ColorFuncPayload, ")"
+	;
+
+LchFunc
+	= "lch", "(", ColorFuncPayload, ")"
+	;
+
+OklabFunc
+	= "oklab", "(", ColorFuncPayload, ")"
+	;
+
+OklchFunc
+	= "oklch", "(", ColorFuncPayload, ")"
+	;
+
+ColorFunc
+	= "color", "(", ColorSpace, WhitespaceNoNewline, ColorFuncPayload, ")"
+	;
+
+ColorMixFunc
+	= "color-mix", "(", ColorFuncPayload, ")"
+	;
+
+RelativeColorFunc
+	= ( "rgb" | "rgba" | "hsl" | "hsla" | "hwb" | "lab" | "lch" | "oklab" | "oklch" | "color" ),
+	  "(", "from", WhitespaceNoNewline, ColorValue, ColorFuncTail, ")"
+	;
+
+DeviceCmykFunc
+	= "device-cmyk", "(", ColorFuncPayload, ")"
+	;
+
+ColorSpace
+	= "srgb"
+	| "srgb-linear"
+	| "display-p3"
+	| "a98-rgb"
+	| "prophoto-rgb"
+	| "rec2020"
+	| "xyz"
+	| "xyz-d50"
+	| "xyz-d65"
+	;
+
+(* The payload is accepted as an uninterpreted balanced-parentheses token sequence,
+	subject only to Value termination rules (see A.1.27). *)
+ColorFuncPayload
+	= { ColorPayloadChar }
+	;
+
+ColorFuncTail
+	= { ColorPayloadChar }
+	;
+
+ColorPayloadChar
+	= AnyCharExceptRightParenNewline
+	;
 ```
 
 ---
@@ -4481,96 +5314,55 @@ LookupToken = "~", LowercaseLetter, { Letter | Digit } ;
 #### A.1.16 UUID Values
 
 ```ebnf
-UuidValue = HexOctet, HexOctet, HexOctet, HexOctet, "-",
-				HexOctet, HexOctet, "-",
-				HexOctet, HexOctet, "-",
-				HexOctet, HexOctet, "-",
-				HexOctet, HexOctet, HexOctet, HexOctet, HexOctet, HexOctet ;
+UuidValue
+	= HexOctet, HexOctet, HexOctet, HexOctet, "-",
+	  HexOctet, HexOctet, "-",
+	  HexOctet, HexOctet, "-",
+	  HexOctet, HexOctet, "-",
+	  HexOctet, HexOctet, HexOctet, HexOctet, HexOctet, HexOctet
+	;
 
-HexOctet = HexDigit, HexDigit ;
+HexOctet
+	= HexDigit, HexDigit
+	;
 ```
 
 ---
 
-#### A.1.17 Color Values
+#### A.1.17 IRI Reference Values
 
 ```ebnf
-ColorValue = HexColor | RgbColor | HslColor | LabColor | LchColor
-			  | OklabColor | OklchColor | ColorFunction | NamedColor ;
+(* IRI references are unquoted tokens containing a ':'.
+	They terminate at Value termination (see A.1.27). *)
 
-HexColor = "#", HexDigit, HexDigit, HexDigit, [ HexDigit ]
-			| "#", HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, [ HexDigit, HexDigit ] ;
+IriReference
+	= IriScheme, ":", IriTokenBody
+	;
 
-RgbColor = ( "rgb" | "rgba" ), "(", ColorArgs, ")" ;
+IriScheme
+	= Letter, { Letter | Digit | "+" | "-" | "." }
+	;
 
-HslColor = ( "hsl" | "hsla" ), "(", ColorArgs, ")" ;
+IriTokenBody
+	= { IriTokenChar }
+	;
 
-LabColor = "lab", "(", ColorArgs, ")" ;
-
-LchColor = "lch", "(", ColorArgs, ")" ;
-
-OklabColor = "oklab", "(", ColorArgs, ")" ;
-
-OklchColor = "oklch", "(", ColorArgs, ")" ;
-
-ColorFunction = "color", "(", ColorSpace, Whitespace, ColorArgs, ")" ;
-
-ColorSpace = "srgb" | "srgb-linear" | "display-p3" | "a98-rgb"
-			  | "prophoto-rgb" | "rec2020" | "xyz" | "xyz-d50" | "xyz-d65" ;
-
-ColorArgs = ColorArg, { ( Whitespace | "," ), ColorArg }, [ ( Whitespace, "/" | "," ), AlphaArg ] ;
-
-ColorArg = NumericValue | Percentage ;
-
-AlphaArg = NumericValue | Percentage ;
-
-Percentage = NumericValue, "%" ;
-
-NamedColor = "&", LowercaseLetter, { LowercaseLetter } ;
+(* This is a token-level placeholder: the exact admissible character set is RFC 3987
+	profiled by this specification. Surface-form validation enforces the disallowed
+	Unicode categories; the grammar enforces only token termination exclusions. *)
+IriTokenChar
+	= AnyCharExceptValueTerminator
+	;
 ```
 
 ---
 
-#### A.1.18 Temporal Values
+#### A.1.18 Lookup Token Values
 
 ```ebnf
-TemporalValue = "{", TemporalBody, "}" ;
-
-TemporalBody = ZonedDateTime | LocalDateTime | Date | YearMonth | MonthDay | Time | Duration | ReservedTemporal ;
-
-Date = Year, "-", Month, "-", Day ;
-
-YearMonth = Year, "-", Month ;
-
-MonthDay = Month, "-", Day ;
-
-LocalDateTime = Date, "T", Time ;
-
-ZonedDateTime = LocalDateTime, TimeZoneOffset, [ TimeZoneId ] ;
-
-TimeZoneOffset = "Z" | ( ( "+" | "-" ), Hour, ":", Minute ) ;
-
-TimeZoneId = "[", TimeZoneIdChar, { TimeZoneIdChar }, "]" ;
-
-TimeZoneIdChar = Letter | Digit | "/" | "_" | "-" ;
-
-Time = Hour, ":", Minute, [ ":", Second, [ ".", Milliseconds ] ] ;
-
-Duration = "P", { DurationComponent }, [ "T", { TimeDurationComponent } ] ;
-
-DurationComponent = DigitSequence, ( "Y" | "M" | "W" | "D" ) ;
-
-TimeDurationComponent = DigitSequence, [ ".", DigitSequence ], ( "H" | "M" | "S" ) ;
-
-ReservedTemporal = "now" | "today" ;
-
-Year = Digit, Digit, Digit, Digit ;
-Month = Digit, Digit ;
-Day = Digit, Digit ;
-Hour = Digit, Digit ;
-Minute = Digit, Digit ;
-Second = Digit, Digit ;
-Milliseconds = Digit, { Digit } ;
+LookupToken
+	= "~", LowercaseLetter, { Letter | Digit }
+	;
 ```
 
 ---
@@ -4578,9 +5370,13 @@ Milliseconds = Digit, { Digit } ;
 #### A.1.19 List Values
 
 ```ebnf
-ListValue = "[", [ Whitespace ], [ ListItems ], [ Whitespace ], "]" ;
+ListValue
+	= "[", { Whitespace }, [ ListItems ], { Whitespace }, "]"
+	;
 
-ListItems = Value, { ",", [ Whitespace ], Value } ;
+ListItems
+	= Value, { { Whitespace }, ",", { Whitespace }, Value }
+	;
 ```
 
 ---
@@ -4588,9 +5384,13 @@ ListItems = Value, { ",", [ Whitespace ], Value } ;
 #### A.1.20 Set Values
 
 ```ebnf
-SetValue = "set[", [ Whitespace ], [ SetItems ], [ Whitespace ], "]" ;
+SetValue
+	= "set", "[", { Whitespace }, [ SetItems ], { Whitespace }, "]"
+	;
 
-SetItems = Value, { ",", [ Whitespace ], Value } ;
+SetItems
+	= Value, { { Whitespace }, ",", { Whitespace }, Value }
+	;
 ```
 
 ---
@@ -4598,15 +5398,29 @@ SetItems = Value, { ",", [ Whitespace ], Value } ;
 #### A.1.21 Map Values
 
 ```ebnf
-MapValue = "map[", [ Whitespace ], [ MapItems ], [ Whitespace ], "]" ;
+MapValue
+	= "map", "[", { Whitespace }, [ MapItems ], { Whitespace }, "]"
+	;
 
-MapItems = MapEntry, { ",", [ Whitespace ], MapEntry } ;
+MapItems
+	= MapEntry, { { Whitespace }, ",", { Whitespace }, MapEntry }
+	;
 
-MapEntry = MapKey, ":", [ Whitespace ], Value ;
+MapEntry
+	= MapKey, { Whitespace }, ":", { Whitespace }, Value
+	;
 
-MapKey = MapIdentifier | StringValue | CharValue | Integer | EnumeratedToken ;
+MapKey
+	= MapIdentifier
+	| StringValue
+	| CharValue
+	| Integer
+	| EnumeratedToken
+	;
 
-MapIdentifier = LowercaseLetter, { Letter | Digit } ;
+MapIdentifier
+	= LowercaseLetter, { Letter | Digit }
+	;
 ```
 
 ---
@@ -4614,9 +5428,13 @@ MapIdentifier = LowercaseLetter, { Letter | Digit } ;
 #### A.1.22 Tuple Values
 
 ```ebnf
-TupleValue = "(", [ Whitespace ], TupleItems, [ Whitespace ], ")" ;
+TupleValue
+	= "(", { Whitespace }, TupleItems, { Whitespace }, ")"
+	;
 
-TupleItems = Value, { ",", [ Whitespace ], Value } ;
+TupleItems
+	= Value, { { Whitespace }, ",", { Whitespace }, Value }
+	;
 ```
 
 ---
@@ -4624,13 +5442,21 @@ TupleItems = Value, { ",", [ Whitespace ], Value } ;
 #### A.1.23 Range Values
 
 ```ebnf
-RangeValue = RangeStart, "..", RangeEnd, [ "s", StepValue ] ;
+RangeValue
+	= RangeStart, "..", RangeEnd, [ "s", StepValue ]
+	;
 
-RangeStart = NumericValue | TemporalValue | CharValue ;
+RangeStart
+	= NumericValue | TemporalValue | CharValue
+	;
 
-RangeEnd = NumericValue | TemporalValue | CharValue ;
+RangeEnd
+	= NumericValue | TemporalValue | CharValue
+	;
 
-StepValue = NumericValue | TemporalValue ;
+StepValue
+	= NumericValue | TemporalValue
+	;
 ```
 
 ---
@@ -4638,13 +5464,50 @@ StepValue = NumericValue | TemporalValue ;
 #### A.1.24 Annotations
 
 ```ebnf
-Annotation = "[", { AnnotationChar }, "]" ;
+(* Codex defines two surface forms for annotations:
+	- Inline: '[' ... ']' on a single line
+	- Block: '[' on its own line, then content lines, then ']' on its own line
+	The attachment/grouping/general-kind rules are surface-form validation rules. *)
 
-AnnotationChar = UnescapedAnnotationChar | AnnotationEscape ;
+Annotation
+	= AnnotationLine | AnnotationBlock
+	;
 
-UnescapedAnnotationChar = AnyCharExceptBracketBackslash ;
+AnnotationLine
+	= Indentation, "[", { AnnotationChar }, "]", Newline
+	;
 
-AnnotationEscape = "\\", ( "]" | "\\" ) ;
+AnnotationBlock
+	= Indentation, "[", Newline,
+	  { AnnotationBlockLine },
+	  Indentation, "]", Newline
+	;
+
+AnnotationBlockLine
+	= Indentation, { AnnotationBlockChar }, Newline
+	;
+
+AnnotationChar
+	= UnescapedAnnotationChar | AnnotationEscape
+	;
+
+UnescapedAnnotationChar
+	= AnyCharExceptRightBracketBackslashNewline
+	;
+
+AnnotationEscape
+	= "\\", ( "]" | "\\" )
+	;
+
+(* Inside block annotations, the only escapes defined are the same as inline:
+	'\]' and '\\'. Everything else is raw bytes subject to those escape constraints. *)
+AnnotationBlockChar
+	= UnescapedAnnotationBlockChar | AnnotationEscape
+	;
+
+UnescapedAnnotationBlockChar
+	= AnyCharExceptBackslashNewline
+	;
 ```
 
 ---
@@ -4652,17 +5515,35 @@ AnnotationEscape = "\\", ( "]" | "\\" ) ;
 #### A.1.25 Whitespace and Structural Elements
 
 ```ebnf
-Whitespace = WhitespaceChar, { WhitespaceChar } ;
+Whitespace
+	= WhitespaceChar, { WhitespaceChar }
+	;
 
-WhitespaceChar = " " | "\t" | Newline ;
+WhitespaceNoNewline
+	= WhitespaceNoNewlineChar, { WhitespaceNoNewlineChar }
+	;
 
-Newline = "\n" ;
+WhitespaceChar
+	= " " | "\t" | Newline
+	;
 
-BlankLine = Newline, { " " | "\t" }, Newline ;
+WhitespaceNoNewlineChar
+	= " " | "\t"
+	;
 
-Indentation = { "\t" } ;
+Newline
+	= "\n"
+	;
 
-Tab = "\t" ;
+(* A blank line is a line that contains no characters after normalization.
+	This grammar admits optional spaces/tabs on an otherwise empty line. *)
+BlankLine
+	= { " " | "\t" }, Newline
+	;
+
+Indentation
+	= { "\t" }
+	;
 ```
 
 ---
@@ -4675,37 +5556,52 @@ The following character classes are used but not fully enumerated:
 * `AnyCharExceptQuoteBackslashNewline` — any Unicode scalar except `"`, `\\`, U+000A
 * `AnyCharExceptApostropheBackslashNewline` — any Unicode scalar except `'`, `\\`, U+000A
 * `AnyCharExceptBacktickBackslash` — any Unicode scalar except `` ` ``, `\\`
-* `AnyCharExceptBracketBackslash` — any Unicode scalar except `]`, `\\`
+* `AnyCharExceptRightParenNewline` — any Unicode scalar except `)`, U+000A
+* `AnyCharExceptRightBracketBackslashNewline` — any Unicode scalar except `]`, `\\`, U+000A
+* `AnyCharExceptBackslashNewline` — any Unicode scalar except `\\`, U+000A
+* `AnyCharExceptValueTerminator` — any Unicode scalar except a Value terminator (defined in §A.1.27)
 
 ---
 
-#### A.1.27 Precedence and Disambiguation
+#### A.1.27 Value Termination and Disambiguation (Normative)
 
-When parsing Values, the following precedence applies (highest first):
+```ebnf
+(* Value termination is token-level, not type-level.
 
-1. String, Character, Backtick (delimited)
-2. Boolean keywords (`true`, `false`)
-3. Enumerated tokens (`$...`)
-4. Lookup tokens (`~...`)
-5. Temporal values (`{...}`)
-6. Set values (`set[...]`)
-7. Map values (`map[...]`)
-8. List values (`[...]`)
-9. Tuple values (`(...)`)
-10. Color functions (`rgb(...)`, etc.)
-11. Hex colors (`#...`)
-12. UUID (pattern match: 8-4-4-4-12)
-13. Range (contains `..`)
-14. Complex/Imaginary (contains `i`)
-15. Fraction (contains `/`)
-16. Precision (contains `p`)
-17. Scientific (contains `e` or `E`)
-18. Decimal (contains `.`)
-19. Integer
-20. IRI reference (fallback)
+	In a Concept marker, an unquoted Value token MUST terminate at the first of:
+	- whitespace (space, tab, or newline)
+	- ">" or "/>" (end of marker)
 
----
+	While scanning for termination, parsers MUST respect balanced delimiters for
+	delimited value spellings and composite literals, including:
+	[], {}, (), '', "", and backticks.
 
+	This appendix provides type grammars for each Value form, but conformance requires
+	the termination behavior above.
+
+	Value disambiguation is performed by deterministic precedence, applied to the
+	maximal token recognized under the termination rule.
+
+	Precedence (highest first):
+
+	1. Delimited: StringValue, CharValue, BacktickString
+	2. BooleanValue ("true" | "false")
+	3. EnumeratedToken ($...)
+	4. LookupToken (~...)
+	5. TemporalValue ({...})
+	6. SetValue (set[...])
+	7. MapValue (map[...])
+	8. ListValue ([...])
+	9. TupleValue ((...))
+	10. ColorValue (all permitted color literal spellings, including functions and named colors)
+	11. UuidValue (8-4-4-4-12 with hex digits)
+	12. RangeValue (contains ".." with valid endpoints)
+	13. NumericValue (Complex/Imaginary/Fraction/Infinity/Precision/Scientific/Decimal/Integer per §A.1.12)
+	14. IriReference (fallback: token contains ":" and matches IriReference)
+
+	If a token matches multiple forms at the same precedence level, parsing MUST fail
+	rather than guess. *)
+```
 ### A.2 PEG (Informative)
 
 The PEG grammar is informative. It provides an implementation-ready, unambiguous grammar.
@@ -4735,11 +5631,23 @@ This grammar uses standard PEG notation:
 #### A.2.2 Document Structure
 
 ```peg
-# A Codex document contains exactly one root Concept
+# A Codex document contains exactly one root Concept.
+# Surface-form rules constrain root count, blank-line placement, and annotation kinds.
 
-Document <- BlankLine* (Annotation BlankLine*)* RootConcept BlankLine* EOF
+Document <- LeadingAnnotationBlocks? RootConcept TrailingBlankLines EOF
 
-RootConcept <- Concept
+LeadingAnnotationBlocks <- (BlankLine* Annotation BlankLine*)*
+
+TrailingBlankLines <- BlankLine*
+
+RootConcept <- ConceptAtColumn0
+
+ConceptAtColumn0 <- (BOL ConceptLine0)
+
+ConceptLine0 <- Concept Newline?
+
+BOL <- &(StartOfFile / Newline)
+StartOfFile <- !.
 
 Concept <- BlockConcept / SelfClosingConcept
 ```
@@ -4750,38 +5658,40 @@ Concept <- BlockConcept / SelfClosingConcept
 
 ```peg
 # Block concepts contain either children or content.
-# The parser consults the schema to determine which.
+# The parser consults the governing schema (ContentRules) to decide which Body to parse.
 # This is schema-directed dispatch, not syntactic ambiguity.
 
-BlockConcept <- OpeningMarker Body ClosingMarker
+BlockConcept <- OpeningMarkerLine Body ClosingMarkerLine
 
-OpeningMarker <- '<' ConceptName Traits? Whitespace? '>'
+OpeningMarkerLine <- Indentation OpeningMarker Newline
+ClosingMarkerLine <- Indentation ClosingMarker Newline
 
+OpeningMarker <- '<' ConceptName Traits? '>'
 ClosingMarker <- '</' ConceptName '>'
 
-# Body parsing is schema-directed:
-# - Children mode (ForbidsContent): parse as ChildrenBody
-# - Content mode (AllowsContent): parse as ContentBody
-# Implementation selects the appropriate production at runtime.
+# Body is selected by schema lookup on ConceptName:
+# - children mode (ForbidsContent): ChildrenBody
+# - content mode (AllowsContent): ContentBody
+Body <- ChildrenBody / ContentBody
 
-ChildrenBody <- (Newline Indentation ChildEntry)*
+# ChildrenBody admits BlankLine and Annotation; their legality and attachment kinds
+# are validated by surface-form rules and canonicalization rules.
+ChildrenBody <- ChildItem*
 
-ChildEntry <- (Annotation Newline Indentation)* Concept
+ChildItem <- BlankLine / AnnotationLine / AnnotationBlock / ConceptLine
+
+ConceptLine <- Indentation (SelfClosingMarker / OpeningMarker) Newline
+# Note: A full BlockConcept begins with OpeningMarkerLine and ends at its ClosingMarkerLine.
+# This line-level production is used for child-start recognition only.
 
 ContentBody <- ContentLine*
 
-ContentLine <- Newline Indentation ContentText
+ContentLine <- Indentation ContentText Newline
 
 ContentText <- ContentChar*
-
 ContentChar <- ContentEscape / ContentSafeChar
-
 ContentEscape <- '\\' ('<' / '\\')
-
 ContentSafeChar <- !Newline !('<' / '\\') .
-
-# Content termination is unambiguous because '<' is not permitted unescaped
-# inside content.
 ```
 
 ---
@@ -4789,7 +5699,9 @@ ContentSafeChar <- !Newline !('<' / '\\') .
 #### A.2.4 Self-Closing Concepts
 
 ```peg
-SelfClosingConcept <- '<' ConceptName Traits? Whitespace? '/>'
+SelfClosingConcept <- SelfClosingMarker
+
+SelfClosingMarker <- '<' ConceptName Traits? '/>'
 ```
 
 ---
@@ -4798,7 +5710,6 @@ SelfClosingConcept <- '<' ConceptName Traits? Whitespace? '/>'
 
 ```peg
 ConceptName <- UppercaseLetter (Letter / Digit)*
-
 UppercaseLetter <- [A-Z]
 LowercaseLetter <- [a-z]
 Letter <- [A-Za-z]
@@ -4810,7 +5721,11 @@ Digit <- [0-9]
 #### A.2.6 Traits
 
 ```peg
-Traits <- (Whitespace Trait)+
+# Traits are whitespace-separated tokens in the opening marker.
+# Newline is permitted in Whitespace, enabling multi-line trait layout;
+# formatting rules define canonical layout.
+
+Traits <- (WhitespaceNoNewline Trait (Whitespace Trait)*) / (Whitespace Trait (Whitespace Trait)*)
 
 Trait <- TraitName '=' Value
 
@@ -4822,34 +5737,26 @@ TraitName <- LowercaseLetter (Letter / Digit)*
 #### A.2.7 Values
 
 ```peg
-# Values are tried in precedence order
-# Delimited values first, then keywords, then pattern-matched
+# Values are tried in deterministic precedence order.
+# Token termination in markers is governed by the surface rules (see A.1.27);
+# this PEG uses explicit constructs for balanced literals.
 
 Value <- StringValue
-		 / CharValue
-		 / BacktickString
-		 / BooleanValue
-		 / EnumeratedToken
-		 / LookupToken
-		 / TemporalValue
-		 / SetValue
-		 / MapValue
-		 / ListValue
-		 / TupleValue
-		 / ColorFunction
-		 / HexColor
-		 / NamedColor
-		 / UuidValue
-		 / RangeValue
-		 / ComplexNumber
-		 / ImaginaryNumber
-		 / Fraction
-		 / Infinity
-		 / PrecisionNumber
-		 / ScientificNumber
-		 / DecimalNumber
-		 / Integer
-		 / IriReference
+      / CharValue
+      / BacktickString
+      / BooleanValue
+      / EnumeratedToken
+      / LookupToken
+      / TemporalValue
+      / SetValue
+      / MapValue
+      / ListValue
+      / TupleValue
+      / ColorValue
+      / UuidValue
+      / RangeValue
+      / NumericValue
+      / IriReference
 ```
 
 ---
@@ -4858,14 +5765,10 @@ Value <- StringValue
 
 ```peg
 StringValue <- '"' StringChar* '"'
-
 StringChar <- EscapeSequence / (!["\\\n] .)
-
 EscapeSequence <- '\\' ( ["\\nrt] / UnicodeEscape )
-
 UnicodeEscape <- 'u' HexDigit HexDigit HexDigit HexDigit
-					/ 'u{' HexDigit+ '}'
-
+             / 'u{' HexDigit+ '}'
 HexDigit <- [0-9A-Fa-f]
 ```
 
@@ -4875,10 +5778,8 @@ HexDigit <- [0-9A-Fa-f]
 
 ```peg
 CharValue <- "'" CharContent "'"
-
 CharContent <- CharEscapeSequence / (!['\\\n] .)
-
-CharEscapeSequence <- '\\' ( ['\\/nrt] / UnicodeEscape )
+CharEscapeSequence <- '\\' ( ["'\\nrt] / UnicodeEscape )
 ```
 
 ---
@@ -4886,12 +5787,8 @@ CharEscapeSequence <- '\\' ( ['\\/nrt] / UnicodeEscape )
 #### A.2.10 Backtick Strings
 
 ```peg
-# Backtick strings span multiple lines; whitespace collapses to single space
-
 BacktickString <- '`' BacktickChar* '`'
-
 BacktickChar <- BacktickEscape / (![`\\] .)
-
 BacktickEscape <- '\\' [`\\]
 ```
 
@@ -4908,22 +5805,22 @@ BooleanValue <- 'true' / 'false'
 #### A.2.12 Numeric Values
 
 ```peg
-# Ordered by specificity: complex before imaginary, precision before decimal
+NumericValue <- ComplexNumber
+             / ImaginaryNumber
+             / Fraction
+             / Infinity
+             / PrecisionNumber
+             / ScientificNumber
+             / DecimalNumber
+             / Integer
 
-ComplexNumber <- Sign? Digits ('.' Digits)? Sign Digits ('.' Digits)? 'i'
-
-ImaginaryNumber <- Sign? Digits ('.' Digits)? 'i'
-
-Fraction <- Sign? Digits '/' Digits
-
+ComplexNumber <- (Integer / DecimalNumber) ([+-]) (Integer / DecimalNumber) 'i'
+ImaginaryNumber <- (Integer / DecimalNumber) 'i'
+Fraction <- Integer '/' Digits
 Infinity <- Sign? 'Infinity'
-
-PrecisionNumber <- Sign? Digits '.' Digits 'p' Digits?
-
-ScientificNumber <- Sign? Digits ('.' Digits)? [eE] Sign? Digits
-
+PrecisionNumber <- DecimalNumber 'p' Digits?
+ScientificNumber <- (Integer / DecimalNumber) [eE] Sign? Digits
 DecimalNumber <- Sign? Digits '.' Digits
-
 Integer <- Sign? Digits
 
 Sign <- [+-]
@@ -4940,25 +5837,17 @@ EnumeratedToken <- '$' UppercaseLetter (Letter / Digit)*
 
 ---
 
-#### A.2.14 IRI References
+#### A.2.14 Lookup Tokens
 
 ```peg
-IriReference <- IriScheme ':' IriBody
-
-IriScheme <- Letter (Letter / Digit / [+.-])*
-
-IriBody <- IriChar*
-
-# In surface form, unquoted values are delimited by structural characters
-# (whitespace, '>', '/>', etc.). This PEG defines a conservative tokenization:
-IriChar <- !WhitespaceChar !'>' .
-
-# ---
-
 LookupToken <- '~' LowercaseLetter (Letter / Digit)*
+```
 
-# ---
+---
 
+#### A.2.15 Temporal Values
+
+```peg
 TemporalValue <- '{' TemporalBody '}'
 
 TemporalBody <- ZonedDateTime / LocalDateTime / Date / YearMonth / MonthDay / Time / Duration / ReservedTemporal
@@ -4977,8 +5866,8 @@ TimeZoneIdChar <- Letter / Digit / '/' / '_' / '-'
 Time <- Hour ':' Minute (':' Second ('.' Milliseconds)?)?
 
 Duration <- 'P' DurationComponent* ('T' TimeDurationComponent*)?
-DurationComponent <- Digits ([YMWD])
-TimeDurationComponent <- Digits ('.' Digits)? ([HMS])
+DurationComponent <- Digits [YMWD]
+TimeDurationComponent <- Digits ('.' Digits)? [HMS]
 
 ReservedTemporal <- 'now' / 'today'
 
@@ -4989,83 +5878,157 @@ Hour <- Digit Digit
 Minute <- Digit Digit
 Second <- Digit Digit
 Milliseconds <- Digit+
+```
 
-# ---
+---
 
-ListValue <- '[' Whitespace? ListItems? Whitespace? ']'
-ListItems <- Value (',' Whitespace? Value)*
+#### A.2.16 List Values
 
-SetValue <- 'set[' Whitespace? SetItems? Whitespace? ']'
-SetItems <- Value (',' Whitespace? Value)*
+```peg
+# Lists MAY contain arbitrary whitespace (including newlines) between tokens.
 
-MapValue <- 'map[' Whitespace? MapItems? Whitespace? ']'
-MapItems <- MapEntry (',' Whitespace? MapEntry)*
-MapEntry <- MapKey ':' Whitespace? Value
+ListValue <- '[' WS* ListItems? WS* ']'
+ListItems <- Value (WS* ',' WS* Value)*
+```
+
+---
+
+#### A.2.17 Set Values
+
+```peg
+SetValue <- 'set' '[' WS* SetItems? WS* ']'
+SetItems <- Value (WS* ',' WS* Value)*
+```
+
+---
+
+#### A.2.18 Map Values
+
+```peg
+MapValue <- 'map' '[' WS* MapItems? WS* ']'
+MapItems <- MapEntry (WS* ',' WS* MapEntry)*
+MapEntry <- MapKey WS* ':' WS* Value
 MapKey <- MapIdentifier / StringValue / CharValue / Integer / EnumeratedToken
 MapIdentifier <- LowercaseLetter (Letter / Digit)*
+```
 
-TupleValue <- '(' Whitespace? TupleItems Whitespace? ')'
-TupleItems <- Value (',' Whitespace? Value)*
+---
 
-# ---
+#### A.2.19 Tuple Values
 
+```peg
+TupleValue <- '(' WS* TupleItems WS* ')'
+TupleItems <- Value (WS* ',' WS* Value)*
+```
+
+---
+
+#### A.2.20 Range Values
+
+```peg
+RangeValue <- RangeStart '..' RangeEnd ('s' StepValue)?
+RangeStart <- TemporalValue / CharValue / NumericValue
+RangeEnd <- TemporalValue / CharValue / NumericValue
+StepValue <- TemporalValue / NumericValue
+```
+
+---
+
+#### A.2.21 UUID Values
+
+```peg
 UuidValue <- Hex8 '-' Hex4 '-' Hex4 '-' Hex4 '-' Hex12
 Hex8 <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
 Hex4 <- HexDigit HexDigit HexDigit HexDigit
 Hex12 <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+```
 
-# ---
+---
 
-RangeValue <- RangeStart '..' RangeEnd ('s' StepValue)?
-RangeStart <- TemporalValue / CharValue / NumericAtom
-RangeEnd <- TemporalValue / CharValue / NumericAtom
-StepValue <- TemporalValue / NumericAtom
+#### A.2.22 Color Values
 
-NumericAtom <- ComplexNumber / ImaginaryNumber / Fraction / Infinity / PrecisionNumber / ScientificNumber / DecimalNumber / Integer
+```peg
+# Color spellings are accepted as declarative literals; no semantic evaluation occurs.
+# For function spellings, we accept any balanced-parentheses payload up to ')'.
 
-# ---
+ColorValue <- HexColor / NamedColor / ColorFunction
 
-HexColor <- '#' (Hex3 / Hex4 / Hex6 / Hex8Color)
+HexColor <- '#' (Hex3 / Hex4 / Hex6 / Hex8)
 Hex3 <- HexDigit HexDigit HexDigit
 Hex4 <- HexDigit HexDigit HexDigit HexDigit
 Hex6 <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
-Hex8Color <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+Hex8 <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
 
 NamedColor <- '&' [a-z]+
 
-ColorFunction <- RgbFunc / HslFunc / LabFunc / LchFunc / OklabFunc / OklchFunc / ColorSpaceFunc
+ColorFunction <- ColorFuncName '(' ColorPayload ')'
+ColorFuncName <- 'rgb' / 'rgba' / 'hsl' / 'hsla' / 'hwb' / 'lab' / 'lch' / 'oklab' / 'oklch' / 'color'
+              / 'color-mix' / 'device-cmyk'
 
-RgbFunc <- ('rgb' / 'rgba') '(' ColorArgs ')'
-HslFunc <- ('hsl' / 'hsla') '(' ColorArgs ')'
-LabFunc <- 'lab' '(' ColorArgs ')'
-LchFunc <- 'lch' '(' ColorArgs ')'
-OklabFunc <- 'oklab' '(' ColorArgs ')'
-OklchFunc <- 'oklch' '(' ColorArgs ')'
-ColorSpaceFunc <- 'color' '(' ColorSpace Whitespace ColorArgs ')'
+# Accept payload as any chars except ')' and '\n' (conservative, still token-terminated by marker rules).
+ColorPayload <- (!(')' / '\n') .)*
+```
 
-ColorSpace <- 'srgb' / 'srgb-linear' / 'display-p3' / 'a98-rgb'
-		   / 'prophoto-rgb' / 'rec2020' / 'xyz' / 'xyz-d50' / 'xyz-d65'
+---
 
-ColorArgs <- ColorArg ((Whitespace / ',') ColorArg)* (Whitespace? ('/' / ',') Whitespace? AlphaArg)?
-ColorArg <- Percentage / NumericAtom
-AlphaArg <- Percentage / NumericAtom
-Percentage <- NumericAtom '%'
+#### A.2.23 IRI References
 
-# ---
+```peg
+# IRI references are fallback unquoted values that contain ':'.
+# Exact RFC 3987 profiling is enforced by surface-form validation, not this PEG.
 
-Annotation <- '[' AnnotationChar* ']'
-AnnotationChar <- AnnotationEscape / (!(']' / '\\') .)
+IriReference <- IriScheme ':' IriBody
+IriScheme <- Letter (Letter / Digit / [+\-\.])*
+IriBody <- IriTokenChar*
+IriTokenChar <- !ValueTerminator .
+```
+
+---
+
+#### A.2.24 Annotations
+
+```peg
+Annotation <- AnnotationLine / AnnotationBlock
+
+AnnotationLine <- Indentation '[' AnnotationChar* ']' Newline
+
+AnnotationBlock <- Indentation '[' Newline AnnotationBlockLine* Indentation ']' Newline
+
+AnnotationBlockLine <- Indentation AnnotationBlockChar* Newline
+
+AnnotationChar <- AnnotationEscape / (!(']' / '\\' / '\n') .)
 AnnotationEscape <- '\\' (']' / '\\')
 
+AnnotationBlockChar <- AnnotationEscape / (!('\\' / '\n') .)
+```
+
+---
+
+#### A.2.25 Whitespace and Structural Elements
+
+```peg
 Newline <- '\n'
 
 WhitespaceChar <- [ \t\n]
 Whitespace <- WhitespaceChar+
 
-BlankLine <- Newline [ \t]* Newline
+WhitespaceNoNewline <- [ \t]+
+
+WS <- [ \t\n]
+
+BlankLine <- [ \t]* Newline
 
 Indentation <- '\t'*
 
+# Conservative terminators for unquoted tokens in markers:
+ValueTerminator <- [ \t\n] / '>' / '/'
+```
+
+---
+
+#### A.2.26 End of File
+
+```peg
 EOF <- !.
 ```
 
@@ -5073,178 +6036,181 @@ EOF <- !.
 
 ## Appendix B. CSS Named Colors (Informative)
 
-This appendix provides an informative list of CSS named color keywords and their sRGB hex values.
+This appendix provides an informative list of CSS named color keywords and their fixed sRGB hex values, as defined by the CSS Color specifications.
 
-This list exists for convenience only.
+This appendix exists for convenience only.
 
-- The normative definition of CSS color keywords is in the CSS Color Module specifications.
-- Codex-conforming tools MUST NOT validate, normalize, or convert Color Values (see §5.7).
-- Named colors in Codex are written with a leading `&` sigil and an ASCII-lowercase keyword (see §5.7.1).
+* The normative definition of CSS color keywords is the CSS Color Module specifications.
+* Codex-conforming tools MUST NOT validate, normalize, convert, or reinterpret Color Values (see §5.7).
+* Named colors in Codex are written with a leading `&` sigil followed by an ASCII-lowercase keyword (see §5.7.1).
+* This appendix documents only fixed, context-independent CSS named colors. Context-dependent keywords are listed separately in §B.2.
+* The sRGB hex values shown are descriptive references only and MUST NOT be used to infer, compute, normalize, or transform Color Values in Codex.
+* Aliases and duplicates (for example, `gray`/`grey`, `cyan`/`aqua`) are intentional and reflect the CSS specification.
 
 ### B.1 Named Color Keyword Table
 
-Each entry maps a Codex Named Color Value (`&name`) to its sRGB hex form.
+Each entry maps a Codex Named Color Value (`&name`) to its fixed sRGB hex form, as defined by CSS.
 
-| Named color | sRGB hex |
-|---|---:|
-| `&aliceblue` | `#f0f8ff` |
-| `&antiquewhite` | `#faebd7` |
-| `&aqua` | `#00ffff` |
-| `&aquamarine` | `#7fffd4` |
-| `&azure` | `#f0ffff` |
-| `&beige` | `#f5f5dc` |
-| `&bisque` | `#ffe4c4` |
-| `&black` | `#000000` |
-| `&blanchedalmond` | `#ffebcd` |
-| `&blue` | `#0000ff` |
-| `&blueviolet` | `#8a2be2` |
-| `&brown` | `#a52a2a` |
-| `&burlywood` | `#deb887` |
-| `&cadetblue` | `#5f9ea0` |
-| `&chartreuse` | `#7fff00` |
-| `&chocolate` | `#d2691e` |
-| `&coral` | `#ff7f50` |
-| `&cornflowerblue` | `#6495ed` |
-| `&cornsilk` | `#fff8dc` |
-| `&crimson` | `#dc143c` |
-| `&cyan` | `#00ffff` |
-| `&darkblue` | `#00008b` |
-| `&darkcyan` | `#008b8b` |
-| `&darkgoldenrod` | `#b8860b` |
-| `&darkgray` | `#a9a9a9` |
-| `&darkgrey` | `#a9a9a9` |
-| `&darkgreen` | `#006400` |
-| `&darkkhaki` | `#bdb76b` |
-| `&darkmagenta` | `#8b008b` |
-| `&darkolivegreen` | `#556b2f` |
-| `&darkorange` | `#ff8c00` |
-| `&darkorchid` | `#9932cc` |
-| `&darkred` | `#8b0000` |
-| `&darksalmon` | `#e9967a` |
-| `&darkseagreen` | `#8fbc8f` |
-| `&darkslateblue` | `#483d8b` |
-| `&darkslategray` | `#2f4f4f` |
-| `&darkslategrey` | `#2f4f4f` |
-| `&darkturquoise` | `#00ced1` |
-| `&darkviolet` | `#9400d3` |
-| `&deeppink` | `#ff1493` |
-| `&deepskyblue` | `#00bfff` |
-| `&dimgray` | `#696969` |
-| `&dimgrey` | `#696969` |
-| `&dodgerblue` | `#1e90ff` |
-| `&firebrick` | `#b22222` |
-| `&floralwhite` | `#fffaf0` |
-| `&forestgreen` | `#228b22` |
-| `&fuchsia` | `#ff00ff` |
-| `&gainsboro` | `#dcdcdc` |
-| `&ghostwhite` | `#f8f8ff` |
-| `&gold` | `#ffd700` |
-| `&goldenrod` | `#daa520` |
-| `&gray` | `#808080` |
-| `&grey` | `#808080` |
-| `&green` | `#008000` |
-| `&greenyellow` | `#adff2f` |
-| `&honeydew` | `#f0fff0` |
-| `&hotpink` | `#ff69b4` |
-| `&indianred` | `#cd5c5c` |
-| `&indigo` | `#4b0082` |
-| `&ivory` | `#fffff0` |
-| `&khaki` | `#f0e68c` |
-| `&lavender` | `#e6e6fa` |
-| `&lavenderblush` | `#fff0f5` |
-| `&lawngreen` | `#7cfc00` |
-| `&lemonchiffon` | `#fffacd` |
-| `&lightblue` | `#add8e6` |
-| `&lightcoral` | `#f08080` |
-| `&lightcyan` | `#e0ffff` |
+| Named color             |  sRGB hex |
+| ----------------------- | --------: |
+| `&aliceblue`            | `#f0f8ff` |
+| `&antiquewhite`         | `#faebd7` |
+| `&aqua`                 | `#00ffff` |
+| `&aquamarine`           | `#7fffd4` |
+| `&azure`                | `#f0ffff` |
+| `&beige`                | `#f5f5dc` |
+| `&bisque`               | `#ffe4c4` |
+| `&black`                | `#000000` |
+| `&blanchedalmond`       | `#ffebcd` |
+| `&blue`                 | `#0000ff` |
+| `&blueviolet`           | `#8a2be2` |
+| `&brown`                | `#a52a2a` |
+| `&burlywood`            | `#deb887` |
+| `&cadetblue`            | `#5f9ea0` |
+| `&chartreuse`           | `#7fff00` |
+| `&chocolate`            | `#d2691e` |
+| `&coral`                | `#ff7f50` |
+| `&cornflowerblue`       | `#6495ed` |
+| `&cornsilk`             | `#fff8dc` |
+| `&crimson`              | `#dc143c` |
+| `&cyan`                 | `#00ffff` |
+| `&darkblue`             | `#00008b` |
+| `&darkcyan`             | `#008b8b` |
+| `&darkgoldenrod`        | `#b8860b` |
+| `&darkgray`             | `#a9a9a9` |
+| `&darkgrey`             | `#a9a9a9` |
+| `&darkgreen`            | `#006400` |
+| `&darkkhaki`            | `#bdb76b` |
+| `&darkmagenta`          | `#8b008b` |
+| `&darkolivegreen`       | `#556b2f` |
+| `&darkorange`           | `#ff8c00` |
+| `&darkorchid`           | `#9932cc` |
+| `&darkred`              | `#8b0000` |
+| `&darksalmon`           | `#e9967a` |
+| `&darkseagreen`         | `#8fbc8f` |
+| `&darkslateblue`        | `#483d8b` |
+| `&darkslategray`        | `#2f4f4f` |
+| `&darkslategrey`        | `#2f4f4f` |
+| `&darkturquoise`        | `#00ced1` |
+| `&darkviolet`           | `#9400d3` |
+| `&deeppink`             | `#ff1493` |
+| `&deepskyblue`          | `#00bfff` |
+| `&dimgray`              | `#696969` |
+| `&dimgrey`              | `#696969` |
+| `&dodgerblue`           | `#1e90ff` |
+| `&firebrick`            | `#b22222` |
+| `&floralwhite`          | `#fffaf0` |
+| `&forestgreen`          | `#228b22` |
+| `&fuchsia`              | `#ff00ff` |
+| `&gainsboro`            | `#dcdcdc` |
+| `&ghostwhite`           | `#f8f8ff` |
+| `&gold`                 | `#ffd700` |
+| `&goldenrod`            | `#daa520` |
+| `&gray`                 | `#808080` |
+| `&grey`                 | `#808080` |
+| `&green`                | `#008000` |
+| `&greenyellow`          | `#adff2f` |
+| `&honeydew`             | `#f0fff0` |
+| `&hotpink`              | `#ff69b4` |
+| `&indianred`            | `#cd5c5c` |
+| `&indigo`               | `#4b0082` |
+| `&ivory`                | `#fffff0` |
+| `&khaki`                | `#f0e68c` |
+| `&lavender`             | `#e6e6fa` |
+| `&lavenderblush`        | `#fff0f5` |
+| `&lawngreen`            | `#7cfc00` |
+| `&lemonchiffon`         | `#fffacd` |
+| `&lightblue`            | `#add8e6` |
+| `&lightcoral`           | `#f08080` |
+| `&lightcyan`            | `#e0ffff` |
 | `&lightgoldenrodyellow` | `#fafad2` |
-| `&lightgray` | `#d3d3d3` |
-| `&lightgrey` | `#d3d3d3` |
-| `&lightgreen` | `#90ee90` |
-| `&lightpink` | `#ffb6c1` |
-| `&lightsalmon` | `#ffa07a` |
-| `&lightseagreen` | `#20b2aa` |
-| `&lightskyblue` | `#87cefa` |
-| `&lightslategray` | `#778899` |
-| `&lightslategrey` | `#778899` |
-| `&lightsteelblue` | `#b0c4de` |
-| `&lightyellow` | `#ffffe0` |
-| `&lime` | `#00ff00` |
-| `&limegreen` | `#32cd32` |
-| `&linen` | `#faf0e6` |
-| `&magenta` | `#ff00ff` |
-| `&maroon` | `#800000` |
-| `&mediumaquamarine` | `#66cdaa` |
-| `&mediumblue` | `#0000cd` |
-| `&mediumorchid` | `#ba55d3` |
-| `&mediumpurple` | `#9370db` |
-| `&mediumseagreen` | `#3cb371` |
-| `&mediumslateblue` | `#7b68ee` |
-| `&mediumspringgreen` | `#00fa9a` |
-| `&mediumturquoise` | `#48d1cc` |
-| `&mediumvioletred` | `#c71585` |
-| `&midnightblue` | `#191970` |
-| `&mintcream` | `#f5fffa` |
-| `&mistyrose` | `#ffe4e1` |
-| `&moccasin` | `#ffe4b5` |
-| `&navajowhite` | `#ffdead` |
-| `&navy` | `#000080` |
-| `&oldlace` | `#fdf5e6` |
-| `&olive` | `#808000` |
-| `&olivedrab` | `#6b8e23` |
-| `&orange` | `#ffa500` |
-| `&orangered` | `#ff4500` |
-| `&orchid` | `#da70d6` |
-| `&palegoldenrod` | `#eee8aa` |
-| `&palegreen` | `#98fb98` |
-| `&paleturquoise` | `#afeeee` |
-| `&palevioletred` | `#db7093` |
-| `&papayawhip` | `#ffefd5` |
-| `&peachpuff` | `#ffdab9` |
-| `&peru` | `#cd853f` |
-| `&pink` | `#ffc0cb` |
-| `&plum` | `#dda0dd` |
-| `&powderblue` | `#b0e0e6` |
-| `&purple` | `#800080` |
-| `&rebeccapurple` | `#663399` |
-| `&red` | `#ff0000` |
-| `&rosybrown` | `#bc8f8f` |
-| `&royalblue` | `#4169e1` |
-| `&saddlebrown` | `#8b4513` |
-| `&salmon` | `#fa8072` |
-| `&sandybrown` | `#f4a460` |
-| `&seagreen` | `#2e8b57` |
-| `&seashell` | `#fff5ee` |
-| `&sienna` | `#a0522d` |
-| `&silver` | `#c0c0c0` |
-| `&skyblue` | `#87ceeb` |
-| `&slateblue` | `#6a5acd` |
-| `&slategray` | `#708090` |
-| `&slategrey` | `#708090` |
-| `&snow` | `#fffafa` |
-| `&springgreen` | `#00ff7f` |
-| `&steelblue` | `#4682b4` |
-| `&tan` | `#d2b48c` |
-| `&teal` | `#008080` |
-| `&thistle` | `#d8bfd8` |
-| `&tomato` | `#ff6347` |
-| `&turquoise` | `#40e0d0` |
-| `&violet` | `#ee82ee` |
-| `&wheat` | `#f5deb3` |
-| `&white` | `#ffffff` |
-| `&whitesmoke` | `#f5f5f5` |
-| `&yellow` | `#ffff00` |
-| `&yellowgreen` | `#9acd32` |
+| `&lightgray`            | `#d3d3d3` |
+| `&lightgrey`            | `#d3d3d3` |
+| `&lightgreen`           | `#90ee90` |
+| `&lightpink`            | `#ffb6c1` |
+| `&lightsalmon`          | `#ffa07a` |
+| `&lightseagreen`        | `#20b2aa` |
+| `&lightskyblue`         | `#87cefa` |
+| `&lightslategray`       | `#778899` |
+| `&lightslategrey`       | `#778899` |
+| `&lightsteelblue`       | `#b0c4de` |
+| `&lightyellow`          | `#ffffe0` |
+| `&lime`                 | `#00ff00` |
+| `&limegreen`            | `#32cd32` |
+| `&linen`                | `#faf0e6` |
+| `&magenta`              | `#ff00ff` |
+| `&maroon`               | `#800000` |
+| `&mediumaquamarine`     | `#66cdaa` |
+| `&mediumblue`           | `#0000cd` |
+| `&mediumorchid`         | `#ba55d3` |
+| `&mediumpurple`         | `#9370db` |
+| `&mediumseagreen`       | `#3cb371` |
+| `&mediumslateblue`      | `#7b68ee` |
+| `&mediumspringgreen`    | `#00fa9a` |
+| `&mediumturquoise`      | `#48d1cc` |
+| `&mediumvioletred`      | `#c71585` |
+| `&midnightblue`         | `#191970` |
+| `&mintcream`            | `#f5fffa` |
+| `&mistyrose`            | `#ffe4e1` |
+| `&moccasin`             | `#ffe4b5` |
+| `&navajowhite`          | `#ffdead` |
+| `&navy`                 | `#000080` |
+| `&oldlace`              | `#fdf5e6` |
+| `&olive`                | `#808000` |
+| `&olivedrab`            | `#6b8e23` |
+| `&orange`               | `#ffa500` |
+| `&orangered`            | `#ff4500` |
+| `&orchid`               | `#da70d6` |
+| `&palegoldenrod`        | `#eee8aa` |
+| `&palegreen`            | `#98fb98` |
+| `&paleturquoise`        | `#afeeee` |
+| `&palevioletred`        | `#db7093` |
+| `&papayawhip`           | `#ffefd5` |
+| `&peachpuff`            | `#ffdab9` |
+| `&peru`                 | `#cd853f` |
+| `&pink`                 | `#ffc0cb` |
+| `&plum`                 | `#dda0dd` |
+| `&powderblue`           | `#b0e0e6` |
+| `&purple`               | `#800080` |
+| `&rebeccapurple`        | `#663399` |
+| `&red`                  | `#ff0000` |
+| `&rosybrown`            | `#bc8f8f` |
+| `&royalblue`            | `#4169e1` |
+| `&saddlebrown`          | `#8b4513` |
+| `&salmon`               | `#fa8072` |
+| `&sandybrown`           | `#f4a460` |
+| `&seagreen`             | `#2e8b57` |
+| `&seashell`             | `#fff5ee` |
+| `&sienna`               | `#a0522d` |
+| `&silver`               | `#c0c0c0` |
+| `&skyblue`              | `#87ceeb` |
+| `&slateblue`            | `#6a5acd` |
+| `&slategray`            | `#708090` |
+| `&slategrey`            | `#708090` |
+| `&snow`                 | `#fffafa` |
+| `&springgreen`          | `#00ff7f` |
+| `&steelblue`            | `#4682b4` |
+| `&tan`                  | `#d2b48c` |
+| `&teal`                 | `#008080` |
+| `&thistle`              | `#d8bfd8` |
+| `&tomato`               | `#ff6347` |
+| `&turquoise`            | `#40e0d0` |
+| `&violet`               | `#ee82ee` |
+| `&wheat`                | `#f5deb3` |
+| `&white`                | `#ffffff` |
+| `&whitesmoke`           | `#f5f5f5` |
+| `&yellow`               | `#ffff00` |
+| `&yellowgreen`          | `#9acd32` |
 
 ### B.2 Context-Dependent Keywords
 
-The following keywords are accepted as Codex named colors, but do not have a single fixed sRGB value in all contexts:
+The following keywords are accepted as Codex named colors but do not have a single fixed sRGB value in all contexts.
 
-| Named color | Notes |
-|---|---|
-| `&transparent` | Equivalent to fully transparent black in CSS; informative sRGB hex form: `#00000000`. |
-| `&currentcolor` | Context-dependent; resolves to the current text color in CSS. |
+Codex-conforming tools MUST treat these values as opaque Color Values and MUST NOT attempt to resolve them.
 
----
+| Named color     | Notes                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------- |
+| `&transparent`  | Equivalent to fully transparent black in CSS; informative reference sRGB form: `#00000000`. |
+| `&currentcolor` | Context-dependent; resolves to the current text color in CSS.                               |
 
 **End of Codex Language Specification v0.1**
