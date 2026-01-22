@@ -5,9 +5,11 @@ Editor: Charles F. Munat
 
 # Codex Language Specification — Version 0.1
 
-This document is the single authoritative specification for Codex 0.1.
+This document is the authoritative language specification for Codex 0.1.
 
-All normative requirements for Codex 0.1 appear exactly once in this document.
+The Codex 0.1 normative specification set includes this document, its normative annexes, and any additional documents under `spec/0.1/` that are explicitly marked `Status: NORMATIVE`.
+
+All normative requirements for Codex 0.1 MUST appear exactly once across the normative specification set.
 
 ---
 
@@ -1217,11 +1219,27 @@ Any annotation that is neither an attached annotation, a grouping annotation, no
 
 ## 9. Schema-First Architecture
 
+Codex is schema-first.
+
+A conforming implementation MUST provide schema-directed parsing and validation.
+
+The authoritative model for schema authoring, schema-to-instance-graph interpretation, and deterministic projection to derived validation artifacts is defined in the normative annex [SCHEMAS.md](SCHEMAS.md).
+
 ### 9.1 Schema-Directed Dispatch
+
+Given a Codex document and a governing schema, a conforming implementation MUST dispatch parsing and validation according to that schema.
 
 ### 9.2 Schema-Less Formatting / Well-Formedness Checks
 
+An implementation MAY perform purely syntactic parsing and formatting checks without a governing schema.
+
+If an implementation performs schema-less checks, it MUST limit those checks to rules that are explicitly defined by this specification as independent of schema semantics.
+
 ### 9.3 Schema-Required Semantic Validation
+
+An implementation MUST NOT perform semantic validation without a governing schema.
+
+The required semantics for schema-driven validation and any required derived artifacts are defined in [SCHEMAS.md](SCHEMAS.md).
 
 ---
 
@@ -1241,53 +1259,21 @@ Any annotation that is neither an attached annotation, a grouping annotation, no
 
 ## 11. Schema Definition Language
 
-### 11.1 Schema Document Structure
+The schema definition language is defined by the Codex schema-definition model and its schema-to-validation projection.
 
-### 11.2 Concept Definitions
-
-### 11.3 Content Rules
-
-### 11.4 Trait Rules
-
-### 11.5 Child Rules
-
-### 11.6 Collection Rules
-
-### 11.7 Trait Definitions
-
-### 11.8 Value Types
-
-### 11.9 Enumerated Value Sets
-
-### 11.10 Constraint Model
-
-### 11.11 Relationship to External Systems
+The authoritative schema authoring profile rules and projection requirements are defined in [SCHEMAS.md](SCHEMAS.md).
 
 ---
 
 ## 12. Schema Loading and Bootstrapping
 
-### 12.1 Schema Provision Mechanisms
-
-### 12.2 Resolution Order
-
-### 12.3 Bootstrap Schema-of-Schemas
-
-### 12.4 Error Classification for Schema Documents
+Schema loading and bootstrapping requirements are defined by the normative schema system described in [SCHEMAS.md](SCHEMAS.md).
 
 ---
 
 ## 13. Schema Versioning
 
-### 13.1 Schema Identity and Version
-
-### 13.2 Monotonic Versioning
-
-### 13.3 Compatibility Classes
-
-### 13.4 Breaking vs Non-Breaking Changes
-
-### 13.5 Tooling Responsibilities
+Schema versioning requirements are defined by the normative schema system described in [SCHEMAS.md](SCHEMAS.md).
 
 ---
 

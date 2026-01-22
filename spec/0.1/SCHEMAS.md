@@ -1,10 +1,10 @@
-# Codex 0.1 — Schema Layers and SHACL Projection (Working)
+# Codex 0.1 — Schema Layers and SHACL Projection
 
-Status: WORKING / NON-NORMATIVE
+Status: NORMATIVE (Annex)
 
-This document exists to design a disciplined, fully algorithmic mapping from Codex schemas to a derived SHACL artifact.
+This document is a normative annex to [codex-language-specification.md](codex-language-specification.md).
 
-Until this content is moved into the authoritative language specification, every requirement in this file is non-normative; however, requirements are written using **MUST / MUST NOT / MAY** to force precision.
+This annex defines a disciplined, fully algorithmic mapping from Codex schemas to derived validation artifacts.
 
 ---
 
@@ -56,7 +56,16 @@ A schema document MUST NOT mix profiles.
 
 Rationale: mixing introduces multiple ways to say the same thing and makes canonicalization ambiguous.
 
-The profile selection mechanism is intentionally not specified here (it belongs in the unified spec), but the selection MUST be explicit and machine-checkable.
+The authoring profile MUST be selected by an explicit declaration in the schema document.
+
+The schema document's root `Schema` concept MUST have an `authoringProfile` trait.
+
+`authoringProfile` MUST be exactly one of:
+
+- `$ProfileA`
+- `$ProfileB`
+
+If `authoringProfile` is missing or has any other value, schema processing MUST fail.
 
 ---
 
