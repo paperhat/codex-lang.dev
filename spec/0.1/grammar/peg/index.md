@@ -143,6 +143,7 @@ Value <- StringValue
        / TupleValue
        / ColorFunction
        / HexColor
+    / NamedColor
        / UuidValue
        / RangeValue
        / ComplexNumber
@@ -350,6 +351,8 @@ HexColor <- '#' HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit H
           / '#' HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
           / '#' HexDigit HexDigit HexDigit HexDigit
           / '#' HexDigit HexDigit HexDigit
+
+NamedColor <- '&' [a-z]+
 
 # Note: 8-digit, 6-digit, 4-digit, 3-digit hex in decreasing specificity
 ```

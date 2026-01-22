@@ -320,7 +320,7 @@ HexOctet = HexDigit, HexDigit ;
 
 ```ebnf
 ColorValue = HexColor | RgbColor | HslColor | LabColor | LchColor
-           | OklabColor | OklchColor | ColorFunction ;
+           | OklabColor | OklchColor | ColorFunction | NamedColor ;
 
 HexColor = "#", HexDigit, HexDigit, HexDigit, [ HexDigit ]
          | "#", HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, [ HexDigit, HexDigit ] ;
@@ -349,6 +349,8 @@ ColorArg = NumericValue | Percentage ;
 AlphaArg = NumericValue | Percentage ;
 
 Percentage = NumericValue, "%" ;
+
+NamedColor = "&", LowercaseLetter, { LowercaseLetter } ;
 ```
 
 ---

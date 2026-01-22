@@ -165,7 +165,7 @@ In particular:
 * Inline annotations collapse internal whitespace to single spaces and trim
    leading/trailing whitespace (as described in the Surface Form Specification)
 * Block annotations preserve internal line structure
-* Block annotations with `CODE:` or `MD:` directives are byte-preserving: tools
+* Block annotations with `CODE:` or `MARKDOWN:` directives are byte-preserving: tools
    MUST NOT reindent, trim, strip trailing whitespace, wrap, or interpret escapes
    within those blocks
 
@@ -191,7 +191,7 @@ Forbidden changes (examples):
 
 * Reorder Concepts or Traits
 * Change Content bytes
-* Change any bytes inside `CODE:` or `MD:` block annotations
+* Change any bytes inside `CODE:` or `MARKDOWN:` block annotations
 * Guess annotation attachment or reinterpret annotation kinds
 * Invent, remove, or rename Concepts/Traits/Values
 

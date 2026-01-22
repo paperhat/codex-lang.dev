@@ -348,7 +348,7 @@ The directive line MUST be exactly one of:
 
 * `FLOW:`
 * `CODE:`
-* `MD:`
+* `MARKDOWN:`
 
 If present, the directive line MUST be preserved in canonical output.
 
@@ -357,7 +357,7 @@ Directive behavior:
 * `CODE:` — preserve the block annotation bytes verbatim (except for global
 	newline normalization). Tools MUST NOT reindent, trim, strip trailing
 	whitespace, wrap, or interpret escapes within the block annotation.
-* `MD:` — preserve the block annotation bytes verbatim (except for global
+* `MARKDOWN:` — preserve the block annotation bytes verbatim (except for global
 	newline normalization). Tools MUST NOT reindent, trim, strip trailing
 	whitespace, wrap, or interpret escapes within the block annotation.
 * `FLOW:` — treat the remaining content as flow text; tools MAY apply

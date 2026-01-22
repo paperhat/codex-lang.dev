@@ -101,7 +101,7 @@ This section is the single home for:
 	 - Inline vs block syntax
 	 - Attachment rules and ambiguity rules
 	 - Grouping annotations (`GROUP:`/`END:`)
-	 - Canonicalization + directives (`FLOW:`/`CODE:`/`MD:`)
+	 - Canonicalization + directives (`FLOW:`/`CODE:`/`MARKDOWN:`)
 
 ### A.9 Schema-First Architecture
 
