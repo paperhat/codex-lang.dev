@@ -1729,6 +1729,103 @@ Every conforming implementation MUST include this schema as built-in, immutable 
 
 		[END: ContentRules Exclusivity]
 
+		[GROUP: Rule Exclusivity]
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:rule-requires-operator
+			title="Rule requires an operator child"
+			description="Each Rule node must contain at least one rule operator child."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="Rule" />
+			</Targets>
+			<Rule>
+				<AnyOf>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AnyOf" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="Not" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ConditionalConstraint" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="OnPathExists" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="OnPathForAll" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="OnPathCount" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="TraitExists" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="TraitMissing" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="TraitEquals" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="TraitCardinality" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="TraitValueType" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ValueIsOneOf" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ValueMatchesPattern" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="PatternConstraint" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ValueLength" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ValueInNumericRange" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ValueIsNonEmpty" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ValueIsValid" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ChildConstraint" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ChildSatisfies" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="CollectionOrdering" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="CollectionAllowsEmpty" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="CollectionAllowsDuplicates" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="MemberCount" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="EachMemberSatisfies" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="CollectionConstraint" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="UniqueConstraint" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="OrderConstraint" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ReferenceConstraint" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="IdentityConstraint" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ContextConstraint" /></Rule>
+					<Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ContentConstraint" /></Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:rule-forbids-multiple-operators
+			title="Rule forbids multiple operator children"
+			description="Each Rule node must not contain more than one rule operator child."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="Rule" />
+			</Targets>
+			<Rule>
+				<AllOf>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AnyOf" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="Not" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ConditionalConstraint" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="OnPathExists" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="OnPathForAll" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="OnPathCount" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="TraitExists" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="TraitMissing" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="TraitEquals" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="TraitCardinality" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="TraitValueType" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ValueIsOneOf" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ValueMatchesPattern" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="PatternConstraint" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ValueLength" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ValueInNumericRange" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ValueIsNonEmpty" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ValueIsValid" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ChildConstraint" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ChildSatisfies" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="CollectionOrdering" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="CollectionAllowsEmpty" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="CollectionAllowsDuplicates" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="MemberCount" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="EachMemberSatisfies" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="CollectionConstraint" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="UniqueConstraint" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="OrderConstraint" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ReferenceConstraint" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="IdentityConstraint" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ContextConstraint" /></Rule></AllOf></Rule></Not></Rule>
+					<Rule><Not><Rule><AllOf><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="AllOf" /></Rule><Rule><ChildConstraint type=$RequiresChildConcept conceptSelector="ContentConstraint" /></Rule></AllOf></Rule></Not></Rule>
+				</AllOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		[END: Rule Exclusivity]
+
 		[GROUP: TraitDefinition Value Type Constraints]
 
 		<ConstraintDefinition
@@ -1960,12 +2057,651 @@ Every conforming implementation MUST include this schema as built-in, immutable 
 				<TargetConcept conceptSelector="OnPathExists" />
 			</Targets>
 			<Rule>
-				<OnPathCount minCount=1 maxCount=1>
-					<ChildPath conceptSelector="TraitPath" />
+				<AnyOf>
 					<Rule>
-						<TraitExists trait="traitName" />
+						<AllOf>
+							<Rule>
+								<OnPathExists>
+									<ChildPath conceptSelector="TraitPath" />
+									<Rule>
+										<TraitExists trait="traitName" />
+									</Rule>
+								</OnPathExists>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ChildPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="DescendantPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ContentPath" />
+											<Rule>
+												<TraitMissing trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+						</AllOf>
 					</Rule>
-				</OnPathCount>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<OnPathExists>
+									<ChildPath conceptSelector="ChildPath" />
+									<Rule>
+										<TraitExists trait="conceptSelector" />
+									</Rule>
+								</OnPathExists>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="TraitPath" />
+											<Rule>
+												<TraitExists trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="DescendantPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ContentPath" />
+											<Rule>
+												<TraitMissing trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+						</AllOf>
+					</Rule>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<OnPathExists>
+									<ChildPath conceptSelector="DescendantPath" />
+									<Rule>
+										<TraitExists trait="conceptSelector" />
+									</Rule>
+								</OnPathExists>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="TraitPath" />
+											<Rule>
+												<TraitExists trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ChildPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ContentPath" />
+											<Rule>
+												<TraitMissing trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+						</AllOf>
+					</Rule>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<OnPathExists>
+									<ChildPath conceptSelector="ContentPath" />
+									<Rule>
+										<TraitMissing trait="traitName" />
+									</Rule>
+								</OnPathExists>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="TraitPath" />
+											<Rule>
+												<TraitExists trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ChildPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="DescendantPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+						</AllOf>
+					</Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:on-path-for-all-requires-path
+			title="OnPathForAll requires exactly one path"
+			description="OnPathForAll must contain exactly one path child (TraitPath, ChildPath, DescendantPath, or ContentPath)."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="OnPathForAll" />
+			</Targets>
+			<Rule>
+				<AnyOf>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<OnPathExists>
+									<ChildPath conceptSelector="TraitPath" />
+									<Rule>
+										<TraitExists trait="traitName" />
+									</Rule>
+								</OnPathExists>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ChildPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="DescendantPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ContentPath" />
+											<Rule>
+												<TraitMissing trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+						</AllOf>
+					</Rule>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<OnPathExists>
+									<ChildPath conceptSelector="ChildPath" />
+									<Rule>
+										<TraitExists trait="conceptSelector" />
+									</Rule>
+								</OnPathExists>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="TraitPath" />
+											<Rule>
+												<TraitExists trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="DescendantPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ContentPath" />
+											<Rule>
+												<TraitMissing trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+						</AllOf>
+					</Rule>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<OnPathExists>
+									<ChildPath conceptSelector="DescendantPath" />
+									<Rule>
+										<TraitExists trait="conceptSelector" />
+									</Rule>
+								</OnPathExists>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="TraitPath" />
+											<Rule>
+												<TraitExists trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ChildPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ContentPath" />
+											<Rule>
+												<TraitMissing trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+						</AllOf>
+					</Rule>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<OnPathExists>
+									<ChildPath conceptSelector="ContentPath" />
+									<Rule>
+										<TraitMissing trait="traitName" />
+									</Rule>
+								</OnPathExists>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="TraitPath" />
+											<Rule>
+												<TraitExists trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ChildPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="DescendantPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+						</AllOf>
+					</Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:on-path-count-requires-path
+			title="OnPathCount requires exactly one path"
+			description="OnPathCount must contain exactly one path child (TraitPath, ChildPath, DescendantPath, or ContentPath)."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="OnPathCount" />
+			</Targets>
+			<Rule>
+				<AnyOf>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<OnPathExists>
+									<ChildPath conceptSelector="TraitPath" />
+									<Rule>
+										<TraitExists trait="traitName" />
+									</Rule>
+								</OnPathExists>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ChildPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="DescendantPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ContentPath" />
+											<Rule>
+												<TraitMissing trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+						</AllOf>
+					</Rule>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<OnPathExists>
+									<ChildPath conceptSelector="ChildPath" />
+									<Rule>
+										<TraitExists trait="conceptSelector" />
+									</Rule>
+								</OnPathExists>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="TraitPath" />
+											<Rule>
+												<TraitExists trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="DescendantPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ContentPath" />
+											<Rule>
+												<TraitMissing trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+						</AllOf>
+					</Rule>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<OnPathExists>
+									<ChildPath conceptSelector="DescendantPath" />
+									<Rule>
+										<TraitExists trait="conceptSelector" />
+									</Rule>
+								</OnPathExists>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="TraitPath" />
+											<Rule>
+												<TraitExists trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ChildPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ContentPath" />
+											<Rule>
+												<TraitMissing trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+						</AllOf>
+					</Rule>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<OnPathExists>
+									<ChildPath conceptSelector="ContentPath" />
+									<Rule>
+										<TraitMissing trait="traitName" />
+									</Rule>
+								</OnPathExists>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="TraitPath" />
+											<Rule>
+												<TraitExists trait="traitName" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="ChildPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+							<Rule>
+								<Not>
+									<Rule>
+										<OnPathExists>
+											<ChildPath conceptSelector="DescendantPath" />
+											<Rule>
+												<TraitExists trait="conceptSelector" />
+											</Rule>
+										</OnPathExists>
+									</Rule>
+								</Not>
+							</Rule>
+						</AllOf>
+					</Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:collection-constraints-require-path
+			title="Collection constraints require exactly one member path"
+			description="CollectionOrdering, CollectionAllowsEmpty, CollectionAllowsDuplicates, MemberCount, EachMemberSatisfies, and OrderConstraint must contain exactly one member-selection path child (ChildPath or DescendantPath)."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="CollectionOrdering" />
+				<TargetConcept conceptSelector="CollectionAllowsEmpty" />
+				<TargetConcept conceptSelector="CollectionAllowsDuplicates" />
+				<TargetConcept conceptSelector="MemberCount" />
+				<TargetConcept conceptSelector="EachMemberSatisfies" />
+				<TargetConcept conceptSelector="OrderConstraint" />
+			</Targets>
+			<Rule>
+				<AnyOf>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<ChildConstraint type=$RequiresChildConcept conceptSelector="ChildPath" />
+							</Rule>
+							<Rule>
+								<ChildConstraint type=$ForbidsChildConcept conceptSelector="DescendantPath" />
+							</Rule>
+						</AllOf>
+					</Rule>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<ChildConstraint type=$RequiresChildConcept conceptSelector="DescendantPath" />
+							</Rule>
+							<Rule>
+								<ChildConstraint type=$ForbidsChildConcept conceptSelector="ChildPath" />
+							</Rule>
+						</AllOf>
+					</Rule>
+				</AnyOf>
 			</Rule>
 		</ConstraintDefinition>
 

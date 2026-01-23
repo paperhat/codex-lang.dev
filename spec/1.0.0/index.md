@@ -361,11 +361,26 @@ A Temporal Value represents a declarative temporal literal.
 
 In the Surface Form, Temporal Values MUST be spelled using `{...}`.
 
-The braced payload of a Temporal Value is syntactically opaque to Codex.
+Temporal Values MUST conform to the Temporal Value grammar defined by this specification (see Appendix A.1.14 and Appendix A.2.15).
 
-Codex itself defines no temporal grammar, evaluation, normalization, ordering, or interpretation for Temporal Values.
+Codex itself defines no temporal evaluation, normalization, ordering, time zone interpretation, or calendrical correctness requirements for Temporal Values.
 
-Codex-conforming tools MUST treat the braced payload as opaque and MUST NOT derive temporal meaning, perform evaluation, or apply defaults except as explicitly defined by the governing schema or consuming system.
+Codex-conforming tools MUST NOT derive temporal meaning, perform evaluation, apply defaults, or validate real-world correctness (for example, month length or leap seconds) except as explicitly defined by the governing schema or consuming system.
+
+#### 5.6.1 Temporal Kind Determination (Normative)
+
+To classify a Temporal Value as a specific temporal kind (for example, `ZonedDateTime` or `Date`), tools MUST parse the braced payload using the Temporal Body grammar in Appendix A.
+
+The temporal kind MUST be determined by the first matching alternative in the following ordered list:
+
+1. `ZonedDateTime`
+2. `LocalDateTime`
+3. `Date`
+4. `YearMonth`
+5. `MonthDay`
+6. `Time`
+7. `Duration`
+8. `ReservedTemporal`
 
 Temporal Values MUST NOT be treated as Enumerated Token Values, even when the braced payload is a reserved literal such as `now` or `today`.
 
@@ -838,6 +853,14 @@ Codex-conforming formatters MUST normalize indentation before semantic validatio
 
 Codex-conforming tools MUST NOT treat author indentation as authoritative.
 
+In the Surface Form, indentation MUST use U+0009 TAB characters only.
+
+Any U+0020 SPACE character that appears in the indentation prefix of any of the following lines MUST be treated as a `ParseError`:
+
+- Concept marker lines
+- Trait lines (including multi-line trait layout)
+- non-blank content lines
+
 If indentation cannot be normalized deterministically, Codex-conforming tools MUST fail with a formatting error.
 
 ### 8.4 Blank Lines
@@ -1027,6 +1050,8 @@ Within content:
 - `\\` represents a literal `\`.
 
 Codex-conforming tools MUST treat any other use of `\` within content as a parse error.
+
+To preserve schema-less determinism of content-versus-children body mode (§10.2.1.1), any non-blank content line whose first non-indentation character is `<` MUST spell that character as `\<`.
 
 A raw `<` character MUST NOT appear in content.
 
@@ -1368,7 +1393,7 @@ If `authoringProfile` is missing or has any other value, schema processing MUST 
 Additional guardrails MUST hold:
 
 - Profile A schemas MUST NOT contain `RdfGraph`.
-- Profile B schemas MUST contain exactly one `RdfGraph` and MUST NOT contain Layer A schema-definition concepts.
+- Profile B schemas MUST contain exactly one `RdfGraph` and MUST NOT contain Layer A schema-definition concepts (including `ConceptDefinitions`, `TraitDefinitions`, `EnumeratedValueSets`, `ConstraintDefinitions`, `ValueTypeDefinitions`, and `ValidatorDefinitions`).
 - Layer A expansion MUST generate a canonical Layer B graph; different Layer A spellings that are semantically identical MUST expand to byte-identical Layer B graphs.
 - Layer B canonicalization MUST make semantically identical graphs byte-identical.
 
@@ -2587,8 +2612,17 @@ Schema-less formatting is not validation. It exists to produce a consistent surf
 
 In schema-less formatting and canonicalization mode, the parser MUST determine a Concept instance’s body mode mechanically as follows:
 
-* If the body contains at least one non-blank content line after indentation normalization, the body MUST be treated as content mode.
-* Otherwise (the body is empty or contains only blank or whitespace-only lines), the body MUST be treated as children mode.
+* Let the body lines be the lines between the Concept instance's opening marker and its matching closing marker (or empty for a self-closing marker).
+* Ignore blank lines.
+* Consider only lines at exactly one nesting level deeper than the enclosing Concept instance after indentation normalization.
+
+The body MUST be classified according to the following rules:
+
+* If there are no non-blank body lines, the body MUST be treated as children mode.
+* If any non-blank considered line is a valid Concept marker line as defined by §8.5, the body MUST be treated as children mode.
+* Otherwise, the body MUST be treated as content mode.
+
+If the body is classified as children mode but contains any non-blank considered line that is not a valid Concept marker line, the document MUST be rejected with a `ParseError`.
 
 This determination is purely mechanical and MUST NOT depend on schema knowledge, heuristics, or inferred intent.
 
@@ -2833,7 +2867,12 @@ A `Schema` Concept MUST declare the following Traits:
   The globally unique identifier for the schema. This value is used as `schemaIri` throughout schema processing, instance-graph mapping, and derived-artifact generation.
 
 * `version` (required; String Value)
-  A human-readable version identifier. This value is opaque to Codex semantics.
+
+  A schema version identifier whose ordering is defined by `versionScheme`.
+
+* `versionScheme` (required; Enumerated Token Value)
+
+  Declares the version comparison scheme used to order schema versions within the schema lineage. Allowed values and comparison rules are defined in §13.4.
 
 * `compatibilityClass` (required; Enumerated Token Value)
   One of:
@@ -2853,13 +2892,32 @@ If `authoringProfile` is missing, invalid, or mixed, schema processing MUST fail
 
 #### Children (Normative)
 
-A `Schema` MAY contain the following child Concepts, in any order:
+A `Schema` MUST satisfy the profile-conditional child-Concept rules defined in §9.4.
 
-* `ConceptDefinitions`
-* `TraitDefinitions`
-* `EnumeratedValueSets`
-* `ConstraintDefinitions`
-* `ValueTypeDefinitions` (optional)
+For `authoringProfile=$ProfileA`:
+
+* A `Schema` MAY contain the following child Concepts, in any order:
+
+  * `ConceptDefinitions`
+  * `TraitDefinitions`
+  * `EnumeratedValueSets`
+  * `ConstraintDefinitions`
+  * `ValueTypeDefinitions` (optional)
+  * `ValidatorDefinitions` (optional)
+
+* A `Schema` MUST NOT contain `RdfGraph`.
+
+For `authoringProfile=$ProfileB`:
+
+* A `Schema` MUST contain exactly one `RdfGraph` child Concept.
+* A `Schema` MUST NOT contain any of the following child Concepts:
+
+  * `ConceptDefinitions`
+  * `TraitDefinitions`
+  * `EnumeratedValueSets`
+  * `ConstraintDefinitions`
+  * `ValueTypeDefinitions`
+  * `ValidatorDefinitions`
 
 No other child Concepts are permitted.
 
@@ -4317,13 +4375,14 @@ Accordingly:
 
 * The `id` Trait of the root `Schema` Concept defines the **stable schema identifier**.
 * The `version` Trait of the root `Schema` Concept defines the **schema version**.
+* The `versionScheme` Trait of the root `Schema` Concept defines the **version ordering scheme**.
 
 The schema identifier (`Schema id`) identifies the schema lineage.
 All versions of the same schema MUST share the same schema identifier.
 
 The schema version (`Schema version`) identifies the specific set of rules that apply.
 
-A schema document that omits either the `id` Trait or the `version` Trait on the root `Schema` Concept is invalid.
+A schema document that omits any of the `id`, `version`, or `versionScheme` Traits on the root `Schema` Concept is invalid.
 
 A schema document MUST NOT declare more than one schema identifier.
 
@@ -4335,19 +4394,50 @@ Schema identity and version information MUST be treated as authoritative and MUS
 
 Schemas MUST use monotonic versioning within a schema lineage.
 
-Schema versions MAY be expressed using any schema-defined format, including:
+Within a schema lineage, all schema versions MUST use the same `versionScheme` value.
 
-* semantic versions (for example, `1.2.0`)
-* date-based versions (for example, `2026-01`)
-* any other explicitly documented scheme
-
-Regardless of format, schema versions MUST form a **total, unambiguous ordering**.
+Regardless of scheme, schema versions MUST form a **total, unambiguous ordering**.
 
 If two schema versions cannot be ordered deterministically, the schema is invalid.
 
 A schema whose version ordering is ambiguous or non-comparable MUST be rejected with a `SchemaError`.
 
-Tools MUST compare schema versions mechanically according to the schema-defined ordering and MUST NOT apply heuristics, coercion, or fallback rules.
+Tools MUST compare schema versions mechanically according to the comparison rules defined in this section for the declared `versionScheme`, and MUST NOT apply heuristics, coercion, or fallback rules.
+
+#### 13.4.1 Version Schemes (Normative)
+
+The root `Schema` Concept’s `versionScheme` Trait MUST be one of the following Enumerated Token Values:
+
+* `$Semver`
+* `$DateYYYYMM`
+* `$DateYYYYMMDD`
+* `$Lexical`
+
+If `versionScheme` is not one of these values, schema processing MUST fail with a `SchemaError`.
+
+#### 13.4.2 Version Comparison Rules (Normative)
+
+For all schemes below, if a `version` string does not conform to the required scheme-specific syntax, schema processing MUST fail with a `SchemaError`.
+
+`$Semver`
+
+* Syntax: `MAJOR.MINOR.PATCH` where `MAJOR`, `MINOR`, and `PATCH` are base-10 non-negative integers with no leading zeros (except that `0` is permitted).
+* Comparison: compare by numeric tuple `(MAJOR, MINOR, PATCH)`.
+
+`$DateYYYYMM`
+
+* Syntax: `YYYY-MM` where `YYYY` is four base-10 digits and `MM` is `01` through `12`.
+* Comparison: compare by numeric tuple `(YYYY, MM)`.
+
+`$DateYYYYMMDD`
+
+* Syntax: `YYYY-MM-DD` where `YYYY` is four base-10 digits, `MM` is `01` through `12`, and `DD` is `01` through `31`.
+* Comparison: compare by numeric tuple `(YYYY, MM, DD)`.
+
+`$Lexical`
+
+* Syntax: any String Value.
+* Comparison: compare the `version` String Values by Unicode scalar value codepoint order, left-to-right; if all compared codepoints are equal, the shorter string is less than the longer string.
 
 ### 13.5 Compatibility Classes (Normative)
 
