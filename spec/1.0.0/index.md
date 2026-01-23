@@ -307,6 +307,16 @@ Numeric Values are declarative spellings.
 
 Codex performs no arithmetic and no numeric normalization. Numeric spellings MUST be preserved exactly.
 
+Integer components in Numeric Value spellings MUST NOT contain leading zeros, except that the single digit `0` is permitted.
+
+This requirement applies to:
+
+- integer Numeric Values
+- the integer component of Decimal Numbers
+- the exponent digit sequence of Scientific Numbers
+- the explicit precision suffix digit sequence (if present)
+- fraction denominators
+
 In the Surface Form, Numeric Values MUST be spelled using the numeric literal grammar defined by this specification.
 
 Numeric Values include:
@@ -426,6 +436,8 @@ Hyphens MUST appear at positions 9, 14, 19, and 24.
 
 Hexadecimal digits in UUID Values are case-insensitive.
 
+In canonical surface form, UUID Values MUST be spelled using lowercase hexadecimal digits.
+
 No UUID version is mandated.
 
 ### 5.9 IRI Reference Values
@@ -514,9 +526,35 @@ A Set Value MUST permit nesting.
 
 A Set Value MUST NOT require all elements to have the same Value type.
 
+#### 5.13.1 Value Equality for Collection Uniqueness (Normative)
+
+For purposes of detecting duplicates in Set Values and Map Values, Codex-conforming tools MUST use the following Value equality relation.
+
+Equality is defined over parsed Values (after interpreting escape sequences, backtick-string whitespace normalization, and other value-specific decoding rules) and MUST NOT be defined over raw source bytes.
+
+Two Values are equal if and only if they have the same Value kind and satisfy the following rules (recursively where applicable):
+
+- String Values: equal if and only if they contain the same sequence of Unicode scalar values.
+- Boolean Values: equal if and only if both are `true` or both are `false`.
+- Numeric Values: equal if and only if their literal spellings are identical codepoint-for-codepoint.
+- Enumerated Token Values: equal if and only if the token names (excluding the leading `$`) are identical codepoint-for-codepoint.
+- Temporal Values: equal if and only if their braced payload strings are identical codepoint-for-codepoint.
+- Color Values: equal if and only if their literal spellings are identical, except that hexadecimal digits in hexadecimal color spellings are compared case-insensitively.
+- UUID Values: equal if and only if they are identical after case-folding hexadecimal digits (i.e., hexadecimal digits are compared case-insensitively).
+- IRI Reference Values: equal if and only if their spellings are identical codepoint-for-codepoint (see §5.9).
+- Lookup Token Values: equal if and only if their token names (excluding the leading `~`) are identical codepoint-for-codepoint.
+- Character Values: equal if and only if they contain the same Unicode scalar value.
+- List Values: equal if and only if they have the same length and corresponding elements are equal.
+- Tuple Values: equal if and only if they have the same length and corresponding elements are equal.
+- Range Values: equal if and only if their start endpoints are equal, their end endpoints are equal, and either both omit a step or both include equal step Values.
+- Set Values: equal if and only if they contain the same elements (under this equality relation), regardless of element order.
+- Map Values: equal if and only if they contain the same bindings, where keys are equal and corresponding bound Values are equal, regardless of entry order.
+
 A Set Value MUST contain no duplicate elements.
 
-If a set literal spelling contains duplicate elements, Codex-conforming tools MUST ignore duplicates.
+Duplicate elements MUST be determined using the Value equality relation in §5.13.1.
+
+If a set literal spelling contains duplicate elements, Codex-conforming tools MUST ignore duplicates by preserving the first occurrence (in the literal spelling) and discarding subsequent equal elements.
 
 ### 5.14 Map Values
 
@@ -531,6 +569,8 @@ Each entry in a Map Value MUST bind exactly one key to exactly one Value.
 A Map Value MUST permit nesting.
 
 A Map Value MUST contain no duplicate keys.
+
+Duplicate keys MUST be determined using the Value equality relation in §5.13.1.
 
 If a map literal spelling contains duplicate keys, Codex-conforming tools MUST treat that spelling as an error.
 
@@ -949,7 +989,7 @@ Except where permitted by a Value spelling (for example, within string and chara
 
 ### 8.7.1 Multiline Value Literals
 
-Value literals whose surface spelling uses balanced delimiters — including list (`[...]`), set (`{...}`), map (`{...}`), tuple (`(...)`), and range forms — MAY span multiple lines in the Surface Form.
+Value literals whose surface spelling uses balanced delimiters — including list (`[...]`), set (`set[...]`), map (`map[...]`), tuple (`(...)`), and range forms — MAY span multiple lines in the Surface Form.
 
 Within a balanced Value literal:
 
@@ -1769,54 +1809,60 @@ If `conceptClassIri(X)` cannot be resolved to exactly one `ConceptDefinition`, s
 
 All aspects of the instance graph mapping required by this specification are defined in this section.
 
-### 9.8 Lookup Binding Table
+### 9.8 Lookup Token Bindings (Normative)
 
-Lookup Token Values (see §5.10) are never resolved implicitly.
+Lookup Token Values (`~name`) are symbolic references that require an explicit binding to a target identifier in order to be resolved.
 
-If a governing schema requires lookup tokens to be resolved for any validation rule, the schema-driven validation process MUST construct and use an explicit lookup binding table.
+A document MAY declare lookup token bindings using a document-level binding section.
 
-Each lookup binding MUST map exactly one lookup token name to exactly one IRI.
+#### 9.8.1 Binding Section Surface Form
 
-If a lookup token is required to be resolved and the binding table does not contain exactly one binding for that token, schema-driven validation MUST fail.
+A binding section is declared using a top-level `Bindings` Concept.
 
-#### 9.8.1 Representation in the Instance Graph
+The `Bindings` Concept:
 
-The schema-driven validation process MAY incorporate a lookup binding table.
+* MUST appear at the top level of the document
+* MUST NOT be nested inside any other Concept
+* MUST NOT contain Content
+* MUST contain one or more `Bind` child Concepts
 
-Each binding entry associates one Lookup Token Value with one IRI.
+#### 9.8.2 `Bind`
 
-Lookup Token Values MUST be represented as typed literals with:
+A `Bind` Concept declares a single lookup binding.
 
-- datatype: `urn:cdx:value-type:LookupToken`
-- lexical form: the canonical surface spelling (for example, `~myToken`)
+##### Traits (Normative)
 
-Binding entries MUST be represented in the instance graph using the reserved predicates:
+* `key` (required; lookup token, without the leading `~`)
+* `id` (required; IRI Reference Value)
 
-- `codex:lookupToken` (object MUST be a Lookup Token typed literal)
-- `codex:lookupIri` (object MUST be an IRI)
+Each `Bind` Concept binds the lookup token `~key` to the specified identifier.
 
-The mapping MUST accept bindings from any source that is explicit and deterministic.
+##### Constraints
 
-One conforming source is: a document-level section that is parsed into a list of bindings in source order.
+* Each lookup token key MUST be bound at most once within a document.
+* If a lookup token is used in the document and is required to be resolved by the governing schema, a corresponding binding MUST be present.
+* Lookup token bindings MUST NOT be inferred, synthesized, or imported implicitly.
 
-For each binding entry at ordinal position `i`, the mapping MUST emit a binding node `b` and two triples:
+#### 9.8.3 Resolution Semantics
 
-- `(b, codex:lookupToken, tokenLiteral)`
-- `(b, codex:lookupIri, targetIri)`
+When lookup token resolution is required by schema validation:
 
-The binding node IRI MUST be deterministic and injective within a document.
+* The binding table MUST be constructed from the `Bindings` section.
+* A lookup token MUST resolve to exactly one identifier.
+* If no binding is found for a required lookup token, validation MUST fail with a `ReferenceError`.
+* If duplicate bindings for the same lookup token are present, validation MUST fail with a `SchemaError`.
 
-One conforming derivation is:
+Lookup token bindings are declarative only and MUST NOT imply loading, dereferencing, or execution.
 
-- `b = documentBaseIri + "/__lookupBinding/" + i`
+#### 9.8.4 Schema Interaction
 
-#### 9.8.2 Binding Table Well-Formedness
+Schemas MAY declare whether a lookup token value:
 
-Additional binding table well-formedness rules:
+* MUST be resolvable
+* MAY remain unresolved
+* MUST NOT appear in a given context
 
-- If two binding entries have the same `tokenLiteral`, schema-driven validation MUST fail.
-- If any binding entry lacks either `tokenLiteral` or `targetIri`, schema-driven validation MUST fail.
-- If any binding entry provides multiple `targetIri` values for the same `tokenLiteral`, schema-driven validation MUST fail.
+These requirements are enforced during schema validation, not during parsing or formatting.
 
 ### 9.9 Deterministic Projection to Derived Validation Artifacts
 
@@ -2537,6 +2583,17 @@ If provided, a schema-less formatter:
 
 Schema-less formatting is not validation. It exists to produce a consistent surface form without consulting schema meaning.
 
+### 10.2.1.1 Schema-less Content Mode Determination (Normative)
+
+In schema-less formatting and canonicalization mode, the parser MUST determine a Concept instance’s body mode mechanically as follows:
+
+* If the body contains at least one non-blank content line after indentation normalization, the body MUST be treated as content mode.
+* Otherwise (the body is empty or contains only blank or whitespace-only lines), the body MUST be treated as children mode.
+
+This determination is purely mechanical and MUST NOT depend on schema knowledge, heuristics, or inferred intent.
+
+If subsequent schema-based validation determines that the mechanically determined body mode is not permitted for the Concept, validation MUST fail with a `SchemaError`.
+
 #### 10.2.2 Full Validation Pipeline (Normative)
 
 To validate a document under a schema, a conforming tool MUST follow this sequence:
@@ -2619,7 +2676,7 @@ Allowed changes (examples):
 - Canonicalize trait layout/spacing without reordering traits
 - Canonicalize inline annotation whitespace (trim + internal collapse)
 - Canonicalize grouping-annotation labels by whitespace normalization
-- Normalize UUID spelling (e.g., hex lowercase) where explicitly specified
+- Normalize UUID spelling to the canonical form required by §5.8
 
 Forbidden changes (examples):
 
@@ -2671,7 +2728,7 @@ Codex tools MUST NOT:
 
 ### 10.12 Reporting Requirements
 
-Formatting error reports SHOULD include:
+Formatting error reports MUST include at minimum:
 
 - error class (`FormattingError`)
 - violated rule
@@ -2997,7 +3054,7 @@ Trait definitions establish the value type, cardinality, and constraints for a T
 ###### Traits (Normative)
 
 * `id` (optional; IRI reference)
-* `name` (required; Trait name string per the Naming and Value Specification (`spec/0.1/naming-and-values/index.md`))
+* `name` (required; Trait name string per §4 Naming Rules)
 * `defaultValueType` (required unless `defaultValueTypes` is provided; value type token)
 * `defaultValueTypes` (required unless `defaultValueType` is provided; list of one or more value type tokens)
 * `cardinality` (required; `$Single | $List`)
@@ -4183,15 +4240,31 @@ Caching behavior, eviction policy, persistence, and invalidation strategies are 
 
 Caching MUST NOT change observable parsing, validation, or error-reporting behavior.
 
-### 12.5 Schema Caching (Informative)
+### 12.6 Error Handling (Normative)
 
-Schemas are immutable within a declared version.
+#### 12.6.1 Schema Unavailable
 
-Implementations MAY cache parsed and validated schemas to avoid redundant processing.
+If no schema can be obtained through any supported mechanism:
 
-Caching behavior, eviction policy, persistence, and invalidation strategies are implementation-defined.
+* Error class: `ParseError`
+* The report MUST indicate that the governing schema was unavailable
+* Parsing MUST NOT proceed
 
-Caching MUST NOT change observable parsing, validation, or error-reporting behavior.
+#### 12.6.2 Schema Load Failure
+
+If schema resolution succeeds but loading the schema fails (for example, network error or file not found):
+
+* Error class: `ParseError`
+* The report MUST indicate that the schema could not be loaded
+* The report MUST include the schema identifier
+
+#### 12.6.3 Invalid Schema
+
+If a loaded schema is not valid Codex or is not a valid schema under the bootstrap schema-of-schemas:
+
+* Error class: `SchemaError`
+* The report MUST indicate that schema validation failed
+* Underlying schema validation errors MUST be reported
 
 ### 12.7 Relationship to Other Specifications
 
@@ -5053,19 +5126,19 @@ Sign
 	;
 
 Integer
-	= [ Sign ], DigitSequence
+	= [ Sign ], IntegerDigits
 	;
 
 DecimalNumber
-	= [ Sign ], DigitSequence, ".", DigitSequence
+	= [ Sign ], IntegerDigits, ".", DigitSequence
 	;
 
 ScientificNumber
-	= ( Integer | DecimalNumber ), ( "e" | "E" ), [ Sign ], DigitSequence
+	= ( Integer | DecimalNumber ), ( "e" | "E" ), [ Sign ], IntegerDigits
 	;
 
 PrecisionNumber
-	= DecimalNumber, "p", [ DigitSequence ]
+	= DecimalNumber, "p", [ IntegerDigits ]
 	;
 
 Infinity
@@ -5073,7 +5146,7 @@ Infinity
 	;
 
 Fraction
-	= Integer, "/", DigitSequence
+	= Integer, "/", IntegerDigits
 	;
 
 ImaginaryNumber
@@ -5086,6 +5159,14 @@ ComplexNumber
 
 DigitSequence
 	= Digit, { Digit }
+	;
+
+NonZeroDigit
+	= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+	;
+
+IntegerDigits
+	= "0" | NonZeroDigit, { Digit }
 	;
 ```
 
@@ -5816,15 +5897,16 @@ NumericValue <- ComplexNumber
 
 ComplexNumber <- (Integer / DecimalNumber) ([+-]) (Integer / DecimalNumber) 'i'
 ImaginaryNumber <- (Integer / DecimalNumber) 'i'
-Fraction <- Integer '/' Digits
+Fraction <- Integer '/' IntDigits
 Infinity <- Sign? 'Infinity'
-PrecisionNumber <- DecimalNumber 'p' Digits?
-ScientificNumber <- (Integer / DecimalNumber) [eE] Sign? Digits
-DecimalNumber <- Sign? Digits '.' Digits
-Integer <- Sign? Digits
+PrecisionNumber <- DecimalNumber 'p' IntDigits?
+ScientificNumber <- (Integer / DecimalNumber) [eE] Sign? IntDigits
+DecimalNumber <- Sign? IntDigits '.' Digits
+Integer <- Sign? IntDigits
 
 Sign <- [+-]
 Digits <- Digit+
+IntDigits <- '0' / [1-9] Digit*
 ```
 
 ---
@@ -6213,4 +6295,4 @@ Codex-conforming tools MUST treat these values as opaque Color Values and MUST N
 | `&transparent`  | Equivalent to fully transparent black in CSS; informative reference sRGB form: `#00000000`. |
 | `&currentcolor` | Context-dependent; resolves to the current text color in CSS.                               |
 
-**End of Codex Language Specification v0.1**
+**End of Codex Language Specification v1.0.0 BETA**
