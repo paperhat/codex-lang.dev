@@ -235,7 +235,7 @@ def _gate_validation_terms_are_qualified() -> None:
         except UnicodeDecodeError:
             text = p.read_text(encoding="utf-8", errors="replace")
 
-        for idx, raw in _iter_unfenced_markdown_lines(text):
+        for idx, raw in enumerate(text.splitlines(), start=1):
             check = _strip_inline_code_spans(raw)
             if not _VALIDATION_TERM_RE.search(check):
                 continue
