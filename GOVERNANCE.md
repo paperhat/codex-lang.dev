@@ -70,7 +70,7 @@ Non-normative documents are **not authoritative**.
 A document marked **LOCKED**:
 
 * is authoritative
-* MUST NOT be changed except via an explicit, versioned revision
+* must not be changed except via an explicit, versioned revision
 * provides a stable reference for implementations and tooling
 * is safe to rely upon for automated processing
 
@@ -80,7 +80,7 @@ A document marked **DRAFT**:
 
 * is under active development
 * may change without notice
-* MUST NOT be treated as authoritative
+* must not be treated as authoritative
 
 ---
 
@@ -94,7 +94,7 @@ In the event of conflict, documents are interpreted according to the following p
 4. **Examples**
 5. **Notes**
 
-Lower-authority documents MUST NOT contradict higher-authority documents.
+Lower-authority documents must not contradict higher-authority documents.
 
 ---
 
@@ -132,7 +132,7 @@ No rights are granted to:
 
 This document is **NORMATIVE and LOCKED**.
 
-Any interpretation of Codex documentation MUST be consistent with this governance.
+Any interpretation of Codex documentation must be consistent with this governance.
 
 ---
 

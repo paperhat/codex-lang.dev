@@ -1,14 +1,14 @@
-Status: NORMATIVE  
+Status: INFORMATIVE  
 Lock State: LOCKED  
-Version: 0.1  
+Version: 1.0.0 BETA  
 Editor: Charles F. Munat
 
 # Codex Bootstrap Schema-of-Schemas
 
-This document defines the bootstrap schema-of-schemas for Codex 1.0.0.
+This document defines the bootstrap schema-of-schemas for Codex 1.0.0 BETA.
 
 This schema is used to validate schema documents authored in Codex.
-Every conforming implementation MUST include this schema as built-in, immutable data.
+Conforming implementations include this schema as built-in, immutable data, as required by the main specification.
 
 ---
 
@@ -29,9 +29,9 @@ Every conforming implementation MUST include this schema as built-in, immutable 
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet name="EntityEligibility">
-			<Member value="MustBeEntity" label="Must be Entity" description="Instances MUST declare an id." />
-			<Member value="MayBeEntity" label="May be Entity" description="Instances MAY declare an id." />
-			<Member value="MustNotBeEntity" label="Must not be Entity" description="Instances MUST NOT declare an id." />
+			<Member value="MustBeEntity" label="Must be Entity" description="Instances must declare an id." />
+			<Member value="MayBeEntity" label="May be Entity" description="Instances may declare an id." />
+			<Member value="MustNotBeEntity" label="Must not be Entity" description="Instances must not declare an id." />
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet name="CompatibilityClass">

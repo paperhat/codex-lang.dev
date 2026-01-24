@@ -7,7 +7,7 @@ This repo contains normative language specifications and conformance artifacts.
 - The spec is a closed-world conformance target: prefer explicit, testable requirements over open-ended guidance.
 
 ## Normativity
-- Use RFC 2119/8174 keywords with discipline: **MUST**, **MUST NOT**, **MAY**.
+- Use RFC 2119/8174 requirement keywords with discipline (use the capitalized forms defined by the spec, in the spec).
 - Do not use **SHOULD** and **SHOULD NOT**.
 - When changing grammar or surface syntax, update all authoritative forms (e.g., EBNF + PEG) in lockstep.
 

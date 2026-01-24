@@ -7,7 +7,7 @@ Editor: Charles F. Munat
 
 This document is the authoritative language specification for Codex 1.0.0 BETA.
 
-All normative requirements for Codex 1.0.0 MUST appear exactly once in this document.
+All normative requirements for Codex 1.0.0 BETA MUST appear exactly once in this document.
 
 ---
 
@@ -27,18 +27,18 @@ This specification normatively defines:
 - reference trait semantics
 - validation error classification
 
-Codex 1.0.0 does not define runtime behavior.
+Codex 1.0.0 BETA does not define runtime behavior.
 
 ---
 
 ### 1.2 Non-Goals
 
-Codex 1.0.0 does not define:
+Codex 1.0.0 BETA does not define:
 
 - a programming, scripting, or templating language
 - an execution model, runtime, or pipeline orchestration
 - storage, querying, indexing, inference, or rendering behavior
-- identifier base scoping or base resolution mechanisms
+- identifier base scoping, dereferencing, or external/base resolution mechanisms
 - schema distribution, registry protocols, or migration mechanisms
 
 Those concerns belong to consuming systems and tooling.
@@ -479,7 +479,9 @@ An IRI Reference Value MUST NOT be a String Value.
 
 IRI Reference Values MUST be compared as opaque strings.
 
-Codex-conforming tools MUST NOT resolve or dereference IRI Reference Values.
+Codex-conforming tools MUST NOT dereference IRI Reference Values.
+
+Where this specification defines deterministic resolution (for example, lookup-token binding and reference-constraint resolution), tools MUST apply only the mechanisms defined by this specification and MUST NOT perform any external lookup, registry query, or network dereferencing.
 
 ### 5.10 Lookup Token Values
 
@@ -497,7 +499,7 @@ The token name MUST NOT contain whitespace, punctuation, hyphens, or underscores
 
 A Lookup Token Value MUST NOT be a String Value.
 
-Codex-conforming tools MUST NOT resolve or dereference Lookup Token Values.
+Codex-conforming tools MUST NOT dereference Lookup Token Values.
 
 ### 5.11 Character Values
 
@@ -713,7 +715,9 @@ The value of a reference Trait MUST NOT be any other Value type.
 
 Reference Traits MUST be interpreted only as declarative relationships.
 
-Reference Traits MUST NOT imply resolution, dereferencing, loading, execution, or transformation.
+Reference Traits MUST NOT imply dereferencing, loading, execution, or transformation.
+
+Reference Traits MUST NOT imply any automatic or external resolution beyond what is explicitly defined by this specification or the governing schema.
 
 Reference Traits are valid only where authorized by the governing schema.
 
@@ -1376,6 +1380,12 @@ Codex defines two authoring profiles:
 
 - **Profile A**: Layer A schema authoring only
 - **Profile B**: Layer B schema authoring only
+
+All conforming implementations MUST support Profile A.
+
+Implementations MAY support Profile B.
+
+If an implementation supports Profile B, it MUST implement all Profile B requirements defined by this specification, including the Layer B (`RdfGraph`) structural and canonicalization rules.
 
 A schema document MUST NOT mix profiles.
 
@@ -2793,7 +2803,7 @@ This section does not:
 
 ## 11. Schema Definition Language
 
-This section normatively defines the schema definition language for Codex 1.0.0.
+This section normatively defines the schema definition language for Codex 1.0.0 BETA.
 
 It specifies how **schemas themselves are authored in Codex**, including:
 
@@ -2889,6 +2899,10 @@ The following Traits are optional:
 The `Schema` Concept MUST declare exactly one authoring profile via the `authoringProfile` Trait, as defined in §9.4.
 
 If `authoringProfile` is missing, invalid, or mixed, schema processing MUST fail.
+
+All conforming implementations MUST support Profile A.
+
+Implementations MAY support Profile B. If an implementation supports Profile B, it MUST enforce the Profile B constraints and Layer B (`RdfGraph`) rules defined by this specification.
 
 #### Children (Normative)
 

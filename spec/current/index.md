@@ -9,7 +9,7 @@ This page points to the **current published version** of the Codex Language Spec
 
 ## Current Version
 
-→ [**Codex Language Specification v1.0.0**](./1.0.0/)
+→ [**Codex Language Specification v1.0.0 BETA**](./1.0.0/)
 
 ---
 
@@ -19,7 +19,7 @@ This page points to the **current published version** of the Codex Language Spec
 - It contains no normative content.
 - Authority always resides in a specific versioned directory.
 
-Implementations MUST target an explicit specification version.
+Implementations target an explicit specification version (for example, the current version linked above).
 
 ---
 

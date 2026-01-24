@@ -68,9 +68,9 @@ An **Entity** is a Concept with stable identity that can be referenced by other 
 
 Entity eligibility is **schema-controlled**:
 
-- `$MustBeEntity` — the Concept MUST declare an `id`
-- `$MayBeEntity` — the Concept MAY declare an `id`
-- `$MustNotBeEntity` — the Concept MUST NOT declare an `id`
+- `$MustBeEntity` — the Concept must declare an `id`
+- `$MayBeEntity` — the Concept may declare an `id`
+- `$MustNotBeEntity` — the Concept must not declare an `id`
 
 ```cdx
 <Book id=book:1984 title="1984" author=person:orwell />
