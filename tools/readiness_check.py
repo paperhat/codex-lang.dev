@@ -9,6 +9,12 @@ from pathlib import Path
 
 
 _RFC2119_RE = re.compile(r"\b(MUST NOT|MUST|MAY)\b")
+_DOLLAR_TOKEN_RE = re.compile(r"\$[A-Za-z][A-Za-z0-9]*")
+_VALIDATION_TERM_RE = re.compile(r"\b(validate|validation)\b", re.IGNORECASE)
+_VALIDATION_QUALIFIER_RE = re.compile(
+    r"\b(schema|semantic|well-formed|well formed|well-formedness|schema-based|schema-driven|schema-first)\b",
+    re.IGNORECASE,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -119,6 +125,133 @@ def _gate_no_rfc2119_leakage() -> None:
         )
 
 
+def _iter_unfenced_markdown_lines(text: str) -> list[tuple[int, str]]:
+    """Return (line_number, line_text) lines that are outside fenced code blocks.
+
+    This gate intentionally implements only the subset of CommonMark fencing we need:
+    - backtick and tilde fences
+    - opening fence length >= 3
+    - closing fence length >= opening length
+
+    This is necessary because some documents use longer fences (e.g. ````) to embed
+    triple-backtick examples; a naive toggle-on-any-fence-line approach can incorrectly
+    treat large suffixes of the file as "inside a fence".
+    """
+
+    in_fence = False
+    fence_char: str | None = None
+    fence_len: int | None = None
+    out: list[tuple[int, str]] = []
+
+    for idx, raw in enumerate(text.splitlines(), start=1):
+        m = re.match(r"^(\s*)(`{3,}|~{3,})", raw)
+        if m:
+            token = m.group(2)
+            token_char = token[0]
+            token_len = len(token)
+            if not in_fence:
+                in_fence = True
+                fence_char = token_char
+                fence_len = token_len
+            else:
+                if fence_char == token_char and fence_len is not None and token_len >= fence_len:
+                    in_fence = False
+                    fence_char = None
+                    fence_len = None
+            continue
+
+        if in_fence:
+            continue
+
+        out.append((idx, raw))
+
+    return out
+
+
+def _strip_inline_code_spans(line: str) -> str:
+    """Remove simple single-line inline code spans delimited by backticks.
+
+    This intentionally ignores the exact backtick-length rules; it is a pragmatic
+    gate to prevent accidental `$...` math parsing in Markdown preview.
+    """
+
+    parts = line.split("`")
+    # Keep only the non-code segments (even indexes).
+    return "".join(part for i, part in enumerate(parts) if i % 2 == 0)
+
+
+def _gate_no_unfenced_dollar_tokens_in_markdown() -> None:
+    """Prevent `$Token` in Markdown prose.
+
+    Some Markdown previewers interpret `$...` as math delimiters; a stray `$MustBeEntity`
+    can crash or heavily degrade preview. Use inline code spans instead: `$MustBeEntity`.
+    """
+
+    leaks: list[str] = []
+
+    for p in ROOT.rglob("*.md"):
+        rel = p.relative_to(ROOT)
+        if any(part.startswith(".") for part in rel.parts):
+            continue
+
+        try:
+            text = p.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            text = p.read_text(encoding="utf-8", errors="replace")
+
+        for idx, raw in _iter_unfenced_markdown_lines(text):
+            check = _strip_inline_code_spans(raw)
+            if _DOLLAR_TOKEN_RE.search(check):
+                leaks.append(f"- {rel}:{idx}: {raw.strip()}")
+
+    if leaks:
+        details = "\n".join(leaks)
+        _fail(
+            "Unfenced $Token found in Markdown prose. Wrap tokens in backticks or move them into a fenced code block.\n"
+            "Example: use `$MustBeEntity`, not $MustBeEntity.\n"
+            f"Found:\n{details}"
+        )
+
+
+def _gate_validation_terms_are_qualified() -> None:
+    """Prevent ambiguous validate/validation phrasing in spec prose.
+
+    The spec must distinguish schema-free well-formedness checking from schema-based
+    semantic validation. This gate rejects prose uses of "validate"/"validation" that
+    are not explicitly qualified (e.g., "schema validation" or "well-formedness").
+    """
+
+    targets = [
+        *(p for p in (ROOT / "spec").glob("*/index.md") if p.is_file()),
+        *(p for p in (ROOT / "spec").glob("*/bootstrap-schema/index.md") if p.is_file()),
+    ]
+
+    leaks: list[str] = []
+
+    for p in targets:
+        rel = p.relative_to(ROOT)
+        try:
+            text = p.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            text = p.read_text(encoding="utf-8", errors="replace")
+
+        for idx, raw in _iter_unfenced_markdown_lines(text):
+            check = _strip_inline_code_spans(raw)
+            if not _VALIDATION_TERM_RE.search(check):
+                continue
+            if _VALIDATION_QUALIFIER_RE.search(check):
+                continue
+            leaks.append(f"- {rel}:{idx}: {raw.strip()}")
+
+    if leaks:
+        details = "\n".join(leaks)
+        _fail(
+            "Ambiguous validate/validation wording found in spec prose.\n"
+            "Qualify as schema validation (semantic) or well-formedness checking, and avoid bare 'validate' phrasing.\n"
+            f"Found:\n{details}"
+        )
+
+
 def main(argv: list[str]) -> int:
     if len(argv) != 1:
         print("usage: readiness_check.py", file=sys.stderr)
@@ -126,6 +259,8 @@ def main(argv: list[str]) -> int:
 
     _gate_required_docs()
     _gate_no_rfc2119_leakage()
+    _gate_validation_terms_are_qualified()
+    _gate_no_unfenced_dollar_tokens_in_markdown()
     _gate_conformance_smokecheck()
     _gate_no_json()
 

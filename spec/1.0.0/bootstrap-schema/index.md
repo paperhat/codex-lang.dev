@@ -7,7 +7,7 @@ Editor: Charles F. Munat
 
 This document defines the bootstrap schema-of-schemas for Codex 1.0.0 BETA.
 
-This schema is used to validate schema documents authored in Codex.
+This schema is used for schema validation of schema documents authored in Codex.
 Conforming implementations include this schema as built-in, immutable data, as required by the main specification.
 
 ---
@@ -19,7 +19,7 @@ Conforming implementations include this schema as built-in, immutable data, as r
 	compatibilityClass=$BackwardCompatible
 	authoringProfile=$ProfileA
 	title="Codex Bootstrap Schema-of-Schemas"
-	description="The authoritative schema for validating Codex schema documents."
+	description="The authoritative schema for schema-validating Codex schema documents."
 >
 	<EnumeratedValueSets>
 		<EnumeratedValueSet name="ConceptKind">
@@ -30,7 +30,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 
 		<EnumeratedValueSet name="EntityEligibility">
 			<Member value="MustBeEntity" label="Must be Entity" description="Instances must declare an id." />
-			<Member value="MayBeEntity" label="May be Entity" description="Instances may declare an id." />
 			<Member value="MustNotBeEntity" label="Must not be Entity" description="Instances must not declare an id." />
 		</EnumeratedValueSet>
 
@@ -426,10 +425,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			key=~traitDefinition
 			name="TraitDefinition"
 			conceptKind=$Semantic
-			entityEligibility=$MayBeEntity
+			entityEligibility=$MustBeEntity
 		>
 			<TraitRules>
-				<AllowsTrait name="id" />
+				<RequiresTrait name="id" />
 				<RequiresTrait name="name" />
 				<AllowsTrait name="defaultValueType" />
 				<AllowsTrait name="defaultValueTypes" />
@@ -465,10 +464,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			key=~enumeratedValueSet
 			name="EnumeratedValueSet"
 			conceptKind=$Semantic
-			entityEligibility=$MayBeEntity
+			entityEligibility=$MustBeEntity
 		>
 			<TraitRules>
-				<AllowsTrait name="id" />
+				<RequiresTrait name="id" />
 				<RequiresTrait name="name" />
 			</TraitRules>
 			<ChildRules>
@@ -499,10 +498,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			key=~valueTypeDefinition
 			name="ValueTypeDefinition"
 			conceptKind=$Semantic
-			entityEligibility=$MayBeEntity
+			entityEligibility=$MustBeEntity
 		>
 			<TraitRules>
-				<AllowsTrait name="id" />
+				<RequiresTrait name="id" />
 				<RequiresTrait name="name" />
 				<RequiresTrait name="baseValueType" />
 				<AllowsTrait name="validatorName" />
@@ -518,9 +517,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			key=~validatorDefinition
 			name="ValidatorDefinition"
 			conceptKind=$Semantic
-			entityEligibility=$MayBeEntity
+			entityEligibility=$MustBeEntity
 		>
 			<TraitRules>
+				<RequiresTrait name="id" />
 				<RequiresTrait name="name" />
 				<AllowsTrait name="message" />
 			</TraitRules>

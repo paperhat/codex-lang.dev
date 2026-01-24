@@ -25,7 +25,7 @@ This specification normatively defines:
 - schema-first parsing architecture
 - schema definition, schema loading/bootstrapping, and schema versioning rules
 - reference trait semantics
-- validation error classification
+	- well-formedness and schema validation error classification
 
 Codex 1.0.0 BETA does not define runtime behavior.
 
@@ -100,12 +100,13 @@ Given the same inputs (document bytes, governing schema, and any other required 
 In particular:
 
 - Parsing MUST be deterministic.
-- Validation MUST be deterministic.
+- Well-formedness checking MUST be deterministic.
+- Schema validation MUST be deterministic.
 - Canonicalization MUST be deterministic.
 
 Non-deterministic or heuristic behavior is forbidden.
 
-For any validation or canonicalization result, an implementation MUST be able to attribute the result to:
+For any well-formedness, schema validation, or canonicalization result, an implementation MUST be able to attribute the result to:
 
 - the rule applied, and
 - the specific declaration(s) or input construct(s) that caused the result.
@@ -134,7 +135,21 @@ Codex is target-agnostic.
 
 A Codex document MAY be transformed into other representations.
 
-No Codex construct, and no Codex-conforming tool behavior defined by this specification, MUST assume a specific target, runtime, storage backend, or rendering model.
+Codex constructs and Codex-conforming tool behavior defined by this specification MUST NOT assume a specific target, runtime, storage backend, or rendering model.
+
+### 2.5 Well-Formedness and Validity
+
+Codex distinguishes two independent questions:
+
+* **Well-formedness**: whether a document is syntactically and structurally correct under this specification's surface-form grammar and structural rules.
+* **Validity**: whether a well-formed document satisfies the semantic rules of a governing schema (including typing, authorization, cardinality, identity, references, and constraints).
+
+Accordingly:
+
+* A conforming implementation MUST be able to parse and check well-formedness without a governing schema.
+* A conforming implementation MUST NOT perform schema validation without an explicit governing schema.
+
+In this document, the term **schema validation** refers only to the schema-based semantic phase. When referring to the schema-free phase, this document uses **parse** and **check well-formedness**.
 
 ---
 
@@ -224,7 +239,7 @@ A self-closing marker MUST represent a Concept with no children and no Content.
 
 An Annotation is author-supplied editorial metadata.
 
-Annotations MUST NOT affect parsing, validation outcomes, or domain semantics.
+Annotations MUST NOT affect parsing, schema validation outcomes, or domain semantics.
 
 Annotations MUST be preserved through Codex-conforming processing, subject only
 to the surface-form normalization and canonicalization rules defined by this
@@ -234,12 +249,15 @@ specification.
 
 ## 4. Naming Rules
 
-### 4.1 Casing
+This section defines requirements for Concept names and Trait names.
+Some requirements in this section are normative but not mechanically enforceable. Such requirements bind schema authors and govern conformance, even where implementations cannot fully verify compliance and human review is required.
+
+### 4.1 Name Forms
 
 For the purposes of Codex, this specification defines:
 
-- PascalCase: a name composed only of ASCII letters and digits, with no separators; the first character MUST be an ASCII uppercase letter; each subsequent ASCII letter that begins a new word segment MUST be an ASCII uppercase letter.
-- camelCase: a name composed only of ASCII letters and digits, with no separators; the first character MUST be an ASCII lowercase letter; each subsequent ASCII letter that begins a new word segment MUST be an ASCII uppercase letter.
+* **PascalCase**: a name composed only of ASCII letters and digits, with no separators; the first character MUST be an ASCII uppercase letter.
+* **camelCase**: a name composed only of ASCII letters and digits, with no separators; the first character MUST be an ASCII lowercase letter.
 
 Concept names MUST use PascalCase.
 
@@ -247,28 +265,57 @@ Trait names MUST use camelCase.
 
 No other casing is permitted.
 
-### 4.2 Initialisms and Acronyms
+### 4.2 Segments (Deterministic)
 
-For the purposes of Codex, this specification defines:
+Codex names are interpreted as a sequence of one or more word segments.
 
-- Abbreviation: a shortened form of a word or phrase.
-- Initialism: an abbreviation formed from the initial letters of words in a phrase.
-- Acronym: an initialism designed to be pronounceable as a word.
+For the purposes of name-form checking, the segmentation of a name MUST be determined mechanically as follows:
 
-Initialisms and acronyms are permitted in names.
+* A segment begins at the start of the name.
+* A new segment begins at an ASCII uppercase letter that is immediately preceded by an ASCII lowercase letter or an ASCII digit.
+* Digits belong to the segment in which they appear.
 
-An initialism or acronym MUST be written as an ordinary word segment: only the first letter of the segment is uppercase and all remaining letters in the segment are lowercase.
+This segmentation rule is purely syntactic and does not depend on natural language interpretation.
 
-A name MUST NOT contain a run of two or more uppercase letters.
+### 4.3 Segment Casing Constraints
 
-### 4.3 General Abbreviations
+Within any segment:
 
-General abbreviations are forbidden in Codex names.
+* Only the first character MAY be an ASCII uppercase letter.
+* All remaining alphabetic characters MUST be ASCII lowercase letters.
+* One-letter segments are permitted.
 
-Names MUST NOT contain periods.
+These constraints apply uniformly to all segments, regardless of their intended meaning.
 
-A schema MAY whitelist specific general abbreviations for its domain. Such
-exceptions apply only within that schema.
+As a consequence, names such as `AstNode` and `RdfGraph` are permitted, while names such as `ASTNode`, `RDFGraph`, or other all-caps runs within a segment are forbidden.
+
+### 4.4 Abbreviations, Initialisms, and Acronyms (Author Responsibility)
+
+Codex does not attempt to mechanically determine whether a name segment is an abbreviation, initialism, or acronym. Such distinctions are contextual, language-dependent, and outside the scope of deterministic lexical analysis.
+
+Nevertheless, the following requirements are normative:
+
+* A schema author MUST NOT introduce abbreviations, initialisms, or acronyms in names unless they are reasonably well understood by the intended audience of the schema.
+* If a schema author uses an abbreviation, initialism, or acronym that may not be universally understood, the schema author MUST document its meaning in prose associated with the governing schema, such that a reader of the schema can readily determine that the term is an abbreviation and what it stands for.
+
+These requirements bind schema authors and govern schema conformance, even though they are not fully mechanically enforceable.
+
+### 4.5 Orthographic Treatment of Abbreviations
+
+When abbreviations, initialisms, or acronyms are used in Codex names, they MUST be written and cased as ordinary word segments, in accordance with §4.2 and §4.3.
+
+In particular:
+
+* Abbreviations MUST NOT be rendered as all-caps segments.
+* Abbreviations MUST follow normal PascalCase or camelCase word segmentation rules.
+
+This requirement is mechanically enforceable and applies regardless of whether the abbreviation is documented or well understood.
+
+### 4.6 Diagnostics
+
+Implementations MAY provide diagnostics or warnings related to suspected abbreviation usage, undocumented terms, or naming clarity.
+
+Failure to emit such diagnostics does not imply schema conformance, and their presence or absence does not alter the normative obligations of schema authors defined in this section.
 
 ---
 
@@ -365,7 +412,7 @@ Temporal Values MUST conform to the Temporal Value grammar defined by this speci
 
 Codex itself defines no temporal evaluation, normalization, ordering, time zone interpretation, or calendrical correctness requirements for Temporal Values.
 
-Codex-conforming tools MUST NOT derive temporal meaning, perform evaluation, apply defaults, or validate real-world correctness (for example, month length or leap seconds) except as explicitly defined by the governing schema or consuming system.
+Codex-conforming tools MUST NOT derive temporal meaning, perform evaluation, apply defaults, or check real-world correctness (for example, month length or leap seconds) except as explicitly defined by the governing schema or consuming system.
 
 #### 5.6.1 Temporal Kind Determination (Normative)
 
@@ -388,7 +435,7 @@ Temporal Values MUST NOT be treated as Enumerated Token Values, even when the br
 
 Color Values are first-class values, not String Values.
 
-Codex-conforming tools MUST NOT validate, normalize, or convert Color Values.
+Codex-conforming tools MUST NOT normalize, convert, or interpret Color Values beyond the well-formedness checks defined by this specification.
 
 In the Surface Form, Color Values MUST be spelled using one of the following literal forms:
 
@@ -1955,8 +2002,8 @@ To keep derived artifacts canonical and avoid accidental variable capture, inter
 One conforming approach is:
 
 - Walk the constraint's rule tree in pre-order.
-- For the $k$-th visited node (1-indexed), allocate a node-local suffix $k$.
-- Any internal variable introduced while translating that node MUST append suffix $k$ to a base name.
+- For the `$k$`-th visited node (1-indexed), allocate a node-local suffix `$k$`.
+- Any internal variable introduced while translating that node MUST append suffix `$k$` to a base name.
 - Variables introduced for one rule node MUST NOT be referenced outside the `EXISTS { ... }` block created for that node.
 
 #### 9.9.1 Enumerated Value Sets (`sh:in`)
@@ -2965,7 +3012,7 @@ A `ConceptDefinition` is an Entity.
 * `key` (optional; Lookup Token Value)
 * `name` (required; Concept name string, per §4 Naming Rules)
 * `conceptKind` (required; `$Semantic | $Structural | $ValueLike`)
-* `entityEligibility` (required; `$MustBeEntity | $MayBeEntity | $MustNotBeEntity`)
+* `entityEligibility` (required; `$MustBeEntity | $MustNotBeEntity`)
 
 ##### Children (Normative)
 
@@ -3109,6 +3156,36 @@ If `CollectionRules` is present:
 
 If `CollectionRules` is absent, no collection semantics are assumed.
 
+##### Ordering Semantics (Normative)
+
+The `ordering` trait on `CollectionRules` specifies whether the order of children in a collection is semantically significant.
+
+Ordering MUST be exactly one of:
+
+###### `$Ordered`
+
+A collection with `ordering=$Ordered` has semantically significant order.
+
+Source order MUST be preserved through all conforming processing.
+
+Conforming implementations MUST NOT reorder children of an `$Ordered` collection.
+
+Two `$Ordered` collections with identical children in different orders MUST be treated as semantically distinct.
+
+Validation and comparison of `$Ordered` collections MUST be order-sensitive.
+
+###### `$Unordered`
+
+A collection with `ordering=$Unordered` has no semantically significant order.
+
+Conforming implementations MUST preserve source order during parsing and general processing.
+
+Validation of `$Unordered` collections MUST be order-insensitive.
+
+Semantic comparison of `$Unordered` collections MUST be order-insensitive: two `$Unordered` collections with identical children in different orders MUST be treated as semantically equivalent.
+
+In canonical surface form, children of an `$Unordered` collection MUST be sorted according to the deterministic ordering defined by the canonicalization rules in §8.
+
 ---
 
 This section is normative.
@@ -3137,6 +3214,42 @@ Trait definitions establish the value type, cardinality, and constraints for a T
 If both `defaultValueType` and `defaultValueTypes` are provided, the implementation MUST treat that as a schema error.
 
 `priority` is a meta-schema concern. Implementations MUST NOT use `priority` to change validation or compilation semantics. Meta-schemas MAY constrain allowed `priority` values (e.g., `$Primary`, `$Secondary`).
+
+##### Cardinality Semantics (Normative)
+
+The `cardinality` trait on a `TraitDefinition` specifies the structural shape of the trait's value when the trait is present on a Concept instance.
+
+Cardinality MUST be exactly one of:
+
+###### `$Single`
+
+A trait with `cardinality=$Single` binds to exactly one value.
+
+When a `$Single` trait is present on a Concept instance, it MUST have exactly one value.
+
+A `$Single` trait MUST NOT have zero values.
+
+A `$Single` trait MUST NOT have multiple values.
+
+###### `$List`
+
+A trait with `cardinality=$List` binds to an ordered sequence of zero or more values.
+
+When a `$List` trait is present on a Concept instance, it MUST have a list value.
+
+The list MAY be empty.
+
+The list MUST preserve element order.
+
+Each element of the list MUST conform to the `itemValueType` declared by the `TraitDefinition`.
+
+##### Cardinality and Trait Presence
+
+Cardinality specifies the shape of a trait's value when present.
+
+Cardinality does not determine whether a trait is required or optional.
+
+Whether a trait must, may, or must not appear on a Concept instance is governed by `TraitRules` (`RequiresTrait`, `AllowsTrait`, `ForbidsTrait`), not by cardinality.
 
 ##### Children (Optional)
 
@@ -3301,7 +3414,6 @@ The following enumerated value sets are defined by the Codex language itself and
 ##### `EntityEligibility`
 
 * `$MustBeEntity`
-* `$MayBeEntity`
 * `$MustNotBeEntity`
 
 ##### `CompatibilityClass`
@@ -6398,5 +6510,7 @@ Codex-conforming tools MUST treat these values as opaque Color Values and MUST N
 | --------------- | ------------------------------------------------------------------------------------------- |
 | `&transparent`  | Equivalent to fully transparent black in CSS; informative reference sRGB form: `#00000000`. |
 | `&currentcolor` | Context-dependent; resolves to the current text color in CSS.                               |
+
+---
 
 **End of Codex Language Specification v1.0.0 BETA**
