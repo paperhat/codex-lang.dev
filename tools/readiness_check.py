@@ -10,9 +10,9 @@ from pathlib import Path
 
 _RFC2119_RE = re.compile(r"\b(MUST NOT|MUST|MAY)\b")
 _DOLLAR_TOKEN_RE = re.compile(r"\$[A-Za-z][A-Za-z0-9]*")
-_VALIDATION_TERM_RE = re.compile(r"\b(validate|validation)\b", re.IGNORECASE)
+_VALIDATION_TERM_RE = re.compile(r"\bvalidat(e|ed|es|ing)\b", re.IGNORECASE)
 _VALIDATION_QUALIFIER_RE = re.compile(
-    r"\b(schema|semantic|well-formed|well formed|well-formedness|schema-based|schema-driven|schema-first)\b",
+    r"\b(schema|schemas|semantic|well-formed|well formed|well-formedness|schema-based|schema-driven|schema-first)\b",
     re.IGNORECASE,
 )
 

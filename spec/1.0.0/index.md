@@ -1395,7 +1395,7 @@ In particular, without a governing schema, an implementation MUST NOT:
 - interpret content mode versus child mode for a concept beyond what is mechanically implied by the surface form
 - interpret whether a concept instance is an Entity beyond the presence or absence of an `id` trait spelling
 - evaluate trait meaning, trait authorization, value typing beyond surface-form Value recognition, or constraint logic
-- resolve or validate reference traits beyond their surface-form value type constraints
+- resolve reference traits beyond their surface-form value type constraints
 
 ### 9.3 Schema-Required Semantic Validation
 
@@ -2228,7 +2228,7 @@ Derived validation artifacts MUST support `ReferenceConstraint(type=ReferenceMus
 
 If a derived validation artifact is produced as an RDF graph (including a SHACL graph), the projection to a concrete RDF syntax MUST be exactly:
 
-1. Validate the derived `RdfGraph` against the derived-artifact structural rules.
+1. Check the derived `RdfGraph` against the derived-artifact structural rules.
 2. Emit the triples in a chosen RDF concrete syntax (for example, Turtle).
 
 The projection MUST NOT change the set of triples.
@@ -4581,7 +4581,7 @@ Exactly one of the following compatibility classes MUST be specified.
 
 A backward-compatible schema version guarantees that:
 
-* all Codex data that validated under the immediately preceding version MUST also validate under this version
+* all Codex data that passed schema validation under the immediately preceding version MUST also pass schema validation under this version
 * the meaning of existing Concepts and Traits MUST be preserved
 * new Concepts or Traits MAY be added
 * new constraints MAY be added only if they do not invalidate any data that was valid under the preceding version
@@ -4592,13 +4592,13 @@ If any previously valid data becomes invalid under a schema version declared as 
 
 A forward-compatible schema version guarantees that:
 
-* Codex data authored for this version MAY validate under the immediately preceding version
+* Codex data authored for this version MAY pass schema validation under the immediately preceding version
 * newly introduced constructs are optional and additive
 * existing Concepts, Traits, and constraints remain unchanged in meaning
 
 Forward compatibility is intended for extension-oriented evolution where older tools can safely ignore newer constructs.
 
-If data authored for a forward-compatible version cannot validate under the preceding version without loss of meaning, the schema is invalid.
+If data authored for a forward-compatible version cannot pass schema validation under the preceding version without loss of meaning, the schema is invalid.
 
 #### 13.5.3 Breaking
 
@@ -5042,7 +5042,7 @@ ConceptLineEnd
 	;
 
 (* A general or grouping annotation block may appear before the root concept.
-	This grammar admits them structurally; their kind/attachment rules are validated
+	This grammar admits them structurally; their kind/attachment rules are checked
 	by the surface-form rules. *)
 GeneralOrGroupingAnnotationBlock
 	= { BlankLine }, Annotation, { BlankLine }
@@ -5502,8 +5502,8 @@ Milliseconds
 #### A.1.15 Color Values
 
 ```ebnf
-(* Color values are accepted as declarative spellings; tools MUST NOT validate,
-	normalize, or convert them. This grammar admits the permitted surface spellings. *)
+(* Color values are accepted as declarative spellings; tools MUST NOT normalize,
+	convert, or interpret them. This grammar admits the permitted surface spellings. *)
 
 ColorValue
 	= HexColor
@@ -5972,7 +5972,7 @@ ClosingMarker <- '</' ConceptName '>'
 Body <- ChildrenBody / ContentBody
 
 # ChildrenBody admits BlankLine and Annotation; their legality and attachment kinds
-# are validated by surface-form rules and canonicalization rules.
+# are checked by surface-form rules and canonicalization rules.
 ChildrenBody <- ChildItem*
 
 ChildItem <- BlankLine / AnnotationLine / AnnotationBlock / ConceptLine
@@ -6339,7 +6339,7 @@ This appendix provides an informative list of CSS named color keywords and their
 This appendix exists for convenience only.
 
 * The normative definition of CSS color keywords is the CSS Color Module specifications.
-* Codex-conforming tools MUST NOT validate, normalize, convert, or reinterpret Color Values (see §5.7).
+* Codex-conforming tools MUST NOT normalize, convert, or reinterpret Color Values beyond surface-form well-formedness checking (see §5.7).
 * Named colors in Codex are written with a leading `&` sigil followed by an ASCII-lowercase keyword (see §5.7.1).
 * This appendix documents only fixed, context-independent CSS named colors. Context-dependent keywords are listed separately in §B.2.
 * The sRGB hex values shown are descriptive references only and MUST NOT be used to infer, compute, normalize, or transform Color Values in Codex.
