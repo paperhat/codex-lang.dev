@@ -1200,6 +1200,9 @@ Conforming implementations include this schema as built-in, immutable data, as r
 		>
 			<TraitRules>
 				<RequiresTrait name="type" />
+				<AllowsTrait name="scope" />
+				<AllowsTrait name="pattern" />
+				<AllowsTrait name="flags" />
 			</TraitRules>
 		</ConceptDefinition>
 
@@ -2066,6 +2069,119 @@ Conforming implementations include this schema as built-in, immutable data, as r
 		</ConstraintDefinition>
 
 		[END: RequiresChildConcept Constraints]
+
+		[GROUP: IdentityConstraint Constraints]
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:identity-constraint-identifier-form-requires-pattern
+			title="IdentifierForm requires pattern"
+			description="When IdentityConstraint.type is IdentifierForm, the pattern trait must be present."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="IdentityConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$IdentifierForm />
+					</When>
+					<Then>
+						<TraitExists trait="pattern" />
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:identity-constraint-identifier-form-forbids-scope
+			title="IdentifierForm forbids scope"
+			description="When IdentityConstraint.type is IdentifierForm, scope must be absent."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="IdentityConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$IdentifierForm />
+					</When>
+					<Then>
+						<TraitMissing trait="scope" />
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:identity-constraint-identifier-uniqueness-forbids-pattern
+			title="IdentifierUniqueness forbids pattern/flags"
+			description="When IdentityConstraint.type is IdentifierUniqueness, pattern and flags must be absent."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="IdentityConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$IdentifierUniqueness />
+					</When>
+					<Then>
+						<AllOf>
+							<Rule>
+								<TraitMissing trait="pattern" />
+							</Rule>
+							<Rule>
+								<TraitMissing trait="flags" />
+							</Rule>
+						</AllOf>
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:identity-constraint-entity-types-forbid-params
+			title="Entity identity types forbid extra params"
+			description="When IdentityConstraint.type is MustBeEntity or MustNotBeEntity, scope/pattern/flags must be absent."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="IdentityConstraint" />
+			</Targets>
+			<Rule>
+				<AnyOf>
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<TraitEquals trait="type" value=$MustBeEntity />
+							</When>
+							<Then>
+								<AllOf>
+									<Rule><TraitMissing trait="scope" /></Rule>
+									<Rule><TraitMissing trait="pattern" /></Rule>
+									<Rule><TraitMissing trait="flags" /></Rule>
+								</AllOf>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<TraitEquals trait="type" value=$MustNotBeEntity />
+							</When>
+							<Then>
+								<AllOf>
+									<Rule><TraitMissing trait="scope" /></Rule>
+									<Rule><TraitMissing trait="pattern" /></Rule>
+									<Rule><TraitMissing trait="flags" /></Rule>
+								</AllOf>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		[END: IdentityConstraint Constraints]
 
 		[GROUP: Uniqueness Constraints]
 

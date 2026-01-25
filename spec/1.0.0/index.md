@@ -149,6 +149,12 @@ Accordingly:
 * A conforming implementation MUST be able to parse and check well-formedness without a governing schema.
 * A conforming implementation MUST NOT perform schema validation without an explicit governing schema.
 
+Well-formedness checking includes mechanically recognizing and classifying Value spellings into their Value kinds (and any grammar-defined subkinds) by applying this specification's surface-form grammar (§5 and Appendix A).
+
+Expected types and type constraints for Trait values are schema-defined; checking a Trait value against its expected `ValueType` is part of schema validation and therefore requires an explicit governing schema.
+
+The bootstrap schema-of-schemas provides a built-in governing schema only for schema documents (§12.4) and MUST NOT be used as a fallback governing schema for instance documents.
+
 In this document, the term **schema validation** refers only to the schema-based semantic phase. When referring to the schema-free phase, this document uses **parse** and **check well-formedness**.
 
 ---
@@ -250,7 +256,7 @@ specification.
 ## 4. Naming Rules
 
 This section defines requirements for Concept names and Trait names.
-Some requirements in this section are normative but not mechanically enforceable. Such requirements bind schema authors and govern conformance, even where implementations cannot fully verify compliance and human review is required.
+Some requirements in this section are normative but not mechanically enforceable; such requirements bind schema authors and govern conformance, even where implementations cannot detect all violations.
 
 ### 4.1 Name Forms
 
@@ -269,7 +275,7 @@ No other casing is permitted.
 
 Codex names are interpreted as a sequence of one or more word segments.
 
-For the purposes of name-form checking, the segmentation of a name MUST be determined mechanically as follows:
+For the purposes of naming validation, the segmentation of a name MUST be determined mechanically as follows:
 
 * A segment begins at the start of the name.
 * A new segment begins at an ASCII uppercase letter that is immediately preceded by an ASCII lowercase letter or an ASCII digit.
@@ -293,10 +299,10 @@ As a consequence, names such as `AstNode` and `RdfGraph` are permitted, while na
 
 Codex does not attempt to mechanically determine whether a name segment is an abbreviation, initialism, or acronym. Such distinctions are contextual, language-dependent, and outside the scope of deterministic lexical analysis.
 
-Nevertheless, the following requirements are normative:
+Nevertheless, the following requirements are **normative**:
 
 * A schema author MUST NOT introduce abbreviations, initialisms, or acronyms in names unless they are reasonably well understood by the intended audience of the schema.
-* If a schema author uses an abbreviation, initialism, or acronym that may not be universally understood, the schema author MUST document its meaning in prose associated with the governing schema, such that a reader of the schema can readily determine that the term is an abbreviation and what it stands for.
+* If a schema author uses an abbreviation, initialism, or acronym that may not be universally understood, the schema author MUST document its meaning in the schema’s descriptive context.
 
 These requirements bind schema authors and govern schema conformance, even though they are not fully mechanically enforceable.
 
@@ -366,16 +372,7 @@ This requirement applies to:
 
 In the Surface Form, Numeric Values MUST be spelled using the numeric literal grammar defined by this specification.
 
-Numeric Values include:
-
-- integers
-- decimals
-- scientific notation
-- infinities
-- fractions
-- imaginary numbers
-- complex numbers
-- precision-significant numbers
+Numeric Values are exactly those spellings admitted by the numeric literal grammar defined by this specification.
 
 The meaning of a Numeric Value beyond its literal spelling MUST be defined by the governing schema or consuming system.
 
@@ -383,7 +380,7 @@ The meaning of a Numeric Value beyond its literal spelling MUST be defined by th
 
 Precision-significant numbers are marked with a `p` suffix.
 
-The precision (number of significant decimal places) MUST be determined by one of the following mechanisms:
+The declared precision (a count of decimal places in the literal spelling) MUST be determined by one of the following mechanisms:
 
 - Inferred precision: the count of decimal places in the literal spelling, including trailing zeros.
 - Explicit precision: an integer following the `p` suffix.
@@ -417,6 +414,8 @@ Codex-conforming tools MUST NOT derive temporal meaning, perform evaluation, app
 #### 5.6.1 Temporal Kind Determination (Normative)
 
 To classify a Temporal Value as a specific temporal kind (for example, `ZonedDateTime` or `Date`), tools MUST parse the braced payload using the Temporal Body grammar in Appendix A.
+
+This classification is purely syntactic and depends only on the braced payload; it does not imply temporal evaluation or interpretation.
 
 The temporal kind MUST be determined by the first matching alternative in the following ordered list:
 
@@ -461,14 +460,7 @@ In the Surface Form, a Named Color Value MUST be spelled as `&` followed immedia
 
 The color name MUST consist only of ASCII lowercase letters (`a` through `z`).
 
-The color name MUST be a CSS named color keyword as defined by the CSS Color Module specifications.
-
-Appendix B provides an informative list.
-
-The following context-dependent CSS keywords are included as named colors:
-
-- `transparent`
-- `currentcolor`
+The color name MUST be one of the named color keywords defined in Appendix B.
 
 In `color(...)`, the color space token MUST be one of:
 
@@ -510,9 +502,7 @@ An IRI Reference Value MUST contain a `:` character separating the scheme from t
 
 In the Surface Form, IRI Reference Values MUST be spelled using the IRI reference grammar defined by this specification.
 
-IRI Reference Values MUST permit non-ASCII Unicode characters directly (RFC 3987 IRI-reference).
-
-IRI Reference Values MUST permit percent-encoding (RFC 3987): https://www.rfc-editor.org/rfc/rfc3987.
+IRI Reference Values MUST permit non-ASCII Unicode characters directly and MUST permit percent-encoding, as defined for IRI-references by RFC 3987: https://www.rfc-editor.org/rfc/rfc3987.
 
 IRI Reference Values MUST NOT contain Unicode whitespace characters.
 
@@ -572,7 +562,7 @@ Each element of a List Value MUST be a Value.
 
 A List Value MUST permit nesting.
 
-A List Value MUST NOT require all elements to have the same Value type.
+A List Value MUST NOT require all elements to have the same Value kind.
 
 A List Value MUST represent exactly the elements explicitly present in its literal spelling.
 
@@ -588,7 +578,7 @@ Each element of a Set Value MUST be a Value.
 
 A Set Value MUST permit nesting.
 
-A Set Value MUST NOT require all elements to have the same Value type.
+A Set Value MUST NOT require all elements to have the same Value kind.
 
 #### 5.13.1 Value Equality for Collection Uniqueness (Normative)
 
@@ -614,7 +604,7 @@ Two Values are equal if and only if they have the same Value kind and satisfy th
 - Set Values: equal if and only if they contain the same elements (under this equality relation), regardless of element order.
 - Map Values: equal if and only if they contain the same bindings, where keys are equal and corresponding bound Values are equal, regardless of entry order.
 
-A Set Value MUST contain no duplicate elements.
+A Set Value MUST be interpreted as containing no duplicate elements.
 
 Duplicate elements MUST be determined using the Value equality relation in §5.13.1.
 
@@ -637,6 +627,8 @@ A Map Value MUST contain no duplicate keys.
 Duplicate keys MUST be determined using the Value equality relation in §5.13.1.
 
 If a map literal spelling contains duplicate keys, Codex-conforming tools MUST treat that spelling as an error.
+
+This is intentionally stricter than Set duplicate handling, because duplicate keys may bind distinct values and are therefore ambiguous.
 
 #### 5.14.1 Map Keys
 
@@ -668,7 +660,7 @@ Each element of a Tuple Value MUST be a Value.
 
 A Tuple Value MUST permit nesting.
 
-A Tuple Value MUST NOT require all elements to have the same Value type.
+A Tuple Value MUST NOT require all elements to have the same Value kind.
 
 For any Tuple Value used by a Trait, the governing schema MUST define the required arity and the meaning of each position.
 
@@ -680,11 +672,11 @@ In the Surface Form, Range Values MUST be spelled using the range literal gramma
 
 A Range Value MUST contain a start endpoint and an end endpoint.
 
-The start endpoint and end endpoint MUST be Values of the same Value type.
+The start endpoint and end endpoint MUST be Values of the same Value kind.
 
 An optional step MAY be present.
 
-If a step is present, the step MUST be a Value appropriate to the endpoint Value type.
+If a step is present, the step MUST be a Value appropriate to the endpoint Value kind.
 
 Range endpoints MUST be treated as inclusive.
 
@@ -698,7 +690,7 @@ The semantics of a Range Value beyond these structural requirements MUST be defi
 
 ### 6.1 Identifiers and the `id` Trait
 
-An identifier is a stable, globally unique name for an Entity.
+An identifier is a stable name for an Entity within an explicit identity scope.
 
 Identifiers MUST be declared, not inferred.
 
@@ -730,6 +722,11 @@ Identifier surface spellings MUST permit percent-encoding.
 
 ### 6.4 Stability and Immutability
 
+For the purposes of this specification, an identifier is *assigned* when a consuming system establishes that identifier as naming a particular Entity within an explicit identity scope.
+Codex does not define an assignment protocol and does not define a mechanism to mechanically detect global uniqueness or reuse.
+
+Within a single document, an identifier MUST NOT be declared by more than one Entity.
+
 Once assigned, an identifier MUST continue to refer to the same Entity.
 
 Identifiers MUST NOT be reused for different Entities.
@@ -754,11 +751,13 @@ Codex defines exactly three reference Traits:
 - `target`
 - `for`
 
-Each reference Trait binds a Concept instance to another Concept instance by identifier.
+Each reference Trait expresses a declarative relationship from a Concept instance to another Concept instance, identified by identity reference.
+
+An identity reference is either an identifier (an IRI Reference Value) or a lookup token handle (a Lookup Token Value) that is resolved as explicitly defined by this specification and the governing schema.
 
 The value of each reference Trait MUST be either an IRI Reference Value (see §5.9) or a Lookup Token Value (see §5.10).
 
-The value of a reference Trait MUST NOT be any other Value type.
+The value of a reference Trait MUST NOT be any other Value kind.
 
 Reference Traits MUST be interpreted only as declarative relationships.
 
@@ -788,23 +787,15 @@ The `for` Trait expresses applicability, scope, specialization, or intended doma
 
 The `for` Trait MUST NOT imply execution or transformation.
 
-If a `for` reference is used to denote a Concept type, it MUST reference the `ConceptDefinition` Entity for that Concept.
+If a `for` reference is used to denote a Concept type, it MUST reference the `ConceptDefinition` Entity for that Concept by identity reference.
 
 ### 7.5 Singleton Rule
 
-By default, a Concept instance MUST NOT declare more than one of the following Traits:
+A governing schema MAY constrain whether a Concept instance may declare multiple reference Traits.
 
-- `reference`
-- `target`
-- `for`
+If a governing schema requires that at most one of `reference`, `target`, or `for` may be present on a Concept instance, it MUST express that requirement using `ReferenceConstraint(type=ReferenceSingleton)`.
 
-A schema MAY explicitly authorize an exception.
-
-Any exception MUST be explicit and documented.
-
-If a Concept instance declares more than one of these Traits without a schema-authorized exception, Codex-conforming tools MUST treat that instance as invalid.
-
-If a schema authorizes an exception, the schema MUST document the permitted combinations and the intended interpretation.
+If a governing schema authorizes more than one reference Trait on the same Concept instance, it MUST document the permitted combinations and the intended interpretation.
 
 ### 7.6 Examples (Informative)
 
@@ -829,7 +820,11 @@ Example: using `target` for an about/applied-to relationship.
 In this example, `Tag` is applied to (is about) the `Book` Concept instance.
 
 ```cdx
-<Book id=book:TheHobbit key=~hobbit title="The Hobbit" />
+<Bindings>
+	<Bind key="hobbit" id=book:TheHobbit />
+</Bindings>
+
+<Book id=book:TheHobbit title="The Hobbit" />
 
 <Tag id=tag:classicFantasy target=~hobbit name=$classicFantasy />
 ```
@@ -839,7 +834,11 @@ Example: using `for` to scope a rule/policy to a Concept type.
 In this example, `LabelPolicy` is not about a particular `Book` instance; it is intended to apply to the `Book` Concept type.
 
 ```cdx
-<ConceptDefinition id=concept:Book key=~book name="Book" />
+<Bindings>
+	<Bind key="book" id=concept:Book />
+</Bindings>
+
+<ConceptDefinition id=concept:Book name="Book" />
 
 <LabelPolicy id=policy:BookLabels for=concept:Book />
 <LabelPolicy id=policy:BookLabelsAlt for=~book />
@@ -1385,6 +1384,7 @@ Schema-less checks MAY include:
 
 - determining whether the input bytes can be decoded as a permitted file encoding
 - determining whether the input matches the surface-form grammar
+- mechanically recognizing and classifying Value spellings into their Value kinds (and any grammar-defined subkinds) using the surface-form grammar
 - enforcing surface-form structural well-formedness (including marker nesting/matching)
 - enforcing surface-form canonicalization rules defined by this specification
 
@@ -1394,7 +1394,7 @@ In particular, without a governing schema, an implementation MUST NOT:
 
 - interpret content mode versus child mode for a concept beyond what is mechanically implied by the surface form
 - interpret whether a concept instance is an Entity beyond the presence or absence of an `id` trait spelling
-- evaluate trait meaning, trait authorization, value typing beyond surface-form Value recognition, or constraint logic
+- evaluate trait meaning, trait authorization, expected `ValueType` constraints, value typing beyond surface-form Value recognition, or constraint logic
 - resolve reference traits beyond their surface-form value type constraints
 
 ### 9.3 Schema-Required Semantic Validation
@@ -1914,10 +1914,10 @@ A `Bind` Concept declares a single lookup binding.
 
 ##### Traits (Normative)
 
-* `key` (required; lookup token, without the leading `~`)
+* `key` (required; string; the lookup token name, without the leading `~`)
 * `id` (required; IRI Reference Value)
 
-Each `Bind` Concept binds the lookup token `~key` to the specified identifier.
+Each `Bind` Concept binds the lookup token whose spelling is `~` followed by `key` to the specified identifier.
 
 ##### Constraints
 
@@ -2083,7 +2083,7 @@ If `flags` is present and non-empty, it MUST emit:
 
 The `pattern` and `flags` semantics MUST be SPARQL 1.1 `REGEX` semantics (see §9.5.1).
 
-#### 9.9.6 Identity Constraints (`codex:isEntity`)
+#### 9.9.6 Identity Constraints
 
 If a derived SHACL artifact encodes an identity constraint requiring an entity, it MUST emit:
 
@@ -2096,6 +2096,20 @@ If a derived SHACL artifact encodes an identity constraint requiring a non-entit
 - Let `S` be the owning node shape for the constraint. The property shape IRI MUST be `PS = predicatePropertyShapeIri(S, codex:isEntity)`.
 - `(PS, sh:path, codex:isEntity)`
 - `(PS, sh:hasValue, "false"^^xsd:boolean)`
+
+Derived validation artifacts MUST support `IdentityConstraint(type=IdentifierUniqueness)`.
+
+For derived artifact purposes, `IdentityConstraint(type=IdentifierUniqueness, scope=S)` MUST be treated as `UniqueConstraint(trait=id, scope=S)` and MUST follow §9.9.7.
+
+`IdentityConstraint(type=IdentifierUniqueness)` with no `scope` MUST be treated as `UniqueInDocument(trait=id)` and MUST follow §9.9.7.
+
+Derived validation artifacts MUST support `IdentityConstraint(type=IdentifierForm, pattern=p, flags=f)`.
+
+Because `codex:declaredId` is represented as an RDF IRI term (see §9.7.7), this constraint MUST be expressible using SHACL-SPARQL.
+It MUST report a violation if the focus node is an Entity and either:
+
+* it has no `codex:declaredId`, or
+* `STR(codex:declaredId)` does not match `p` under SPARQL 1.1 `REGEX` semantics (using flags `f` if present).
 
 #### 9.9.7 Uniqueness Constraints
 
@@ -3211,6 +3225,8 @@ Trait definitions establish the value type, cardinality, and constraints for a T
 * `isReferenceTrait` (optional; boolean)
 * `priority` (optional; enumerated token; presentation hint)
 
+`isReferenceTrait` is schema metadata only. It MUST NOT change the definition of reference Traits in §7, and it MUST NOT change the reference constraint semantics in §9.9.9–§9.9.12.
+
 If both `defaultValueType` and `defaultValueTypes` are provided, the implementation MUST treat that as a schema error.
 
 `priority` is a meta-schema concern. Implementations MUST NOT use `priority` to change validation or compilation semantics. Meta-schemas MAY constrain allowed `priority` values (e.g., `$Primary`, `$Secondary`).
@@ -3333,6 +3349,8 @@ Each token corresponds to a Value category defined in §5 (Value Literal Catalog
 
 A built-in value type token constrains only **surface-form validity and structural classification**.
 It MUST NOT imply evaluation, normalization, or conversion beyond what is defined in §5.
+
+See §2.5 and §9.2 for the distinction between schema-less Value-kind classification and schema validation of expected `ValueType` constraints.
 
 If a schema constrains a value using a built-in value type token, and a Trait value does not match that Value type’s surface grammar, schema-driven validation MUST fail.
 
@@ -4125,6 +4143,9 @@ Constrains entity and identifier semantics.
 ###### Traits (Normative)
 
 * `type` (required; one of the identity constraint types defined below)
+* `scope` (optional; Concept name string defining an identity uniqueness scope)
+* `pattern` (optional; regex string)
+* `flags` (optional; string; SPARQL 1.1 `REGEX` flags)
 
 ###### Types (Normative)
 
@@ -4134,6 +4155,26 @@ Constrains entity and identifier semantics.
 * `IdentifierForm`
 
 Identity constraint semantics MUST follow the entity and identity model defined in §§3.5 and 6.
+
+`IdentityConstraint(type=MustBeEntity)` MUST report an `IdentityError` unless the focus Concept instance is an Entity under §3.5.
+
+`IdentityConstraint(type=MustNotBeEntity)` MUST report an `IdentityError` if the focus Concept instance declares an `id` Trait.
+
+For `MustBeEntity` and `MustNotBeEntity`, `scope`, `pattern`, and `flags` MUST NOT be present.
+
+`IdentityConstraint(type=IdentifierUniqueness, scope=S)` constrains identifiers to be unique within the nearest enclosing scope `S`.
+Its semantics MUST be identical to `UniqueConstraint(trait=id, scope=S)` as defined in §9.9.7 (where `id` refers to `codex:declaredId`).
+
+If `scope` is omitted, `IdentityConstraint(type=IdentifierUniqueness)` MUST mean document-wide identifier uniqueness, with semantics identical to `UniqueInDocument(trait=id)` as defined in §9.9.7.
+
+For `IdentifierUniqueness`, `pattern` and `flags` MUST NOT be present.
+
+`IdentityConstraint(type=IdentifierForm, pattern=p, flags=f)` constrains the spelling of declared identifiers.
+When the focus Concept instance is an Entity, its declared `id` value MUST match the regular expression `p` under SPARQL 1.1 `REGEX` semantics (see §9.5.1).
+
+`IdentityConstraint(type=IdentifierForm)` MUST be treated as a schema error unless `pattern` is provided.
+
+For `IdentifierForm`, `scope` MUST NOT be present.
 
 ---
 
@@ -4369,6 +4410,8 @@ The bootstrap schema-of-schemas exists to eliminate circular dependency during s
 
 The bootstrap schema-of-schemas is distinct from domain schemas and from ecosystem meta-schemas.
 It governs **only** documents whose root Concept is `Schema`.
+
+The bootstrap schema-of-schemas MUST NOT be substituted for a missing governing schema when processing an instance document.
 
 #### 12.4.1 Requirements
 
@@ -4869,7 +4912,7 @@ Characteristics:
 
 Examples (illustrative):
 
-- violation of the reference singleton rule (unless schema permits)
+- violation of a governing schema's `ReferenceConstraint(type=ReferenceSingleton)` requirement
 - reference to a non-existent Entity (where resolution is required)
 - reference to an Entity of an unauthorized Concept type
 
@@ -6332,22 +6375,21 @@ EOF <- !.
 
 ---
 
-## Appendix B. CSS Named Colors (Informative)
+## Appendix B. Codex Named Colors (Normative)
 
-This appendix provides an informative list of CSS named color keywords and their fixed sRGB hex values, as defined by the CSS Color specifications.
+This appendix defines the complete set of named color keywords accepted in Codex Named Color Values (§5.7.1).
 
-This appendix exists for convenience only.
+Codex-conforming tools MUST treat Color Values as opaque and MUST NOT infer, compute, normalize, or transform Color Values based on the keyword tables in this appendix.
 
-* The normative definition of CSS color keywords is the CSS Color Module specifications.
-* Codex-conforming tools MUST NOT normalize, convert, or reinterpret Color Values beyond surface-form well-formedness checking (see §5.7).
-* Named colors in Codex are written with a leading `&` sigil followed by an ASCII-lowercase keyword (see §5.7.1).
-* This appendix documents only fixed, context-independent CSS named colors. Context-dependent keywords are listed separately in §B.2.
-* The sRGB hex values shown are descriptive references only and MUST NOT be used to infer, compute, normalize, or transform Color Values in Codex.
-* Aliases and duplicates (for example, `gray`/`grey`, `cyan`/`aqua`) are intentional and reflect the CSS specification.
+The sRGB hex values shown are descriptive references only.
+
+Aliases and duplicates (for example, `gray`/`grey`, `cyan`/`aqua`) are intentional and are part of the Codex named color set.
 
 ### B.1 Named Color Keyword Table
 
-Each entry maps a Codex Named Color Value (`&name`) to its fixed sRGB hex form, as defined by CSS.
+Each entry defines an accepted Codex Named Color Value (`&name`).
+
+The sRGB hex column is informative and does not define Codex color semantics.
 
 | Named color             |  sRGB hex |
 | ----------------------- | --------: |
@@ -6504,12 +6546,14 @@ Each entry maps a Codex Named Color Value (`&name`) to its fixed sRGB hex form, 
 
 The following keywords are accepted as Codex named colors but do not have a single fixed sRGB value in all contexts.
 
+These values are valid Codex Color Values, but Codex does not define any fixed expansion or interpretation for them.
+
 Codex-conforming tools MUST treat these values as opaque Color Values and MUST NOT attempt to resolve them.
 
 | Named color     | Notes                                                                                       |
 | --------------- | ------------------------------------------------------------------------------------------- |
-| `&transparent`  | Equivalent to fully transparent black in CSS; informative reference sRGB form: `#00000000`. |
-| `&currentcolor` | Context-dependent; resolves to the current text color in CSS.                               |
+| `&transparent`  | Context-dependent; informative reference sRGB form: `#00000000`.                            |
+| `&currentcolor` | Context-dependent.                                                                          |
 
 ---
 
