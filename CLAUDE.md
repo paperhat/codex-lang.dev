@@ -48,8 +48,8 @@ Every Codex document maps deterministically to an RDF graph:
 | Path | Purpose |
 |------|---------|
 | `spec/1.0.0/index.md` | **Normative specification** (~5000 lines). All requirements defined here. |
-| `spec/1.0.0/bootstrap-schema/index.cdx` | **Profile B bootstrap** — Schema-of-schemas as SHACL triples. Validates schema documents. |
-| `spec/1.0.0/bootstrap-schema/expanded/index.cdx` | **Profile A bootstrap** — Human-readable equivalent of the above. |
+| `spec/1.0.0/bootstrap-schema/schema.cdx` | **Profile B bootstrap** — Schema-of-schemas as SHACL triples. Validates schema documents. |
+| `spec/1.0.0/bootstrap-schema/expanded/schema.cdx` | **Profile A bootstrap** — Human-readable equivalent of the above. |
 | `conformance/1.0.0/` | Conformance test suite (valid/invalid cases, expected outputs). |
 | `notes/index.md` | Informative documentation on value types. |
 
