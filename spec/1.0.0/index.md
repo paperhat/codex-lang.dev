@@ -1242,9 +1242,9 @@ A block annotation MUST use `[` and `]` on their own lines.
 
 Annotations MAY appear at top-level or within bodies interpreted as containing child Concepts.
 
-Annotations MUST NOT appear inside Concept markers.
+Annotations MUST NOT appear inside Concept markers (that is, inside `<Concept …>`, `</Concept>`, or `<Concept />`).
 
-Annotations MAY contain arbitrary text, including blank lines.
+Annotations MAY contain arbitrary text, including blank lines (block annotations only).
 
 #### 8.9.2 Structural Rules
 
@@ -1254,15 +1254,15 @@ For an inline annotation, the closing `]` MUST appear on the same line.
 
 For a block annotation:
 
-- The line containing `[` MUST contain no other non-whitespace characters.
-- The closing `]` MUST appear as the first non-whitespace character on its own line.
-- The closing `]` line MUST contain no other non-whitespace characters.
+* The line containing `[` MUST contain no other non-whitespace characters.
+* The closing `]` MUST appear as the first non-whitespace character on its own line.
+* The closing `]` line MUST contain no other non-whitespace characters.
 
 #### 8.9.3 Escaping
 
 Within an annotation:
 
-- `\]` represents a literal `]`.
+* `\]` represents a literal `]`.
 
 A backslash not immediately followed by `]` is a literal backslash and has no special meaning.
 
@@ -1274,9 +1274,9 @@ Canonicalization of annotations is deterministic and depends on the annotation f
 
 Codex-conforming tools MUST canonicalize inline annotations as follows:
 
-- Leading and trailing whitespace inside the brackets MUST be trimmed.
-- Internal runs of whitespace (spaces, tabs, and newlines) MUST be collapsed to a single space.
-- Escaped closing brackets MUST remain escaped (that is, `\]` MUST remain spelled as `\]`).
+* Leading and trailing whitespace inside the brackets MUST be trimmed.
+* Internal runs of whitespace (spaces, tabs, and newlines) MUST be collapsed to a single space.
+* Escaped closing brackets MUST remain escaped (that is, `\]` MUST remain spelled as `\]`).
 
 Canonical rendering MUST use no padding spaces just inside the brackets (for example, `[text]`, not `[ text ]`).
 
@@ -1290,8 +1290,8 @@ Block annotations MAY declare a directive (see §8.9.5) that controls additional
 
 For a block annotation with no directive, Codex-conforming tools MUST:
 
-- Remove trailing whitespace on each content line.
-- Normalize indentation so that the content lines are indented exactly one tab deeper than the `[` / `]` lines.
+* Remove trailing whitespace on each content line.
+* Normalize indentation so that the content lines are indented exactly one tab deeper than the `[` / `]` lines.
 
 #### 8.9.5 Block Annotation Directives
 
@@ -1299,17 +1299,19 @@ In a block annotation, the first non-blank content line MAY be a directive line.
 
 If present, the directive line MUST be exactly one of:
 
-- `FLOW:`
-- `CODE:`
-- `MARKDOWN:`
+* `FLOW:`
+* `CODE:`
+* `MARKDOWN:`
+
+Directive recognition MUST be performed prior to any canonicalization other than newline normalization.
 
 If present, the directive line MUST be preserved in canonical output.
 
 Directive behavior:
 
-- `CODE:` — Codex-conforming tools MUST preserve the block annotation bytes verbatim except for newline normalization.
-- `MARKDOWN:` — Codex-conforming tools MUST preserve the block annotation bytes verbatim except for newline normalization.
-- `FLOW:` — The flow-text value is the remaining content with leading and trailing whitespace trimmed, internal runs of whitespace collapsed to single spaces, and escapes interpreted per §8.9.3.
+* `CODE:` — Codex-conforming tools MUST preserve the block annotation bytes verbatim except for newline normalization.
+* `MARKDOWN:` — Codex-conforming tools MUST preserve the block annotation bytes verbatim except for newline normalization.
+* `FLOW:` — The flow-text value is the remaining content with leading and trailing whitespace trimmed, internal runs of whitespace collapsed to single spaces, and escapes interpreted per §8.9.3.
 
 For `CODE:` and `MARKDOWN:` directives, Codex-conforming tools MUST NOT reindent, trim, strip trailing whitespace, wrap, or interpret escapes within the block annotation.
 
@@ -1317,10 +1319,10 @@ If no directive is present, the block annotation MUST be canonicalized as descri
 
 For `FLOW:` directives, Codex-conforming tools MUST render canonical output as follows:
 
-- Split the remaining content into paragraphs separated by one or more blank lines.
-- For each paragraph, wrap words to lines of at most 80 Unicode scalar characters using greedy packing.
-- Indent each wrapped line exactly one tab deeper than the `[` / `]` lines.
-- Separate paragraphs by exactly one blank line.
+* Split the remaining content into paragraphs separated by one or more blank lines.
+* For each paragraph, wrap words to lines of at most 80 Unicode scalar characters using greedy packing.
+* Indent each wrapped line exactly one tab deeper than the `[` / `]` lines.
+* Separate paragraphs by exactly one blank line.
 
 #### 8.9.6 Annotation Kinds
 
@@ -1334,25 +1336,24 @@ Codex defines three kinds of annotations:
 
 An annotation is an attached annotation if and only if:
 
-- It is an inline annotation.
-- It is not a grouping annotation.
-- It is immediately followed (on the next line) by a Concept opening marker.
-- There is no blank line between the annotation and that marker.
+* It is not a grouping annotation.
+* It appears immediately before a Concept opening marker.
+* There is no blank line between the annotation and that marker.
+
+Attached annotations MAY be inline or block annotations.
 
 Multiple attached annotations MAY stack.
 
+Stacked attached annotations MUST be contiguous and MUST NOT be separated by blank lines.
+
 An attached-annotation stack attaches to the next Concept opening marker.
-
-Attached annotations MUST NOT have blank lines separating them from each other.
-
-If a blank line appears between stacked annotations, the annotations MUST NOT be treated as attached.
 
 ##### 8.9.6.2 Grouping Annotations
 
 A grouping annotation is a single-line annotation whose canonicalized annotation text matches one of the following forms:
 
-- `GROUP: <label>`
-- `END: <label>`
+* `GROUP: <label>`
+* `END: <label>`
 
 `<label>` MUST be a non-empty string after trimming.
 
@@ -1366,12 +1367,15 @@ Grouping annotations MAY nest.
 
 Label comparison MUST use the canonical label form (trimmed, with internal whitespace collapsed to single spaces).
 
+Grouping annotations MUST conform to the canonical blank-line requirements in §8.9.8.
+
 ##### 8.9.6.3 General Annotations
 
 An annotation is a general annotation if and only if:
 
-- It is surrounded by exactly one blank line above and exactly one blank line below, where file boundaries count as blank-line boundaries.
-- It is not a grouping annotation.
+* It is not an attached annotation.
+* It is not a grouping annotation.
+* It is surrounded by exactly one blank line above and exactly one blank line below, where file boundaries count as blank-line boundaries.
 
 General annotations MAY be inline or block.
 
@@ -1381,8 +1385,8 @@ General annotations MUST NOT attach to Concept instances.
 
 Grouping annotations form a properly nested stack.
 
-- `[GROUP: X]` pushes label `X`.
-- `[END: X]` MUST match the most recent unmatched `[GROUP: X]`.
+* `[GROUP: X]` pushes label `X`.
+* `[END: X]` MUST match the most recent unmatched `[GROUP: X]`.
 
 If an `END` label does not match the most recent open group label, or if an `END` appears with no open group, Codex-conforming tools MUST treat the document as invalid.
 
@@ -1390,9 +1394,9 @@ If an `END` label does not match the most recent open group label, or if an `END
 
 In canonical surface form:
 
-- Attached annotations MUST appear directly above the annotated Concept opening marker with no blank line.
-- Grouping annotations MUST be surrounded by exactly one blank line above and below, where file boundaries count as blank-line boundaries.
-- General annotations MUST be surrounded by exactly one blank line above and below, where file boundaries count as blank-line boundaries.
+* Attached annotations MUST appear directly above the annotated Concept opening marker with no blank line.
+* Grouping annotations MUST be surrounded by exactly one blank line above and below, where file boundaries count as blank-line boundaries.
+* General annotations MUST be surrounded by exactly one blank line above and below, where file boundaries count as blank-line boundaries.
 
 Any annotation that is neither an attached annotation, a grouping annotation, nor a general annotation is invalid.
 

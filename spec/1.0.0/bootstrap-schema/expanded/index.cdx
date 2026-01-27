@@ -187,6 +187,7 @@
 	</EnumeratedValueSets>
 
 	<ConceptDefinitions>
+
 		[GROUP: Root Schema Concept]
 
 		<ConceptDefinition
@@ -461,11 +462,6 @@
 			</TraitRules>
 		</ConceptDefinition>
 
-		[NOTE: ExactlyOneChildOf expresses XOR child requirements within ChildRules.
-		 The parent must contain exactly one child matching any listed ConceptOption.
-		 Enforces: not empty (at least one), not multiple (at most one), must match an option.
-		 Requires min=2 ConceptOptions because a choice with fewer than 2 options is meaningless.]
-
 		<ConceptDefinition
 			id=urn:codex:bootstrap:concept:ExactlyOneChildOf
 			key=~exactlyOneChildOf
@@ -477,9 +473,6 @@
 				<RequiresChildConcept conceptSelector="ConceptOption" min=2 />
 			</ChildRules>
 		</ConceptDefinition>
-
-		[NOTE: ConceptOption specifies one valid concept type within an ExactlyOneChildOf group.
-		 Each option names a concept via conceptSelector; the parent chooses exactly one.]
 
 		<ConceptDefinition
 			id=urn:codex:bootstrap:concept:ConceptOption
@@ -529,10 +522,6 @@
 				<AllowsChildConcept conceptSelector="AllowedValues" max=1 />
 			</ChildRules>
 		</ConceptDefinition>
-
-		[NOTE: AllowedValues uses ExactlyOneChildOf to enforce:
-		 - Must contain exactly one child (cannot be empty)
-		 - Child must be either ValueIsOneOf or EnumeratedConstraint (cannot have both)]
 
 		<ConceptDefinition
 			id=urn:codex:bootstrap:concept:AllowedValues
@@ -653,9 +642,6 @@
 				/>
 			</ChildRules>
 		</ConceptDefinition>
-
-		[NOTE: Targets must contain at least one child (TargetConcept or TargetContext).
-		 Context-only constraints (with only TargetContext) are valid per spec 11.7.3.]
 
 		<ConceptDefinition
 			id=urn:codex:bootstrap:concept:Targets
@@ -1430,6 +1416,7 @@
 	</ConceptDefinitions>
 
 	<TraitDefinitions>
+
 		[GROUP: Common Traits]
 
 		<TraitDefinition
@@ -1845,6 +1832,7 @@
 	</TraitDefinitions>
 
 	<ConstraintDefinitions>
+
 		[GROUP: Schema Structural Constraints]
 
 		<ConstraintDefinition
@@ -2725,9 +2713,5 @@
 		</ConstraintDefinition>
 
 		[END: Non-Empty Container Constraints]
-
-		[NOTE: Min-Max Ordering Constraints cannot be expressed in the current constraint language.
-		 Comparing two trait values (e.g., min <= max) would require a new constraint type
-		 such as TraitComparison or SHACL-SPARQL. This is a known limitation.]
 	</ConstraintDefinitions>
 </Schema>
