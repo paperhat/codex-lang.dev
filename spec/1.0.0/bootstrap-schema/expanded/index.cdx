@@ -1,18 +1,3 @@
-Status: INFORMATIVE  
-Lock State: LOCKED  
-Version: 1.0.0 BETA  
-Editor: Charles F. Munat
-
-# Codex Bootstrap Schema-of-Schemas
-
-This document defines the bootstrap schema-of-schemas for Codex 1.0.0 BETA.
-
-This schema is used for schema validation of schema documents authored in Codex.
-Conforming implementations include this schema as built-in, immutable data, as required by the main specification.
-
----
-
-```cdx
 <Schema
 	id=urn:codex:bootstrap:1.0.0
 	version="1.0.0"
@@ -22,39 +7,86 @@ Conforming implementations include this schema as built-in, immutable data, as r
 	description="The authoritative schema for schema-validating Codex schema documents."
 >
 	<EnumeratedValueSets>
-		<EnumeratedValueSet name="ConceptKind">
-			<Member value="Semantic" label="Semantic" description="A concept with domain meaning." />
-			<Member value="Structural" label="Structural" description="A concept that organizes structure." />
-			<Member value="ValueLike" label="Value-like" description="A concept that behaves like a value." />
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:ConceptKind
+			key=~conceptKind
+			name="ConceptKind"
+		>
+			<Member
+				value="Semantic"
+				label="Semantic"
+				description="A concept with domain meaning."
+			/>
+			<Member
+				value="Structural"
+				label="Structural"
+				description="A concept that organizes structure."
+			/>
+			<Member
+				value="ValueLike"
+				label="Value-like"
+				description="A concept that behaves like a value."
+			/>
 		</EnumeratedValueSet>
 
-		<EnumeratedValueSet name="EntityEligibility">
-			<Member value="MustBeEntity" label="Must be Entity" description="Instances must declare an id." />
-			<Member value="MustNotBeEntity" label="Must not be Entity" description="Instances must not declare an id." />
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:EntityEligibility
+			key=~entityEligibility
+			name="EntityEligibility"
+		>
+			<Member
+				value="MustBeEntity"
+				label="Must be Entity"
+				description="Instances must declare an id."
+			/>
+			<Member
+				value="MustNotBeEntity"
+				label="Must not be Entity"
+				description="Instances must not declare an id."
+			/>
 		</EnumeratedValueSet>
 
-		<EnumeratedValueSet name="CompatibilityClass">
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:CompatibilityClass
+			key=~compatibilityClass
+			name="CompatibilityClass"
+		>
 			<Member value="BackwardCompatible" label="Backward Compatible" />
 			<Member value="ForwardCompatible" label="Forward Compatible" />
 			<Member value="Breaking" label="Breaking" />
 		</EnumeratedValueSet>
 
-		<EnumeratedValueSet name="AuthoringProfile">
-			<Member value="ProfileA" label="Profile A" description="Layer A schema authoring only." />
-			<Member value="ProfileB" label="Profile B" description="Layer B schema authoring only." />
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:AuthoringProfile
+			key=~authoringProfile
+			name="AuthoringProfile"
+		>
+			<Member
+				value="ProfileA"
+				label="Profile A"
+				description="Layer A schema authoring only."
+			/>
+			<Member
+				value="ProfileB"
+				label="Profile B"
+				description="Layer B schema authoring only."
+			/>
 		</EnumeratedValueSet>
 
-		<EnumeratedValueSet name="Ordering">
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:Ordering
+			key=~ordering
+			name="Ordering"
+		>
 			<Member value="Ordered" label="Ordered" />
 			<Member value="Unordered" label="Unordered" />
 		</EnumeratedValueSet>
 
-		<EnumeratedValueSet name="Cardinality">
-			<Member value="Single" label="Single" />
-			<Member value="List" label="List" />
-		</EnumeratedValueSet>
-
-		<EnumeratedValueSet name="ValueType">
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:ValueType
+			key=~valueType
+			name="ValueType"
+		>
 			<Member value="String" />
 			<Member value="Char" />
 			<Member value="Boolean" />
@@ -75,13 +107,21 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			<Member value="Range" />
 		</EnumeratedValueSet>
 
-		<EnumeratedValueSet name="ChildConstraintType">
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:ChildConstraintType
+			key=~childConstraintType
+			name="ChildConstraintType"
+		>
 			<Member value="RequiresChildConcept" />
 			<Member value="AllowsChildConcept" />
 			<Member value="ForbidsChildConcept" />
 		</EnumeratedValueSet>
 
-		<EnumeratedValueSet name="ReferenceConstraintType">
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:ReferenceConstraintType
+			key=~referenceConstraintType
+			name="ReferenceConstraintType"
+		>
 			<Member value="ReferenceTargetsEntity" />
 			<Member value="ReferenceMustResolve" />
 			<Member value="ReferenceTargetsConcept" />
@@ -89,27 +129,60 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			<Member value="ReferenceTraitAllowed" />
 		</EnumeratedValueSet>
 
-		<EnumeratedValueSet name="IdentityConstraintType">
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:IdentityConstraintType
+			key=~identityConstraintType
+			name="IdentityConstraintType"
+		>
 			<Member value="MustBeEntity" />
 			<Member value="MustNotBeEntity" />
 			<Member value="IdentifierUniqueness" />
 			<Member value="IdentifierForm" />
 		</EnumeratedValueSet>
 
-		<EnumeratedValueSet name="ContextConstraintType">
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:ContextConstraintType
+			key=~contextConstraintType
+			name="ContextConstraintType"
+		>
 			<Member value="OnlyValidUnderParent" />
 			<Member value="OnlyValidUnderContext" />
 		</EnumeratedValueSet>
 
-		<EnumeratedValueSet name="ContentConstraintType">
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:ContentConstraintType
+			key=~contentConstraintType
+			name="ContentConstraintType"
+		>
 			<Member value="ContentForbiddenUnlessAllowed" />
 			<Member value="ContentRequired" />
 			<Member value="ContentMatchesPattern" />
 		</EnumeratedValueSet>
 
-		<EnumeratedValueSet name="TraitPriority">
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:TraitPriority
+			key=~traitPriority
+			name="TraitPriority"
+		>
 			<Member value="Primary" />
 			<Member value="Secondary" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:OrderConstraintType
+			key=~orderConstraintType
+			name="OrderConstraintType"
+		>
+			<Member
+				value="Ascending"
+				label="Ascending"
+				description="Elements must be in ascending order by the specified trait."
+			/>
+			<Member
+				value="Descending"
+				label="Descending"
+				description="Elements must be in descending order by the specified trait."
+			/>
 		</EnumeratedValueSet>
 	</EnumeratedValueSets>
 
@@ -236,6 +309,7 @@ Conforming implementations include this schema as built-in, immutable data, as r
 				<RequiresTrait name="conceptKind" />
 				<RequiresTrait name="entityEligibility" />
 				<AllowsTrait name="key" />
+				<AllowsTrait name="role" />
 			</TraitRules>
 			<ChildRules>
 				<AllowsChildConcept conceptSelector="ContentRules" max=1 />
@@ -253,8 +327,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
-				<AllowsChildConcept conceptSelector="AllowsContent" max=1 />
-				<AllowsChildConcept conceptSelector="ForbidsContent" max=1 />
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="AllowsContent" />
+					<ConceptOption conceptSelector="ForbidsContent" />
+				</ExactlyOneChildOf>
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -298,6 +374,9 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			<TraitRules>
 				<RequiresTrait name="name" />
 			</TraitRules>
+			<ChildRules>
+				<AllowsChildConcept conceptSelector="AllowedValues" max=1 />
+			</ChildRules>
 		</ConceptDefinition>
 
 		<ConceptDefinition
@@ -310,6 +389,9 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			<TraitRules>
 				<RequiresTrait name="name" />
 			</TraitRules>
+			<ChildRules>
+				<AllowsChildConcept conceptSelector="AllowedValues" max=1 />
+			</ChildRules>
 		</ConceptDefinition>
 
 		<ConceptDefinition
@@ -379,6 +461,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			</TraitRules>
 		</ConceptDefinition>
 
+		[NOTE: ExactlyOneChildOf expresses XOR child requirements within ChildRules.
+		 The parent must contain exactly one child matching any listed ConceptOption.
+		 Enforces: not empty (at least one), not multiple (at most one), must match an option.
+		 Requires min=2 ConceptOptions because a choice with fewer than 2 options is meaningless.]
+
 		<ConceptDefinition
 			id=urn:codex:bootstrap:concept:ExactlyOneChildOf
 			key=~exactlyOneChildOf
@@ -390,6 +477,9 @@ Conforming implementations include this schema as built-in, immutable data, as r
 				<RequiresChildConcept conceptSelector="ConceptOption" min=2 />
 			</ChildRules>
 		</ConceptDefinition>
+
+		[NOTE: ConceptOption specifies one valid concept type within an ExactlyOneChildOf group.
+		 Each option names a concept via conceptSelector; the parent chooses exactly one.]
 
 		<ConceptDefinition
 			id=urn:codex:bootstrap:concept:ConceptOption
@@ -432,8 +522,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 				<RequiresTrait name="name" />
 				<AllowsTrait name="defaultValueType" />
 				<AllowsTrait name="defaultValueTypes" />
-				<RequiresTrait name="cardinality" />
-				<AllowsTrait name="itemValueType" />
 				<AllowsTrait name="isReferenceTrait" />
 				<AllowsTrait name="priority" />
 			</TraitRules>
@@ -441,6 +529,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 				<AllowsChildConcept conceptSelector="AllowedValues" max=1 />
 			</ChildRules>
 		</ConceptDefinition>
+
+		[NOTE: AllowedValues uses ExactlyOneChildOf to enforce:
+		 - Must contain exactly one child (cannot be empty)
+		 - Child must be either ValueIsOneOf or EnumeratedConstraint (cannot have both)]
 
 		<ConceptDefinition
 			id=urn:codex:bootstrap:concept:AllowedValues
@@ -450,8 +542,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
-				<AllowsChildConcept conceptSelector="ValueIsOneOf" />
-				<AllowsChildConcept conceptSelector="EnumeratedConstraint" />
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="ValueIsOneOf" />
+					<ConceptOption conceptSelector="EnumeratedConstraint" />
+				</ExactlyOneChildOf>
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -469,6 +563,7 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			<TraitRules>
 				<RequiresTrait name="id" />
 				<RequiresTrait name="name" />
+				<AllowsTrait name="key" />
 			</TraitRules>
 			<ChildRules>
 				<RequiresChildConcept conceptSelector="Member" min=1 />
@@ -546,10 +641,21 @@ Conforming implementations include this schema as built-in, immutable data, as r
 				<AllowsTrait name="description" />
 			</TraitRules>
 			<ChildRules>
-				<RequiresChildConcept conceptSelector="Targets" min=1 max=1 />
-				<RequiresChildConcept conceptSelector="Rule" min=1 max=1 />
+				<RequiresChildConcept
+					conceptSelector="Targets"
+					min=1
+					max=1
+				/>
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					min=1
+					max=1
+				/>
 			</ChildRules>
 		</ConceptDefinition>
+
+		[NOTE: Targets must contain at least one child (TargetConcept or TargetContext).
+		 Context-only constraints (with only TargetContext) are valid per spec 11.7.3.]
 
 		<ConceptDefinition
 			id=urn:codex:bootstrap:concept:Targets
@@ -559,7 +665,7 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
-				<AllowsChildConcept conceptSelector="TargetConcept" min=0 />
+				<AllowsChildConcept conceptSelector="TargetConcept" />
 				<AllowsChildConcept conceptSelector="TargetContext" />
 			</ChildRules>
 		</ConceptDefinition>
@@ -623,7 +729,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 					<ConceptOption conceptSelector="CollectionAllowsDuplicates" />
 					<ConceptOption conceptSelector="MemberCount" />
 					<ConceptOption conceptSelector="EachMemberSatisfies" />
-					<ConceptOption conceptSelector="CollectionConstraint" />
 					<ConceptOption conceptSelector="UniqueConstraint" />
 					<ConceptOption conceptSelector="OrderConstraint" />
 					<ConceptOption conceptSelector="ReferenceConstraint" />
@@ -670,7 +775,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
-				<RequiresChildConcept conceptSelector="Rule" min=1 max=1 />
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					min=1
+					max=1
+				/>
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -682,8 +791,16 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
-				<RequiresChildConcept conceptSelector="When" min=1 max=1 />
-				<RequiresChildConcept conceptSelector="Then" min=1 max=1 />
+				<RequiresChildConcept
+					conceptSelector="When"
+					min=1
+					max=1
+				/>
+				<RequiresChildConcept
+					conceptSelector="Then"
+					min=1
+					max=1
+				/>
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -695,7 +812,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
-				<RequiresChildConcept conceptSelector="Rule" min=1 max=1 />
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					min=1
+					max=1
+				/>
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -707,7 +828,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
-				<RequiresChildConcept conceptSelector="Rule" min=1 max=1 />
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					min=1
+					max=1
+				/>
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -777,7 +902,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 					<ConceptOption conceptSelector="DescendantPath" />
 					<ConceptOption conceptSelector="ContentPath" />
 				</ExactlyOneChildOf>
-				<RequiresChildConcept conceptSelector="Rule" min=1 max=1 />
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					min=1
+					max=1
+				/>
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -795,7 +924,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 					<ConceptOption conceptSelector="DescendantPath" />
 					<ConceptOption conceptSelector="ContentPath" />
 				</ExactlyOneChildOf>
-				<RequiresChildConcept conceptSelector="Rule" min=1 max=1 />
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					min=1
+					max=1
+				/>
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -817,7 +950,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 					<ConceptOption conceptSelector="DescendantPath" />
 					<ConceptOption conceptSelector="ContentPath" />
 				</ExactlyOneChildOf>
-				<RequiresChildConcept conceptSelector="Rule" min=1 max=1 />
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					min=1
+					max=1
+				/>
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -1002,7 +1139,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
-				<RequiresTrait name="type" />
+				<RequiresTrait name="type">
+					<AllowedValues>
+						<EnumeratedConstraint set=~childConstraintType />
+					</AllowedValues>
+				</RequiresTrait>
 				<RequiresTrait name="conceptSelector" />
 			</TraitRules>
 		</ConceptDefinition>
@@ -1018,7 +1159,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 				<RequiresTrait name="conceptSelector" />
 			</TraitRules>
 			<ChildRules>
-				<RequiresChildConcept conceptSelector="Rule" min=1 max=1 />
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					min=1
+					max=1
+				/>
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -1112,25 +1257,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 					<ConceptOption conceptSelector="ChildPath" />
 					<ConceptOption conceptSelector="DescendantPath" />
 				</ExactlyOneChildOf>
-				<RequiresChildConcept conceptSelector="Rule" min=1 max=1 />
-			</ChildRules>
-		</ConceptDefinition>
-
-		<ConceptDefinition
-			id=urn:codex:bootstrap:concept:CollectionConstraint
-			key=~collectionConstraint
-			name="CollectionConstraint"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
-		>
-			<TraitRules>
-				<RequiresTrait name="type" />
-			</TraitRules>
-			<ChildRules>
-				<ExactlyOneChildOf>
-					<ConceptOption conceptSelector="ChildPath" />
-					<ConceptOption conceptSelector="DescendantPath" />
-				</ExactlyOneChildOf>
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					min=1
+					max=1
+				/>
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -1159,7 +1290,12 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
-				<RequiresTrait name="type" />
+				<RequiresTrait name="type">
+					<AllowedValues>
+						<EnumeratedConstraint set=~orderConstraintType />
+					</AllowedValues>
+				</RequiresTrait>
+				<RequiresTrait name="byTrait" />
 			</TraitRules>
 			<ChildRules>
 				<ExactlyOneChildOf>
@@ -1181,7 +1317,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
-				<RequiresTrait name="type" />
+				<RequiresTrait name="type">
+					<AllowedValues>
+						<EnumeratedConstraint set=~referenceConstraintType />
+					</AllowedValues>
+				</RequiresTrait>
 				<AllowsTrait name="conceptSelector" />
 				<AllowsTrait name="traitName" />
 			</TraitRules>
@@ -1199,7 +1339,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
-				<RequiresTrait name="type" />
+				<RequiresTrait name="type">
+					<AllowedValues>
+						<EnumeratedConstraint set=~identityConstraintType />
+					</AllowedValues>
+				</RequiresTrait>
 				<AllowsTrait name="scope" />
 				<AllowsTrait name="pattern" />
 				<AllowsTrait name="flags" />
@@ -1218,7 +1362,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
-				<RequiresTrait name="type" />
+				<RequiresTrait name="type">
+					<AllowedValues>
+						<EnumeratedConstraint set=~contextConstraintType />
+					</AllowedValues>
+				</RequiresTrait>
 				<AllowsTrait name="contextSelector" />
 			</TraitRules>
 		</ConceptDefinition>
@@ -1235,7 +1383,11 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
-				<RequiresTrait name="type" />
+				<RequiresTrait name="type">
+					<AllowedValues>
+						<EnumeratedConstraint set=~contentConstraintType />
+					</AllowedValues>
+				</RequiresTrait>
 				<AllowsTrait name="pattern" />
 				<AllowsTrait name="flags" />
 			</TraitRules>
@@ -1284,7 +1436,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:id
 			name="id"
 			defaultValueType=$IriReference
-			cardinality=$Single
 			isReferenceTrait=false
 			priority=$Primary
 		/>
@@ -1293,7 +1444,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:key
 			name="key"
 			defaultValueType=$LookupToken
-			cardinality=$Single
 			isReferenceTrait=false
 			priority=$Secondary
 		/>
@@ -1302,7 +1452,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:name
 			name="name"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1310,7 +1459,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:title
 			name="title"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1318,7 +1466,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:description
 			name="description"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1326,7 +1473,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:version
 			name="version"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1334,7 +1480,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:label
 			name="label"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1342,7 +1487,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:value
 			name="value"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1350,7 +1494,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:values
 			name="values"
 			defaultValueType=$List
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1358,7 +1501,20 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:message
 			name="message"
 			defaultValueType=$String
-			cardinality=$Single
+			priority=$Secondary
+		/>
+
+		<TraitDefinition
+			id=urn:codex:bootstrap:trait:role
+			name="role"
+			defaultValueTypes=[$String, $List<$String>]
+			priority=$Secondary
+		/>
+
+		<TraitDefinition
+			id=urn:codex:bootstrap:trait:tag
+			name="tag"
+			defaultValueTypes=[$String, $List<$String>]
 			priority=$Secondary
 		/>
 
@@ -1370,11 +1526,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:compatibilityClass
 			name="compatibilityClass"
 			defaultValueType=$EnumeratedToken
-			cardinality=$Single
 			priority=$Primary
 		>
 			<AllowedValues>
-				<EnumeratedConstraint set="CompatibilityClass" />
+				<EnumeratedConstraint set=~compatibilityClass />
 			</AllowedValues>
 		</TraitDefinition>
 
@@ -1382,11 +1537,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:authoringProfile
 			name="authoringProfile"
 			defaultValueType=$EnumeratedToken
-			cardinality=$Single
 			priority=$Primary
 		>
 			<AllowedValues>
-				<EnumeratedConstraint set="AuthoringProfile" />
+				<EnumeratedConstraint set=~authoringProfile />
 			</AllowedValues>
 		</TraitDefinition>
 
@@ -1398,11 +1552,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:conceptKind
 			name="conceptKind"
 			defaultValueType=$EnumeratedToken
-			cardinality=$Single
 			priority=$Primary
 		>
 			<AllowedValues>
-				<EnumeratedConstraint set="ConceptKind" />
+				<EnumeratedConstraint set=~conceptKind />
 			</AllowedValues>
 		</TraitDefinition>
 
@@ -1410,11 +1563,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:entityEligibility
 			name="entityEligibility"
 			defaultValueType=$EnumeratedToken
-			cardinality=$Single
 			priority=$Primary
 		>
 			<AllowedValues>
-				<EnumeratedConstraint set="EntityEligibility" />
+				<EnumeratedConstraint set=~entityEligibility />
 			</AllowedValues>
 		</TraitDefinition>
 
@@ -1422,7 +1574,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:conceptSelector
 			name="conceptSelector"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1430,7 +1581,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:contextSelector
 			name="contextSelector"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1442,51 +1592,24 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:defaultValueType
 			name="defaultValueType"
 			defaultValueType=$EnumeratedToken
-			cardinality=$Single
 			priority=$Primary
 		>
 			<AllowedValues>
-				<EnumeratedConstraint set="ValueType" />
+				<EnumeratedConstraint set=~valueType />
 			</AllowedValues>
 		</TraitDefinition>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:defaultValueTypes
 			name="defaultValueTypes"
-			defaultValueType=$List
-			cardinality=$Single
+			defaultValueType=$List<$EnumeratedToken>
 			priority=$Primary
 		/>
-
-		<TraitDefinition
-			id=urn:codex:bootstrap:trait:cardinality
-			name="cardinality"
-			defaultValueType=$EnumeratedToken
-			cardinality=$Single
-			priority=$Primary
-		>
-			<AllowedValues>
-				<EnumeratedConstraint set="Cardinality" />
-			</AllowedValues>
-		</TraitDefinition>
-
-		<TraitDefinition
-			id=urn:codex:bootstrap:trait:itemValueType
-			name="itemValueType"
-			defaultValueType=$EnumeratedToken
-			cardinality=$Single
-			priority=$Secondary
-		>
-			<AllowedValues>
-				<EnumeratedConstraint set="ValueType" />
-			</AllowedValues>
-		</TraitDefinition>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:isReferenceTrait
 			name="isReferenceTrait"
 			defaultValueType=$Boolean
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1494,11 +1617,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:priority
 			name="priority"
 			defaultValueType=$EnumeratedToken
-			cardinality=$Single
 			priority=$Secondary
 		>
 			<AllowedValues>
-				<EnumeratedConstraint set="TraitPriority" />
+				<EnumeratedConstraint set=~traitPriority />
 			</AllowedValues>
 		</TraitDefinition>
 
@@ -1506,19 +1628,17 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:baseValueType
 			name="baseValueType"
 			defaultValueType=$EnumeratedToken
-			cardinality=$Single
 			priority=$Primary
 		>
 			<AllowedValues>
-				<EnumeratedConstraint set="ValueType" />
+				<EnumeratedConstraint set=~valueType />
 			</AllowedValues>
 		</TraitDefinition>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:validatorName
 			name="validatorName"
-			defaultValueType=$EnumeratedToken
-			cardinality=$Single
+			defaultValueType=$String
 			priority=$Primary
 		/>
 
@@ -1530,7 +1650,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:min
 			name="min"
 			defaultValueType=$NonNegativeInteger
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1538,7 +1657,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:max
 			name="max"
 			defaultValueType=$PositiveInteger
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1546,7 +1664,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:minCount
 			name="minCount"
 			defaultValueType=$NonNegativeInteger
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1554,7 +1671,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:maxCount
 			name="maxCount"
 			defaultValueType=$PositiveInteger
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1562,7 +1678,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:rangeMin
 			name="rangeMin"
 			defaultValueType=$Number
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1570,7 +1685,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:rangeMax
 			name="rangeMax"
 			defaultValueType=$Number
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1582,11 +1696,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:ordering
 			name="ordering"
 			defaultValueType=$EnumeratedToken
-			cardinality=$Single
 			priority=$Primary
 		>
 			<AllowedValues>
-				<EnumeratedConstraint set="Ordering" />
+				<EnumeratedConstraint set=~ordering />
 			</AllowedValues>
 		</TraitDefinition>
 
@@ -1594,7 +1707,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:allowsDuplicates
 			name="allowsDuplicates"
 			defaultValueType=$Boolean
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1602,7 +1714,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:allowed
 			name="allowed"
 			defaultValueType=$Boolean
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1610,7 +1721,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:keyTrait
 			name="keyTrait"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1622,7 +1732,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:trait
 			name="trait"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1630,7 +1739,13 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:traitName
 			name="traitName"
 			defaultValueType=$String
-			cardinality=$Single
+			priority=$Primary
+		/>
+
+		<TraitDefinition
+			id=urn:codex:bootstrap:trait:byTrait
+			name="byTrait"
+			defaultValueType=$String
 			priority=$Primary
 		/>
 
@@ -1638,11 +1753,10 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:valueType
 			name="valueType"
 			defaultValueType=$EnumeratedToken
-			cardinality=$Single
 			priority=$Primary
 		>
 			<AllowedValues>
-				<EnumeratedConstraint set="ValueType" />
+				<EnumeratedConstraint set=~valueType />
 			</AllowedValues>
 		</TraitDefinition>
 
@@ -1650,7 +1764,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:pattern
 			name="pattern"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1658,7 +1771,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:flags
 			name="flags"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1666,15 +1778,13 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:scope
 			name="scope"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Primary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:set
 			name="set"
-			defaultValueType=$String
-			cardinality=$Single
+			defaultValueType=$LookupToken
 			priority=$Primary
 		/>
 
@@ -1682,7 +1792,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:type
 			name="type"
 			defaultValueType=$EnumeratedToken
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1694,7 +1803,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:s
 			name="s"
 			defaultValueType=$IriReference
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1702,7 +1810,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:p
 			name="p"
 			defaultValueType=$IriReference
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1710,7 +1817,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:o
 			name="o"
 			defaultValueType=$IriReference
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1718,7 +1824,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:lex
 			name="lex"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Primary
 		/>
 
@@ -1726,7 +1831,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:datatype
 			name="datatype"
 			defaultValueType=$IriReference
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1734,7 +1838,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			id=urn:codex:bootstrap:trait:language
 			name="language"
 			defaultValueType=$String
-			cardinality=$Single
 			priority=$Secondary
 		/>
 
@@ -1745,57 +1848,26 @@ Conforming implementations include this schema as built-in, immutable data, as r
 		[GROUP: Schema Structural Constraints]
 
 		<ConstraintDefinition
-			id=urn:codex:bootstrap:constraint:schema-requires-concept-definitions
-			title="Schema should have ConceptDefinitions"
-			description="A meaningful schema should define at least one concept."
+			id=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions
+			title="Profile A schemas must have ConceptDefinitions"
+			description="A Profile A schema must define at least one concept."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="Schema" />
 			</Targets>
 			<Rule>
-				<ChildConstraint type=$RequiresChildConcept conceptSelector="ConceptDefinitions" />
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="authoringProfile" value=$ProfileA />
+					</When>
+					<Then>
+						<ChildConstraint type=$RequiresChildConcept conceptSelector="ConceptDefinitions" />
+					</Then>
+				</ConditionalConstraint>
 			</Rule>
 		</ConstraintDefinition>
 
 		[END: Schema Structural Constraints]
-
-		[GROUP: ContentRules Exclusivity]
-
-		<ConstraintDefinition
-			id=urn:codex:bootstrap:constraint:content-rules-exclusivity
-			title="ContentRules must have exactly one child"
-			description="ContentRules must contain either AllowsContent or ForbidsContent, not both."
-		>
-			<Targets>
-				<TargetConcept conceptSelector="ContentRules" />
-			</Targets>
-			<Rule>
-				<AnyOf>
-					<Rule>
-						<AllOf>
-							<Rule>
-								<ChildConstraint type=$RequiresChildConcept conceptSelector="AllowsContent" />
-							</Rule>
-							<Rule>
-								<ChildConstraint type=$ForbidsChildConcept conceptSelector="ForbidsContent" />
-							</Rule>
-						</AllOf>
-					</Rule>
-					<Rule>
-						<AllOf>
-							<Rule>
-								<ChildConstraint type=$RequiresChildConcept conceptSelector="ForbidsContent" />
-							</Rule>
-							<Rule>
-								<ChildConstraint type=$ForbidsChildConcept conceptSelector="AllowsContent" />
-							</Rule>
-						</AllOf>
-					</Rule>
-				</AnyOf>
-			</Rule>
-		</ConstraintDefinition>
-
-		[END: ContentRules Exclusivity]
 
 		[GROUP: TraitDefinition Value Type Constraints]
 
@@ -1830,26 +1902,6 @@ Conforming implementations include this schema as built-in, immutable data, as r
 						</AllOf>
 					</Rule>
 				</AnyOf>
-			</Rule>
-		</ConstraintDefinition>
-
-		<ConstraintDefinition
-			id=urn:codex:bootstrap:constraint:trait-definition-list-requires-item-type
-			title="List cardinality requires itemValueType"
-			description="When cardinality is List, itemValueType must be specified."
-		>
-			<Targets>
-				<TargetConcept conceptSelector="TraitDefinition" />
-			</Targets>
-			<Rule>
-				<ConditionalConstraint>
-					<When>
-						<TraitEquals trait="cardinality" value=$List />
-					</When>
-					<Then>
-						<TraitExists trait="itemValueType" />
-					</Then>
-				</ConditionalConstraint>
 			</Rule>
 		</ConstraintDefinition>
 
@@ -2113,6 +2165,26 @@ Conforming implementations include this schema as built-in, immutable data, as r
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:identity-constraint-identifier-uniqueness-requires-scope
+			title="IdentifierUniqueness requires scope"
+			description="When IdentityConstraint.type is IdentifierUniqueness, scope must be present to define the uniqueness boundary."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="IdentityConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$IdentifierUniqueness />
+					</When>
+					<Then>
+						<TraitExists trait="scope" />
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
 			id=urn:codex:bootstrap:constraint:identity-constraint-identifier-uniqueness-forbids-pattern
 			title="IdentifierUniqueness forbids pattern/flags"
 			description="When IdentityConstraint.type is IdentifierUniqueness, pattern and flags must be absent."
@@ -2140,48 +2212,167 @@ Conforming implementations include this schema as built-in, immutable data, as r
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
-			id=urn:codex:bootstrap:constraint:identity-constraint-entity-types-forbid-params
-			title="Entity identity types forbid extra params"
-			description="When IdentityConstraint.type is MustBeEntity or MustNotBeEntity, scope/pattern/flags must be absent."
+			id=urn:codex:bootstrap:constraint:identity-constraint-must-be-entity-forbids-params
+			title="MustBeEntity forbids extra params"
+			description="When IdentityConstraint.type is MustBeEntity, scope/pattern/flags must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="IdentityConstraint" />
 			</Targets>
 			<Rule>
-				<AnyOf>
-					<Rule>
-						<ConditionalConstraint>
-							<When>
-								<TraitEquals trait="type" value=$MustBeEntity />
-							</When>
-							<Then>
-								<AllOf>
-									<Rule><TraitMissing trait="scope" /></Rule>
-									<Rule><TraitMissing trait="pattern" /></Rule>
-									<Rule><TraitMissing trait="flags" /></Rule>
-								</AllOf>
-							</Then>
-						</ConditionalConstraint>
-					</Rule>
-					<Rule>
-						<ConditionalConstraint>
-							<When>
-								<TraitEquals trait="type" value=$MustNotBeEntity />
-							</When>
-							<Then>
-								<AllOf>
-									<Rule><TraitMissing trait="scope" /></Rule>
-									<Rule><TraitMissing trait="pattern" /></Rule>
-									<Rule><TraitMissing trait="flags" /></Rule>
-								</AllOf>
-							</Then>
-						</ConditionalConstraint>
-					</Rule>
-				</AnyOf>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$MustBeEntity />
+					</When>
+					<Then>
+						<AllOf>
+							<Rule><TraitMissing trait="scope" /></Rule>
+							<Rule><TraitMissing trait="pattern" /></Rule>
+							<Rule><TraitMissing trait="flags" /></Rule>
+						</AllOf>
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:identity-constraint-must-not-be-entity-forbids-params
+			title="MustNotBeEntity forbids extra params"
+			description="When IdentityConstraint.type is MustNotBeEntity, scope/pattern/flags must be absent."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="IdentityConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$MustNotBeEntity />
+					</When>
+					<Then>
+						<AllOf>
+							<Rule><TraitMissing trait="scope" /></Rule>
+							<Rule><TraitMissing trait="pattern" /></Rule>
+							<Rule><TraitMissing trait="flags" /></Rule>
+						</AllOf>
+					</Then>
+				</ConditionalConstraint>
 			</Rule>
 		</ConstraintDefinition>
 
 		[END: IdentityConstraint Constraints]
+
+		[GROUP: ReferenceConstraint Parameter Requirements]
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:reference-targets-concept-requires-selector
+			title="ReferenceTargetsConcept requires conceptSelector"
+			description="When ReferenceConstraint.type is ReferenceTargetsConcept, conceptSelector must be present."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ReferenceConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$ReferenceTargetsConcept />
+					</When>
+					<Then>
+						<TraitExists trait="conceptSelector" />
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:reference-trait-allowed-requires-traitname
+			title="ReferenceTraitAllowed requires traitName"
+			description="When ReferenceConstraint.type is ReferenceTraitAllowed, traitName must be present."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ReferenceConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$ReferenceTraitAllowed />
+					</When>
+					<Then>
+						<TraitExists trait="traitName" />
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:reference-targets-entity-forbids-params
+			title="ReferenceTargetsEntity forbids extra params"
+			description="When ReferenceConstraint.type is ReferenceTargetsEntity, conceptSelector and traitName must be absent."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ReferenceConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$ReferenceTargetsEntity />
+					</When>
+					<Then>
+						<AllOf>
+							<Rule><TraitMissing trait="conceptSelector" /></Rule>
+							<Rule><TraitMissing trait="traitName" /></Rule>
+						</AllOf>
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:reference-must-resolve-forbids-params
+			title="ReferenceMustResolve forbids extra params"
+			description="When ReferenceConstraint.type is ReferenceMustResolve, conceptSelector and traitName must be absent."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ReferenceConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$ReferenceMustResolve />
+					</When>
+					<Then>
+						<AllOf>
+							<Rule><TraitMissing trait="conceptSelector" /></Rule>
+							<Rule><TraitMissing trait="traitName" /></Rule>
+						</AllOf>
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:reference-singleton-forbids-params
+			title="ReferenceSingleton forbids extra params"
+			description="When ReferenceConstraint.type is ReferenceSingleton, conceptSelector and traitName must be absent."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ReferenceConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$ReferenceSingleton />
+					</When>
+					<Then>
+						<AllOf>
+							<Rule><TraitMissing trait="conceptSelector" /></Rule>
+							<Rule><TraitMissing trait="traitName" /></Rule>
+						</AllOf>
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		[END: ReferenceConstraint Parameter Requirements]
 
 		[GROUP: Uniqueness Constraints]
 
@@ -2234,6 +2425,32 @@ Conforming implementations include this schema as built-in, immutable data, as r
 			</Targets>
 			<Rule>
 				<UniqueConstraint trait="value" scope="EnumeratedValueSet" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:validator-definition-name-unique
+			title="ValidatorDefinition names must be unique"
+			description="Within a schema, each ValidatorDefinition must have a unique name."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ValidatorDefinition" />
+			</Targets>
+			<Rule>
+				<UniqueConstraint trait="name" scope="Schema" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:value-type-definition-name-unique
+			title="ValueTypeDefinition names must be unique"
+			description="Within a schema, each ValueTypeDefinition must have a unique name."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ValueTypeDefinition" />
+			</Targets>
+			<Rule>
+				<UniqueConstraint trait="name" scope="Schema" />
 			</Rule>
 		</ConstraintDefinition>
 
@@ -2321,29 +2538,196 @@ Conforming implementations include this schema as built-in, immutable data, as r
 		</ConstraintDefinition>
 
 		[END: Profile Constraints]
+
+		[GROUP: ContextConstraint Parameter Requirements]
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:context-constraint-only-valid-under-context-requires-selector
+			title="OnlyValidUnderContext requires contextSelector"
+			description="When ContextConstraint.type is OnlyValidUnderContext, contextSelector must be present."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ContextConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$OnlyValidUnderContext />
+					</When>
+					<Then>
+						<TraitExists trait="contextSelector" />
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:context-constraint-only-valid-under-parent-forbids-selector
+			title="OnlyValidUnderParent forbids contextSelector"
+			description="When ContextConstraint.type is OnlyValidUnderParent, contextSelector must be absent."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ContextConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$OnlyValidUnderParent />
+					</When>
+					<Then>
+						<TraitMissing trait="contextSelector" />
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		[END: ContextConstraint Parameter Requirements]
+
+		[GROUP: ContentConstraint Parameter Requirements]
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:content-constraint-matches-pattern-requires-pattern
+			title="ContentMatchesPattern requires pattern"
+			description="When ContentConstraint.type is ContentMatchesPattern, pattern must be present."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ContentConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$ContentMatchesPattern />
+					</When>
+					<Then>
+						<TraitExists trait="pattern" />
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:content-constraint-required-forbids-pattern
+			title="ContentRequired forbids pattern"
+			description="When ContentConstraint.type is ContentRequired, pattern and flags must be absent."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ContentConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$ContentRequired />
+					</When>
+					<Then>
+						<AllOf>
+							<Rule><TraitMissing trait="pattern" /></Rule>
+							<Rule><TraitMissing trait="flags" /></Rule>
+						</AllOf>
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:content-constraint-forbidden-forbids-pattern
+			title="ContentForbiddenUnlessAllowed forbids pattern"
+			description="When ContentConstraint.type is ContentForbiddenUnlessAllowed, pattern and flags must be absent."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ContentConstraint" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitEquals trait="type" value=$ContentForbiddenUnlessAllowed />
+					</When>
+					<Then>
+						<AllOf>
+							<Rule><TraitMissing trait="pattern" /></Rule>
+							<Rule><TraitMissing trait="flags" /></Rule>
+						</AllOf>
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		[END: ContentConstraint Parameter Requirements]
+
+		[GROUP: Non-Empty Container Constraints]
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:trait-rules-non-empty
+			title="TraitRules must have at least one rule"
+			description="A TraitRules container must contain at least one RequiresTrait, AllowsTrait, or ForbidsTrait."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="TraitRules" />
+			</Targets>
+			<Rule>
+				<AnyOf>
+					<Rule>
+						<ChildConstraint type=$RequiresChildConcept conceptSelector="RequiresTrait" />
+					</Rule>
+					<Rule>
+						<ChildConstraint type=$RequiresChildConcept conceptSelector="AllowsTrait" />
+					</Rule>
+					<Rule>
+						<ChildConstraint type=$RequiresChildConcept conceptSelector="ForbidsTrait" />
+					</Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:child-rules-non-empty
+			title="ChildRules must have at least one rule"
+			description="A ChildRules container must contain at least one child rule."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ChildRules" />
+			</Targets>
+			<Rule>
+				<AnyOf>
+					<Rule>
+						<ChildConstraint type=$RequiresChildConcept conceptSelector="AllowsChildConcept" />
+					</Rule>
+					<Rule>
+						<ChildConstraint type=$RequiresChildConcept conceptSelector="RequiresChildConcept" />
+					</Rule>
+					<Rule>
+						<ChildConstraint type=$RequiresChildConcept conceptSelector="ForbidsChildConcept" />
+					</Rule>
+					<Rule>
+						<ChildConstraint type=$RequiresChildConcept conceptSelector="ExactlyOneChildOf" />
+					</Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			id=urn:codex:bootstrap:constraint:targets-non-empty
+			title="Targets must have at least one target"
+			description="A Targets container must contain at least one TargetConcept or TargetContext."
+		>
+			<Targets>
+				<TargetConcept conceptSelector="Targets" />
+			</Targets>
+			<Rule>
+				<AnyOf>
+					<Rule>
+						<ChildConstraint type=$RequiresChildConcept conceptSelector="TargetConcept" />
+					</Rule>
+					<Rule>
+						<ChildConstraint type=$RequiresChildConcept conceptSelector="TargetContext" />
+					</Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		[END: Non-Empty Container Constraints]
+
+		[NOTE: Min-Max Ordering Constraints cannot be expressed in the current constraint language.
+		 Comparing two trait values (e.g., min <= max) would require a new constraint type
+		 such as TraitComparison or SHACL-SPARQL. This is a known limitation.]
 	</ConstraintDefinitions>
 </Schema>
-```
-
----
-
-## Notes
-
-1. This schema is self-describing: it defines all the constructs it uses.
-
-2. The schema uses Profile A (`authoringProfile=$ProfileA`) as it is authored in Codex-native form.
-
-3. All concept definitions include deterministic IRIs under the `urn:codex:bootstrap:` namespace.
-
-4. Lookup tokens (`key` traits) are provided for all concepts to enable `~conceptName` references.
-
-5. The constraint definitions enforce the invariants specified in §11 of the main specification, including:
-   - ContentRules exclusivity (AllowsContent XOR ForbidsContent)
-   - TraitDefinition value type requirements
-   - RdfTriple object constraints
-   - Cardinality bound requirements
-   - Profile guardrails
-
-6. Uniqueness constraints ensure concept, trait, and enumerated value set names are unique within their scopes.
-
-7. This schema does NOT include runtime behavior, resolution, or execution semantics per the Codex non-goals.

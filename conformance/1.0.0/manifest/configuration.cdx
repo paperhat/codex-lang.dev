@@ -72,9 +72,9 @@
 	/>
 
 	<Case
-		id="valid/content-escaped-angle-and-backslash"
-		input="cases/valid/content-escaped-angle-and-backslash/data.cdx"
-		expectedCanonical="expected/canonical/content-escaped-angle-and-backslash/data.cdx"
+		id="valid/content-escaped-leading-angle"
+		input="cases/valid/content-escaped-leading-angle/data.cdx"
+		expectedCanonical="expected/canonical/content-escaped-leading-angle/data.cdx"
 	/>
 
 	<Case

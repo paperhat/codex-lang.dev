@@ -125,7 +125,7 @@ Accordingly:
 
 - Parsing MUST determine only the syntactic structure of the document.
 - Formatting and canonicalization MUST be mechanical and MUST NOT perform schema evaluation.
-- Semantic validation MUST evaluate schema rules (including content-mode interpretation, constraints, cardinality, identity, and references) and MUST NOT be performed implicitly during parsing.
+- Semantic validation MUST evaluate schema rules (including content-mode interpretation, constraints, value types, identity, and references) and MUST NOT be performed implicitly during parsing.
 
 Codex and Codex-conforming tools MUST NOT define, assume, or require any particular storage backend, inference system, rendering model, or execution semantics.
 
@@ -142,7 +142,7 @@ Codex constructs and Codex-conforming tool behavior defined by this specificatio
 Codex distinguishes two independent questions:
 
 * **Well-formedness**: whether a document is syntactically and structurally correct under this specification's surface-form grammar and structural rules.
-* **Validity**: whether a well-formed document satisfies the semantic rules of a governing schema (including typing, authorization, cardinality, identity, references, and constraints).
+* **Validity**: whether a well-formed document satisfies the semantic rules of a governing schema (including typing, authorization, value types, identity, references, and constraints).
 
 Accordingly:
 
@@ -338,6 +338,10 @@ In the Surface Form, String Values are spelled as string literals and backtick s
 A Backtick String is a surface-form spelling of a String Value.
 
 Backtick strings are intended for multiline authoring convenience.
+
+Within a Backtick String, `\`` represents a literal `` ` ``.
+
+A backslash not immediately followed by a backtick is a literal backslash and has no special meaning.
 
 After interpreting the Backtick String's escape sequences, the resulting character sequence MUST be transformed into the resulting String Value by applying the following whitespace normalization:
 
@@ -683,6 +687,56 @@ Range endpoints MUST be treated as inclusive.
 Codex-conforming tools MUST NOT enumerate Range Values.
 
 The semantics of a Range Value beyond these structural requirements MUST be defined by the governing schema or consuming system.
+
+### 5.17 Parameterized Value Types
+
+Collection value types MAY be parameterized to constrain their contents.
+
+#### 5.17.1 Syntax
+
+A parameterized value type consists of a base type token followed by type arguments in angle brackets.
+
+The following collection types support parameterization:
+
+* `$List<T>` — a list where each item conforms to `T`
+* `$Set<T>` — a set where each item conforms to `T`
+* `$Map<K, V>` — a map where keys conform to `K` and values conform to `V`
+* `$Tuple<T1, T2, ...>` — a tuple where each position conforms to its corresponding type
+* `$Range<T>` — a range where bounds conform to `T`
+
+#### 5.17.2 Type Arguments
+
+A type argument MUST be one of:
+
+* A simple value type token (e.g., `$String`)
+* A parameterized value type (e.g., `$List<$String>`)
+* A type union (e.g., `[$String, $Integer]`)
+
+A type union is a bracketed, comma-separated list of value type tokens. A value conforms to a type union if it conforms to any member type.
+
+Type arguments MUST NOT contain whitespace.
+
+#### 5.17.3 Unparameterized Collection Types
+
+An unparameterized collection type (e.g., `$List` without `<...>`) permits items of any value type.
+
+#### 5.17.4 Nesting
+
+Parameterized types MAY be nested to any depth.
+
+For example, `$List<$List<$String>>` specifies a list of lists of strings.
+
+#### 5.17.5 Examples
+
+| Type | Meaning |
+|------|---------|
+| `$List<$String>` | List of strings |
+| `$List<[$String, $Integer]>` | List where each item is a string or integer |
+| `$Set<$Boolean>` | Set of booleans |
+| `$Map<$String, $List<$Integer>>` | Map from strings to lists of integers |
+| `$Tuple<$String, $Integer, $Boolean>` | 3-tuple: (string, integer, boolean) |
+| `$Range<$Integer>` | Range with integer bounds |
+| `$List` | List of any values (unparameterized) |
 
 ---
 
@@ -1097,15 +1151,12 @@ Codex-conforming tools MUST identify the end of content by scanning for the clos
 Within content:
 
 - `\<` represents a literal `<`.
-- `\\` represents a literal `\`.
 
-Codex-conforming tools MUST treat any other use of `\` within content as a parse error.
+A backslash not immediately followed by `<` is a literal backslash and has no special meaning.
 
 To preserve schema-less determinism of content-versus-children body mode (§10.2.1.1), any non-blank content line whose first non-indentation character is `<` MUST spell that character as `\<`.
 
 A raw `<` character MUST NOT appear in content.
-
-A raw `\` character MUST NOT appear in content.
 
 #### 8.8.3 Content Indentation Normalization
 
@@ -1212,11 +1263,8 @@ For a block annotation:
 Within an annotation:
 
 - `\]` represents a literal `]`.
-- `\\` represents a literal `\`.
 
-No other escape sequences are defined.
-
-Codex-conforming tools MUST treat any other use of `\` within an annotation as a parse error.
+A backslash not immediately followed by `]` is a literal backslash and has no special meaning.
 
 #### 8.9.4 Canonical Form
 
@@ -1228,7 +1276,7 @@ Codex-conforming tools MUST canonicalize inline annotations as follows:
 
 - Leading and trailing whitespace inside the brackets MUST be trimmed.
 - Internal runs of whitespace (spaces, tabs, and newlines) MUST be collapsed to a single space.
-- Escaped characters MUST remain escaped.
+- Escaped closing brackets MUST remain escaped (that is, `\]` MUST remain spelled as `\]`).
 
 Canonical rendering MUST use no padding spaces just inside the brackets (for example, `[text]`, not `[ text ]`).
 
@@ -1449,7 +1497,7 @@ If `authoringProfile` is missing or has any other value, schema processing MUST 
 
 Additional guardrails MUST hold:
 
-- Profile A schemas MUST NOT contain `RdfGraph`.
+- Profile A schemas MUST contain exactly one `ConceptDefinitions` and MUST NOT contain `RdfGraph`.
 - Profile B schemas MUST contain exactly one `RdfGraph` and MUST NOT contain Layer A schema-definition concepts (including `ConceptDefinitions`, `TraitDefinitions`, `EnumeratedValueSets`, `ConstraintDefinitions`, `ValueTypeDefinitions`, and `ValidatorDefinitions`).
 - Layer A expansion MUST generate a canonical Layer B graph; different Layer A spellings that are semantically identical MUST expand to byte-identical Layer B graphs.
 - Layer B canonicalization MUST make semantically identical graphs byte-identical.
@@ -1488,6 +1536,8 @@ Each `ValidatorDefinition` MUST have these traits:
 
 - `name` (required; Enumerated Token Value)
 - `message` (optional; String Value)
+
+`ValidatorDefinition` names MUST be unique within the Schema.
 
 Each `ValidatorDefinition` MUST be in content mode.
 
@@ -2097,11 +2147,9 @@ If a derived SHACL artifact encodes an identity constraint requiring a non-entit
 - `(PS, sh:path, codex:isEntity)`
 - `(PS, sh:hasValue, "false"^^xsd:boolean)`
 
-Derived validation artifacts MUST support `IdentityConstraint(type=IdentifierUniqueness)`.
+Derived validation artifacts MUST support `IdentityConstraint(type=IdentifierUniqueness, scope=S)`.
 
-For derived artifact purposes, `IdentityConstraint(type=IdentifierUniqueness, scope=S)` MUST be treated as `UniqueConstraint(trait=id, scope=S)` and MUST follow §9.9.7.
-
-`IdentityConstraint(type=IdentifierUniqueness)` with no `scope` MUST be treated as `UniqueInDocument(trait=id)` and MUST follow §9.9.7.
+The `scope` trait MUST be present. For derived artifact purposes, `IdentityConstraint(type=IdentifierUniqueness, scope=S)` MUST be treated as `UniqueConstraint(trait=id, scope=S)` and MUST follow §9.9.7.
 
 Derived validation artifacts MUST support `IdentityConstraint(type=IdentifierForm, pattern=p, flags=f)`.
 
@@ -2110,6 +2158,19 @@ It MUST report a violation if the focus node is an Entity and either:
 
 * it has no `codex:declaredId`, or
 * `STR(codex:declaredId)` does not match `p` under SPARQL 1.1 `REGEX` semantics (using flags `f` if present).
+
+One conforming boolean condition for the SHACL-SPARQL constraint is:
+
+```
+EXISTS {
+	focusVar codex:declaredId ?idK .
+	FILTER(
+		REGEX(STR(?idK), p, f)
+	)
+}
+```
+
+where `p` is the required pattern and `f` is the flags string if present. If `flags` is absent, the generated constraint MUST use the 2-argument `REGEX(text, pattern)` form.
 
 #### 9.9.7 Uniqueness Constraints
 
@@ -2143,20 +2204,24 @@ For document-wide uniqueness, `UniqueInDocument(trait=t)` MUST mean:
 
 Context constraints are expressible using the deterministic parent links in the instance graph (see §9.7.4).
 
-`ContextConstraint(type=OnlyValidUnderParent, contextSelector=P)` MUST be expressible in derived validation artifacts.
+`ContextConstraint(type=OnlyValidUnderParent)` MUST be expressible in derived validation artifacts.
 
-If projected into a SHACL-derived artifact, it MUST map to SHACL-SPARQL and MUST report a violation when the focus node has no direct parent of type `P`.
+`OnlyValidUnderParent` validates that the focus node's immediate parent is of the type specified by `TargetContext` in the constraint's `Targets` block. The `contextSelector` trait MUST NOT be present.
+
+If projected into a SHACL-derived artifact, it MUST map to SHACL-SPARQL and MUST report a violation when the focus node has no direct parent of the target context type.
 
 One conforming boolean condition for the SHACL-SPARQL constraint is:
 
 ```
 EXISTS {
 	focusVar <codex:parentNode> ?pK .
-	?pK rdf:type <conceptClassIri(P)> .
+	?pK rdf:type <conceptClassIri(TargetContext)> .
 }
 ```
 
 `ContextConstraint(type=OnlyValidUnderContext, contextSelector=A)` MUST be expressible in derived validation artifacts.
+
+`OnlyValidUnderContext` validates that the focus node has an ancestor of type `A` somewhere in its parent chain. The `contextSelector` trait MUST be present and specifies the required ancestor type.
 
 If projected into a SHACL-derived artifact, it MUST map to SHACL-SPARQL and MUST report a violation when the focus node has no ancestor (via one or more parent links) of type `A`.
 
@@ -2706,7 +2771,7 @@ To validate a document under a schema, a conforming tool MUST follow this sequen
 1. Decode + newline normalization
 2. Formatting + canonicalization (mandatory) — using the schema-less mode defined in §10.2.1
 3. Schema resolution — obtain the governing schema for the document (§12)
-4. Semantic validation — schema rule evaluation (constraints, cardinality, identity, references)
+4. Semantic validation — schema rule evaluation (constraints, value types, identity, references)
 
 Schema resolution is required before semantic validation.
 
@@ -2971,14 +3036,14 @@ A `Schema` MUST satisfy the profile-conditional child-Concept rules defined in �
 
 For `authoringProfile=$ProfileA`:
 
+* A `Schema` MUST contain exactly one `ConceptDefinitions` child Concept.
 * A `Schema` MAY contain the following child Concepts, in any order:
 
-  * `ConceptDefinitions`
   * `TraitDefinitions`
   * `EnumeratedValueSets`
   * `ConstraintDefinitions`
-  * `ValueTypeDefinitions` (optional)
-  * `ValidatorDefinitions` (optional)
+  * `ValueTypeDefinitions`
+  * `ValidatorDefinitions`
 
 * A `Schema` MUST NOT contain `RdfGraph`.
 
@@ -3068,11 +3133,13 @@ If `ContentRules` is omitted, `ForbidsContent` applies.
 
 ##### Children (Normative)
 
-Zero or more of:
+One or more of:
 
 * `RequiresTrait`
 * `AllowsTrait`
 * `ForbidsTrait`
+
+If no trait rules are needed, omit the `TraitRules` container entirely.
 
 Each rule applies to exactly one trait name.
 
@@ -3110,11 +3177,13 @@ Traits:
 
 ##### Children (Normative)
 
-Zero or more of:
+One or more of:
 
 * `AllowsChildConcept`
 * `RequiresChildConcept`
 * `ForbidsChildConcept`
+
+If no child rules are needed, omit the `ChildRules` container entirely.
 
 ###### `AllowsChildConcept`
 
@@ -3212,16 +3281,14 @@ This section is normative.
 
 Defines a Trait independently of any Concept.
 
-Trait definitions establish the value type, cardinality, and constraints for a Trait that may be used across multiple Concepts.
+Trait definitions establish the value type and constraints for a Trait that may be used across multiple Concepts.
 
 ###### Traits (Normative)
 
 * `id` (optional; IRI reference)
 * `name` (required; Trait name string per §4 Naming Rules)
-* `defaultValueType` (required unless `defaultValueTypes` is provided; value type token)
-* `defaultValueTypes` (required unless `defaultValueType` is provided; list of one or more value type tokens)
-* `cardinality` (required; `$Single | $List`)
-* `itemValueType` (required if `cardinality=$List`; value type token)
+* `defaultValueType` (required unless `defaultValueTypes` is provided; value type token, optionally parameterized per §5.17)
+* `defaultValueTypes` (required unless `defaultValueType` is provided; list of one or more value type tokens, optionally parameterized per §5.17)
 * `isReferenceTrait` (optional; boolean)
 * `priority` (optional; enumerated token; presentation hint)
 
@@ -3231,41 +3298,25 @@ If both `defaultValueType` and `defaultValueTypes` are provided, the implementat
 
 `priority` is a meta-schema concern. Implementations MUST NOT use `priority` to change validation or compilation semantics. Meta-schemas MAY constrain allowed `priority` values (e.g., `$Primary`, `$Secondary`).
 
-##### Cardinality Semantics (Normative)
+##### Value Type Semantics (Normative)
 
-The `cardinality` trait on a `TraitDefinition` specifies the structural shape of the trait's value when the trait is present on a Concept instance.
+When a trait is present on a Concept instance, its value MUST conform to the declared value type.
 
-Cardinality MUST be exactly one of:
+If `defaultValueType` specifies a single type, the value MUST conform to that type.
 
-###### `$Single`
+If `defaultValueTypes` specifies multiple types, the value MUST conform to exactly one of the listed types.
 
-A trait with `cardinality=$Single` binds to exactly one value.
+##### Collection Type Semantics (Normative)
 
-When a `$Single` trait is present on a Concept instance, it MUST have exactly one value.
+If a trait's value type is a parameterized collection type (e.g., `$List<$String>`), each element of the collection MUST conform to the declared item type.
 
-A `$Single` trait MUST NOT have zero values.
+If a trait's value type is an unparameterized collection type (e.g., `$List`), elements MAY be of any type.
 
-A `$Single` trait MUST NOT have multiple values.
+If a trait's value type is a union containing both scalar and collection types (e.g., `[$String, $List<$String>]`), the value MUST conform to exactly one member of the union.
 
-###### `$List`
+##### Trait Presence
 
-A trait with `cardinality=$List` binds to an ordered sequence of zero or more values.
-
-When a `$List` trait is present on a Concept instance, it MUST have a list value.
-
-The list MAY be empty.
-
-The list MUST preserve element order.
-
-Each element of the list MUST conform to the `itemValueType` declared by the `TraitDefinition`.
-
-##### Cardinality and Trait Presence
-
-Cardinality specifies the shape of a trait's value when present.
-
-Cardinality does not determine whether a trait is required or optional.
-
-Whether a trait must, may, or must not appear on a Concept instance is governed by `TraitRules` (`RequiresTrait`, `AllowsTrait`, `ForbidsTrait`), not by cardinality.
+Whether a trait must, may, or must not appear on a Concept instance is governed by `TraitRules` (`RequiresTrait`, `AllowsTrait`, `ForbidsTrait`), not by its value type.
 
 ##### Children (Optional)
 
@@ -3277,18 +3328,26 @@ Whether a trait must, may, or must not appear on a Concept instance is governed 
 <TraitDefinition
 	name="amount"
 	defaultValueType=$Number
-	cardinality=$Single
 />
 
 <TraitDefinition
 	name="unit"
 	defaultValueType=$EnumeratedToken
-	cardinality=$Single
 >
 	<AllowedValues>
 		<ValueIsOneOf values=[$Grams, $Kilograms, $Milliliters, $Liters, $Units] />
 	</AllowedValues>
 </TraitDefinition>
+
+<TraitDefinition
+	name="tags"
+	defaultValueType=$List<$String>
+/>
+
+<TraitDefinition
+	name="role"
+	defaultValueTypes=[$String, $List<$String>]
+/>
 ```
 
 ---
@@ -3372,6 +3431,8 @@ Schema-defined value types are referenced using Enumerated Token Values whose na
 * `name` (required; Concept name string per §4 Naming Rules)
 * `baseValueType` (required; built-in value type token)
 * `validatorName` (optional; Enumerated Token Value identifying a `ValidatorDefinition`)
+
+`ValueTypeDefinition` names MUST be unique within the Schema.
 
 The `baseValueType` defines the surface-form Value category.
 
@@ -4021,6 +4082,10 @@ Constrains the ordering semantics of a collection.
 
 * `ordering` (required; `$Ordered | $Unordered`)
 
+###### Children (Normative)
+
+* Exactly one of `ChildPath` or `DescendantPath` (see §9.5.4)
+
 ---
 
 ##### `CollectionAllowsEmpty`
@@ -4031,6 +4096,10 @@ Constrains whether a collection may be empty.
 
 * `allowed` (required; boolean)
 
+###### Children (Normative)
+
+* Exactly one of `ChildPath` or `DescendantPath` (see §9.5.4)
+
 ---
 
 ##### `CollectionAllowsDuplicates`
@@ -4040,6 +4109,11 @@ Constrains whether a collection may contain duplicate members.
 ###### Traits (Normative)
 
 * `allowed` (required; boolean)
+* `keyTrait` (conditional; required when `allowed=false`)
+
+###### Children (Normative)
+
+* Exactly one of `ChildPath` or `DescendantPath` (see §9.5.4)
 
 ---
 
@@ -4054,6 +4128,10 @@ Constrains the number of collection members.
 
 At least one of `min` or `max` MUST be present.
 
+###### Children (Normative)
+
+* Exactly one of `ChildPath` or `DescendantPath` (see §9.5.4)
+
 ---
 
 ##### `EachMemberSatisfies`
@@ -4062,19 +4140,10 @@ Each collection member MUST satisfy a nested rule.
 
 ###### Children (Normative)
 
+* Exactly one of `ChildPath` or `DescendantPath` (see §9.5.4)
 * Exactly one `Rule` child
 
----
-
-##### `CollectionConstraint`
-
-Generic collection constraint using explicit type dispatch.
-
-###### Traits (Normative)
-
-* `type` (required; enumerated token)
-
-This form MUST NOT introduce semantics beyond those explicitly defined by the corresponding concrete collection constraint.
+The rule MUST be evaluated for each matching collection member.
 
 ---
 
@@ -4097,13 +4166,23 @@ Uniqueness semantics MUST follow the deterministic scope rules defined in §9.9.
 
 ##### `OrderConstraint`
 
-Defines positional rules for ordered collections.
+Constrains the ordering of collection elements by a trait value.
 
 ###### Traits (Normative)
 
-* `type` (required; enumerated token identifying the order rule)
+* `type` (required; one of the order constraint types defined below)
+* `byTrait` (required; Trait name string per §4)
 
-Order constraint semantics MUST be explicitly defined by the schema-definition specification.
+###### Types (Normative)
+
+* `Ascending`: Elements must be in ascending order by the specified trait value.
+* `Descending`: Elements must be in descending order by the specified trait value.
+
+###### Children (Normative)
+
+* Exactly one of `ChildPath` or `DescendantPath` (see §9.5.4)
+
+Order constraint semantics apply to ordered collections. If the collection is unordered, the constraint has no effect.
 If a rule cannot be translated deterministically, schema processing MUST fail.
 
 ---
@@ -4120,15 +4199,11 @@ Constrains usage of reference Traits.
 
 ###### Types (Normative)
 
-* `ReferenceTargetsEntity`
-* `ReferenceMustResolve`
-* `ReferenceTargetsConcept`
-
-  * requires additional trait `conceptSelector`
-* `ReferenceSingleton`
-* `ReferenceTraitAllowed`
-
-  * requires additional trait `traitName`
+* `ReferenceTargetsEntity`: Target must be an entity. The `conceptSelector` and `traitName` traits MUST NOT be present.
+* `ReferenceMustResolve`: Reference must resolve. The `conceptSelector` and `traitName` traits MUST NOT be present.
+* `ReferenceSingleton`: At most one reference trait may be present. The `conceptSelector` and `traitName` traits MUST NOT be present.
+* `ReferenceTargetsConcept`: Target must be a specific concept type. The `conceptSelector` trait MUST be present.
+* `ReferenceTraitAllowed`: A specific reference trait is allowed. The `traitName` trait MUST be present.
 
 Reference constraint semantics MUST follow §9.9.9–§9.9.12 exactly.
 
@@ -4149,10 +4224,10 @@ Constrains entity and identifier semantics.
 
 ###### Types (Normative)
 
-* `MustBeEntity`
-* `MustNotBeEntity`
-* `IdentifierUniqueness`
-* `IdentifierForm`
+* `MustBeEntity`: Instance must be an entity. The `scope`, `pattern`, and `flags` traits MUST NOT be present.
+* `MustNotBeEntity`: Instance must not be an entity. The `scope`, `pattern`, and `flags` traits MUST NOT be present.
+* `IdentifierUniqueness`: Identifiers must be unique within scope. The `scope` trait MUST be present. The `pattern` and `flags` traits MUST NOT be present.
+* `IdentifierForm`: Identifier must match pattern. The `pattern` trait MUST be present. The `scope` trait MUST NOT be present.
 
 Identity constraint semantics MUST follow the entity and identity model defined in §§3.5 and 6.
 
@@ -4165,9 +4240,7 @@ For `MustBeEntity` and `MustNotBeEntity`, `scope`, `pattern`, and `flags` MUST N
 `IdentityConstraint(type=IdentifierUniqueness, scope=S)` constrains identifiers to be unique within the nearest enclosing scope `S`.
 Its semantics MUST be identical to `UniqueConstraint(trait=id, scope=S)` as defined in §9.9.7 (where `id` refers to `codex:declaredId`).
 
-If `scope` is omitted, `IdentityConstraint(type=IdentifierUniqueness)` MUST mean document-wide identifier uniqueness, with semantics identical to `UniqueInDocument(trait=id)` as defined in §9.9.7.
-
-For `IdentifierUniqueness`, `pattern` and `flags` MUST NOT be present.
+For `IdentifierUniqueness`, the `scope` trait MUST be present. The `pattern` and `flags` traits MUST NOT be present.
 
 `IdentityConstraint(type=IdentifierForm, pattern=p, flags=f)` constrains the spelling of declared identifiers.
 When the focus Concept instance is an Entity, its declared `id` value MUST match the regular expression `p` under SPARQL 1.1 `REGEX` semantics (see §9.5.1).
@@ -4187,12 +4260,12 @@ Constrains the structural context in which a Concept instance may appear.
 ###### Traits (Normative)
 
 * `type` (required; one of the context constraint types defined below)
-* `contextSelector` (required for applicable types; Concept name string)
+* `contextSelector` (Concept name string; see type-specific requirements below)
 
 ###### Types (Normative)
 
-* `OnlyValidUnderParent`
-* `OnlyValidUnderContext`
+* `OnlyValidUnderParent`: Validates the immediate parent is of the type specified by `TargetContext`. The `contextSelector` trait MUST NOT be present.
+* `OnlyValidUnderContext`: Validates an ancestor of the specified type exists in the parent chain. The `contextSelector` trait MUST be present.
 
 Context constraint semantics MUST follow §9.9.8.
 
@@ -4210,12 +4283,9 @@ Constrains content presence or structure.
 
 ###### Types (Normative)
 
-* `ContentForbiddenUnlessAllowed`
-* `ContentRequired`
-* `ContentMatchesPattern`
-
-  * requires additional trait `pattern`
-  * optional `flags` trait MAY be present
+* `ContentForbiddenUnlessAllowed`: Validates content is absent. The `pattern` and `flags` traits MUST NOT be present.
+* `ContentRequired`: Validates content exists. The `pattern` and `flags` traits MUST NOT be present.
+* `ContentMatchesPattern`: Validates content matches a pattern. The `pattern` trait MUST be present. The `flags` trait MAY be present.
 
 Content constraint semantics MUST follow the content model defined in §3.4 and the validation rules defined in §9.9.5.
 
@@ -4665,7 +4735,7 @@ The following changes are breaking and MUST require `compatibilityClass=$Breakin
 * renaming a Concept
 * removing a `TraitDefinition`
 * renaming a Trait
-* changing the value type, cardinality, or reference semantics of an existing Trait
+* changing the value type or reference semantics of an existing Trait
 * changing `entityEligibility` for any Concept
 * changing collection semantics, including ordering or duplicate allowance
 * changing identity, reference, or uniqueness semantics
@@ -4837,7 +4907,6 @@ Examples (illustrative):
 - multiple root Concepts in a file
 - forbidden whitespace around `=`
 - annotation opening `[` not at first non-whitespace position
-- annotation escape misuse (e.g., `\q` in an Annotation)
 
 `SurfaceFormError` is fatal.
 
@@ -5177,12 +5246,12 @@ ContentChar
 	;
 
 ContentEscape
-	= "\\", ( "<" | "\\" )
+	= "\\", "<"
 	;
 
-(* Raw '<' and '\' are forbidden in content. *)
+(* Raw '<' is forbidden in content. *)
 ContentSafeChar
-	= AnyCharExceptNewline - "<" - "\\"
+	= AnyCharExceptNewline - "<"
 	;
 ```
 
@@ -5346,11 +5415,11 @@ BacktickChar
 	;
 
 UnescapedBacktickChar
-	= AnyCharExceptBacktickBackslash
+	= AnyCharExceptBacktick
 	;
 
 BacktickEscape
-	= "\\", ( "`" | "\\" )
+	= "\\", "`"
 	;
 ```
 
@@ -5435,7 +5504,20 @@ IntegerDigits
 
 ```ebnf
 EnumeratedToken
-	= "$", UppercaseLetter, { Letter | Digit }
+	= "$", UppercaseLetter, { Letter | Digit }, [ TypeParameters ]
+	;
+
+TypeParameters
+	= "<", TypeArgument, { ",", TypeArgument }, ">"
+	;
+
+TypeArgument
+	= EnumeratedToken
+	| TypeUnion
+	;
+
+TypeUnion
+	= "[", EnumeratedToken, { ",", EnumeratedToken }, "]"
 	;
 ```
 
@@ -5832,21 +5914,20 @@ AnnotationChar
 	;
 
 UnescapedAnnotationChar
-	= AnyCharExceptRightBracketBackslashNewline
+	= AnyCharExceptRightBracketNewline
 	;
 
 AnnotationEscape
-	= "\\", ( "]" | "\\" )
+	= "\\", "]"
 	;
 
-(* Inside block annotations, the only escapes defined are the same as inline:
-	'\]' and '\\'. Everything else is raw bytes subject to those escape constraints. *)
+(* Inside block annotations, the only escape defined is the same as inline: '\]'. *)
 AnnotationBlockChar
 	= UnescapedAnnotationBlockChar | AnnotationEscape
 	;
 
 UnescapedAnnotationBlockChar
-	= AnyCharExceptBackslashNewline
+	= AnyCharExceptNewline
 	;
 ```
 
@@ -5895,8 +5976,10 @@ The following character classes are used but not fully enumerated:
 * `AnyCharExceptNewline` — any Unicode scalar except U+000A
 * `AnyCharExceptQuoteBackslashNewline` — any Unicode scalar except `"`, `\\`, U+000A
 * `AnyCharExceptApostropheBackslashNewline` — any Unicode scalar except `'`, `\\`, U+000A
+* `AnyCharExceptBacktick` — any Unicode scalar except `` ` ``
 * `AnyCharExceptBacktickBackslash` — any Unicode scalar except `` ` ``, `\\`
 * `AnyCharExceptRightParenNewline` — any Unicode scalar except `)`, U+000A
+* `AnyCharExceptRightBracketNewline` — any Unicode scalar except `]`, U+000A
 * `AnyCharExceptRightBracketBackslashNewline` — any Unicode scalar except `]`, `\\`, U+000A
 * `AnyCharExceptBackslashNewline` — any Unicode scalar except `\\`, U+000A
 * `AnyCharExceptValueTerminator` — any Unicode scalar except a Value terminator (defined in §A.1.27)
@@ -6030,8 +6113,8 @@ ContentLine <- Indentation ContentText Newline
 
 ContentText <- ContentChar*
 ContentChar <- ContentEscape / ContentSafeChar
-ContentEscape <- '\\' ('<' / '\\')
-ContentSafeChar <- !Newline !('<' / '\\') .
+ContentEscape <- '\\' '<'
+ContentSafeChar <- !Newline !'<' .
 ```
 
 ---
@@ -6128,8 +6211,8 @@ CharEscapeSequence <- '\\' ( ["'\\nrt] / UnicodeEscape )
 
 ```peg
 BacktickString <- '`' BacktickChar* '`'
-BacktickChar <- BacktickEscape / (![`\\] .)
-BacktickEscape <- '\\' [`\\]
+BacktickChar <- BacktickEscape / (!'`' .)
+BacktickEscape <- '\\' '`'
 ```
 
 ---
@@ -6173,7 +6256,13 @@ IntDigits <- '0' / [1-9] Digit*
 #### A.2.13 Enumerated Tokens
 
 ```peg
-EnumeratedToken <- '$' UppercaseLetter (Letter / Digit)*
+EnumeratedToken <- '$' UppercaseLetter (Letter / Digit)* TypeParameters?
+
+TypeParameters <- '<' TypeArgument (',' TypeArgument)* '>'
+
+TypeArgument <- EnumeratedToken / TypeUnion
+
+TypeUnion <- '[' EnumeratedToken (',' EnumeratedToken)* ']'
 ```
 
 ---
@@ -6337,10 +6426,10 @@ AnnotationBlock <- Indentation '[' Newline AnnotationBlockLine* Indentation ']' 
 
 AnnotationBlockLine <- Indentation AnnotationBlockChar* Newline
 
-AnnotationChar <- AnnotationEscape / (!(']' / '\\' / '\n') .)
-AnnotationEscape <- '\\' (']' / '\\')
+AnnotationChar <- AnnotationEscape / (!(']' / '\n') .)
+AnnotationEscape <- '\\' ']'
 
-AnnotationBlockChar <- AnnotationEscape / (!('\\' / '\n') .)
+AnnotationBlockChar <- AnnotationEscape / (!'\n' .)
 ```
 
 ---
