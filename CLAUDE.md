@@ -1,5 +1,24 @@
 # Codex Language — Reference for AI Assistants
 
+## Critical: No Conventions Without Approval
+
+Codex exists to eliminate ambiguity and ensure one canonical implementation. Standard specification conventions (RFC 2119 keywords, precedence clauses, optional features, etc.) often introduce the very ambiguity Codex rejects.
+
+**Do not apply conventional patterns automatically.** Question every inherited practice. Check with the user before introducing any standard spec-writing convention. If uncertain whether something is conventional, ask.
+
+The goal: any two conforming implementations produce byte-identical output for the same input. Every specification choice must serve that goal.
+
+## Specification Principles
+
+- **No may**: Only must and must not. Optional features create implementation variance. This applies at all levels — if a schema could let instance authors choose (e.g., `$MayBeEntity`), that's still optionality. Binary declarations only, no defaults.
+- **No redundancy**: Each requirement stated exactly once. Use references, not restatements.
+- **No conflict clauses**: The spec has no conflicts. If you find one, it's a defect to fix, not resolve via precedence.
+- **Round-trippability**: Core invariant. Applies to *canonical* form, not raw input. Canonicalization (like `gofmt`) normalizes first.
+- **Ordering**: Structural ordering has no semantic meaning *to Codex*. Schemas can define semantic ordering for specific constructs. Implementations preserve ordering for both round-trippability and schema-defined constraints.
+- **Content vs children mode**: Determined mechanically by first non-indentation character: `<` or `[` = children mode, anything else = content mode. Escapes `\<` and `\[` allow content starting with those characters.
+- **Reference implementation scope**: Canonicalization → parsing → validation → triple serialization → triple reconstruction. All five stages required for conformance.
+- **Bootstrap schema**: Hardcoded into implementations, not loaded at runtime (avoids circularity). Files in `bootstrap-schema/` are for human readability only.
+
 ## What Codex Is
 
 Codex is a declarative semantic markup language that serves as the storage/serialization format for the Paperhat Workshop Semantic Authoring System. It is backed by RDF, OWL2, SHACL, and SPARQL.
@@ -16,7 +35,7 @@ Codex is a declarative semantic markup language that serves as the storage/seria
 - **Trait** — Name-value pair on a Concept (camelCase). Schema-authorized.
 - **Value** — Literal datum (strings, numbers, booleans, IRIs, UUIDs, colors, temporals, collections, etc.). Parsed, never evaluated.
 - **Content** — Opaque narrative text. Preserved without interpretation.
-- **Entity** — A Concept with an `id` Trait. Entity eligibility is schema-controlled.
+- **Entity** — Schema declares `$MustBeEntity` (must have `id`) or `$MustNotBeEntity` (must not). No default, no `$MayBeEntity`.
 
 ## Two-Layer Architecture
 

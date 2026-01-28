@@ -7,6 +7,7 @@
 	description="The authoritative schema for schema-validating Codex schema documents. This Profile B schema provides full SHACL/SHACL-SPARQL constraint power. See expanded/index.cdx for the human-readable Profile A equivalent."
 >
 	<RdfGraph>
+
 		[
 			MARKDOWN:
 			This Profile B bootstrap schema expresses the full Codex schema-of-schemas as
@@ -1497,7 +1498,6 @@
 
 		[GROUP: Schema Structural Constraints]
 
-
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:Schema />
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions#sparql />
@@ -1507,7 +1507,6 @@
 		[END: Schema Structural Constraints]
 
 		[GROUP: TraitDefinition Value Type Constraints]
-
 
 		<RdfTriple s=urn:codex:bootstrap:constraint:trait-definition-value-type p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:trait-definition-value-type p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:TraitDefinition />
@@ -1540,7 +1539,6 @@
 		[END: TraitDefinition Value Type Constraints]
 
 		[GROUP: RdfTriple Object Constraints]
-
 
 		<RdfTriple s=urn:codex:bootstrap:constraint:rdf-triple-object p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:rdf-triple-object p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:RdfTriple />
@@ -1580,7 +1578,6 @@
 		[END: RdfTriple Object Constraints]
 
 		[GROUP: Cardinality Constraint Bounds]
-
 
 		<RdfTriple s=urn:codex:bootstrap:constraint:value-length-requires-bound p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:value-length-requires-bound p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:ValueLength />
@@ -1680,7 +1677,6 @@
 
 		[GROUP: Collection Duplicate Constraints]
 
-
 		<RdfTriple s=urn:codex:bootstrap:constraint:duplicates-false-requires-key-trait p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:duplicates-false-requires-key-trait p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:CollectionAllowsDuplicates />
 		<RdfTriple s=urn:codex:bootstrap:constraint:duplicates-false-requires-key-trait p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:duplicates-false-requires-key-trait#sparql />
@@ -1691,7 +1687,6 @@
 
 		[GROUP: RequiresChildConcept Constraints]
 
-
 		<RdfTriple s=urn:codex:bootstrap:constraint:requires-child-concept-min-positive p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:requires-child-concept-min-positive p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:RequiresChildConcept />
 		<RdfTriple s=urn:codex:bootstrap:constraint:requires-child-concept-min-positive p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:requires-child-concept-min-positive#sparql />
@@ -1701,7 +1696,6 @@
 		[END: RequiresChildConcept Constraints]
 
 		[GROUP: IdentityConstraint Constraints]
-
 
 		<RdfTriple s=urn:codex:bootstrap:constraint:identity-constraint-identifier-form-requires-pattern p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:identity-constraint-identifier-form-requires-pattern p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:IdentityConstraint />
@@ -1748,7 +1742,6 @@
 
 		[GROUP: ReferenceConstraint Parameter Requirements]
 
-
 		<RdfTriple s=urn:codex:bootstrap:constraint:reference-targets-concept-requires-selector p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:reference-targets-concept-requires-selector p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:ReferenceConstraint />
 		<RdfTriple s=urn:codex:bootstrap:constraint:reference-targets-concept-requires-selector p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:reference-targets-concept-requires-selector#sparql />
@@ -1786,7 +1779,6 @@
 		[END: ReferenceConstraint Parameter Requirements]
 
 		[GROUP: Uniqueness Constraints]
-
 
 		<RdfTriple s=urn:codex:bootstrap:constraint:concept-definition-name-unique p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:concept-definition-name-unique p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:ConceptDefinition />
@@ -1833,7 +1825,6 @@
 
 		[GROUP: Profile Constraints]
 
-
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:Schema />
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph#sparql />
@@ -1858,7 +1849,6 @@
 
 		[GROUP: ContextConstraint Parameter Requirements]
 
-
 		<RdfTriple s=urn:codex:bootstrap:constraint:context-constraint-only-valid-under-context-requires-selector p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:context-constraint-only-valid-under-context-requires-selector p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:ContextConstraint />
 		<RdfTriple s=urn:codex:bootstrap:constraint:context-constraint-only-valid-under-context-requires-selector p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:context-constraint-only-valid-under-context-requires-selector#sparql />
@@ -1875,7 +1865,6 @@
 		[END: ContextConstraint Parameter Requirements]
 
 		[GROUP: ContentConstraint Parameter Requirements]
-
 
 		<RdfTriple s=urn:codex:bootstrap:constraint:content-constraint-matches-pattern-requires-pattern p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:content-constraint-matches-pattern-requires-pattern p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:ContentConstraint />
@@ -1901,7 +1890,6 @@
 
 		[GROUP: Non-Empty Container Constraints]
 
-
 		<RdfTriple s=urn:codex:bootstrap:constraint:trait-rules-non-empty p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:trait-rules-non-empty p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:TraitRules />
 		<RdfTriple s=urn:codex:bootstrap:constraint:trait-rules-non-empty p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:trait-rules-non-empty#sparql />
@@ -1924,10 +1912,7 @@
 
 		[END: Non-Empty Container Constraints]
 
-
-
 		[GROUP: Min/Max Ordering Constraints]
-
 
 		<RdfTriple s=urn:codex:bootstrap:constraint:value-length-min-max-ordering p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:value-length-min-max-ordering p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:ValueLength />

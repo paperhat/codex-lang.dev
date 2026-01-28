@@ -1413,6 +1413,7 @@
 		</ConceptDefinition>
 
 		[END: Layer B - RDF Graph]
+
 	</ConceptDefinitions>
 
 	<TraitDefinitions>
@@ -1829,6 +1830,7 @@
 		/>
 
 		[END: RDF Triple Traits]
+
 	</TraitDefinitions>
 
 	<ConstraintDefinitions>
@@ -2713,5 +2715,6 @@
 		</ConstraintDefinition>
 
 		[END: Non-Empty Container Constraints]
+
 	</ConstraintDefinitions>
 </Schema>

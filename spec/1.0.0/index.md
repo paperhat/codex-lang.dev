@@ -25,9 +25,9 @@ This specification normatively defines:
 - schema-first parsing architecture
 - schema definition, schema loading/bootstrapping, and schema versioning rules
 - reference trait semantics
-	- well-formedness and schema validation error classification
+- well-formedness and schema validation error classification
 
-Codex 1.0.0 BETA does not define runtime behavior.
+Well-formedness checking does not require a schema; semantic validation does. See §2.5 for this distinction.
 
 ---
 
@@ -43,15 +43,11 @@ Codex 1.0.0 BETA does not define:
 
 Those concerns belong to consuming systems and tooling.
 
-### 1.3 Normativity and Precedence
+### 1.3 Normativity and Conformance
 
-This document uses the capitalized keywords **MUST**, **MUST NOT**, and **MAY**
-to indicate requirements.
+This document uses the capitalized keywords **MUST** and **MUST NOT** to indicate requirements.
 
-Any statement that uses **MUST**, **MUST NOT**, or **MAY** is normative.
-
-**MAY** defines an explicitly optional capability. If an implementation supports
-that capability, it MUST implement it exactly as specified.
+Any statement that uses **MUST** or **MUST NOT** is normative.
 
 Unless explicitly stated otherwise:
 
@@ -59,21 +55,19 @@ Unless explicitly stated otherwise:
 - Text labeled **Informative** is explanatory and does not define requirements.
 - Examples are illustrative and non-normative.
 
-All statements that do not use **MUST**, **MUST NOT**, or **MAY** are
-informative unless explicitly labeled **Normative**.
+All statements that do not use **MUST** or **MUST NOT** are informative unless explicitly labeled **Normative**.
 
-If two statements in this document conflict, a conforming implementation MUST
-follow this precedence order:
+A conforming implementation satisfies every normative requirement in this specification. Given identical inputs, all conforming implementations MUST produce identical outputs.
 
-1. Statements explicitly marked **Normative**
-2. Unmarked requirement statements using MUST/MUST NOT/MAY
-3. Appendix A.1 **EBNF (Normative)** for syntactic precision (what parses)
-4. Appendix A.2 **PEG (Informative)** and all other informative material
+#### 1.3.1 Consistency Guarantee
 
-Where Appendix A.1 (EBNF) defines syntax and the prose defines semantic intent:
+This specification contains no internal conflicts.
 
-- For syntactic recognition (what sequences of characters are valid tokens): EBNF prevails.
-- For semantic meaning and processing obligations: prose prevails.
+Appendix A.1 (EBNF) formalizes the syntactic rules described in the prose. The prose defines semantic meaning and processing obligations. These two forms address distinct concerns and do not conflict.
+
+The bootstrap schemas (`bootstrap-schema/schema.cdx` and `bootstrap-schema/expanded/schema.cdx`) instantiate the schema-definition rules defined in this specification. They are derived artifacts, not independent sources of authority.
+
+If an implementer discovers an apparent conflict between any parts of this specification or between this specification and the bootstrap schemas, that conflict is a defect. Implementers MUST NOT guess which source prevails. Implementers MUST report the defect.
 
 ---
 
@@ -81,21 +75,25 @@ Where Appendix A.1 (EBNF) defines syntax and the prose defines semantic intent:
 
 ### 2.1 Declarative and Closed-World Model
 
-Codex is a declarative language.
+Codex is a declarative language with closed-world semantics.
 
-A conforming implementation MUST treat the meaning of a Codex document as the result of its explicit declarations only.
+A conforming implementation MUST treat something not explicitly declared as not present.
 
-Codex has closed-world semantics:
+An implementation MUST NOT infer meaning from omission, shape, or other non-specified cues.
 
-- Meaning MUST be explicitly declared.
-- An implementation MUST NOT infer additional meaning from omission, shape, ordering, or other non-specified cues.
-- An implementation MUST NOT assume defaults unless they are explicitly defined by this specification or by the governing schema.
+An implementation MUST NOT assume defaults unless explicitly defined by this specification or by the governing schema.
 
-If something is not declared, it MUST be treated as not present.
+Structural ordering (of Traits, children, and collection elements) carries no semantic meaning to Codex itself. Schemas define whether ordering is semantically significant for specific constructs. Implementations MUST preserve structural ordering both for round-trippability (see §2.6) and to support schema-defined ordering constraints.
 
 ### 2.2 Determinism and Explainability
 
-Given the same inputs (document bytes, governing schema, and any other required external inputs explicitly defined by this specification), a conforming implementation MUST produce the same results.
+Given the same inputs, a conforming implementation MUST produce the same results.
+
+Required inputs are:
+
+- document bytes
+- governing schema (for validation; not required for well-formedness checking)
+- document base IRI (for instance graph mapping; see §9.7)
 
 In particular:
 
@@ -104,7 +102,7 @@ In particular:
 - Schema validation MUST be deterministic.
 - Canonicalization MUST be deterministic.
 
-Non-deterministic or heuristic behavior is forbidden.
+An implementation MUST NOT exhibit non-deterministic or heuristic behavior.
 
 For any well-formedness, schema validation, or canonicalization result, an implementation MUST be able to attribute the result to:
 
@@ -127,15 +125,11 @@ Accordingly:
 - Formatting and canonicalization MUST be mechanical and MUST NOT perform schema evaluation.
 - Semantic validation MUST evaluate schema rules (including content-mode interpretation, constraints, value types, identity, and references) and MUST NOT be performed implicitly during parsing.
 
-Codex and Codex-conforming tools MUST NOT define, assume, or require any particular storage backend, inference system, rendering model, or execution semantics.
-
 ### 2.4 Target Agnosticism
 
-Codex is target-agnostic.
+Codex is target-agnostic. A Codex document can be transformed into other representations (RDF/SHACL, JSON, TOML, etc.).
 
-A Codex document MAY be transformed into other representations.
-
-Codex constructs and Codex-conforming tool behavior defined by this specification MUST NOT assume a specific target, runtime, storage backend, or rendering model.
+Codex constructs and Codex-conforming tool behavior MUST NOT assume or require any particular target format, runtime, storage backend, inference system, rendering model, or execution semantics.
 
 ### 2.5 Well-Formedness and Validity
 
@@ -157,6 +151,24 @@ The bootstrap schema-of-schemas provides a built-in governing schema only for sc
 
 In this document, the term **schema validation** refers only to the schema-based semantic phase. When referring to the schema-free phase, this document uses **parse** and **check well-formedness**.
 
+### 2.6 Round-Trippability
+
+Round-trippability applies to the canonical form, not raw input. Raw input may use arbitrary whitespace or non-canonical formatting. Canonicalization (similar to `gofmt`) normalizes raw input to a single canonical surface form. Round-tripping preserves this canonical form.
+
+A conforming implementation MUST support round-tripping: a canonicalized Codex document, after transformation to RDF triples, storage, retrieval via SPARQL, and reconstruction, MUST produce a byte-identical canonicalized document.
+
+Formally: `canonicalize(original) = canonicalize(reconstruct(query(store(to_triples(validate(parse(canonicalize(original))))))))`
+
+This invariant ensures that Codex serves as a lossless serialization format for RDF data. Structural ordering, annotations, and all surface-form details MUST survive the round-trip.
+
+To guarantee round-trippability, a conforming implementation MUST include:
+
+- canonicalization (raw bytes → canonical surface form)
+- parsing (canonical surface form → AST)
+- validation (AST + schema → IR)
+- triple serialization (IR → RDF/SHACL triples)
+- triple reconstruction (SPARQL query results → canonical Codex)
+
 ---
 
 ## 3. Core Model
@@ -167,14 +179,12 @@ A Concept is a named declarative construct and the primary structural unit of a 
 
 A Concept instance MUST have exactly one Concept name.
 
-A Concept instance MAY declare zero or more Traits.
+A Concept instance MUST declare zero or more Traits.
 
-A Concept instance MAY contain either:
+A Concept instance MUST be in exactly one of two body modes:
 
-- zero or more child Concepts, or
-- Content,
-
-but it MUST NOT contain both child Concepts and Content.
+- **children mode**: the Concept instance contains zero or more child Concepts and no Content.
+- **content mode**: the Concept instance contains Content and no child Concepts.
 
 ### 3.2 Trait
 
@@ -212,16 +222,14 @@ Content MUST be preserved through Codex-conforming processing, subject only to t
 
 An Entity is a Concept instance with explicit identity.
 
-A Concept instance is an Entity if and only if:
+A Concept instance is an Entity if and only if the governing schema declares `$MustBeEntity` for that Concept via its `entityEligibility` rule.
 
-- the governing schema permits or requires identity for that Concept via its `entityEligibility` rule, and
-- the Concept instance declares an `id` Trait.
+The governing schema MUST declare exactly one `entityEligibility` value for each Concept. The valid values are:
 
-If the governing schema declares `$MustBeEntity` for a Concept, each instance of that Concept MUST declare an `id` Trait.
+- `$MustBeEntity`: each instance of that Concept MUST declare an `id` Trait.
+- `$MustNotBeEntity`: each instance of that Concept MUST NOT declare an `id` Trait.
 
-If the governing schema declares `$MustNotBeEntity` for a Concept, each instance of that Concept MUST NOT declare an `id` Trait.
-
-Codex-conforming tools MUST NOT treat a Concept instance as an Entity unless it declares an `id` Trait.
+If the governing schema does not declare `entityEligibility` for a Concept, schema validation MUST fail.
 
 Codex-conforming formatting and canonicalization MUST NOT synthesize identity by adding an `id` Trait or inventing an identifier value.
 
@@ -237,7 +245,7 @@ Markers MUST be one of:
 
 Markers MUST delimit Concept structure and nesting.
 
-Each closing marker MUST match the most recent unclosed opening marker.
+Each closing marker MUST match the most recent unclosed opening marker. If a closing marker does not match, or if any opening marker remains unclosed at end of input, the document MUST be rejected with a `ParseError` (§14).
 
 A self-closing marker MUST represent a Concept with no children and no Content.
 
@@ -1034,7 +1042,7 @@ A closing marker MUST be spelled as:
 </ConceptName>
 ```
 
-The closing marker MUST match the most recent unclosed Concept instance.
+The closing marker MUST match the most recent unclosed opening marker (see §3.6).
 
 The closing marker MUST appear on its own line after indentation.
 
@@ -1151,12 +1159,13 @@ Codex-conforming tools MUST identify the end of content by scanning for the clos
 Within content:
 
 - `\<` represents a literal `<`.
+- `\[` represents a literal `[`.
 
-A backslash not immediately followed by `<` is a literal backslash and has no special meaning.
+A backslash not immediately followed by `<` or `[` is a literal backslash and has no special meaning.
 
-To preserve schema-less determinism of content-versus-children body mode (§10.2.1.1), any non-blank content line whose first non-indentation character is `<` MUST spell that character as `\<`.
+A raw `<` character MUST NOT appear anywhere in content.
 
-A raw `<` character MUST NOT appear in content.
+A raw `[` character MUST NOT appear as the first non-indentation character of a content line. This preserves schema-less determinism of content-versus-children body mode (see §10.2.1.1).
 
 #### 8.8.3 Content Indentation Normalization
 
@@ -1192,7 +1201,7 @@ def add(a, b):
     return a + b
 ```
 
-Example: escaping `<` and `\` inside content.
+Example: escaping `<` inside content.
 
 ```cdx
 <Tutorial>
@@ -1204,6 +1213,15 @@ Example: escaping `<` and `\` inside content.
 		The text inside is opaque content.
 	</Section>
 </Tutorial>
+```
+
+Example: escaping `[` at the start of a content line.
+
+```cdx
+<Note>
+	\[1] This footnote reference starts with a bracket.
+	Normal [bracketed] text mid-line needs no escaping.
+</Note>
 ```
 
 ### 8.9 Annotations
@@ -2759,10 +2777,12 @@ In schema-less formatting and canonicalization mode, the parser MUST determine a
 The body MUST be classified according to the following rules:
 
 * If there are no non-blank body lines, the body MUST be treated as children mode.
-* If any non-blank considered line is a valid Concept marker line as defined by §8.5, the body MUST be treated as children mode.
+* If any non-blank considered line begins with `<` (Concept marker) or `[` (annotation), the body MUST be treated as children mode.
 * Otherwise, the body MUST be treated as content mode.
 
-If the body is classified as children mode but contains any non-blank considered line that is not a valid Concept marker line, the document MUST be rejected with a `ParseError`.
+Lines beginning with the escape sequences `\<` or `\[` are content, not structural markers.
+
+If the body is classified as children mode but contains any non-blank considered line that is neither a valid Concept marker line (§8.5) nor a valid annotation line (§8.9), the document MUST be rejected with a `ParseError`.
 
 This determination is purely mechanical and MUST NOT depend on schema knowledge, heuristics, or inferred intent.
 
@@ -5250,10 +5270,10 @@ ContentChar
 	;
 
 ContentEscape
-	= "\\", "<"
+	= "\\", ( "<" | "[" )
 	;
 
-(* Raw '<' is forbidden in content. *)
+(* Raw '<' is forbidden anywhere in content. Raw '[' is forbidden at line start only. *)
 ContentSafeChar
 	= AnyCharExceptNewline - "<"
 	;
@@ -6117,7 +6137,7 @@ ContentLine <- Indentation ContentText Newline
 
 ContentText <- ContentChar*
 ContentChar <- ContentEscape / ContentSafeChar
-ContentEscape <- '\\' '<'
+ContentEscape <- '\\' ('<' / '[')
 ContentSafeChar <- !Newline !'<' .
 ```
 

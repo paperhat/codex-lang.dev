@@ -91,6 +91,10 @@ def _gate_conformance_smokecheck() -> None:
     _run(["python3", "tools/conformance_smokecheck.py", str(manifest.relative_to(ROOT))])
 
 
+def _gate_cdx_annotation_lint() -> None:
+    _run(["python3", "tools/annotation_lint.py"])
+
+
 def _gate_no_rfc2119_leakage() -> None:
     # RFC-2119 keywords are reserved for versioned specification documents.
     # This prevents accidental normativity "leakage" into pointer pages, READMEs, etc.
@@ -261,6 +265,7 @@ def main(argv: list[str]) -> int:
     _gate_no_rfc2119_leakage()
     _gate_validation_terms_are_qualified()
     _gate_no_unfenced_dollar_tokens_in_markdown()
+    _gate_cdx_annotation_lint()
     _gate_conformance_smokecheck()
     _gate_no_json()
 
