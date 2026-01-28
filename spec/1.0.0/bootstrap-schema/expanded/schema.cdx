@@ -64,12 +64,12 @@
 			<Member
 				value="SimplifiedMode"
 				label="Simplified Authoring Mode"
-				description="Layer A schema authoring only."
+				description="Codex-native schema-definition authoring surface only."
 			/>
 			<Member
 				value="CanonicalMode"
 				label="Canonical Authoring Mode"
-				description="Layer B schema authoring only."
+				description="Canonical Representation authoring only."
 			/>
 		</EnumeratedValueSet>
 
@@ -1381,7 +1381,7 @@
 
 		[END: Atomic Constraints - Content]
 
-		[GROUP: Layer B - RDF Graph]
+		[GROUP: Canonical Representation - RDF Graph]
 
 		<ConceptDefinition
 			id=urn:codex:bootstrap:concept:RdfGraph
@@ -1412,7 +1412,7 @@
 			</TraitRules>
 		</ConceptDefinition>
 
-		[END: Layer B - RDF Graph]
+		[END: Canonical Representation - RDF Graph]
 
 	</ConceptDefinitions>
 
@@ -2489,8 +2489,8 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
-			id=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers
-			title="Canonical mode schemas must not contain Layer A containers"
+			id=urn:codex:bootstrap:constraint:profile-b-forbids-schema-definition-containers
+			title="Canonical mode schemas must not contain Codex-native schema-definition containers"
 			description="When authoringMode is CanonicalMode, the schema must not contain ConceptDefinitions, TraitDefinitions, EnumeratedValueSets, ConstraintDefinitions, ValueTypeDefinitions, or ValidatorDefinitions."
 		>
 			<Targets>

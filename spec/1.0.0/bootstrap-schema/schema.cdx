@@ -1839,11 +1839,11 @@
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-requires-rdf-graph#sparql p=http://www.w3.org/ns/shacl#message lex="Canonical mode schemas must contain RdfGraph" />
 
 
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:Schema />
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers#sparql />
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers#sparql p=http://www.w3.org/ns/shacl#select lex="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:authoringMode> <urn:codex:bootstrap:enum:AuthoringMode#CanonicalMode> . $this <urn:codex:bootstrap:rel:hasChild> ?child . { ?child a <urn:codex:bootstrap:concept:ConceptDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:TraitDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:EnumeratedValueSets> } UNION { ?child a <urn:codex:bootstrap:concept:ConstraintDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:ValueTypeDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:ValidatorDefinitions> } }" />
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers#sparql p=http://www.w3.org/ns/shacl#message lex="Canonical mode schemas must not contain Layer A containers" />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-schema-definition-containers p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-schema-definition-containers p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:Schema />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-schema-definition-containers p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:profile-b-forbids-schema-definition-containers#sparql />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-schema-definition-containers#sparql p=http://www.w3.org/ns/shacl#select lex="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:authoringMode> <urn:codex:bootstrap:enum:AuthoringMode#CanonicalMode> . $this <urn:codex:bootstrap:rel:hasChild> ?child . { ?child a <urn:codex:bootstrap:concept:ConceptDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:TraitDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:EnumeratedValueSets> } UNION { ?child a <urn:codex:bootstrap:concept:ConstraintDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:ValueTypeDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:ValidatorDefinitions> } }" />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-schema-definition-containers#sparql p=http://www.w3.org/ns/shacl#message lex="Canonical mode schemas must not contain Codex-native schema-definition containers" />
 
 		[END: Mode Constraints]
 

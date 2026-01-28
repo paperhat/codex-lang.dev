@@ -8,7 +8,7 @@ Codex eliminates ambiguity for byte-identical output across implementations. Sta
 
 ## Specification Principles
 
-- **No `MAY`**: Only `MUST`/`MUST NOT`. No optionality at any level.
+- **No `may`**: Only `must`/`must not`. No optionality at any level.
 - **No redundancy**: Each requirement stated once. Use references.
 - **No conflict clauses**: Conflicts are defects to fix, not resolve via precedence.
 - **Round-trippability**: Applies to canonical form. Canonicalization normalizes first.
@@ -28,11 +28,11 @@ Declarative semantic markup for the Paperhat Workshop system, backed by RDF/OWL2
 - **Content**: Opaque text. Preserved without interpretation.
 - **Entity**: `$MustBeEntity` or `$MustNotBeEntity`. No default.
 
-## Two-Layer Architecture
+## Authoring Modes and Canonical Representation
 
-**Layer A** (human-readable): `ConceptDefinition`, `TraitDefinition`, etc.
-**Layer B** (machine): `RdfGraph`/`RdfTriple`, SHACL-SPARQL.
-A expands deterministically to B.
+- **Canonical Representation** (semantic authority): RDF 1.1 graph (optionally expressed as SHACL / SHACL-SPARQL).
+- **Canonical Authoring Mode**: the author writes the Canonical Representation directly via `RdfGraph`/`RdfTriple`.
+- **Simplified Authoring Mode**: the author writes Codex-native schema-definition concepts; this is an authoring surface only and expands deterministically and losslessly into the Canonical Representation.
 
 ## Key Invariants
 
@@ -52,16 +52,16 @@ A expands deterministically to B.
 
 ## Specification Structure
 
-§1-2: Front matter, invariants · §3: Core model · §4: Naming (PascalCase/camelCase) · §5: Value literals · §6: Identity · §7: Reference Traits · §8: Surface form · §9: Schema architecture, Layer B, SHACL · §10: Canonicalization · §11: Schema definition · §12: Bootstrapping · §13: Versioning · §14: Errors · Appendix A: Grammars · Appendix B: Named colors
+§1-2: Front matter, invariants · §3: Core model · §4: Naming (PascalCase/camelCase) · §5: Value literals · §6: Identity · §7: Reference Traits · §8: Surface form · §9: Schema architecture, Canonical Representation, SHACL · §10: Canonicalization · §11: Schema definition · §12: Bootstrapping · §13: Versioning · §14: Errors · Appendix A: Grammars · Appendix B: Named colors
 
 ## Established Decisions (§1–§8)
 
 Do not regress:
 
-- **§1.3**: Only MUST/MUST NOT. MAY undefined.
+- **§1.3**: Only must/must not. may undefined.
 - **§4.1**: Names: ASCII letters/digits, non-empty. PascalCase uppercase-first, camelCase lowercase-first.
 - **§4.2**: No 3+ consecutive uppercase (mechanically enforces acronym-as-word).
-- **§4.3**: Authors MUST treat acronyms as words (not fully mechanical).
+- **§4.3**: Authors must treat acronyms as words (not fully mechanical).
 - **§5.1**: Empty strings permitted.
 - **§5.4**: No infinity/NaN. `-0` distinct from `0`. No leading zeros (sign excluded). Precision `p` on any numeric (inferred from decimal places; explicit overrides).
 - **§5.5**: Enumerated tokens: `$` + PascalCase.
@@ -73,9 +73,9 @@ Do not regress:
 - **§5.13**: Value equality over parsed values. Case-insensitive: hex/function names/color space tokens (Colors), hex (UUIDs).
 - **§5.14–15**: Set/Map duplicates are errors. Canonical order = source order.
 - **§6.1**: Two identity mechanisms: `id` (IRI, global scope) and `key` (Lookup Token, document scope).
-- **§6.2**: Entity MUST have exactly one `id`; non-Entity MUST not have `id`. Values unique within document.
+- **§6.2**: Entity must have exactly one `id`; non-Entity must not have `id`. Values unique within document.
 - **§6.3**: Concept has zero or one `key`. Resolution via §9.8 bindings.
-- **§7.1**: Exactly three reference traits: `reference`, `target`, `for`. Values: IRI or Lookup Token. MUST not imply dereferencing/loading/execution/transformation.
+- **§7.1**: Exactly three reference traits: `reference`, `target`, `for`. Values: IRI or Lookup Token. must not imply dereferencing/loading/execution/transformation.
 - **§7.2–4**: Intent statements are non-normative guidance for schema authors.
 - **§7.5**: Singleton rule via `ReferenceConstraint(type=ReferenceSingleton)`.
 - **§8.1–2**: UTF-8 default (no BOM); UTF-16 requires BOM. LF canonical; CRLF normalized; bare CR error; trailing LF required.

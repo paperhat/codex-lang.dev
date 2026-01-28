@@ -1504,12 +1504,20 @@ A schema document MUST be validated under exactly one authoring mode.
 
 Codex defines two authoring modes:
 
-- **Simplified Authoring Mode**: Layer A schema authoring only
-- **Canonical Authoring Mode**: Layer B schema authoring only
+- **Simplified Authoring Mode**: Codex-native schema-definition authoring surface only
+- **Canonical Authoring Mode**: Canonical Representation authoring only (via `RdfGraph`)
 
-All conforming implementations MUST support the Simplified Authoring Mode.
+The Canonical Representation is the only semantic model for Codex schemas.
+
+Authoring modes are guardrails over what schema authors may write; they do not define alternative semantic models.
+
+Simplified Authoring Mode is a deterministic, lossless authoring surface that expands into the Canonical Representation and has no independent semantics.
+
+Both modes are mandatory and first-class.
 
 All conforming implementations MUST support the Canonical Authoring Mode.
+
+All conforming implementations MUST support the Simplified Authoring Mode.
 
 A schema document MUST NOT mix modes.
 
@@ -1527,17 +1535,19 @@ If `authoringMode` is missing or has any other value, schema processing MUST fai
 Additional guardrails MUST hold:
 
 - Simplified mode schemas MUST contain exactly one `ConceptDefinitions` and MUST NOT contain `RdfGraph`.
-- Canonical mode schemas MUST contain exactly one `RdfGraph` and MUST NOT contain Layer A schema-definition concepts (including `ConceptDefinitions`, `TraitDefinitions`, `EnumeratedValueSets`, `ConstraintDefinitions`, `ValueTypeDefinitions`, and `ValidatorDefinitions`).
-- Layer A expansion MUST generate a canonical Layer B graph; different Layer A spellings that are semantically identical MUST expand to byte-identical Layer B graphs.
-- Layer B canonicalization MUST make semantically identical graphs byte-identical.
+- Canonical mode schemas MUST contain exactly one `RdfGraph` and MUST NOT contain Codex-native schema-definition concepts (including `ConceptDefinitions`, `TraitDefinitions`, `EnumeratedValueSets`, `ConstraintDefinitions`, `ValueTypeDefinitions`, and `ValidatorDefinitions`).
+- Simplified-mode expansion MUST generate the Canonical Representation as a canonical RDF graph; different simplified spellings that are semantically identical MUST expand to byte-identical canonical RDF graphs.
+- Canonicalization of the Canonical Representation MUST make semantically identical graphs byte-identical.
 
-### 9.5 Layer A (Codex-Native Schema Authoring)
+### 9.5 Simplified Authoring Mode (Codex-Native Schema Authoring Surface)
 
-Layer A is the Codex-native schema authoring model defined by the schema-definition specification.
+Simplified Authoring Mode is the Codex-native schema-definition authoring surface defined by the schema-definition specification.
 
-Layer A schema authoring MUST satisfy the Codex language invariants, including closed-world semantics, determinism, and prohibition of heuristics.
+This authoring surface has no independent semantics and exists only to expand deterministically into the Canonical Representation.
 
-Layer A authoring is the required authoring form for the Simplified Authoring Mode.
+Simplified Authoring Mode MUST satisfy the Codex language invariants, including closed-world semantics, determinism, and prohibition of heuristics.
+
+Codex-native schema-definition concepts are the required authoring form for the Simplified Authoring Mode.
 
 To support a total, deterministic projection to derived validation artifacts, simplified-mode schema authoring MUST additionally support the following extensions.
 
@@ -1555,7 +1565,7 @@ The `pattern` and `flags` semantics MUST be SPARQL 1.1 `REGEX` semantics.
 
 #### 9.5.2 Explicit Validator Definitions
 
-Layer A MUST support explicit validator definitions that make `ValueIsValid` deterministic.
+Simplified Authoring Mode MUST support explicit validator definitions that make `ValueIsValid` deterministic.
 
 `ValidatorDefinitions` is a container concept.
 
@@ -1583,13 +1593,13 @@ If `$X` cannot be resolved to exactly one `ValidatorDefinition`, schema processi
 
 #### 9.5.3 Explicit Path and Quantifier Rule Forms
 
-Layer A MUST provide explicit rule forms that bind exactly one path to exactly one nested rule, so that path and quantifier semantics are total and deterministic.
+Simplified Authoring Mode MUST provide explicit rule forms that bind exactly one path to exactly one nested rule, so that path and quantifier semantics are total and deterministic.
 
 The schema-definition specification defines paths (`TraitPath`, `ChildPath`, `DescendantPath`, `ContentPath`) and quantifiers (`Exists`, `ForAll`, `Count`) but does not, by itself, define a concrete rule-node form that composes them with rules.
 
-To produce a total, deterministic mapping, Layer A MUST include explicit rule-node forms that bind a path and scope a nested rule.
+To produce a total, deterministic mapping, Simplified Authoring Mode MUST include explicit rule-node forms that bind a path and scope a nested rule.
 
-Layer A MUST provide the following rule nodes:
+Simplified Authoring Mode MUST provide the following rule nodes:
 
 - `OnPathExists`
 - `OnPathForAll`
@@ -1632,29 +1642,31 @@ For `CollectionAllowsDuplicates` with `allowed=false`, the constraint node MUST 
 
 If `keyTrait` is `id`, it MUST refer to the declared identifier as specified by the instance-graph identity rules.
 
-### 9.6 Layer B (RDF / SHACL Representation)
+### 9.6 Canonical Representation (RDF / SHACL)
 
-Layer B is the canonical, fully general schema representation used to derive validation artifacts.
+The Canonical Representation of Codex schemas is an RDF 1.1 graph.
 
-Layer B MUST be representable as an RDF 1.1 graph.
+The Canonical Representation is the only semantic authority for Codex schemas.
 
-Layer B MAY be further expressed as SHACL shapes.
+The Canonical Representation MUST be representable as an RDF 1.1 graph.
 
-Layer B MUST be able to represent any SHACL graph, including SHACL-SPARQL constraints.
+The Canonical Representation MAY be further expressed as SHACL shapes.
 
-This specification does not define namespace prefixes; Layer B uses IRIs directly.
+The Canonical Representation MUST be able to represent any SHACL graph, including SHACL-SPARQL constraints.
 
-Layer B MUST be deterministic and canonical:
+This specification does not define namespace prefixes; the Canonical Representation uses IRIs directly.
 
-- Layer B MUST NOT contain RDF blank nodes.
-- All RDF nodes in Layer B MUST be IRIs.
-- Where SHACL commonly uses blank nodes (for example, `sh:property` values and RDF lists), Layer B MUST use deterministically derived skolem IRIs instead.
-- Layer B MUST be treated as a set of RDF triples.
-- Layer B MUST NOT contain duplicate triples.
+The Canonical Representation MUST be deterministic and canonical:
+
+- The Canonical Representation MUST NOT contain RDF blank nodes.
+- All RDF nodes in the Canonical Representation MUST be IRIs.
+- Where SHACL commonly uses blank nodes (for example, `sh:property` values and RDF lists), the Canonical Representation MUST use deterministically derived skolem IRIs instead.
+- The Canonical Representation MUST be treated as a set of RDF triples.
+- The Canonical Representation MUST NOT contain duplicate triples.
 
 #### 9.6.1 Canonical Triple Form
 
-When Layer B is authored as a Codex graph form, it MUST use:
+When the Canonical Representation is authored as a Codex graph form, it MUST use:
 
 - `RdfGraph` — container for triples
 - `RdfTriple` — a single RDF triple
@@ -1684,7 +1696,7 @@ If `datatype` is absent and `language` is absent, the literal datatype MUST be `
 
 #### 9.6.2 Canonical Ordering and Duplicate Removal
 
-In canonical Layer B, `RdfTriple` children MUST be sorted in ascending lexicographic order of `(s, p, oKey)`.
+In the canonical RDF graph, `RdfTriple` children MUST be sorted in ascending lexicographic order of `(s, p, oKey)`.
 
 `oKey` MUST be:
 
@@ -1693,15 +1705,15 @@ In canonical Layer B, `RdfTriple` children MUST be sorted in ascending lexicogra
 
 If two triples are identical after this normalization, duplicates MUST be removed.
 
-Any algorithm that derives Layer B or derives SHACL shapes from Layer B MUST fail rather than guess when required semantics are not explicitly defined.
+Any algorithm that derives the Canonical Representation or derives SHACL shapes from the Canonical Representation MUST fail rather than guess when required semantics are not explicitly defined.
 
 #### 9.6.3 RDF List Encoding (No Blank Nodes)
 
-If Layer B includes an RDF list (for example, as the object of `sh:in`), it MUST be encoded using the standard RDF list vocabulary (`rdf:first`, `rdf:rest`, `rdf:nil`).
+If the Canonical Representation includes an RDF list (for example, as the object of `sh:in`), it MUST be encoded using the standard RDF list vocabulary (`rdf:first`, `rdf:rest`, `rdf:nil`).
 
 All RDF list nodes MUST be IRIs.
 
-Where the RDF list encoding would otherwise use blank nodes, Layer B MUST use deterministically derived skolem IRIs instead.
+Where the RDF list encoding would otherwise use blank nodes, the Canonical Representation MUST use deterministically derived skolem IRIs instead.
 
 #### 9.6.4 Deterministic Derived IRIs (One Way To Say It)
 
@@ -1739,7 +1751,7 @@ If derived validation artifacts include a node shape targeting the document node
 
 - `documentNodeShapeIri = schemaIri + "#shape/Document"`
 
-All canonicalization and projection rules for Layer B required by this specification are defined in this section.
+All canonicalization and projection rules for the Canonical Representation required by this specification are defined in this section.
 
 ### 9.7 Codex→RDF Instance Graph Mapping
 
@@ -2354,17 +2366,17 @@ At minimum, processing MUST fail in any of the following cases:
 - a lookup token is required to resolve but does not have exactly one binding
 - a derived validation artifact cannot be constructed without inventing missing definitions
 
-### 9.11 Layer A → Layer B Expansion Algorithm (Total)
+### 9.11 Simplified Authoring Mode → Canonical Representation Expansion Algorithm (Total)
 
-This section defines a deterministic, total expansion algorithm from the Simplified Authoring Mode (Layer A) schema authoring to canonical Layer B (`RdfGraph`) suitable for derived validation artifacts (including SHACL and SHACL-SPARQL).
+This section defines a deterministic, total expansion algorithm from the Simplified Authoring Mode (Codex-native schema-definition authoring surface) to the Canonical Representation (`RdfGraph`) suitable for derived validation artifacts (including SHACL and SHACL-SPARQL).
 
 The expansion algorithm is normative.
 
 #### 9.11.1 Inputs and Output
 
-Input: a Layer A schema document `S`.
+Input: a Simplified Authoring Mode schema document `S`.
 
-Output: a Layer B `RdfGraph` containing a SHACL graph.
+Output: a Canonical Representation `RdfGraph` containing a SHACL graph.
 
 #### 9.11.2 Preconditions
 
@@ -2408,8 +2420,8 @@ Cardinality mapping:
 
 Value type mapping:
 
-- If Layer A declares a value type token that maps to an RDF datatype IRI, the expansion MUST emit `(PS, sh:datatype, datatypeIri)`.
-- If Layer A constrains by enumerated set, the expansion MUST emit `(PS, sh:in, listNodeIri)` and MUST emit the RDF list structure using deterministic skolem IRIs (see §9.6.3).
+- If simplified-mode schema authoring declares a value type token that maps to an RDF datatype IRI, the expansion MUST emit `(PS, sh:datatype, datatypeIri)`.
+- If simplified-mode schema authoring constrains by enumerated set, the expansion MUST emit `(PS, sh:in, listNodeIri)` and MUST emit the RDF list structure using deterministic skolem IRIs (see §9.6.3).
 
 Any value-type token without a defined mapping MUST cause expansion failure.
 
@@ -2430,7 +2442,7 @@ Child presence mapping:
 - `RequiresChildConcept` MUST emit `(PS, sh:minCount, "1"^^xsd:integer)`.
 - `ForbidsChildConcept` MUST emit `(PS, sh:maxCount, "0"^^xsd:integer)`.
 
-If Layer A restricts child type, the expansion MUST emit `(PS, sh:class, Q)`.
+If simplified-mode schema authoring restricts child type, the expansion MUST emit `(PS, sh:class, Q)`.
 
 #### 9.11.6 ConstraintDefinitions → SHACL Constraints
 
