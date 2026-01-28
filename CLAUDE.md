@@ -54,7 +54,7 @@ A expands deterministically to B.
 
 §1-2: Front matter, invariants · §3: Core model · §4: Naming (PascalCase/camelCase) · §5: Value literals · §6: Identity · §7: Reference Traits · §8: Surface form · §9: Schema architecture, Layer B, SHACL · §10: Canonicalization · §11: Schema definition · §12: Bootstrapping · §13: Versioning · §14: Errors · Appendix A: Grammars · Appendix B: Named colors
 
-## Established Decisions (§1–§7)
+## Established Decisions (§1–§8)
 
 Do not regress:
 
@@ -78,3 +78,9 @@ Do not regress:
 - **§7.1**: Exactly three reference traits: `reference`, `target`, `for`. Values: IRI or Lookup Token. MUST NOT imply dereferencing/loading/execution/transformation.
 - **§7.2–4**: Intent statements are non-normative guidance for schema authors.
 - **§7.5**: Singleton rule via `ReferenceConstraint(type=ReferenceSingleton)`.
+- **§8.1–2**: UTF-8 default (no BOM); UTF-16 requires BOM. LF canonical; CRLF normalized; bare CR error; trailing LF required.
+- **§8.3**: Tabs only (U+0009) for indentation. Spaces in indentation = error.
+- **§8.5–6**: Empty block `<X></X>` is error; use self-closing. No whitespace around `=`. 1–2 traits inline; 3+ multiline with `>` or `/>` on own line.
+- **§8.8**: Content is opaque. Escaping: `\<` and `\[` (line-initial only). Indentation stripped (schema-free). `whitespaceMode`: `$Preformatted` (preserve) or `$Flow` (collapse, wrap 100 chars) — schema-directed.
+- **§8.9**: Three annotation kinds: attached, grouping, general. Block directives: `FLOW:`, `CODE:`, `MARKDOWN:`.
+- **§10.5**: Two-phase canonicalization: Phase 1 (schema-free) for encoding/indentation/layout; Phase 2 (schema-directed) for content whitespace mode.

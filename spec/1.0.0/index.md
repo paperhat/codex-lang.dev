@@ -1114,9 +1114,7 @@ Content MUST NOT be interpreted as Codex structure, Traits, or Values.
 
 In canonical surface form, content lines MUST be indented one nesting level deeper than their enclosing Concept instance.
 
-Content MAY contain blank lines.
-
-Content MAY span multiple lines.
+Content can contain blank lines and can span multiple lines.
 
 #### 8.8.1 Content Termination
 
@@ -1149,25 +1147,70 @@ Codex-conforming tools MUST preserve all characters following the removed indent
 
 If a non-blank content line does not have the required canonical leading indentation after indentation normalization, Codex-conforming tools MUST fail with a formatting error.
 
-#### 8.8.4 Examples (Informative)
+Indentation normalization is schema-free and MUST be performed before schema-directed processing.
+
+#### 8.8.4 Whitespace Mode Normalization
+
+Whitespace mode normalization is schema-directed and MUST be performed during schema-directed processing.
+
+The governing schema declares `whitespaceMode` on each Concept that allows content (see §11.4.2).
+
+For `whitespaceMode=$Preformatted`:
+
+* Codex-conforming tools MUST preserve all content whitespace exactly after indentation normalization.
+
+For `whitespaceMode=$Flow`:
+
+* Codex-conforming tools MUST collapse each run of whitespace characters (spaces, tabs, and line breaks) to a single U+0020 SPACE.
+* Codex-conforming tools MUST trim leading and trailing whitespace from the resulting content.
+* In canonical surface form, Codex-conforming tools MUST wrap content to lines of at most 100 Unicode scalar values, breaking at whitespace boundaries where possible.
+* Each wrapped line MUST be indented exactly one nesting level deeper than the enclosing Concept instance.
+
+Schema-less processing MUST treat all content as `$Preformatted` (preserve all whitespace after indentation normalization).
+
+#### 8.8.5 Examples (Informative)
 
 This section is informative.
 
 Example: indentation stripping while preserving whitespace-sensitive content.
 
+This example assumes `Verse` is defined with `whitespaceMode=$Preformatted`.
+
 ```cdx
-<Code>
-	def add(a, b):
-	    return a + b
-</Code>
+<Verse>
+	Buffalo Bill 's
+	defunct
+	        who used to
+	        ride a watersmooth-silver
+	                                  stallion
+	and break onetwothreefourfive pigeonsjustlikethat
+	                                                  Jesus
+
+	he was a handsome man
+	                      and what i want to know is
+	how do you like your blueeyed boy
+	Mister Death
+</Verse>
 ```
 
 The logical content is:
 
 ```
-def add(a, b):
-    return a + b
+Buffalo Bill 's
+defunct
+        who used to
+        ride a watersmooth-silver
+                                  stallion
+and break onetwothreefourfive pigeonsjustlikethat
+                                                  Jesus
+
+he was a handsome man
+                      and what i want to know is
+how do you like your blueeyed boy
+Mister Death
 ```
+
+(Poem: "Buffalo Bill 's" by e.e. cummings)
 
 Example: escaping `<` inside content.
 
@@ -1226,11 +1269,11 @@ A block annotation MUST use `[` and `]` on their own lines.
 ]
 ```
 
-Annotations MAY appear at top-level or within bodies interpreted as containing child Concepts.
+Annotations can appear at top-level or within bodies interpreted as containing child Concepts.
 
 Annotations MUST NOT appear inside Concept markers (that is, inside `<Concept …>`, `</Concept>`, or `<Concept />`).
 
-Annotations MAY contain arbitrary text, including blank lines (block annotations only).
+Annotations can contain arbitrary text, including blank lines (block annotations only).
 
 #### 8.9.2 Structural Rules
 
@@ -1272,7 +1315,7 @@ Block annotations MUST preserve their internal line structure.
 
 Codex-conforming tools MUST normalize block-annotation line endings to LF.
 
-Block annotations MAY declare a directive (see §8.9.5) that controls additional canonicalization.
+A block annotation can include a directive (see §8.9.5) that controls additional canonicalization.
 
 For a block annotation with no directive, Codex-conforming tools MUST:
 
@@ -1281,7 +1324,7 @@ For a block annotation with no directive, Codex-conforming tools MUST:
 
 #### 8.9.5 Block Annotation Directives
 
-In a block annotation, the first non-blank content line MAY be a directive line.
+In a block annotation, the first non-blank content line can be a directive line.
 
 If present, the directive line MUST be exactly one of:
 
@@ -1326,9 +1369,9 @@ An annotation is an attached annotation if and only if:
 * It appears immediately before a Concept opening marker.
 * There is no blank line between the annotation and that marker.
 
-Attached annotations MAY be inline or block annotations.
+An attached annotation can be either inline or block form.
 
-Multiple attached annotations MAY stack.
+Multiple attached annotations can stack.
 
 Stacked attached annotations MUST be contiguous and MUST NOT be separated by blank lines.
 
@@ -1349,7 +1392,7 @@ Grouping annotations MUST NOT attach to Concept instances.
 
 Grouping annotations define a purely editorial grouping region.
 
-Grouping annotations MAY nest.
+Grouping annotations can nest.
 
 Label comparison MUST use the canonical label form (trimmed, with internal whitespace collapsed to single spaces).
 
@@ -1363,7 +1406,7 @@ An annotation is a general annotation if and only if:
 * It is not a grouping annotation.
 * It is surrounded by exactly one blank line above and exactly one blank line below, where file boundaries count as blank-line boundaries.
 
-General annotations MAY be inline or block.
+A general annotation can be either inline or block form.
 
 General annotations MUST NOT attach to Concept instances.
 
@@ -1384,7 +1427,7 @@ In canonical surface form:
 * Grouping annotations MUST be surrounded by exactly one blank line above and below, where file boundaries count as blank-line boundaries.
 * General annotations MUST be surrounded by exactly one blank line above and below, where file boundaries count as blank-line boundaries.
 
-Any annotation that is neither an attached annotation, a grouping annotation, nor a general annotation is invalid.
+Codex-conforming tools MUST treat any annotation that is neither an attached annotation, a grouping annotation, nor a general annotation as invalid.
 
 ---
 
@@ -1414,11 +1457,9 @@ Given a Codex document and a governing schema, a conforming implementation MUST 
 
 ### 9.2 Schema-Less Formatting / Well-Formedness Checks
 
-An implementation MAY perform purely syntactic parsing and formatting checks without a governing schema.
-
 If an implementation performs schema-less checks, it MUST limit those checks to rules that are explicitly defined by this specification as independent of schema semantics.
 
-Schema-less checks MAY include:
+Schema-less checks are limited to:
 
 - determining whether the input bytes can be decoded as a permitted file encoding
 - determining whether the input matches the surface-form grammar
@@ -1441,7 +1482,7 @@ An implementation MUST NOT perform semantic validation without a governing schem
 
 Given a governing schema, an implementation MUST perform semantic validation as defined by that schema.
 
-Schema-driven semantic validation MUST be deterministic and MUST be explainable in terms of the specific schema rule(s) applied.
+Schema-driven semantic validation MUST be explainable in terms of the specific schema rule(s) applied.
 
 Schema-driven semantic validation MUST include evaluation of all schema-defined authorizations and constraints, including at least:
 
@@ -1468,9 +1509,7 @@ Codex defines two authoring profiles:
 
 All conforming implementations MUST support Profile A.
 
-Implementations MAY support Profile B.
-
-If an implementation supports Profile B, it MUST implement all Profile B requirements defined by this specification, including the Layer B (`RdfGraph`) structural and canonicalization rules.
+All conforming implementations MUST support Profile B.
 
 A schema document MUST NOT mix profiles.
 
@@ -2794,7 +2833,9 @@ If canonicalization cannot be performed unambiguously, the document is invalid.
 
 ### 10.5 Canonicalization Rules (Normative)
 
-Canonicalization includes, at minimum:
+Canonicalization is divided into two phases:
+
+**Phase 1 (schema-free)** applies to all documents:
 
 - canonical encoding and newline normalization (§8)
 - deterministic indentation
@@ -2807,6 +2848,13 @@ Canonicalization includes, at minimum:
 - canonical inline-annotation whitespace collapse
 - canonical string escaping
 - preservation of Concept, Trait, and Content order
+- content indentation normalization (§8.8.3)
+
+**Phase 2 (schema-directed)** applies during schema-directed processing:
+
+- content whitespace mode normalization per `whitespaceMode` declaration (§8.8.4)
+
+Schema-less processing MUST complete Phase 1 only. Schema-directed processing MUST complete both phases.
 
 Canonicalization MUST NOT:
 
@@ -3018,9 +3066,7 @@ The `Schema` Concept MUST declare exactly one authoring profile via the `authori
 
 If `authoringProfile` is missing, invalid, or mixed, schema processing MUST fail.
 
-All conforming implementations MUST support Profile A.
-
-Implementations MAY support Profile B. If an implementation supports Profile B, it MUST enforce the Profile B constraints and Layer B (`RdfGraph`) rules defined by this specification.
+All conforming implementations MUST support both Profile A and Profile B (see §9.4).
 
 #### Children (Normative)
 
@@ -3112,6 +3158,21 @@ Exactly one of:
 
 * `AllowsContent` — instances are in content mode
 * `ForbidsContent` — instances are in children mode
+
+###### `AllowsContent`
+
+Traits:
+
+* `whitespaceMode` (required; Enumerated Token Value)
+
+`whitespaceMode` MUST be one of:
+
+* `$Preformatted` — content whitespace is significant and MUST be preserved exactly (e.g., source code, poetry)
+* `$Flow` — content whitespace is not significant; Codex-conforming tools MUST collapse runs of whitespace to single spaces and trim leading/trailing whitespace
+
+###### `ForbidsContent`
+
+`ForbidsContent` has no traits.
 
 ##### Defaults
 
