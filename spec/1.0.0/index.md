@@ -270,8 +270,10 @@ Some requirements in this section are normative but not mechanically enforceable
 
 For the purposes of Codex, this specification defines:
 
-* **PascalCase**: a name composed only of ASCII letters and digits, with no separators; the first character MUST be an ASCII uppercase letter.
-* **camelCase**: a name composed only of ASCII letters and digits, with no separators; the first character MUST be an ASCII lowercase letter.
+* **PascalCase**: a name composed only of ASCII letters and digits; the first character MUST be an ASCII uppercase letter.
+* **camelCase**: a name composed only of ASCII letters and digits; the first character MUST be an ASCII lowercase letter.
+
+A name MUST contain at least one character.
 
 Concept names MUST use PascalCase.
 
@@ -279,57 +281,24 @@ Trait names MUST use camelCase.
 
 No other casing is permitted.
 
-### 4.2 Segments (Deterministic)
+### 4.2 Consecutive Uppercase Restriction
 
-Codex names are interpreted as a sequence of one or more word segments.
+Concept names and Trait names MUST NOT contain three or more consecutive ASCII uppercase letters.
 
-For the purposes of naming validation, the segmentation of a name MUST be determined mechanically as follows:
+This restriction ensures that acronyms and initialisms are written as ordinary words with only the first letter capitalized (e.g., `AstNode`, not `ASTNode`). It also permits single-letter words in names (e.g., `ThisIsAThing` is valid because the transition from "A" to "Thing" produces only two consecutive uppercase letters).
 
-* A segment begins at the start of the name.
-* A new segment begins at an ASCII uppercase letter that is immediately preceded by an ASCII lowercase letter or an ASCII digit.
-* Digits belong to the segment in which they appear.
+### 4.3 Acronyms and Initialisms (Author Responsibility)
 
-This segmentation rule is purely syntactic and does not depend on natural language interpretation.
+Authors MUST write acronyms and initialisms as single words with only the first letter capitalized.
 
-### 4.3 Segment Casing Constraints
+This requirement binds schema authors. It is not fully mechanically enforceable because implementations cannot distinguish an incorrectly written acronym from a legitimate sequence of single-letter words.
 
-Within any segment:
-
-* Only the first character MAY be an ASCII uppercase letter.
-* All remaining alphabetic characters MUST be ASCII lowercase letters.
-* One-letter segments are permitted.
-
-These constraints apply uniformly to all segments, regardless of their intended meaning.
-
-As a consequence, names such as `AstNode` and `RdfGraph` are permitted, while names such as `ASTNode`, `RDFGraph`, or other all-caps runs within a segment are forbidden.
-
-### 4.4 Abbreviations, Initialisms, and Acronyms (Author Responsibility)
-
-Codex does not attempt to mechanically determine whether a name segment is an abbreviation, initialism, or acronym. Such distinctions are contextual, language-dependent, and outside the scope of deterministic lexical analysis.
-
-Nevertheless, the following requirements are **normative**:
-
-* A schema author MUST NOT introduce abbreviations, initialisms, or acronyms in names unless they are reasonably well understood by the intended audience of the schema.
-* If a schema author uses an abbreviation, initialism, or acronym that may not be universally understood, the schema author MUST document its meaning in the schema’s descriptive context.
-
-These requirements bind schema authors and govern schema conformance, even though they are not fully mechanically enforceable.
-
-### 4.5 Orthographic Treatment of Abbreviations
-
-When abbreviations, initialisms, or acronyms are used in Codex names, they MUST be written and cased as ordinary word segments, in accordance with §4.2 and §4.3.
-
-In particular:
-
-* Abbreviations MUST NOT be rendered as all-caps segments.
-* Abbreviations MUST follow normal PascalCase or camelCase word segmentation rules.
-
-This requirement is mechanically enforceable and applies regardless of whether the abbreviation is documented or well understood.
-
-### 4.6 Diagnostics
-
-Implementations MAY provide diagnostics or warnings related to suspected abbreviation usage, undocumented terms, or naming clarity.
-
-Failure to emit such diagnostics does not imply schema conformance, and their presence or absence does not alter the normative obligations of schema authors defined in this section.
+| Correct | Incorrect | Mechanical rejection (§4.2) | Author intent |
+|---------|-----------|----------------------------|---------------|
+| `AstNode` | `ASTNode` | A-S-T-N = 4 consecutive | "AST" is one word |
+| `HtmlParser` | `HTMLParser` | H-T-M-L-P = 5 consecutive | "HTML" is one word |
+| `safeHtml` | `safeHTML` | H-T-M-L = 4 consecutive | "HTML" is one word |
+| `ioStream` | `iOStream` | not rejected | "IO" is one word |
 
 ---
 
@@ -337,17 +306,15 @@ Failure to emit such diagnostics does not imply schema conformance, and their pr
 
 ### 5.1 String Values
 
-A String Value is a sequence of Unicode scalar values.
+A String Value is a sequence of zero or more Unicode scalar values. An empty String Value (zero scalar values) is permitted.
 
-In the Surface Form, String Values are spelled as string literals and backtick strings.
+In the Surface Form, String Values MUST be spelled as quoted string literals (see Appendix A) or backtick strings (see §5.2).
 
 ### 5.2 Backtick Strings
 
 A Backtick String is a surface-form spelling of a String Value.
 
-Backtick strings are intended for multiline authoring convenience.
-
-Within a Backtick String, `\`` represents a literal `` ` ``.
+Within a Backtick String, `` `\` `` represents a literal `` ` ``.
 
 A backslash not immediately followed by a backtick is a literal backslash and has no special meaning.
 
@@ -368,11 +335,9 @@ No other spellings are permitted.
 
 ### 5.4 Numeric Values
 
-Numeric Values are declarative spellings.
-
 Codex performs no arithmetic and no numeric normalization. Numeric spellings MUST be preserved exactly.
 
-Integer components in Numeric Value spellings MUST NOT contain leading zeros, except that the single digit `0` is permitted.
+Integer components in Numeric Value spellings MUST NOT contain leading zeros, except that the single digit `0` is permitted. A sign character (if present) is not part of the integer component.
 
 This requirement applies to:
 
@@ -384,20 +349,20 @@ This requirement applies to:
 
 In the Surface Form, Numeric Values MUST be spelled using the numeric literal grammar defined by this specification.
 
-Numeric Values are exactly those spellings admitted by the numeric literal grammar defined by this specification.
+Numeric Values MUST NOT include infinity, NaN, or other non-finite representations. Codex defines only finite numeric literals.
+
+The literal spelling `-0` is permitted and MUST be preserved distinct from `0`.
 
 The meaning of a Numeric Value beyond its literal spelling MUST be defined by the governing schema or consuming system.
 
 #### 5.4.1 Precision-Significant Numbers
 
-Precision-significant numbers are marked with a `p` suffix.
+A precision-significant number MUST be a decimal number spelled with a `p` suffix. Integer Numeric Values MUST NOT use the `p` suffix.
 
 The declared precision (a count of decimal places in the literal spelling) MUST be determined by one of the following mechanisms:
 
 - Inferred precision: the count of decimal places in the literal spelling, including trailing zeros.
-- Explicit precision: an integer following the `p` suffix.
-
-The `p` suffix indicates that precision is semantically significant.
+- Explicit precision: a non-negative integer following the `p` suffix. Zero is permitted.
 
 Consuming systems MUST preserve the declared precision.
 
@@ -405,7 +370,7 @@ Consuming systems MUST preserve the declared precision.
 
 An Enumerated Token Value is a Value drawn from a schema-defined closed set.
 
-In the Surface Form, Enumerated Token Values MUST be spelled with a leading `$` sigil.
+In the Surface Form, Enumerated Token Values MUST be spelled with a leading `$` sigil followed by a token name. The token name MUST use PascalCase.
 
 Enumerated Token Values MUST NOT be treated as String Values.
 
@@ -417,9 +382,9 @@ A Temporal Value represents a declarative temporal literal.
 
 In the Surface Form, Temporal Values MUST be spelled using `{...}`.
 
-Temporal Values MUST conform to the Temporal Value grammar defined by this specification (see Appendix A.1.14 and Appendix A.2.15).
+Temporal Values MUST conform to the Temporal Value grammar defined by this specification (see Appendix A.1.14 and Appendix A.2.15). The Temporal Value grammar defines the complete braced literal; the Temporal Body grammar defines the content within the braces.
 
-Codex itself defines no temporal evaluation, normalization, ordering, time zone interpretation, or calendrical correctness requirements for Temporal Values.
+Codex itself defines no temporal evaluation, normalization, ordering, time zone interpretation, or calendrical correctness requirements for Temporal Values. In canonical surface form, Temporal Values MUST be spelled exactly as parsed (no normalization).
 
 Codex-conforming tools MUST NOT derive temporal meaning, perform evaluation, apply defaults, or check real-world correctness (for example, month length or leap seconds) except as explicitly defined by the governing schema or consuming system.
 
@@ -444,7 +409,7 @@ Temporal Values MUST NOT be treated as Enumerated Token Values, even when the br
 
 ### 5.7 Color Values
 
-Color Values are first-class values, not String Values.
+A Color Value MUST NOT be treated as a String Value.
 
 Codex-conforming tools MUST NOT normalize, convert, or interpret Color Values beyond the well-formedness checks defined by this specification.
 
@@ -464,17 +429,11 @@ In the Surface Form, Color Values MUST be spelled using one of the following lit
 - `device-cmyk(...)`
 - named colors using a leading `&` sigil
 
-Hex digits in hexadecimal colors are case-insensitive.
+Hex digits in hexadecimal colors are case-insensitive for parsing. In canonical surface form, hexadecimal digits in Color Values MUST be lowercase.
 
-#### 5.7.1 Named Color Values
+Color function names are case-insensitive for parsing. In canonical surface form, color function names MUST be lowercase.
 
-In the Surface Form, a Named Color Value MUST be spelled as `&` followed immediately by a color name.
-
-The color name MUST consist only of ASCII lowercase letters (`a` through `z`).
-
-The color name MUST be one of the named color keywords defined in Appendix B.
-
-In `color(...)`, the color space token MUST be one of:
+Color space tokens in `color(...)` are case-insensitive for parsing. In canonical surface form, color space tokens MUST be lowercase. The color space token MUST be one of:
 
 - `srgb`
 - `srgb-linear`
@@ -485,6 +444,14 @@ In `color(...)`, the color space token MUST be one of:
 - `xyz`
 - `xyz-d50`
 - `xyz-d65`
+
+#### 5.7.1 Named Color Values
+
+In the Surface Form, a Named Color Value MUST be spelled as `&` followed immediately by a color name.
+
+The color name MUST consist only of ASCII lowercase letters (`a` through `z`).
+
+The color name MUST be one of the named color keywords defined in Appendix B.
 
 ### 5.8 UUID Values
 
@@ -498,11 +465,9 @@ A UUID Value MUST NOT be a String Value.
 
 A UUID Value MUST NOT include braces, prefixes, or other delimiters.
 
-Hyphens MUST appear at positions 9, 14, 19, and 24.
+Hyphens MUST appear at character positions 9, 14, 19, and 24 (1-indexed).
 
-Hexadecimal digits in UUID Values are case-insensitive.
-
-In canonical surface form, UUID Values MUST be spelled using lowercase hexadecimal digits.
+Hexadecimal digits in UUID Values are case-insensitive for parsing. In canonical surface form, UUID Values MUST be spelled using lowercase hexadecimal digits.
 
 No UUID version is mandated.
 
@@ -534,17 +499,11 @@ Where this specification defines deterministic resolution (for example, lookup-t
 
 ### 5.10 Lookup Token Values
 
-A Lookup Token Value is an unquoted token representing a shorthand reference.
+A Lookup Token Value is an unquoted token that binds to a schema-defined value.
 
 In the Surface Form, Lookup Token Values MUST be spelled as `~` followed immediately by a token name.
 
 The token name MUST use camelCase.
-
-Therefore, the token name MUST start with an ASCII lowercase letter.
-
-The token name MAY contain ASCII letters and digits.
-
-The token name MUST NOT contain whitespace, punctuation, hyphens, or underscores.
 
 A Lookup Token Value MUST NOT be a String Value.
 
@@ -554,7 +513,7 @@ Codex-conforming tools MUST NOT dereference Lookup Token Values.
 
 A Character Value represents exactly one Unicode scalar value.
 
-In the Surface Form, Character Values MUST be spelled as character literals.
+In the Surface Form, Character Values MUST be spelled as character literals (see Appendix A).
 
 A Character Value MUST NOT be a String Value.
 
@@ -566,10 +525,6 @@ A List Value is an ordered sequence of zero or more Value elements.
 
 In the Surface Form, List Values MUST be spelled using the list literal grammar defined by this specification.
 
-A List Value MUST preserve element order.
-
-A List Value MUST permit zero elements.
-
 Each element of a List Value MUST be a Value.
 
 A List Value MUST permit nesting.
@@ -580,11 +535,9 @@ A List Value MUST represent exactly the elements explicitly present in its liter
 
 ### 5.13 Set Values
 
-A Set Value is an unordered collection of zero or more Value elements.
+A Set Value is an unordered collection of zero or more Value elements. Set Values have no semantic ordering; however, in canonical surface form, elements MUST be serialized in the order they appear in the source spelling.
 
 In the Surface Form, Set Values MUST be spelled using the set literal grammar defined by this specification.
-
-A Set Value MUST permit zero elements.
 
 Each element of a Set Value MUST be a Value.
 
@@ -605,26 +558,25 @@ Two Values are equal if and only if they have the same Value kind and satisfy th
 - Numeric Values: equal if and only if their literal spellings are identical codepoint-for-codepoint.
 - Enumerated Token Values: equal if and only if the token names (excluding the leading `$`) are identical codepoint-for-codepoint.
 - Temporal Values: equal if and only if their braced payload strings are identical codepoint-for-codepoint.
-- Color Values: equal if and only if their literal spellings are identical, except that hexadecimal digits in hexadecimal color spellings are compared case-insensitively.
+- Color Values: equal if and only if their literal spellings are identical, except that hexadecimal digits, color function names, and color space tokens are compared case-insensitively.
 - UUID Values: equal if and only if they are identical after case-folding hexadecimal digits (i.e., hexadecimal digits are compared case-insensitively).
 - IRI Reference Values: equal if and only if their spellings are identical codepoint-for-codepoint (see §5.9).
 - Lookup Token Values: equal if and only if their token names (excluding the leading `~`) are identical codepoint-for-codepoint.
 - Character Values: equal if and only if they contain the same Unicode scalar value.
-- List Values: equal if and only if they have the same length and corresponding elements are equal.
-- Tuple Values: equal if and only if they have the same length and corresponding elements are equal.
+- List Values and Tuple Values: equal if and only if they have the same length and corresponding elements are equal.
 - Range Values: equal if and only if their start endpoints are equal, their end endpoints are equal, and either both omit a step or both include equal step Values.
 - Set Values: equal if and only if they contain the same elements (under this equality relation), regardless of element order.
 - Map Values: equal if and only if they contain the same bindings, where keys are equal and corresponding bound Values are equal, regardless of entry order.
 
-A Set Value MUST be interpreted as containing no duplicate elements.
+A Set Value MUST contain no duplicate elements.
 
 Duplicate elements MUST be determined using the Value equality relation in §5.13.1.
 
-If a set literal spelling contains duplicate elements, Codex-conforming tools MUST ignore duplicates by preserving the first occurrence (in the literal spelling) and discarding subsequent equal elements.
+If a set literal spelling contains duplicate elements, Codex-conforming tools MUST treat that spelling as an error.
 
 ### 5.14 Map Values
 
-A Map Value is a collection of key-value pairs.
+A Map Value is a collection of key-value pairs. Map Values have no semantic ordering; however, in canonical surface form, entries MUST be serialized in the order they appear in the source spelling.
 
 In the Surface Form, Map Values MUST be spelled using the map literal grammar defined by this specification.
 
@@ -640,8 +592,6 @@ Duplicate keys MUST be determined using the Value equality relation in §5.13.1.
 
 If a map literal spelling contains duplicate keys, Codex-conforming tools MUST treat that spelling as an error.
 
-This is intentionally stricter than Set duplicate handling, because duplicate keys may bind distinct values and are therefore ambiguous.
-
 #### 5.14.1 Map Keys
 
 In the Surface Form, a map key MUST be one of:
@@ -652,19 +602,13 @@ In the Surface Form, a map key MUST be one of:
 - an integer Numeric Value
 - an Enumerated Token Value
 
-An unquoted identifier key MUST start with an ASCII lowercase letter.
-
-An unquoted identifier key MAY contain ASCII letters and digits.
-
-An unquoted identifier key MUST NOT contain whitespace, punctuation, hyphens, or underscores.
+An unquoted identifier key MUST use camelCase.
 
 ### 5.15 Tuple Values
 
 A Tuple Value is an ordered sequence of one or more Value elements with positional semantics.
 
 In the Surface Form, Tuple Values MUST be spelled using the tuple literal grammar defined by this specification.
-
-A Tuple Value MUST preserve element order.
 
 A Tuple Value MUST contain at least one element.
 
@@ -684,11 +628,11 @@ In the Surface Form, Range Values MUST be spelled using the range literal gramma
 
 A Range Value MUST contain a start endpoint and an end endpoint.
 
-The start endpoint and end endpoint MUST be Values of the same Value kind.
+The start endpoint and end endpoint MUST be Values of the same base Value kind (e.g., both Integer, both String), independent of any parameterized type constraints.
 
-An optional step MAY be present.
+A Range Value MUST contain either zero steps or one step.
 
-If a step is present, the step MUST be a Value appropriate to the endpoint Value kind.
+If a step is present, the governing schema MUST define which Value kinds are valid for the step.
 
 Range endpoints MUST be treated as inclusive.
 
@@ -698,7 +642,7 @@ The semantics of a Range Value beyond these structural requirements MUST be defi
 
 ### 5.17 Parameterized Value Types
 
-Collection value types MAY be parameterized to constrain their contents.
+This section defines parameterized forms of collection value types, which constrain the types of their contents.
 
 #### 5.17.1 Syntax
 
@@ -730,7 +674,7 @@ An unparameterized collection type (e.g., `$List` without `<...>`) permits items
 
 #### 5.17.4 Nesting
 
-Parameterized types MAY be nested to any depth.
+There is no limit on the nesting depth of parameterized types.
 
 For example, `$List<$List<$String>>` specifies a list of lists of strings.
 
@@ -2228,7 +2172,7 @@ Context constraints are expressible using the deterministic parent links in the 
 
 `ContextConstraint(type=OnlyValidUnderParent)` MUST be expressible in derived validation artifacts.
 
-`OnlyValidUnderParent` validates that the focus node's immediate parent is of the type specified by `TargetContext` in the constraint's `Targets` block. The `contextSelector` trait MUST NOT be present.
+`OnlyValidUnderParent` requires that the focus node's immediate parent is of the type specified by `TargetContext` in the constraint's `Targets` block. The `contextSelector` trait MUST NOT be present.
 
 If projected into a SHACL-derived artifact, it MUST map to SHACL-SPARQL and MUST report a violation when the focus node has no direct parent of the target context type.
 
@@ -2243,7 +2187,7 @@ EXISTS {
 
 `ContextConstraint(type=OnlyValidUnderContext, contextSelector=A)` MUST be expressible in derived validation artifacts.
 
-`OnlyValidUnderContext` validates that the focus node has an ancestor of type `A` somewhere in its parent chain. The `contextSelector` trait MUST be present and specifies the required ancestor type.
+`OnlyValidUnderContext` requires that the focus node has an ancestor of type `A` somewhere in its parent chain. The `contextSelector` trait MUST be present and specifies the required ancestor type.
 
 If projected into a SHACL-derived artifact, it MUST map to SHACL-SPARQL and MUST report a violation when the focus node has no ancestor (via one or more parent links) of type `A`.
 
@@ -4288,8 +4232,8 @@ Constrains the structural context in which a Concept instance may appear.
 
 ###### Types (Normative)
 
-* `OnlyValidUnderParent`: Validates the immediate parent is of the type specified by `TargetContext`. The `contextSelector` trait MUST NOT be present.
-* `OnlyValidUnderContext`: Validates an ancestor of the specified type exists in the parent chain. The `contextSelector` trait MUST be present.
+* `OnlyValidUnderParent`: Requires the immediate parent is of the type specified by `TargetContext`. The `contextSelector` trait MUST NOT be present.
+* `OnlyValidUnderContext`: Requires an ancestor of the specified type exists in the parent chain. The `contextSelector` trait MUST be present.
 
 Context constraint semantics MUST follow §9.9.8.
 
@@ -4307,9 +4251,9 @@ Constrains content presence or structure.
 
 ###### Types (Normative)
 
-* `ContentForbiddenUnlessAllowed`: Validates content is absent. The `pattern` and `flags` traits MUST NOT be present.
-* `ContentRequired`: Validates content exists. The `pattern` and `flags` traits MUST NOT be present.
-* `ContentMatchesPattern`: Validates content matches a pattern. The `pattern` trait MUST be present. The `flags` trait MAY be present.
+* `ContentForbiddenUnlessAllowed`: Requires content is absent. The `pattern` and `flags` traits MUST NOT be present.
+* `ContentRequired`: Requires content exists. The `pattern` and `flags` traits MUST NOT be present.
+* `ContentMatchesPattern`: Requires content matches a pattern. The `pattern` trait MUST be present. The `flags` trait MAY be present.
 
 Content constraint semantics MUST follow the content model defined in §3.4 and the validation rules defined in §9.9.5.
 

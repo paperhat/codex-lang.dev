@@ -97,3 +97,21 @@ Every Codex document maps deterministically to an RDF graph:
 - Profile A (`expanded/index.cdx`) is easier to read than Profile B
 - Conformance tests show expected parsing/canonicalization behavior
 - All validation ultimately goes through SHACL — understand §9.7 (instance graph mapping) and §9.6 (Layer B) for validation work
+
+## Established Specification Decisions (§1–§5)
+
+Do not regress these:
+
+- **§1.3**: Only MUST and MUST NOT are normative keywords. MAY is not defined — do not use it.
+- **§4.1**: Names are ASCII letters and digits only. Names must be non-empty. PascalCase starts uppercase, camelCase starts lowercase.
+- **§4.2**: No 3+ consecutive uppercase letters. This mechanically enforces acronym treatment (e.g., `ASTNode` rejected because A-S-T-N = 4 consecutive).
+- **§4.3**: Authors must treat acronyms as single words. Not fully mechanically enforceable (e.g., `iOStream` vs `ioStream` — only 2 consecutive, so not rejected by §4.2).
+- **§5.1**: Empty strings permitted (zero or more Unicode scalar values).
+- **§5.4**: No infinity/NaN. `-0` preserved distinct from `0`. No leading zeros in integer components (sign not part of integer component). Precision suffix (`p`) only on decimals, not integers.
+- **§5.5**: Enumerated tokens use `$` sigil + PascalCase token name.
+- **§5.6**: Two grammars — Temporal Value (complete braced literal) and Temporal Body (content within braces).
+- **§5.7**: Canonical form requires lowercase for hex digits, color function names, and color space tokens. Named colors use `&` sigil + lowercase letters only (Appendix B).
+- **§5.8**: UUID canonical form uses lowercase hex digits.
+- **§5.10**: Lookup tokens use `~` sigil + camelCase token name.
+- **§5.13–§5.14**: Set and Map duplicates are errors (not silent removal). Canonical ordering preserves source order.
+- **§5.13.1**: Value equality is over parsed values. Hex digits, color function names, and color space tokens compared case-insensitively for Colors; hex digits case-insensitive for UUIDs.
