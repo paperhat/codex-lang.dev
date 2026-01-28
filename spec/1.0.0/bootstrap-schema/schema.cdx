@@ -2,19 +2,19 @@
 	id=urn:codex:bootstrap:1.0.0
 	version="1.0.0"
 	compatibilityClass=$BackwardCompatible
-	authoringProfile=$ProfileB
+	authoringMode=$CanonicalMode
 	title="Codex Bootstrap Schema-of-Schemas"
-	description="The authoritative schema for schema-validating Codex schema documents. This Profile B schema provides full SHACL/SHACL-SPARQL constraint power. See expanded/index.cdx for the human-readable Profile A equivalent."
+	description="Bootstrap schema for schema-validating Codex schema documents. This canonical-mode schema expresses the schema-of-schemas as SHACL triples (including SHACL-SPARQL where required). See expanded/schema.cdx for the equivalent simplified-mode representation."
 >
 	<RdfGraph>
 
 		[
 			MARKDOWN:
-			This Profile B bootstrap schema expresses the full Codex schema-of-schemas as
+			This canonical-mode bootstrap schema expresses the full Codex schema-of-schemas as
 			SHACL triples, including SHACL-SPARQL constraints for rules that cannot be
 			expressed in SHACL Core (e.g., cross-trait comparisons like min <= max).
 
-			The expanded/index.cdx file contains the equivalent Profile A representation
+			The expanded/schema.cdx file contains the equivalent simplified-mode representation
 			for human readability.
 
 			Namespace prefixes (not used in actual IRIs):
@@ -112,22 +112,22 @@
 		/>
 
 		<RdfTriple
-			s=urn:codex:bootstrap:enum:AuthoringProfile#list/1
+			s=urn:codex:bootstrap:enum:AuthoringMode#list/1
 			p=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
-			lex="ProfileA"
+			lex="SimplifiedMode"
 		/>
 		<RdfTriple
-			s=urn:codex:bootstrap:enum:AuthoringProfile#list/1
+			s=urn:codex:bootstrap:enum:AuthoringMode#list/1
 			p=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
-			o=urn:codex:bootstrap:enum:AuthoringProfile#list/2
+			o=urn:codex:bootstrap:enum:AuthoringMode#list/2
 		/>
 		<RdfTriple
-			s=urn:codex:bootstrap:enum:AuthoringProfile#list/2
+			s=urn:codex:bootstrap:enum:AuthoringMode#list/2
 			p=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
-			lex="ProfileB"
+			lex="CanonicalMode"
 		/>
 		<RdfTriple
-			s=urn:codex:bootstrap:enum:AuthoringProfile#list/2
+			s=urn:codex:bootstrap:enum:AuthoringMode#list/2
 			p=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
 			o=http://www.w3.org/1999/02/22-rdf-syntax-ns#nil
 		/>
@@ -323,20 +323,20 @@
 		<RdfTriple
 			s=urn:codex:bootstrap:concept:Schema#shape
 			p=http://www.w3.org/ns/shacl#property
-			o=urn:codex:bootstrap:concept:Schema#shape/property/trait/authoringProfile
+			o=urn:codex:bootstrap:concept:Schema#shape/property/trait/authoringMode
 		/>
 		<RdfTriple
-			s=urn:codex:bootstrap:concept:Schema#shape/property/trait/authoringProfile
+			s=urn:codex:bootstrap:concept:Schema#shape/property/trait/authoringMode
 			p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			o=http://www.w3.org/ns/shacl#PropertyShape
 		/>
 		<RdfTriple
-			s=urn:codex:bootstrap:concept:Schema#shape/property/trait/authoringProfile
+			s=urn:codex:bootstrap:concept:Schema#shape/property/trait/authoringMode
 			p=http://www.w3.org/ns/shacl#path
-			o=urn:codex:bootstrap:trait:authoringProfile
+			o=urn:codex:bootstrap:trait:authoringMode
 		/>
 		<RdfTriple
-			s=urn:codex:bootstrap:concept:Schema#shape/property/trait/authoringProfile
+			s=urn:codex:bootstrap:concept:Schema#shape/property/trait/authoringMode
 			p=http://www.w3.org/ns/shacl#minCount
 			lex="1"
 			datatype=http://www.w3.org/2001/XMLSchema#integer
@@ -1216,7 +1216,7 @@
 
 		<RdfTriple s=urn:codex:bootstrap:concept:Schema#shape/property/trait/compatibilityClass p=http://www.w3.org/ns/shacl#in o=urn:codex:bootstrap:enum:CompatibilityClass#list/1 />
 
-		<RdfTriple s=urn:codex:bootstrap:concept:Schema#shape/property/trait/authoringProfile p=http://www.w3.org/ns/shacl#in o=urn:codex:bootstrap:enum:AuthoringProfile#list/1 />
+		<RdfTriple s=urn:codex:bootstrap:concept:Schema#shape/property/trait/authoringMode p=http://www.w3.org/ns/shacl#in o=urn:codex:bootstrap:enum:AuthoringMode#list/1 />
 
 		[END: Schema Enumerated Trait Constraints]
 
@@ -1322,9 +1322,9 @@
 		<RdfTriple s=urn:codex:bootstrap:trait:compatibilityClass p=http://www.w3.org/2000/01/rdf-schema#label lex="compatibilityClass" />
 		<RdfTriple s=urn:codex:bootstrap:trait:compatibilityClass p=http://www.w3.org/2000/01/rdf-schema#range o=http://www.w3.org/2001/XMLSchema#token />
 
-		<RdfTriple s=urn:codex:bootstrap:trait:authoringProfile p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
-		<RdfTriple s=urn:codex:bootstrap:trait:authoringProfile p=http://www.w3.org/2000/01/rdf-schema#label lex="authoringProfile" />
-		<RdfTriple s=urn:codex:bootstrap:trait:authoringProfile p=http://www.w3.org/2000/01/rdf-schema#range o=http://www.w3.org/2001/XMLSchema#token />
+		<RdfTriple s=urn:codex:bootstrap:trait:authoringMode p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
+		<RdfTriple s=urn:codex:bootstrap:trait:authoringMode p=http://www.w3.org/2000/01/rdf-schema#label lex="authoringMode" />
+		<RdfTriple s=urn:codex:bootstrap:trait:authoringMode p=http://www.w3.org/2000/01/rdf-schema#range o=http://www.w3.org/2001/XMLSchema#token />
 
 		[END: Schema Traits]
 
@@ -1501,8 +1501,8 @@
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:Schema />
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions#sparql />
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions#sparql p=http://www.w3.org/ns/shacl#select lex="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:authoringProfile> ?profile . FILTER(?profile = <urn:codex:bootstrap:enum:AuthoringProfile#ProfileA>) . FILTER NOT EXISTS { $this <urn:codex:bootstrap:rel:hasChild> ?child . ?child a <urn:codex:bootstrap:concept:ConceptDefinitions> } }" />
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions#sparql p=http://www.w3.org/ns/shacl#message lex="Profile A schemas must have ConceptDefinitions" />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions#sparql p=http://www.w3.org/ns/shacl#select lex="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:authoringMode> ?profile . FILTER(?profile = <urn:codex:bootstrap:enum:AuthoringMode#SimplifiedMode>) . FILTER NOT EXISTS { $this <urn:codex:bootstrap:rel:hasChild> ?child . ?child a <urn:codex:bootstrap:concept:ConceptDefinitions> } }" />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions#sparql p=http://www.w3.org/ns/shacl#message lex="Simplified mode schemas must have ConceptDefinitions" />
 
 		[END: Schema Structural Constraints]
 
@@ -1823,29 +1823,29 @@
 
 		[END: Uniqueness Constraints]
 
-		[GROUP: Profile Constraints]
+		[GROUP: Mode Constraints]
 
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:Schema />
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph#sparql />
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph#sparql p=http://www.w3.org/ns/shacl#select lex="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:authoringProfile> <urn:codex:bootstrap:enum:AuthoringProfile#ProfileA> . $this <urn:codex:bootstrap:rel:hasChild> ?child . ?child a <urn:codex:bootstrap:concept:RdfGraph> }" />
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph#sparql p=http://www.w3.org/ns/shacl#message lex="Profile A schemas must not contain RdfGraph" />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph#sparql p=http://www.w3.org/ns/shacl#select lex="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:authoringMode> <urn:codex:bootstrap:enum:AuthoringMode#SimplifiedMode> . $this <urn:codex:bootstrap:rel:hasChild> ?child . ?child a <urn:codex:bootstrap:concept:RdfGraph> }" />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph#sparql p=http://www.w3.org/ns/shacl#message lex="Simplified mode schemas must not contain RdfGraph" />
 
 
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-requires-rdf-graph p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-requires-rdf-graph p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:Schema />
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-requires-rdf-graph p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:profile-b-requires-rdf-graph#sparql />
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-requires-rdf-graph#sparql p=http://www.w3.org/ns/shacl#select lex="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:authoringProfile> <urn:codex:bootstrap:enum:AuthoringProfile#ProfileB> . FILTER NOT EXISTS { $this <urn:codex:bootstrap:rel:hasChild> ?child . ?child a <urn:codex:bootstrap:concept:RdfGraph> } }" />
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-requires-rdf-graph#sparql p=http://www.w3.org/ns/shacl#message lex="Profile B schemas must contain RdfGraph" />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-requires-rdf-graph#sparql p=http://www.w3.org/ns/shacl#select lex="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:authoringMode> <urn:codex:bootstrap:enum:AuthoringMode#CanonicalMode> . FILTER NOT EXISTS { $this <urn:codex:bootstrap:rel:hasChild> ?child . ?child a <urn:codex:bootstrap:concept:RdfGraph> } }" />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-requires-rdf-graph#sparql p=http://www.w3.org/ns/shacl#message lex="Canonical mode schemas must contain RdfGraph" />
 
 
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers p=http://www.w3.org/1999/02/22-rdf-syntax-ns#type o=http://www.w3.org/ns/shacl#NodeShape />
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers p=http://www.w3.org/ns/shacl#targetClass o=urn:codex:bootstrap:concept:Schema />
 		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers p=http://www.w3.org/ns/shacl#sparql o=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers#sparql />
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers#sparql p=http://www.w3.org/ns/shacl#select lex="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:authoringProfile> <urn:codex:bootstrap:enum:AuthoringProfile#ProfileB> . $this <urn:codex:bootstrap:rel:hasChild> ?child . { ?child a <urn:codex:bootstrap:concept:ConceptDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:TraitDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:EnumeratedValueSets> } UNION { ?child a <urn:codex:bootstrap:concept:ConstraintDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:ValueTypeDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:ValidatorDefinitions> } }" />
-		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers#sparql p=http://www.w3.org/ns/shacl#message lex="Profile B schemas must not contain Layer A containers" />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers#sparql p=http://www.w3.org/ns/shacl#select lex="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:authoringMode> <urn:codex:bootstrap:enum:AuthoringMode#CanonicalMode> . $this <urn:codex:bootstrap:rel:hasChild> ?child . { ?child a <urn:codex:bootstrap:concept:ConceptDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:TraitDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:EnumeratedValueSets> } UNION { ?child a <urn:codex:bootstrap:concept:ConstraintDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:ValueTypeDefinitions> } UNION { ?child a <urn:codex:bootstrap:concept:ValidatorDefinitions> } }" />
+		<RdfTriple s=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers#sparql p=http://www.w3.org/ns/shacl#message lex="Canonical mode schemas must not contain Layer A containers" />
 
-		[END: Profile Constraints]
+		[END: Mode Constraints]
 
 		[GROUP: ContextConstraint Parameter Requirements]
 

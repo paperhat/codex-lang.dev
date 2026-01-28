@@ -1498,36 +1498,36 @@ If the governing schema requires any external inputs (for example, inputs needed
 
 The required semantics for schema-driven validation and any required derived artifacts are defined by this specification (notably §9.5–§9.11) and by the schema-definition specification.
 
-### 9.4 Authoring Profiles (Guardrail)
+### 9.4 Authoring Modes (Guardrail)
 
-A schema document MUST be validated under exactly one authoring profile.
+A schema document MUST be validated under exactly one authoring mode.
 
-Codex defines two authoring profiles:
+Codex defines two authoring modes:
 
-- **Profile A**: Layer A schema authoring only
-- **Profile B**: Layer B schema authoring only
+- **Simplified Authoring Mode**: Layer A schema authoring only
+- **Canonical Authoring Mode**: Layer B schema authoring only
 
-All conforming implementations MUST support Profile A.
+All conforming implementations MUST support the Simplified Authoring Mode.
 
-All conforming implementations MUST support Profile B.
+All conforming implementations MUST support the Canonical Authoring Mode.
 
-A schema document MUST NOT mix profiles.
+A schema document MUST NOT mix modes.
 
-The authoring profile MUST be selected by an explicit declaration in the schema document.
+The authoring mode MUST be selected by an explicit declaration in the schema document.
 
-The schema document's root `Schema` concept MUST have an `authoringProfile` trait.
+The schema document's root `Schema` concept MUST have an `authoringMode` trait.
 
-`authoringProfile` MUST be exactly one of:
+`authoringMode` MUST be exactly one of:
 
-- `$ProfileA`
-- `$ProfileB`
+- `$SimplifiedMode`
+- `$CanonicalMode`
 
-If `authoringProfile` is missing or has any other value, schema processing MUST fail.
+If `authoringMode` is missing or has any other value, schema processing MUST fail.
 
 Additional guardrails MUST hold:
 
-- Profile A schemas MUST contain exactly one `ConceptDefinitions` and MUST NOT contain `RdfGraph`.
-- Profile B schemas MUST contain exactly one `RdfGraph` and MUST NOT contain Layer A schema-definition concepts (including `ConceptDefinitions`, `TraitDefinitions`, `EnumeratedValueSets`, `ConstraintDefinitions`, `ValueTypeDefinitions`, and `ValidatorDefinitions`).
+- Simplified mode schemas MUST contain exactly one `ConceptDefinitions` and MUST NOT contain `RdfGraph`.
+- Canonical mode schemas MUST contain exactly one `RdfGraph` and MUST NOT contain Layer A schema-definition concepts (including `ConceptDefinitions`, `TraitDefinitions`, `EnumeratedValueSets`, `ConstraintDefinitions`, `ValueTypeDefinitions`, and `ValidatorDefinitions`).
 - Layer A expansion MUST generate a canonical Layer B graph; different Layer A spellings that are semantically identical MUST expand to byte-identical Layer B graphs.
 - Layer B canonicalization MUST make semantically identical graphs byte-identical.
 
@@ -1537,9 +1537,9 @@ Layer A is the Codex-native schema authoring model defined by the schema-definit
 
 Layer A schema authoring MUST satisfy the Codex language invariants, including closed-world semantics, determinism, and prohibition of heuristics.
 
-Layer A authoring is the required authoring form for Profile A.
+Layer A authoring is the required authoring form for the Simplified Authoring Mode.
 
-To support a total, deterministic projection to derived validation artifacts, Profile A schema authoring MUST additionally support the following extensions.
+To support a total, deterministic projection to derived validation artifacts, simplified-mode schema authoring MUST additionally support the following extensions.
 
 #### 9.5.1 Pattern Flags
 
@@ -2347,7 +2347,7 @@ Schema processing, schema-driven validation, instance-graph mapping, and derived
 
 At minimum, processing MUST fail in any of the following cases:
 
-- the schema authoring profile is missing, invalid, or mixed (see §9.4)
+- the schema authoring mode is missing, invalid, or mixed (see §9.4)
 - a schema rule requires semantics not explicitly defined by this specification, the governing schema, or the schema-definition specification
 - a required external input is missing
 - an algorithm would require nondeterministic choice (including heuristic inference or “best effort”)
@@ -2356,7 +2356,7 @@ At minimum, processing MUST fail in any of the following cases:
 
 ### 9.11 Layer A → Layer B Expansion Algorithm (Total)
 
-This section defines a deterministic, total expansion algorithm from Profile A (Layer A) schema authoring to canonical Layer B (`RdfGraph`) suitable for derived validation artifacts (including SHACL and SHACL-SPARQL).
+This section defines a deterministic, total expansion algorithm from the Simplified Authoring Mode (Layer A) schema authoring to canonical Layer B (`RdfGraph`) suitable for derived validation artifacts (including SHACL and SHACL-SPARQL).
 
 The expansion algorithm is normative.
 
@@ -3062,17 +3062,17 @@ The following Traits are optional:
 * `title` (optional; String Value)
 * `description` (optional; String Value)
 
-The `Schema` Concept MUST declare exactly one authoring profile via the `authoringProfile` Trait, as defined in §9.4.
+The `Schema` Concept MUST declare exactly one authoring mode via the `authoringMode` Trait, as defined in §9.4.
 
-If `authoringProfile` is missing, invalid, or mixed, schema processing MUST fail.
+If `authoringMode` is missing, invalid, or mixed, schema processing MUST fail.
 
-All conforming implementations MUST support both Profile A and Profile B (see §9.4).
+All conforming implementations MUST support both the Simplified Authoring Mode and the Canonical Authoring Mode (see §9.4).
 
 #### Children (Normative)
 
-A `Schema` MUST satisfy the profile-conditional child-Concept rules defined in §9.4.
+A `Schema` MUST satisfy the mode-conditional child-Concept rules defined in §9.4.
 
-For `authoringProfile=$ProfileA`:
+For `authoringMode=$SimplifiedMode`:
 
 * A `Schema` MUST contain exactly one `ConceptDefinitions` child Concept.
 * A `Schema` MAY contain the following child Concepts, in any order:
@@ -3085,7 +3085,7 @@ For `authoringProfile=$ProfileA`:
 
 * A `Schema` MUST NOT contain `RdfGraph`.
 
-For `authoringProfile=$ProfileB`:
+For `authoringMode=$CanonicalMode`:
 
 * A `Schema` MUST contain exactly one `RdfGraph` child Concept.
 * A `Schema` MUST NOT contain any of the following child Concepts:
@@ -3106,7 +3106,7 @@ Each container Concept listed above MUST obey the structural, identity, and cont
 * A `Schema` Concept is an Entity and therefore MUST declare an `id`.
 * All Concept, Trait, ValueType, and Constraint identifiers used within the schema MUST be resolvable and unique where required.
 * A schema MUST be self-contained except for explicitly declared external inputs permitted by this specification.
-* A schema MUST be valid under exactly one authoring profile (see §9.4).
+* A schema MUST be valid under exactly one authoring mode (see §9.4).
 * Any schema whose structure or semantics cannot be interpreted deterministically under this specification MUST be rejected.
 
 The `Schema` Concept defines the boundary within which schema-first parsing, validation, instance-graph mapping, and derived-artifact generation occur, as specified in §9.

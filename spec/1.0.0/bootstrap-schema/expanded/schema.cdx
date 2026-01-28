@@ -2,7 +2,7 @@
 	id=urn:codex:bootstrap:1.0.0
 	version="1.0.0"
 	compatibilityClass=$BackwardCompatible
-	authoringProfile=$ProfileA
+	authoringMode=$SimplifiedMode
 	title="Codex Bootstrap Schema-of-Schemas"
 	description="The authoritative schema for schema-validating Codex schema documents."
 >
@@ -57,18 +57,18 @@
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet
-			id=urn:codex:bootstrap:enum:AuthoringProfile
-			key=~authoringProfile
-			name="AuthoringProfile"
+			id=urn:codex:bootstrap:enum:AuthoringMode
+			key=~authoringMode
+			name="AuthoringMode"
 		>
 			<Member
-				value="ProfileA"
-				label="Profile A"
+				value="SimplifiedMode"
+				label="Simplified Authoring Mode"
 				description="Layer A schema authoring only."
 			/>
 			<Member
-				value="ProfileB"
-				label="Profile B"
+				value="CanonicalMode"
+				label="Canonical Authoring Mode"
 				description="Layer B schema authoring only."
 			/>
 		</EnumeratedValueSet>
@@ -201,7 +201,7 @@
 				<RequiresTrait name="id" />
 				<RequiresTrait name="version" />
 				<RequiresTrait name="compatibilityClass" />
-				<RequiresTrait name="authoringProfile" />
+				<RequiresTrait name="authoringMode" />
 				<AllowsTrait name="title" />
 				<AllowsTrait name="description" />
 				<AllowsTrait name="key" />
@@ -1522,13 +1522,13 @@
 		</TraitDefinition>
 
 		<TraitDefinition
-			id=urn:codex:bootstrap:trait:authoringProfile
-			name="authoringProfile"
+			id=urn:codex:bootstrap:trait:authoringMode
+			name="authoringMode"
 			defaultValueType=$EnumeratedToken
 			priority=$Primary
 		>
 			<AllowedValues>
-				<EnumeratedConstraint set=~authoringProfile />
+				<EnumeratedConstraint set=~authoringMode />
 			</AllowedValues>
 		</TraitDefinition>
 
@@ -1839,8 +1839,8 @@
 
 		<ConstraintDefinition
 			id=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions
-			title="Profile A schemas must have ConceptDefinitions"
-			description="A Profile A schema must define at least one concept."
+			title="Simplified mode schemas must have ConceptDefinitions"
+			description="A simplified-mode schema must define at least one concept."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="Schema" />
@@ -1848,7 +1848,7 @@
 			<Rule>
 				<ConditionalConstraint>
 					<When>
-						<TraitEquals trait="authoringProfile" value=$ProfileA />
+						<TraitEquals trait="authoringMode" value=$SimplifiedMode />
 					</When>
 					<Then>
 						<ChildConstraint type=$RequiresChildConcept conceptSelector="ConceptDefinitions" />
@@ -2446,12 +2446,12 @@
 
 		[END: Uniqueness Constraints]
 
-		[GROUP: Profile Constraints]
+		[GROUP: Mode Constraints]
 
 		<ConstraintDefinition
 			id=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph
-			title="Profile A schemas must not contain RdfGraph"
-			description="When authoringProfile is ProfileA, the schema must not contain an RdfGraph."
+			title="Simplified mode schemas must not contain RdfGraph"
+			description="When authoringMode is SimplifiedMode, the schema must not contain an RdfGraph."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="Schema" />
@@ -2459,7 +2459,7 @@
 			<Rule>
 				<ConditionalConstraint>
 					<When>
-						<TraitEquals trait="authoringProfile" value=$ProfileA />
+						<TraitEquals trait="authoringMode" value=$SimplifiedMode />
 					</When>
 					<Then>
 						<ChildConstraint type=$ForbidsChildConcept conceptSelector="RdfGraph" />
@@ -2470,8 +2470,8 @@
 
 		<ConstraintDefinition
 			id=urn:codex:bootstrap:constraint:profile-b-requires-rdf-graph
-			title="Profile B schemas must contain RdfGraph"
-			description="When authoringProfile is ProfileB, the schema must contain exactly one RdfGraph."
+			title="Canonical mode schemas must contain RdfGraph"
+			description="When authoringMode is CanonicalMode, the schema must contain exactly one RdfGraph."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="Schema" />
@@ -2479,7 +2479,7 @@
 			<Rule>
 				<ConditionalConstraint>
 					<When>
-						<TraitEquals trait="authoringProfile" value=$ProfileB />
+						<TraitEquals trait="authoringMode" value=$CanonicalMode />
 					</When>
 					<Then>
 						<ChildConstraint type=$RequiresChildConcept conceptSelector="RdfGraph" />
@@ -2490,8 +2490,8 @@
 
 		<ConstraintDefinition
 			id=urn:codex:bootstrap:constraint:profile-b-forbids-layer-a-containers
-			title="Profile B schemas must not contain Layer A containers"
-			description="When authoringProfile is ProfileB, the schema must not contain ConceptDefinitions, TraitDefinitions, EnumeratedValueSets, ConstraintDefinitions, ValueTypeDefinitions, or ValidatorDefinitions."
+			title="Canonical mode schemas must not contain Layer A containers"
+			description="When authoringMode is CanonicalMode, the schema must not contain ConceptDefinitions, TraitDefinitions, EnumeratedValueSets, ConstraintDefinitions, ValueTypeDefinitions, or ValidatorDefinitions."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="Schema" />
@@ -2499,7 +2499,7 @@
 			<Rule>
 				<ConditionalConstraint>
 					<When>
-						<TraitEquals trait="authoringProfile" value=$ProfileB />
+						<TraitEquals trait="authoringMode" value=$CanonicalMode />
 					</When>
 					<Then>
 						<AllOf>
@@ -2527,7 +2527,7 @@
 			</Rule>
 		</ConstraintDefinition>
 
-		[END: Profile Constraints]
+		[END: Mode Constraints]
 
 		[GROUP: ContextConstraint Parameter Requirements]
 

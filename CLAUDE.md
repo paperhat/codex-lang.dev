@@ -8,7 +8,7 @@ Codex eliminates ambiguity for byte-identical output across implementations. Sta
 
 ## Specification Principles
 
-- **No MAY**: Only MUST/MUST NOT. No optionality at any level.
+- **No `MAY`**: Only `MUST`/`MUST NOT`. No optionality at any level.
 - **No redundancy**: Each requirement stated once. Use references.
 - **No conflict clauses**: Conflicts are defects to fix, not resolve via precedence.
 - **Round-trippability**: Applies to canonical form. Canonicalization normalizes first.
@@ -46,8 +46,8 @@ A expands deterministically to B.
 | Path | Purpose |
 |------|---------|
 | `spec/1.0.0/index.md` | Normative specification |
-| `spec/1.0.0/bootstrap-schema/schema.cdx` | Profile B bootstrap (SHACL) |
-| `spec/1.0.0/bootstrap-schema/expanded/schema.cdx` | Profile A bootstrap (human-readable) |
+| `spec/1.0.0/bootstrap-schema/schema.cdx` | Canonical Authoring Mode bootstrap (SHACL) |
+| `spec/1.0.0/bootstrap-schema/expanded/schema.cdx` | Simplified Authoring Mode bootstrap (human-readable) |
 | `conformance/1.0.0/` | Conformance test suite |
 
 ## Specification Structure
@@ -61,7 +61,7 @@ Do not regress:
 - **§1.3**: Only MUST/MUST NOT. MAY undefined.
 - **§4.1**: Names: ASCII letters/digits, non-empty. PascalCase uppercase-first, camelCase lowercase-first.
 - **§4.2**: No 3+ consecutive uppercase (mechanically enforces acronym-as-word).
-- **§4.3**: Authors must treat acronyms as words (not fully mechanical).
+- **§4.3**: Authors MUST treat acronyms as words (not fully mechanical).
 - **§5.1**: Empty strings permitted.
 - **§5.4**: No infinity/NaN. `-0` distinct from `0`. No leading zeros (sign excluded). Precision `p` on any numeric (inferred from decimal places; explicit overrides).
 - **§5.5**: Enumerated tokens: `$` + PascalCase.
@@ -73,9 +73,9 @@ Do not regress:
 - **§5.13**: Value equality over parsed values. Case-insensitive: hex/function names/color space tokens (Colors), hex (UUIDs).
 - **§5.14–15**: Set/Map duplicates are errors. Canonical order = source order.
 - **§6.1**: Two identity mechanisms: `id` (IRI, global scope) and `key` (Lookup Token, document scope).
-- **§6.2**: Entity MUST have exactly one `id`; non-Entity MUST NOT have `id`. Values unique within document.
+- **§6.2**: Entity MUST have exactly one `id`; non-Entity MUST not have `id`. Values unique within document.
 - **§6.3**: Concept has zero or one `key`. Resolution via §9.8 bindings.
-- **§7.1**: Exactly three reference traits: `reference`, `target`, `for`. Values: IRI or Lookup Token. MUST NOT imply dereferencing/loading/execution/transformation.
+- **§7.1**: Exactly three reference traits: `reference`, `target`, `for`. Values: IRI or Lookup Token. MUST not imply dereferencing/loading/execution/transformation.
 - **§7.2–4**: Intent statements are non-normative guidance for schema authors.
 - **§7.5**: Singleton rule via `ReferenceConstraint(type=ReferenceSingleton)`.
 - **§8.1–2**: UTF-8 default (no BOM); UTF-16 requires BOM. LF canonical; CRLF normalized; bare CR error; trailing LF required.
