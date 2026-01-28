@@ -895,8 +895,6 @@ The canonical line ending is LF (`\n`, U+000A).
 
 Codex-conforming tools MUST normalize CRLF (`\r\n`) sequences to LF on input.
 
-Bare CR (`\r`) is forbidden.
-
 Codex-conforming tools MUST treat bare CR (`\r`) as a parse error.
 
 In canonical surface form, a Codex document MUST end with a trailing LF.
@@ -904,8 +902,6 @@ In canonical surface form, a Codex document MUST end with a trailing LF.
 ### 8.3 Indentation
 
 Indentation is a canonical formatting requirement.
-
-In canonical surface form, indentation MUST use tabs only.
 
 In canonical surface form, one tab character represents one level of nesting.
 
@@ -957,8 +953,6 @@ Codex-conforming tools MUST treat a line containing only whitespace as empty aft
 
 Annotation blank-line rules MUST be defined by the rules for annotations (see §8.9).
 
-Content is opaque to semantics and MAY contain blank lines.
-
 Blank line restrictions in this section MUST NOT be applied to content.
 
 ### 8.5 Concept Markers
@@ -982,7 +976,7 @@ An opening marker MUST be spelled as:
 
 `ConceptName` MUST follow the naming rules defined by this specification.
 
-Traits MAY appear inline in the opening marker.
+An opening marker includes zero or more Traits.
 
 If multiple Traits are present, their order MUST be preserved.
 
@@ -998,7 +992,7 @@ The closing marker MUST match the most recent unclosed opening marker (see §3.6
 
 The closing marker MUST appear on its own line after indentation.
 
-No additional content is permitted on the closing marker line.
+Additional content MUST NOT appear on the closing marker line.
 
 #### 8.5.3 Self-Closing Marker
 
@@ -1011,13 +1005,11 @@ A self-closing marker MUST be spelled as:
 
 A self-closing marker represents a Concept instance with no content and no child Concepts.
 
-A self-closing marker MAY include Traits.
+A self-closing marker includes zero or more Traits.
 
 #### 8.5.4 Empty Block Concepts
 
-The form `<ConceptName></ConceptName>` is invalid.
-
-Codex-conforming tools MUST treat that form as a parse error.
+Codex-conforming tools MUST treat the form `<ConceptName></ConceptName>` as a parse error.
 
 To represent a deliberately empty Concept instance, authors MUST use self-closing form.
 
@@ -1049,6 +1041,30 @@ If a Concept opening marker has three or more Traits, each Trait MUST appear on 
 
 When Traits are written on multiple lines, each Trait line MUST be indented exactly one nesting level deeper than the Concept marker.
 
+When Traits are written on multiple lines, the closing `>` or `/>` MUST appear on its own line at the same indentation level as the opening `<`.
+
+Example (canonical multiline opening marker):
+
+```cdx
+<Book
+	id=book:TheHobbit
+	title="The Hobbit"
+	author="J.R.R. Tolkien"
+>
+	[children here]
+</Book>
+```
+
+Example (canonical multiline self-closing marker):
+
+```cdx
+<Book
+	id=book:TheHobbit
+	title="The Hobbit"
+	author="J.R.R. Tolkien"
+/>
+```
+
 ### 8.7 Values (Surface Parsing Notes)
 
 In the Surface Form, Trait values are literal spellings of Value types defined by this specification (see §5).
@@ -1076,12 +1092,12 @@ Except where permitted by a Value spelling (for example, within string and chara
 
 ### 8.7.1 Multiline Value Literals
 
-Value literals whose surface spelling uses balanced delimiters — including list (`[...]`), set (`set[...]`), map (`map[...]`), tuple (`(...)`), and range forms — MAY span multiple lines in the Surface Form.
+Codex-conforming tools MUST accept multiline spellings for Value literals that use balanced delimiters, including list (`[...]`), set (`set[...]`), map (`map[...]`), tuple (`(...)`), and range forms.
 
 Within a balanced Value literal:
 
 * Line breaks are treated as whitespace.
-* Whitespace MAY appear freely between elements, entries, or delimiters.
+* Whitespace between elements, entries, or delimiters is not significant.
 * Whitespace MUST NOT terminate the Value.
 
 Outside of balanced delimiters, a Value literal MUST be fully contained on a single line.
