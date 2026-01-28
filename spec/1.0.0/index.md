@@ -725,32 +725,13 @@ The value of an `id` trait MUST be an IRI Reference Value (§5.9).
 
 Codex-conforming tools MUST NOT synthesize an `id` trait.
 
-#### 6.2.2 IRI Conformance
-
-The value of an `id` trait MUST conform to RFC 3987 (Internationalized Resource Identifiers): https://www.rfc-editor.org/rfc/rfc3987.
-
-Codex-conforming tools MUST treat `id` values as opaque strings for comparison.
-
-Codex-conforming tools MUST NOT require `id` values to be dereferenceable.
-
-#### 6.2.3 Surface Form Restrictions
-
-An `id` value MUST NOT contain:
-
-- Unicode whitespace characters
-- Unicode control characters
-- Unicode bidirectional control characters
-- Unicode private-use characters
-
-Codex-conforming tools MUST accept percent-encoded sequences in `id` values.
-
-#### 6.2.4 Uniqueness
+#### 6.2.2 Uniqueness
 
 Within a single document, each `id` value MUST be unique across all Entities.
 
 Codex does not define a mechanism to enforce cross-document uniqueness; however, `id` values serve as RDF subject identifiers in triple stores and are expected to be globally unique in practice.
 
-#### 6.2.5 Stability
+#### 6.2.3 Stability
 
 Once an `id` value is assigned to an Entity, that `id` value MUST continue to refer to the same Entity.
 
@@ -790,7 +771,7 @@ Codex defines exactly three reference Traits:
 
 Each reference Trait expresses a declarative relationship from a Concept instance to another Concept instance, identified by identity reference.
 
-An identity reference is either an identifier (an IRI Reference Value) or a lookup token handle (a Lookup Token Value) that is resolved as explicitly defined by this specification and the governing schema.
+An identity reference is either an Entity `id` (an IRI Reference Value; §6.2) or a Concept `key` (a Lookup Token Value; §6.3) that is resolved as explicitly defined by this specification and the governing schema.
 
 The value of each reference Trait MUST be either an IRI Reference Value (see §5.9) or a Lookup Token Value (see §5.10).
 
@@ -802,9 +783,11 @@ Reference Traits MUST NOT imply dereferencing, loading, execution, or transforma
 
 Reference Traits MUST NOT imply any automatic or external resolution beyond what is explicitly defined by this specification or the governing schema.
 
-Reference Traits are valid only where authorized by the governing schema.
+A Concept instance MUST NOT declare a reference Trait unless authorized by the governing schema.
 
 Where reference Traits are authorized, the governing schema MUST define any additional semantics beyond the intent statements in this section.
+
+The intent statements in §7.2–7.4 guide schema authors but are not normative requirements.
 
 ### 7.2 `reference`
 
@@ -816,21 +799,15 @@ The `reference` Trait MUST NOT imply action, application, scope, execution, or t
 
 The `target` Trait expresses that a Concept instance is about, applied to, or oriented toward another Concept instance.
 
-The `target` Trait MUST NOT imply execution or transformation.
-
 ### 7.4 `for`
 
 The `for` Trait expresses applicability, scope, specialization, or intended domain.
-
-The `for` Trait MUST NOT imply execution or transformation.
 
 If a `for` reference is used to denote a Concept type, it MUST reference the `ConceptDefinition` Entity for that Concept by identity reference.
 
 ### 7.5 Singleton Rule
 
-A governing schema MAY constrain whether a Concept instance may declare multiple reference Traits.
-
-If a governing schema requires that at most one of `reference`, `target`, or `for` may be present on a Concept instance, it MUST express that requirement using `ReferenceConstraint(type=ReferenceSingleton)`.
+If a governing schema requires that at most one of `reference`, `target`, or `for` be present on a Concept instance, it MUST express that requirement using `ReferenceConstraint(type=ReferenceSingleton)`.
 
 If a governing schema authorizes more than one reference Trait on the same Concept instance, it MUST document the permitted combinations and the intended interpretation.
 

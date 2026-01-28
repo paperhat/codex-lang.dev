@@ -54,7 +54,7 @@ A expands deterministically to B.
 
 §1-2: Front matter, invariants · §3: Core model · §4: Naming (PascalCase/camelCase) · §5: Value literals · §6: Identity · §7: Reference Traits · §8: Surface form · §9: Schema architecture, Layer B, SHACL · §10: Canonicalization · §11: Schema definition · §12: Bootstrapping · §13: Versioning · §14: Errors · Appendix A: Grammars · Appendix B: Named colors
 
-## Established Decisions (§1–§5)
+## Established Decisions (§1–§7)
 
 Do not regress:
 
@@ -72,3 +72,9 @@ Do not regress:
 - **§5.11**: Character literal delimiter: single quote (`'`).
 - **§5.13**: Value equality over parsed values. Case-insensitive: hex/function names/color space tokens (Colors), hex (UUIDs).
 - **§5.14–15**: Set/Map duplicates are errors. Canonical order = source order.
+- **§6.1**: Two identity mechanisms: `id` (IRI, global scope) and `key` (Lookup Token, document scope).
+- **§6.2**: Entity MUST have exactly one `id`; non-Entity MUST NOT have `id`. Values unique within document.
+- **§6.3**: Concept has zero or one `key`. Resolution via §9.8 bindings.
+- **§7.1**: Exactly three reference traits: `reference`, `target`, `for`. Values: IRI or Lookup Token. MUST NOT imply dereferencing/loading/execution/transformation.
+- **§7.2–4**: Intent statements are non-normative guidance for schema authors.
+- **§7.5**: Singleton rule via `ReferenceConstraint(type=ReferenceSingleton)`.
