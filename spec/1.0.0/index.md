@@ -314,7 +314,7 @@ In the Surface Form, String Values MUST be spelled as quoted string literals (se
 
 A Backtick String is a surface-form spelling of a String Value.
 
-Within a Backtick String, `` `\` `` represents a literal `` ` ``.
+Within a Backtick String, `` \` `` represents a literal `` ` ``.
 
 A backslash not immediately followed by a backtick is a literal backslash and has no special meaning.
 
@@ -357,12 +357,12 @@ The meaning of a Numeric Value beyond its literal spelling MUST be defined by th
 
 #### 5.4.1 Precision-Significant Numbers
 
-A precision-significant number MUST be a decimal number spelled with a `p` suffix. Integer Numeric Values MUST NOT use the `p` suffix.
+A precision-significant number is a Numeric Value spelled with a `p` suffix.
 
-The declared precision (a count of decimal places in the literal spelling) MUST be determined by one of the following mechanisms:
+The declared precision (a count of decimal places) MUST be determined by one of the following mechanisms:
 
-- Inferred precision: the count of decimal places in the literal spelling, including trailing zeros.
-- Explicit precision: a non-negative integer following the `p` suffix. Zero is permitted.
+- Inferred precision: the count of decimal places in the literal spelling, including trailing zeros. A literal with no decimal point has 0 decimal places.
+- Explicit precision: a non-negative integer following the `p` suffix, which overrides inferred precision.
 
 Consuming systems MUST preserve the declared precision.
 
@@ -513,7 +513,7 @@ Codex-conforming tools MUST NOT dereference Lookup Token Values.
 
 A Character Value represents exactly one Unicode scalar value.
 
-In the Surface Form, Character Values MUST be spelled as character literals (see Appendix A).
+In the Surface Form, Character Values MUST be spelled as character literals delimited by single quotes (`'`). See Appendix A for the full grammar.
 
 A Character Value MUST NOT be a String Value.
 
@@ -523,7 +523,7 @@ After interpreting the character literal's escape sequences, the resulting Chara
 
 A List Value is an ordered sequence of zero or more Value elements.
 
-In the Surface Form, List Values MUST be spelled using the list literal grammar defined by this specification.
+In the Surface Form, List Values MUST be spelled using square brackets (`[...]`). See Appendix A for the full grammar.
 
 Each element of a List Value MUST be a Value.
 
@@ -533,19 +533,9 @@ A List Value MUST NOT require all elements to have the same Value kind.
 
 A List Value MUST represent exactly the elements explicitly present in its literal spelling.
 
-### 5.13 Set Values
+For schema-level type constraints on list contents, see §5.18.
 
-A Set Value is an unordered collection of zero or more Value elements. Set Values have no semantic ordering; however, in canonical surface form, elements MUST be serialized in the order they appear in the source spelling.
-
-In the Surface Form, Set Values MUST be spelled using the set literal grammar defined by this specification.
-
-Each element of a Set Value MUST be a Value.
-
-A Set Value MUST permit nesting.
-
-A Set Value MUST NOT require all elements to have the same Value kind.
-
-#### 5.13.1 Value Equality for Collection Uniqueness (Normative)
+### 5.13 Value Equality for Collection Uniqueness (Normative)
 
 For purposes of detecting duplicates in Set Values and Map Values, Codex-conforming tools MUST use the following Value equality relation.
 
@@ -556,29 +546,43 @@ Two Values are equal if and only if they have the same Value kind and satisfy th
 - String Values: equal if and only if they contain the same sequence of Unicode scalar values.
 - Boolean Values: equal if and only if both are `true` or both are `false`.
 - Numeric Values: equal if and only if their literal spellings are identical codepoint-for-codepoint.
-- Enumerated Token Values: equal if and only if the token names (excluding the leading `$`) are identical codepoint-for-codepoint.
-- Temporal Values: equal if and only if their braced payload strings are identical codepoint-for-codepoint.
+- Enumerated Token Values: equal if and only if their literal spellings are identical codepoint-for-codepoint.
+- Temporal Values: equal if and only if their literal spellings are identical codepoint-for-codepoint.
 - Color Values: equal if and only if their literal spellings are identical, except that hexadecimal digits, color function names, and color space tokens are compared case-insensitively.
 - UUID Values: equal if and only if they are identical after case-folding hexadecimal digits (i.e., hexadecimal digits are compared case-insensitively).
 - IRI Reference Values: equal if and only if their spellings are identical codepoint-for-codepoint (see §5.9).
-- Lookup Token Values: equal if and only if their token names (excluding the leading `~`) are identical codepoint-for-codepoint.
+- Lookup Token Values: equal if and only if their literal spellings are identical codepoint-for-codepoint.
 - Character Values: equal if and only if they contain the same Unicode scalar value.
 - List Values and Tuple Values: equal if and only if they have the same length and corresponding elements are equal.
 - Range Values: equal if and only if their start endpoints are equal, their end endpoints are equal, and either both omit a step or both include equal step Values.
 - Set Values: equal if and only if they contain the same elements (under this equality relation), regardless of element order.
 - Map Values: equal if and only if they contain the same bindings, where keys are equal and corresponding bound Values are equal, regardless of entry order.
 
+### 5.14 Set Values
+
+A Set Value is an unordered collection of zero or more Value elements. Set Values have no semantic ordering; however, in canonical surface form, elements MUST be serialized in the order they appear in the source spelling.
+
+In the Surface Form, Set Values MUST be spelled using the `set` keyword followed by square brackets (`set[...]`). See Appendix A for the full grammar.
+
+Each element of a Set Value MUST be a Value.
+
+A Set Value MUST permit nesting.
+
+A Set Value MUST NOT require all elements to have the same Value kind.
+
 A Set Value MUST contain no duplicate elements.
 
-Duplicate elements MUST be determined using the Value equality relation in §5.13.1.
+Duplicate elements MUST be determined using the Value equality relation in §5.13.
 
 If a set literal spelling contains duplicate elements, Codex-conforming tools MUST treat that spelling as an error.
 
-### 5.14 Map Values
+For schema-level type constraints on set contents, see §5.18.
+
+### 5.15 Map Values
 
 A Map Value is a collection of key-value pairs. Map Values have no semantic ordering; however, in canonical surface form, entries MUST be serialized in the order they appear in the source spelling.
 
-In the Surface Form, Map Values MUST be spelled using the map literal grammar defined by this specification.
+In the Surface Form, Map Values MUST be spelled using the `map` keyword followed by square brackets containing `key: value` entries (`map[key: value, ...]`). See Appendix A for the full grammar.
 
 A Map Value MUST permit zero entries.
 
@@ -588,11 +592,13 @@ A Map Value MUST permit nesting.
 
 A Map Value MUST contain no duplicate keys.
 
-Duplicate keys MUST be determined using the Value equality relation in §5.13.1.
+Duplicate keys MUST be determined using the Value equality relation in §5.13.
 
 If a map literal spelling contains duplicate keys, Codex-conforming tools MUST treat that spelling as an error.
 
-#### 5.14.1 Map Keys
+For schema-level type constraints on map keys and values, see §5.18.
+
+#### 5.15.1 Map Keys
 
 In the Surface Form, a map key MUST be one of:
 
@@ -604,11 +610,11 @@ In the Surface Form, a map key MUST be one of:
 
 An unquoted identifier key MUST use camelCase.
 
-### 5.15 Tuple Values
+### 5.16 Tuple Values
 
 A Tuple Value is an ordered sequence of one or more Value elements with positional semantics.
 
-In the Surface Form, Tuple Values MUST be spelled using the tuple literal grammar defined by this specification.
+In the Surface Form, Tuple Values MUST be spelled using parentheses (`(...)`). See Appendix A for the full grammar.
 
 A Tuple Value MUST contain at least one element.
 
@@ -620,11 +626,13 @@ A Tuple Value MUST NOT require all elements to have the same Value kind.
 
 For any Tuple Value used by a Trait, the governing schema MUST define the required arity and the meaning of each position.
 
-### 5.16 Range Values
+For schema-level type constraints on tuple positions, see §5.18.
+
+### 5.17 Range Values
 
 A Range Value is a declarative interval.
 
-In the Surface Form, Range Values MUST be spelled using the range literal grammar defined by this specification.
+In the Surface Form, Range Values MUST be spelled using `..` between endpoints, with an optional `s` suffix for step (`x..y` or `x..ysz` where `x` is the starting value, `y` is the ending value, and `z` is the step). See Appendix A for the full grammar.
 
 A Range Value MUST contain a start endpoint and an end endpoint.
 
@@ -640,11 +648,13 @@ Codex-conforming tools MUST NOT enumerate Range Values.
 
 The semantics of a Range Value beyond these structural requirements MUST be defined by the governing schema or consuming system.
 
-### 5.17 Parameterized Value Types
+For schema-level type constraints on range bounds, see §5.18.
+
+### 5.18 Parameterized Value Types
 
 This section defines parameterized forms of collection value types, which constrain the types of their contents.
 
-#### 5.17.1 Syntax
+#### 5.18.1 Syntax
 
 A parameterized value type consists of a base type token followed by type arguments in angle brackets.
 
@@ -656,7 +666,7 @@ The following collection types support parameterization:
 * `$Tuple<T1, T2, ...>` — a tuple where each position conforms to its corresponding type
 * `$Range<T>` — a range where bounds conform to `T`
 
-#### 5.17.2 Type Arguments
+#### 5.18.2 Type Arguments
 
 A type argument MUST be one of:
 
@@ -668,23 +678,23 @@ A type union is a bracketed, comma-separated list of value type tokens. A value 
 
 Type arguments MUST NOT contain whitespace.
 
-#### 5.17.3 Unparameterized Collection Types
+#### 5.18.3 Unparameterized Collection Types
 
 An unparameterized collection type (e.g., `$List` without `<...>`) permits items of any value type.
 
-#### 5.17.4 Nesting
+#### 5.18.4 Nesting
 
 There is no limit on the nesting depth of parameterized types.
 
 For example, `$List<$List<$String>>` specifies a list of lists of strings.
 
-#### 5.17.5 Examples
+#### 5.18.5 Examples
 
 | Type | Meaning |
 |------|---------|
 | `$List<$String>` | List of strings |
-| `$List<[$String, $Integer]>` | List where each item is a string or integer |
-| `$Set<$Boolean>` | Set of booleans |
+| `$List<[$String, $Boolean]>` | List where each item is a string or boolean |
+| `$Set<$Integer>` | Set of integers |
 | `$Map<$String, $List<$Integer>>` | Map from strings to lists of integers |
 | `$Tuple<$String, $Integer, $Boolean>` | 3-tuple: (string, integer, boolean) |
 | `$Range<$Integer>` | Range with integer bounds |
@@ -694,56 +704,77 @@ For example, `$List<$List<$String>>` specifies a list of lists of strings.
 
 ## 6. Identity
 
-### 6.1 Identifiers and the `id` Trait
+### 6.1 Overview
 
-An identifier is a stable name for an Entity within an explicit identity scope.
+Codex provides two mechanisms for referencing Concepts:
 
-Identifiers MUST be declared, not inferred.
+| Mechanism | Trait | Value Type | Scope |
+|-----------|-------|------------|-------|
+| Entity Identity | `id` | IRI Reference Value (§5.9) | Global |
+| Concept Key | `key` | Lookup Token Value (§5.10) | Document |
 
-Identifiers MUST be expressed exclusively via the `id` Trait.
+### 6.2 Entity Identity
 
-Codex-conforming tools MUST NOT synthesize an `id` Trait.
+#### 6.2.1 The `id` Trait
 
-### 6.2 Identifiers Are IRIs
+Every Entity MUST have exactly one `id` trait.
 
-All identifiers MUST be IRIs as defined by RFC 3987 (Internationalized Resource Identifiers): https://www.rfc-editor.org/rfc/rfc3987.
+Every non-Entity MUST NOT have an `id` trait.
 
-Identifiers MUST be comparable as opaque strings.
+The value of an `id` trait MUST be an IRI Reference Value (§5.9).
 
-Codex-conforming tools MUST NOT require identifiers to be dereferenceable.
+Codex-conforming tools MUST NOT synthesize an `id` trait.
 
-### 6.3 IRI Surface Profile Restrictions
+#### 6.2.2 IRI Conformance
 
-In the Surface Form, identifiers MUST be spelled as IRI Reference Values (RFC 3987 IRI-reference): https://www.rfc-editor.org/rfc/rfc3987.
+The value of an `id` trait MUST conform to RFC 3987 (Internationalized Resource Identifiers): https://www.rfc-editor.org/rfc/rfc3987.
 
-Identifier surface spellings MUST NOT contain Unicode whitespace characters.
+Codex-conforming tools MUST treat `id` values as opaque strings for comparison.
 
-Identifier surface spellings MUST NOT contain Unicode control characters.
+Codex-conforming tools MUST NOT require `id` values to be dereferenceable.
 
-Identifier surface spellings MUST NOT contain Unicode bidirectional control characters.
+#### 6.2.3 Surface Form Restrictions
 
-Identifier surface spellings MUST NOT contain Unicode private-use characters.
+An `id` value MUST NOT contain:
 
-Identifier surface spellings MUST permit percent-encoding.
+- Unicode whitespace characters
+- Unicode control characters
+- Unicode bidirectional control characters
+- Unicode private-use characters
 
-### 6.4 Stability and Immutability
+Codex-conforming tools MUST accept percent-encoded sequences in `id` values.
 
-For the purposes of this specification, an identifier is *assigned* when a consuming system establishes that identifier as naming a particular Entity within an explicit identity scope.
-Codex does not define an assignment protocol and does not define a mechanism to mechanically detect global uniqueness or reuse.
+#### 6.2.4 Uniqueness
 
-Within a single document, an identifier MUST NOT be declared by more than one Entity.
+Within a single document, each `id` value MUST be unique across all Entities.
 
-Once assigned, an identifier MUST continue to refer to the same Entity.
+Codex does not define a mechanism to enforce cross-document uniqueness; however, `id` values serve as RDF subject identifiers in triple stores and are expected to be globally unique in practice.
 
-Identifiers MUST NOT be reused for different Entities.
+#### 6.2.5 Stability
 
-Changing an identifier MUST be treated as creating a new Entity.
+Once an `id` value is assigned to an Entity, that `id` value MUST continue to refer to the same Entity.
 
-### 6.5 Opaqueness and Normalization
+Changing an Entity's `id` value MUST be treated as creating a new Entity.
 
-Codex-conforming tools MUST treat identifiers as opaque values.
+### 6.3 Concept Keys
 
-Codex-conforming tools MUST NOT reinterpret identifier spellings based on document structure or implicit context.
+#### 6.3.1 The `key` Trait
+
+A Concept MUST have zero or one `key` traits.
+
+The value of a `key` trait MUST be a Lookup Token Value (§5.10).
+
+Codex-conforming tools MUST NOT synthesize a `key` trait.
+
+#### 6.3.2 Uniqueness
+
+Within a single document, each `key` value MUST be unique across all Concepts.
+
+Concept keys have document scope; cross-document key references are not defined by this specification.
+
+#### 6.3.3 Resolution
+
+When a Lookup Token Value appears as a reference trait value, resolution to an Entity `id` is performed via the binding mechanism defined in §9.8.
 
 ---
 
@@ -827,7 +858,7 @@ In this example, `Tag` is applied to (is about) the `Book` Concept instance.
 
 ```cdx
 <Bindings>
-	<Bind key="hobbit" id=book:TheHobbit />
+	<Bind key=~hobbit id=book:TheHobbit />
 </Bindings>
 
 <Book id=book:TheHobbit title="The Hobbit" />
@@ -841,7 +872,7 @@ In this example, `LabelPolicy` is not about a particular `Book` instance; it is 
 
 ```cdx
 <Bindings>
-	<Bind key="book" id=concept:Book />
+	<Bind key=~book id=concept:Book />
 </Bindings>
 
 <ConceptDefinition id=concept:Book name="Book" />
@@ -1930,10 +1961,10 @@ A `Bind` Concept declares a single lookup binding.
 
 ##### Traits (Normative)
 
-* `key` (required; string; the lookup token name, without the leading `~`)
-* `id` (required; IRI Reference Value)
+* `key` (required; Lookup Token Value; §5.10)
+* `id` (required; IRI Reference Value; §5.9)
 
-Each `Bind` Concept binds the lookup token whose spelling is `~` followed by `key` to the specified identifier.
+Each `Bind` Concept binds the specified lookup token (`key`) to the specified Entity identity (`id`).
 
 ##### Constraints
 
@@ -1954,11 +1985,11 @@ Lookup token bindings are declarative only and MUST NOT imply loading, dereferen
 
 #### 9.8.4 Schema Interaction
 
-Schemas MAY declare whether a lookup token value:
+A governing schema MUST specify, for each context where lookup token values are permitted, one of the following resolution requirements:
 
-* MUST be resolvable
-* MAY remain unresolved
-* MUST NOT appear in a given context
+* The lookup token MUST be resolvable.
+* The lookup token MUST NOT appear in the context.
+* Resolution is not required.
 
 These requirements are enforced during schema validation, not during parsing or formatting.
 
