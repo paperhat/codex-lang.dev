@@ -24,8 +24,8 @@ This specification normatively defines:
 - formatting and canonicalization requirements
 - schema-first parsing architecture
 - schema definition, schema loading/bootstrapping, and schema versioning rules
-- reference trait semantics (§7)
-- well-formedness and schema validation error classification (§14)
+- reference trait semantics
+- well-formedness and schema validation error classification
 
 Well-formedness checking does not require a schema; semantic validation does. See §2.5 for this distinction.
 
@@ -81,7 +81,7 @@ A conforming implementation MUST treat something not explicitly declared as not 
 
 An implementation MUST NOT infer meaning from omission, shape, or other non-specified cues.
 
-An implementation MUST NOT assume defaults unless explicitly defined by this specification or by the governing schema (see §12 for schema loading).
+An implementation MUST NOT assume defaults unless explicitly defined by this specification or by the governing schema.
 
 Structural ordering (of Traits, children, and collection elements) carries no semantic meaning to Codex itself. Schemas define whether ordering is semantically significant for specific constructs. Implementations MUST preserve structural ordering both for round-trippability (see §2.6) and to support schema-defined ordering constraints.
 
@@ -145,7 +145,7 @@ Accordingly:
 
 Well-formedness checking includes mechanically recognizing and classifying Value spellings into their Value kinds (and any grammar-defined subkinds) by applying this specification's surface-form grammar (§5 and Appendix A).
 
-Expected types and type constraints for Trait values are schema-defined; checking a Trait value against its expected `ValueType` (§11.6) is part of schema validation and therefore requires an explicit governing schema.
+Expected types and type constraints for Trait values are schema-defined; checking a Trait value against its expected `ValueType` is part of schema validation and therefore requires an explicit governing schema.
 
 The bootstrap schema-of-schemas provides a built-in governing schema only for schema documents (§12.4) and MUST NOT be used as a fallback governing schema for instance documents.
 
@@ -181,7 +181,7 @@ A Concept instance MUST have exactly one Concept name.
 
 A Concept instance MUST declare zero or more Traits.
 
-A Concept instance MUST be in exactly one of two body modes (see §8.8 for surface form rules and §10.2.1.1 for mechanical determination):
+A Concept instance MUST be in exactly one of two body modes:
 
 - **children mode**: the Concept instance contains zero or more child Concepts and no Content.
 - **content mode**: the Concept instance contains Content and no child Concepts.
@@ -194,7 +194,7 @@ A Trait instance MUST be declared on exactly one containing Concept instance.
 
 A Trait instance MUST NOT have independent identity.
 
-Trait meaning and permissibility are schema validation concerns and MUST be defined by the governing schema; well-formedness checking (§2.5) does not evaluate trait authorization.
+Trait meaning and permissibility MUST be defined by the governing schema.
 
 ### 3.3 Value
 
@@ -224,7 +224,7 @@ An Entity is a Concept instance with explicit identity.
 
 A Concept instance is an Entity if and only if the governing schema declares `$MustBeEntity` for that Concept via its `entityEligibility` rule.
 
-The governing schema MUST declare exactly one `entityEligibility` value for each Concept (see §11.4.1). The valid values are:
+The governing schema MUST declare exactly one `entityEligibility` value for each Concept. The valid values are:
 
 - `$MustBeEntity`: each instance of that Concept MUST declare an `id` Trait.
 - `$MustNotBeEntity`: each instance of that Concept MUST NOT declare an `id` Trait.
@@ -235,7 +235,7 @@ Codex-conforming formatting and canonicalization MUST NOT synthesize identity by
 
 ### 3.6 Marker
 
-A Marker is a syntactic delimiter for Concept instances in the surface form (see §8.5 for syntax).
+A Marker is a syntactic delimiter for Concept instances in the surface form.
 
 Markers MUST be one of:
 
@@ -251,7 +251,7 @@ A self-closing marker MUST represent a Concept with no children and no Content.
 
 ### 3.7 Annotation
 
-An Annotation is author-supplied editorial metadata (see §8.9 for syntax and annotation kinds).
+An Annotation is author-supplied editorial metadata.
 
 Annotations MUST NOT affect parsing, schema validation outcomes, or domain semantics.
 
@@ -270,10 +270,10 @@ Some requirements in this section are normative but not mechanically enforceable
 
 For the purposes of Codex, this specification defines:
 
-* **PascalCase**: a single contiguous token composed only of ASCII letters and ASCII digits, with no whitespace, punctuation, or other characters; the first character MUST be an ASCII uppercase letter.
-* **camelCase**: a single contiguous token composed only of ASCII letters and ASCII digits, with no whitespace, punctuation, or other characters; the first character MUST be an ASCII lowercase letter.
+* **PascalCase**: a name composed only of ASCII letters and digits; the first character MUST be an ASCII uppercase letter.
+* **camelCase**: a name composed only of ASCII letters and digits; the first character MUST be an ASCII lowercase letter.
 
-A name MUST contain at least one character and MUST NOT contain whitespace.
+A name MUST contain at least one character.
 
 Concept names MUST use PascalCase.
 
@@ -295,10 +295,10 @@ This requirement binds schema authors. It is not fully mechanically enforceable 
 
 | Correct | Incorrect | Mechanical rejection (§4.2) | Author intent |
 |---------|-----------|----------------------------|---------------|
-| `AstNode` | `ASTNode` | rejected (A-S-T-N = 4 consecutive) | "AST" is one word |
-| `HtmlParser` | `HTMLParser` | rejected (H-T-M-L-P = 5 consecutive) | "HTML" is one word |
-| `safeHtml` | `safeHTML` | rejected (H-T-M-L = 4 consecutive) | "HTML" is one word |
-| `ioStream` | `iOStream` | not rejected (O-S = 2 consecutive) | "IO" is one word; `iOStream` violates §4.3 but passes §4.2 |
+| `AstNode` | `ASTNode` | A-S-T-N = 4 consecutive | "AST" is one word |
+| `HtmlParser` | `HTMLParser` | H-T-M-L-P = 5 consecutive | "HTML" is one word |
+| `safeHtml` | `safeHTML` | H-T-M-L = 4 consecutive | "HTML" is one word |
+| `ioStream` | `iOStream` | not rejected | "IO" is one word |
 
 ---
 
@@ -572,7 +572,7 @@ A Set Value MUST contain no duplicate elements.
 
 Duplicate elements MUST be determined using the Value equality relation in §5.13.
 
-If a set literal spelling contains duplicate elements, Codex-conforming tools MUST treat that spelling as an error.
+If a set literal spelling contains duplicate elements, Codex-conforming tools MUST reject that spelling with a `ParseError` (§14).
 
 For schema-level type constraints on set contents, see §5.18.
 
@@ -592,7 +592,7 @@ A Map Value MUST contain no duplicate keys.
 
 Duplicate keys MUST be determined using the Value equality relation in §5.13.
 
-If a map literal spelling contains duplicate keys, Codex-conforming tools MUST treat that spelling as an error.
+If a map literal spelling contains duplicate keys, Codex-conforming tools MUST reject that spelling with a `ParseError` (§14).
 
 For schema-level type constraints on map keys and values, see §5.18.
 
@@ -725,7 +725,7 @@ Codex-conforming tools MUST NOT synthesize an `id` trait.
 
 #### 6.2.2 Uniqueness
 
-Within a single document, each `id` value MUST be unique across all Entities.
+Within a single document, each `id` value MUST be unique across all Entities. If a document contains duplicate `id` values, Codex-conforming tools MUST reject that document with an `IdentityError` (§14).
 
 Codex does not define a mechanism to enforce cross-document uniqueness; however, `id` values serve as RDF subject identifiers in triple stores and are expected to be globally unique in practice.
 
@@ -747,7 +747,7 @@ Codex-conforming tools MUST NOT synthesize a `key` trait.
 
 #### 6.3.2 Uniqueness
 
-Within a single document, each `key` value MUST be unique across all Concepts.
+Within a single document, each `key` value MUST be unique across all Concepts. If a document contains duplicate `key` values, Codex-conforming tools MUST reject that document with an `IdentityError` (§14).
 
 Concept keys have document scope; cross-document key references are not defined by this specification.
 
@@ -885,7 +885,7 @@ Codex-conforming tools MUST determine the file encoding as follows:
 - If the file starts with `FF FE`, interpret the file as UTF-16 Little Endian.
 - Otherwise, interpret the file as UTF-8 with no BOM.
 
-Codex-conforming tools MUST treat any other encoding as an error.
+Codex-conforming tools MUST reject any other encoding with a `ParseError` (§14).
 
 ### 8.2 Line Endings
 
@@ -893,7 +893,7 @@ The canonical line ending is LF (`\n`, U+000A).
 
 Codex-conforming tools MUST normalize CRLF (`\r\n`) sequences to LF on input.
 
-Codex-conforming tools MUST treat bare CR (`\r`) as a parse error.
+Codex-conforming tools MUST reject bare CR (`\r`) with a `ParseError` (§14).
 
 In canonical surface form, a Codex document MUST end with a trailing LF.
 
@@ -913,7 +913,7 @@ Codex-conforming tools MUST NOT treat author indentation as authoritative.
 
 In the Surface Form, indentation MUST use U+0009 TAB characters only.
 
-Any U+0020 SPACE character that appears in the indentation prefix of any of the following lines MUST be treated as a `ParseError` (§14):
+Codex-conforming tools MUST reject any U+0020 SPACE character that appears in the indentation prefix of any of the following lines with a `ParseError` (§14):
 
 - Concept marker lines
 - Trait lines (including multi-line trait layout)
@@ -939,7 +939,7 @@ In canonical surface form, blank line restrictions apply only to structure parse
 
 Outside of annotations (see §8.9) and content, a blank line MUST NOT appear in any other location within a Concept instance body interpreted as containing child Concepts.
 
-In canonical surface form, Codex-conforming tools MUST treat the following as errors:
+In canonical surface form, Codex-conforming tools MUST reject documents containing any of the following with a `FormattingError` (§14):
 
 - A blank line between a Concept instance's opening marker and its first child.
 - A blank line between a Concept instance's last child and its closing marker.
@@ -1007,7 +1007,7 @@ A self-closing marker includes zero or more Traits.
 
 #### 8.5.4 Empty Block Concepts
 
-Codex-conforming tools MUST treat the form `<ConceptName></ConceptName>` as a parse error.
+Codex-conforming tools MUST reject the form `<ConceptName></ConceptName>` with a `ParseError` (§14).
 
 To represent a deliberately empty Concept instance, authors MUST use self-closing form.
 
@@ -1073,7 +1073,7 @@ Codex-conforming tools MUST NOT evaluate, interpret, or normalize Values beyond 
 
 A Trait value spelling MUST match exactly one Value spelling defined by this specification (see §5).
 
-If a Trait value spelling does not match any Value spelling defined by this specification, Codex-conforming tools MUST treat it as a parse error.
+If a Trait value spelling does not match any Value spelling defined by this specification, Codex-conforming tools MUST reject it with a `ParseError` (§14).
 
 Codex-conforming tools MUST NOT infer a Value type.
 
@@ -1081,7 +1081,7 @@ Codex-conforming tools MUST NOT coerce one Value type into another.
 
 Within a Concept marker, a Value MUST terminate at the first of the following:
 
-- unbalanced whitespace (space, tab, or newline)
+- whitespace outside balanced delimiters (space, tab, or newline)
 - `>` or `/>` (end of Concept marker)
 
 While scanning for Value termination, Codex-conforming tools MUST respect balanced delimiters as required by the Value spellings and the grammar, including `[]`, `{}`, `()`, `''`, and `""`.
@@ -1131,6 +1131,8 @@ A raw `<` character MUST NOT appear anywhere in content.
 
 A raw `[` character MUST NOT appear as the first non-indentation character of a content line. This preserves schema-less determinism of content-versus-children body mode (see §10.2.1.1).
 
+Codex-conforming tools MUST reject violations of these content escaping rules with a `ParseError` (§14).
+
 #### 8.8.3 Content Indentation Normalization
 
 Codex-conforming tools MUST store and process content without its canonical leading indentation.
@@ -1161,7 +1163,7 @@ For `whitespaceMode=$Flow`:
 
 * Codex-conforming tools MUST collapse each run of whitespace characters (spaces, tabs, and line breaks) to a single U+0020 SPACE.
 * Codex-conforming tools MUST trim leading and trailing whitespace from the resulting content.
-* In canonical surface form, Codex-conforming tools MUST wrap content to lines of at most 100 Unicode scalar values, breaking at whitespace boundaries where possible.
+* In canonical surface form, Codex-conforming tools MUST wrap content to lines of at most 100 Unicode scalar values, breaking at whitespace boundaries. If a non-breakable sequence exceeds 100 Unicode scalar values, it MUST appear on its own line without wrapping.
 * Each wrapped line MUST be indented exactly one nesting level deeper than the enclosing Concept instance.
 
 Schema-less processing MUST treat all content as `$Preformatted` (preserve all whitespace after indentation normalization).
@@ -1302,7 +1304,7 @@ Canonicalization of annotations is deterministic and depends on the annotation f
 Codex-conforming tools MUST canonicalize inline annotations as follows:
 
 * Leading and trailing whitespace inside the brackets MUST be trimmed.
-* Internal runs of whitespace (spaces, tabs, and newlines) MUST be collapsed to a single space.
+* Internal runs of whitespace (spaces and tabs) MUST be collapsed to a single space.
 * Escaped closing brackets MUST remain escaped (that is, `\]` MUST remain spelled as `\]`).
 
 Canonical rendering MUST use no padding spaces just inside the brackets (for example, `[text]`, not `[ text ]`).
@@ -1347,7 +1349,7 @@ If no directive is present, the block annotation MUST be canonicalized as descri
 For `FLOW:` directives, Codex-conforming tools MUST render canonical output as follows:
 
 * Split the remaining content into paragraphs separated by one or more blank lines.
-* For each paragraph, wrap words to lines of at most 80 Unicode scalar characters using greedy packing.
+* For each paragraph, wrap words to lines of at most 100 Unicode scalar values using greedy packing. If a non-breakable sequence exceeds 100 Unicode scalar values, it MUST appear on its own line without wrapping.
 * Indent each wrapped line exactly one tab deeper than the `[` / `]` lines.
 * Separate paragraphs by exactly one blank line.
 
@@ -1415,7 +1417,7 @@ Grouping annotations form a properly nested stack.
 * `[GROUP: X]` pushes label `X`.
 * `[END: X]` MUST match the most recent unmatched `[GROUP: X]`.
 
-If an `END` label does not match the most recent open group label, or if an `END` appears with no open group, Codex-conforming tools MUST treat the document as invalid.
+If an `END` label does not match the most recent open group label, or if an `END` appears with no open group, Codex-conforming tools MUST reject the document with a `ParseError` (§14).
 
 #### 8.9.8 Canonical Blank Line Requirements
 
@@ -1425,7 +1427,7 @@ In canonical surface form:
 * Grouping annotations MUST be surrounded by exactly one blank line above and below, where file boundaries count as blank-line boundaries.
 * General annotations MUST be surrounded by exactly one blank line above and below, where file boundaries count as blank-line boundaries.
 
-Codex-conforming tools MUST treat any annotation that is neither an attached annotation, a grouping annotation, nor a general annotation as invalid.
+Codex-conforming tools MUST reject any annotation that is neither an attached annotation, a grouping annotation, nor a general annotation with a `ParseError` (§14).
 
 ---
 
@@ -1457,7 +1459,7 @@ The required inputs for schema-directed processing are:
 - the governing schema
 - any other external inputs explicitly required by this specification or by the governing schema
 
-No other external input—including environment state, configuration, registries, network access, clocks, or randomness—may influence processing.
+Other external inputs—including environment state, configuration, registries, network access, clocks, or randomness—MUST NOT influence processing.
 
 If any required input is missing, schema-directed processing MUST fail with a `SchemaError` (§14).
 
@@ -2376,7 +2378,7 @@ At minimum, processing MUST fail in any of the following cases:
 - a schema rule requires semantics not explicitly defined by this specification, the governing schema, or the schema-definition specification — `SchemaError`
 - a required external input is missing — `SchemaError`
 - an algorithm would require nondeterministic choice (including heuristic inference or "best effort") — `SchemaError`
-- a lookup token is required to resolve but does not have exactly one binding — `ReferenceError`
+- a lookup token is required to resolve but no binding is found — `ReferenceError`
 - a derived validation artifact cannot be constructed without inventing missing definitions — `SchemaError`
 
 ### 9.11 Simplified Authoring Mode → Canonical Representation Expansion Algorithm (Total)
@@ -2781,7 +2783,7 @@ An implementation MUST provide a schema-less formatting / canonicalization mode 
 
 This mode exists to support well-formedness and formatting checks (gofmt-like), independent of semantic validation.
 
-If provided, a schema-less formatter:
+A schema-less formatter:
 
 - MUST NOT claim that its output is valid under any schema
 - MUST NOT report schema/semantic error classes (e.g., `SchemaError`, `IdentityError`, `ReferenceError`, `ConstraintError`)
@@ -2866,15 +2868,27 @@ Canonicalization is divided into two phases:
 **Phase 2 (schema-directed)** applies during schema-directed processing:
 
 - content whitespace mode normalization per `whitespaceMode` declaration (§8.8.4)
+- deterministic sorting of children in `$Unordered` collections (§10.5.1)
 
 Schema-less processing MUST complete Phase 1 only. Schema-directed processing MUST complete both phases.
 
 Canonicalization MUST NOT:
 
-- reorder Concepts
+- reorder Concepts (except children of `$Unordered` collections during Phase 2)
 - reorder Traits
 - invent or remove Concepts, Traits, or Content
 - infer missing structure
+
+#### 10.5.1 Deterministic Ordering for Unordered Collections
+
+In canonical surface form, children of an `$Unordered` collection MUST be sorted according to the following deterministic algorithm:
+
+1. Sort by Concept name (lexicographic, case-sensitive, ascending).
+2. If Concept names are equal, sort by `id` trait value (lexicographic, ascending) if present.
+3. If Concept names are equal and neither child has an `id` trait, sort by `key` trait value (lexicographic, ascending) if present.
+4. If still tied, preserve source order.
+
+This sorting is schema-directed and MUST only be applied during Phase 2 processing.
 
 ### 10.6 Annotation Canonicalization
 Annotation canonicalization MUST follow the surface form requirements (§8).
@@ -3112,7 +3126,7 @@ Each container Concept listed above MUST obey the structural, identity, and cont
 * All Concept, Trait, ValueType, and Constraint identifiers used within the schema MUST be resolvable and unique where required.
 * A schema MUST be self-contained except for explicitly declared external inputs permitted by this specification.
 * A schema MUST be valid under exactly one authoring mode (see §9.4).
-* Any schema whose structure or semantics cannot be interpreted deterministically under this specification MUST be rejected.
+* Any schema whose structure or semantics cannot be interpreted deterministically under this specification MUST be rejected with a `SchemaError` (§14).
 
 The `Schema` Concept defines the boundary within which schema-first parsing, validation, instance-graph mapping, and derived-artifact generation occur, as specified in §9.
 
@@ -3318,11 +3332,7 @@ Validation of `$Unordered` collections MUST be order-insensitive.
 
 Semantic comparison of `$Unordered` collections MUST be order-insensitive: two `$Unordered` collections with identical children in different orders MUST be treated as semantically equivalent.
 
-In canonical surface form, children of an `$Unordered` collection MUST be sorted according to the deterministic ordering defined by the canonicalization rules in §8.
-
----
-
-This section is normative.
+In canonical surface form, children of an `$Unordered` collection MUST be sorted according to the deterministic ordering defined in §10.5.1.
 
 ---
 
@@ -3344,7 +3354,7 @@ Trait definitions establish the value type and constraints for a Trait that may 
 
 `isReferenceTrait` is schema metadata only. It MUST NOT change the definition of reference Traits in §7, and it MUST NOT change the reference constraint semantics in §9.9.9–§9.9.12.
 
-If both `defaultValueType` and `defaultValueTypes` are provided, the implementation MUST treat that as a schema error.
+If both `defaultValueType` and `defaultValueTypes` are provided, schema processing MUST fail with a `SchemaError` (§14).
 
 `priority` is a meta-schema concern. Implementations MUST NOT use `priority` to change validation or compilation semantics. Meta-schemas are permitted to constrain allowed `priority` values (e.g., `$Primary`, `$Secondary`).
 
@@ -4178,7 +4188,7 @@ Constrains the ordering of collection elements by a trait value.
 ###### Children
 * Exactly one of `ChildPath` or `DescendantPath` (see §9.5.4)
 
-Order constraint semantics apply to ordered collections. If the collection is unordered, the constraint has no effect.
+Order constraint semantics apply to `$Ordered` collections only. If an `OrderConstraint` is applied to an `$Unordered` collection, schema processing MUST fail with a `SchemaError` (§14).
 If a rule cannot be translated deterministically, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
@@ -4232,12 +4242,10 @@ For `MustBeEntity` and `MustNotBeEntity`, `scope`, `pattern`, and `flags` MUST N
 `IdentityConstraint(type=IdentifierUniqueness, scope=S)` constrains identifiers to be unique within the nearest enclosing scope `S`.
 Its semantics MUST be identical to `UniqueConstraint(trait=id, scope=S)` as defined in §9.9.7 (where `id` refers to `codex:declaredId`).
 
-For `IdentifierUniqueness`, the `scope` trait MUST be present. The `pattern` and `flags` traits MUST NOT be present.
-
 `IdentityConstraint(type=IdentifierForm, pattern=p, flags=f)` constrains the spelling of declared identifiers.
 When the focus Concept instance is an Entity, its declared `id` value MUST match the regular expression `p` under SPARQL 1.1 `REGEX` semantics (see §9.5.1).
 
-`IdentityConstraint(type=IdentifierForm)` MUST be treated as a schema error unless `pattern` is provided.
+If `pattern` is not provided for `IdentityConstraint(type=IdentifierForm)`, schema processing MUST fail with a `SchemaError` (§14).
 
 For `IdentifierForm`, `scope` MUST NOT be present.
 
@@ -4254,7 +4262,7 @@ Constrains the structural context in which a Concept instance may appear.
 * `contextSelector` (Concept name string; see type-specific requirements below)
 
 ###### Types
-* `OnlyValidUnderParent`: Requires the immediate parent is of the type specified by `TargetContext`. The `contextSelector` trait MUST NOT be present.
+* `OnlyValidUnderParent`: Requires the immediate parent is of the type specified by the `TargetContext` in this constraint's `Targets` block. The `ContextConstraint` itself MUST NOT have a `contextSelector` trait.
 * `OnlyValidUnderContext`: Requires an ancestor of the specified type exists in the parent chain. The `contextSelector` trait MUST be present.
 
 Context constraint semantics MUST follow §9.9.8.
@@ -4271,7 +4279,7 @@ Constrains content presence or structure.
 * `type` (required; one of the content constraint types defined below)
 
 ###### Types
-* `ContentForbiddenUnlessAllowed`: Requires content is absent. The `pattern` and `flags` traits MUST NOT be present.
+* `ForbidsContent`: Requires content is absent. The `pattern` and `flags` traits MUST NOT be present.
 * `ContentRequired`: Requires content exists. The `pattern` and `flags` traits MUST NOT be present.
 * `ContentMatchesPattern`: Requires content matches a pattern. The `pattern` trait MUST be present. The `flags` trait is permitted.
 
@@ -4415,49 +4423,24 @@ Its goals are to:
 * define a clear and deterministic schema resolution order
 * support bootstrapping of the schema language itself via a built-in schema-of-schemas
 * ensure failures are reported clearly and classified correctly when a schema is unavailable or invalid
-### 12.2 Schema Provision Mechanisms
-A conforming implementation MUST support explicit provision of a governing schema.
 
-A conforming implementation is permitted to support additional schema provision mechanisms, provided they do not override or weaken explicit provision.
+### 12.2 Schema Provision
 
-Schema provision mechanisms determine **which schema is supplied** to the schema-first processing pipeline; they MUST NOT alter parsing, validation, or canonicalization semantics.
+A conforming implementation MUST require explicit provision of a governing schema.
 
-#### 12.2.1 Explicit Provision (Required)
-
-The governing schema is provided directly by the caller as an explicit input.
+The governing schema is provided directly by the caller as an explicit input:
 
 ```
 parse(documentBytes, governingSchema) → parsedDocument
 ```
 
-This is the baseline mechanism.
+The implementation MUST use the provided schema and MUST NOT attempt to substitute, infer, or override it.
 
-All conforming implementations MUST support explicit schema provision.
+If no governing schema is provided, parsing MUST fail with a `ParseError` (§14).
 
-If an explicit schema is provided, the implementation MUST use that schema and MUST NOT attempt to substitute, infer, or override it.
+External systems for schema storage, discovery, or distribution do not affect the parsing, validation, or canonicalization of Codex documents and are outside the scope of this specification.
 
-#### 12.2.2 Registry-Based Resolution (Optional)
-
-An implementation is permitted to support resolving a governing schema via a schema registry.
-
-Registry lookup mechanisms, identifiers, transport protocols, caching behavior, and trust models are outside the scope of this specification.
-
-If supported, registry-based resolution MUST be explicit, deterministic, and fail-fast.
-
-Registry-based resolution MUST NOT be attempted unless explicit provision did not occur.
-
-### 12.3 Schema Resolution Order
-If an implementation supports more than one schema provision mechanism, it MUST resolve the governing schema using the following strict precedence order:
-
-1. **Explicit provision** — if a governing schema is provided directly by the caller, it MUST be used.
-2. **Registry-based resolution** — if supported and no explicit schema was provided, the implementation is permitted to attempt registry lookup.
-3. **Failure** — if no governing schema is obtained, processing MUST fail with a `ParseError` (§14).
-
-Explicit provision always takes precedence over all other mechanisms.
-
-An implementation MUST NOT infer, guess, or substitute a governing schema.
-
-### 12.4 Bootstrap Schema-of-Schemas
+### 12.3 Bootstrap Schema-of-Schemas
 Codex defines a built-in **bootstrap schema-of-schemas** used to parse and validate schema documents authored in Codex.
 
 The bootstrap schema-of-schemas exists to eliminate circular dependency during schema loading and to make the schema definition language self-hosting.
@@ -4467,19 +4450,19 @@ It governs **only** documents whose root Concept is `Schema`.
 
 The bootstrap schema-of-schemas MUST NOT be substituted for a missing governing schema when processing an instance document.
 
-#### 12.4.1 Requirements
+#### 12.3.1 Requirements
 
 Every conforming implementation MUST:
 
 * include the complete bootstrap schema-of-schemas as built-in, immutable data
 * use the bootstrap schema-of-schemas to parse and validate schema documents
-* ensure the bootstrap schema-of-schemas is applied deterministically and without extension unless an explicit governing schema is provided
+* ensure the bootstrap schema-of-schemas is applied deterministically and without extension when no explicit governing schema is provided
 
-An explicitly provided governing schema for a schema document MUST either be the bootstrap schema-of-schemas itself or a schema that is valid under the bootstrap schema-of-schemas. Partial extension, modification, or augmentation of the bootstrap schema-of-schemas is forbidden.
+An explicitly provided governing schema for a schema document MUST either be the bootstrap schema-of-schemas itself or a schema that is valid under the bootstrap schema-of-schemas. An implementation MUST NOT partially extend, modify, or augment the bootstrap schema-of-schemas.
 
 The bootstrap schema-of-schemas MUST itself conform to the Codex language invariants (§2) and the schema-first architecture (§9).
 
-#### 12.4.2 Schema Document Detection
+#### 12.3.2 Schema Document Detection
 
 A document is a schema document if and only if its root Concept is `Schema`.
 
@@ -4490,9 +4473,9 @@ When a parser encounters a root `Schema` Concept:
 1. If an explicit governing schema was provided by the caller, that schema MUST be used.
 2. Otherwise, the built-in bootstrap schema-of-schemas MUST be used.
 
-No other detection, inference, or fallback mechanisms are permitted.
+An implementation MUST NOT use any other detection, inference, or fallback mechanisms.
 
-#### 12.4.3 Validation and Error Classification
+#### 12.3.3 Validation and Error Classification
 
 When processing a schema document:
 
@@ -4501,80 +4484,70 @@ When processing a schema document:
 
 Implementations MUST NOT attempt partial validation, recovery, or best-effort interpretation.
 
-#### 12.4.4 Canonical Authority
+#### 12.3.4 Canonical Authority
 
 All schema-language constructs that appear in schema documents are defined **exactly once**:
 
 * in the schema definition language specified in §11 of this document
 
-The bootstrap schema-of-schemas MUST accept exactly those schema documents that conform to §11, and MUST reject all others.
+The bootstrap schema-of-schemas MUST accept exactly those schema documents that conform to §11, and MUST reject all others with a `SchemaError` (§14).
 
 The bootstrap schema-of-schemas MUST NOT introduce additional constructs, defaults, or semantics beyond those defined in §11.
 
-### 12.5 Schema Caching (Informative)
-
-Schemas are immutable within a declared version.
-
-Implementations are permitted to cache parsed and validated schemas to avoid redundant processing.
+### 12.4 Schema Caching
 
 Caching behavior, eviction policy, persistence, and invalidation strategies are implementation-defined.
 
 Caching MUST NOT change observable parsing, validation, or error-reporting behavior.
 
-### 12.6 Error Handling
-#### 12.6.1 Schema Unavailable
+### 12.5 Error Handling
+#### 12.5.1 Schema Unavailable
 
 If no schema can be obtained through any supported mechanism:
 
-* Error class: `ParseError`
+* Error class: `ParseError` (§14)
 * The report MUST indicate that the governing schema was unavailable
 * Parsing MUST NOT proceed
 
-#### 12.6.2 Schema Load Failure
+#### 12.5.2 Schema Load Failure
 
 If schema resolution succeeds but loading the schema fails (for example, network error or file not found):
 
-* Error class: `ParseError`
+* Error class: `ParseError` (§14)
 * The report MUST indicate that the schema could not be loaded
 * The report MUST include the schema identifier
 
-#### 12.6.3 Invalid Schema
+#### 12.5.3 Invalid Schema
 
 If a loaded schema is not valid Codex or is not a valid schema under the bootstrap schema-of-schemas:
 
-* Error class: `SchemaError`
+* Error class: `SchemaError` (§14)
 * The report MUST indicate that schema validation failed
 * Underlying schema validation errors MUST be reported
 
-### 12.7 Relationship to Other Specifications
+### 12.6 Relationship to Other Specifications
 
 * This specification defines schema-first processing semantics (§9).
 * This section defines how governing schemas are obtained and bootstrapped (§12).
 * The schema definition language itself is defined normatively in §11.
 * Formatting and canonicalization rules apply uniformly to both schema documents and non-schema documents (§10).
 
-No other specification may override or weaken these rules.
+No other specification overrides or weakens these rules.
 
 ---
 
 ## 13. Schema Versioning
 
-This section defines how schemas are versioned and evolved.
-
-Schema versioning rules are part of the Codex language and are governed by this section.
+This section normatively defines how schemas are versioned and evolved.
 
 ### 13.1 Purpose
 
-This section defines how Codex schemas are versioned and evolved.
-
-Its goals are to:
+The goals of this section are to:
 
 - allow schemas to change without breaking existing data
 - make compatibility explicit and inspectable
 - prevent silent semantic drift
 - support long-lived data and tooling stability
-
-This section governs schema evolution semantics, not data migration mechanisms.
 
 ### 13.2 Core Principles
 
@@ -4583,7 +4556,7 @@ Codex schema versioning is governed by the following principles:
 1. Schemas evolve; data persists.
 2. Compatibility is explicit, not inferred.
 3. Breaking changes are deliberate.
-4. Validation is version-aware and conforms to the determinism invariant.
+4. Validation is version-aware and conforms to the determinism invariant (§2).
 
 Schemas MUST make their versioning intent explicit.
 
@@ -4603,24 +4576,20 @@ All versions of the same schema MUST share the same schema identifier.
 
 The schema version (`Schema version`) identifies the specific set of rules that apply.
 
-A schema document that omits any of the `id`, `version`, or `versionScheme` Traits on the root `Schema` Concept is invalid.
+A schema document that omits any of the `id`, `version`, or `versionScheme` Traits on the root `Schema` Concept MUST be rejected with a `SchemaError` (§14).
 
 A schema document MUST NOT declare more than one schema identifier.
 
-A schema document MUST NOT redefine or alias the schema identifier across versions.
+Within a schema lineage, the schema identifier MUST NOT be redefined or aliased.
 
 Schema identity and version information MUST be treated as authoritative and MUST NOT be inferred, synthesized, or substituted by tooling.
 
 ### 13.4 Version Semantics
 Schemas MUST use monotonic versioning within a schema lineage.
 
-Within a schema lineage, all schema versions MUST use the same `versionScheme` value.
+Within a schema lineage, all schema versions MUST use the same `versionScheme` value; a schema that changes the `versionScheme` within a lineage MUST be rejected with a `SchemaError` (§14).
 
-Regardless of scheme, schema versions MUST form a **total, unambiguous ordering**.
-
-If two schema versions cannot be ordered deterministically, the schema is invalid.
-
-A schema whose version ordering is ambiguous or non-comparable MUST be rejected with a `SchemaError` (§14).
+Regardless of scheme, schema versions MUST form a **total, unambiguous ordering**. A schema whose version ordering is ambiguous or non-comparable MUST be rejected with a `SchemaError` (§14).
 
 Tools MUST compare schema versions mechanically according to the comparison rules defined in this section for the declared `versionScheme`, and MUST NOT apply heuristics, coercion, or fallback rules.
 
@@ -4639,7 +4608,7 @@ For all schemes below, if a `version` string does not conform to the required sc
 
 `$Semver`
 
-* Syntax: `MAJOR.MINOR.PATCH` where `MAJOR`, `MINOR`, and `PATCH` are base-10 non-negative integers with no leading zeros (except that `0` is permitted).
+* Syntax: `MAJOR.MINOR.PATCH` where `MAJOR`, `MINOR`, and `PATCH` are base-10 non-negative integers with no leading zeros (the value zero is represented as a single `0` digit).
 * Comparison: compare by numeric tuple `(MAJOR, MINOR, PATCH)`.
 
 `$DateYYYYMM`
@@ -4658,17 +4627,30 @@ For all schemes below, if a `version` string does not conform to the required sc
 * Comparison: compare the `version` String Values by Unicode scalar value codepoint order, left-to-right; if all compared codepoints are equal, the shorter string is less than the longer string.
 
 ### 13.5 Compatibility Classes
-Each schema version MUST declare exactly one compatibility class relative to the immediately preceding version in the same schema lineage.
+Each schema version MUST declare exactly one compatibility class. For all versions except the first, the compatibility class declares the relationship to the immediately preceding version in the same schema lineage.
 
 The compatibility class is declared via the `compatibilityClass` Trait on the root `Schema` Concept as defined in §11.
 
+The `compatibilityClass` Trait MUST be one of the following Enumerated Token Values:
+
+* `$Initial`
+* `$BackwardCompatible`
+* `$ForwardCompatible`
+* `$Breaking`
+
+If `compatibilityClass` is not one of these values, schema processing MUST fail with a `SchemaError` (§14).
+
 The declared compatibility class is **normative and enforceable**.
 
-If a schema version’s declared compatibility class is contradicted by its actual effects on validation semantics, the schema is invalid and MUST be rejected with a `SchemaError` (§14).
+If a schema version's declared compatibility class is contradicted by its actual effects on validation semantics, the schema MUST be rejected with a `SchemaError` (§14).
 
-Exactly one of the following compatibility classes MUST be specified.
+#### 13.5.1 Initial
 
-#### 13.5.1 Backward-Compatible
+The first version in a schema lineage MUST declare `compatibilityClass=$Initial`.
+
+A schema version that declares `$Initial` MUST be the first version in its lineage; if a non-first version declares `$Initial`, schema processing MUST fail with a `SchemaError` (§14).
+
+#### 13.5.2 BackwardCompatible
 
 A backward-compatible schema version guarantees that:
 
@@ -4677,9 +4659,9 @@ A backward-compatible schema version guarantees that:
 * new Concepts or Traits are permitted to be added
 * new constraints are permitted to be added only if they do not invalidate any data that was valid under the preceding version
 
-If any previously valid data becomes invalid under a schema version declared as backward-compatible, the schema is invalid.
+If any previously valid data becomes invalid under a schema version declared as backward-compatible, the schema MUST be rejected with a `SchemaError` (§14).
 
-#### 13.5.2 Forward-Compatible
+#### 13.5.3 ForwardCompatible
 
 A forward-compatible schema version guarantees that:
 
@@ -4689,9 +4671,9 @@ A forward-compatible schema version guarantees that:
 
 Forward compatibility is intended for extension-oriented evolution where older tools can safely ignore newer constructs.
 
-If data authored for a forward-compatible version cannot pass schema validation under the preceding version without loss of meaning, the schema is invalid.
+If data authored for a forward-compatible version cannot pass schema validation under the preceding version without loss of meaning, the schema MUST be rejected with a `SchemaError` (§14).
 
-#### 13.5.3 Breaking
+#### 13.5.4 Breaking
 
 A breaking schema version declares that:
 
@@ -4699,12 +4681,10 @@ A breaking schema version declares that:
 * the meaning or constraints of existing Concepts or Traits are permitted to change
 * explicit migration is required
 
-Breaking schema versions MUST be explicitly declared.
-
-Any schema version that introduces a breaking change MUST be marked as breaking.
+Any schema version that introduces a breaking change MUST be declared as breaking.
 
 ### 13.6 What Constitutes a Breaking Change
-A schema version introduces a breaking change if and only if it violates any guarantee required by the `BackwardCompatible` or `ForwardCompatible` compatibility classes with respect to the immediately preceding version.
+A schema version introduces a breaking change if and only if it violates any guarantee required by the `$BackwardCompatible` or `$ForwardCompatible` compatibility classes with respect to the immediately preceding version.
 
 The following changes are breaking and MUST require `compatibilityClass=$Breaking`:
 
@@ -4753,7 +4733,7 @@ A conforming implementation MUST:
 * use exactly the rules defined by the declared schema version
 * treat schema identifier and version as part of the validation input
 * fail validation with a `SchemaError` (§14) if the schema version is missing, ambiguous, or cannot be resolved
-* fail validation with a `SchemaError` (§14) if the declared compatibility class does not permit validation in the requested context
+* fail validation with a `SchemaError` (§14) if the declared compatibility class is violated by the schema's actual effects
 
 A conforming implementation MUST NOT:
 
@@ -4809,7 +4789,7 @@ All version handling MUST be explicit, deterministic, and free of heuristics.
 
 ### 14.1 Purpose
 
-This section defines a canonical taxonomy of validation errors in Codex.
+This section defines the closed set of validation error classes in Codex.
 
 Its goals are to:
 
@@ -4823,7 +4803,7 @@ This section governs error classification only, not wording, UI presentation, or
 ### 14.2 Primary Error Class Requirement
 Every Codex failure MUST belong to exactly one primary error class.
 
-Secondary information is permitted to be attached, but the primary class MUST be unambiguous.
+Tools MUST report exactly one primary error class; additional diagnostic details MUST NOT obscure or replace the primary classification.
 
 ### 14.3 Closed Set of Error Classes (Top Level)
 Codex defines the following closed set of top-level error classes:
@@ -4838,7 +4818,18 @@ Codex defines the following closed set of top-level error classes:
 8. ContextError
 9. ConstraintError
 
-No other top-level error classes are permitted.
+An implementation MUST NOT define additional top-level error classes.
+
+Validation MUST proceed in the following order:
+
+1. Parsing (ParseError)
+2. Surface form validation (SurfaceFormError)
+3. Canonicalization (FormattingError)
+4. Schema validation (SchemaError, IdentityError, ReferenceError, CollectionError, ContextError, ConstraintError)
+
+Processing MUST halt at the first failure. A failure in an earlier phase MUST NOT be reported as a later-phase error class.
+
+When a violation matches multiple schema-level error classes (4–9), the implementation MUST classify it as the earliest matching class in the enumerated order.
 
 ### 14.4 Error Class Definitions
 
@@ -4850,7 +4841,7 @@ Characteristics:
 
 - input is not structurally readable
 - parsing cannot continue
-- parsing is permitted to be performed without a governing schema for well-formedness checks
+- well-formedness checks MUST NOT require a governing schema
 
 Examples (illustrative):
 
@@ -4860,8 +4851,6 @@ Examples (illustrative):
 - unterminated Annotation (missing closing `]`)
 - structurally invalid nesting of markers
 
-`ParseError` is fatal.
-
 #### 14.4.2 SurfaceFormError
 
 Definition: a file parses successfully but violates the surface form requirements (§8).
@@ -4870,7 +4859,7 @@ Characteristics:
 
 - syntax is readable
 - surface requirements are violated
-- schema is available, but this class concerns schema-independent surface rules
+- this class concerns schema-independent surface rules defined in §8
 
 Examples (illustrative):
 
@@ -4878,8 +4867,6 @@ Examples (illustrative):
 - multiple root Concepts in a file
 - forbidden whitespace around `=`
 - annotation opening `[` not at first non-whitespace position
-
-`SurfaceFormError` is fatal.
 
 #### 14.4.3 FormattingError
 
@@ -4889,7 +4876,7 @@ See §10 for canonicalization rules.
 
 Characteristics:
 
-- canonicalization is deterministic or must fail
+- canonicalization MUST be deterministic or MUST fail
 - tools MUST NOT guess or “best-effort” normalize
 
 Examples (illustrative):
@@ -4899,17 +4886,14 @@ Examples (illustrative):
 - whitespace patterns that cannot be normalized without changing structure
 - any other canonicalization failure
 
-`FormattingError` is fatal.
-
 #### 14.4.4 SchemaError
 
 Definition: parsed Codex violates schema-defined rules.
 
 Characteristics:
 
-- schema is consulted
-- Concepts or Traits are invalid under the active schema
-- meaning cannot be assigned
+- the governing schema is consulted
+- Concepts or Traits are invalid under the governing schema
 
 Examples (illustrative):
 
@@ -4917,7 +4901,7 @@ Examples (illustrative):
 - missing required Trait
 - invalid Trait value type
 
-`SchemaError` is fatal.
+See §9 and §11 for schema rules.
 
 #### 14.4.5 IdentityError
 
@@ -4937,8 +4921,6 @@ Examples (illustrative):
 - duplicate identifiers within a schema-defined scope
 - identifier form invalid under schema constraints
 
-`IdentityError` is fatal.
-
 #### 14.4.6 ReferenceError
 
 Definition: reference Traits are invalid or inconsistent.
@@ -4947,8 +4929,8 @@ See §7 for reference trait semantics.
 
 Characteristics:
 
-- involves `reference`, `target`, or `for`
-- relates to graph linkage and intent
+- involves `reference`, `target`, or `for` Traits
+- concerns relationships between Concepts
 
 Examples (illustrative):
 
@@ -4956,16 +4938,16 @@ Examples (illustrative):
 - reference to a non-existent Entity (where resolution is required)
 - reference to an Entity of an unauthorized Concept type
 
-`ReferenceError` is fatal.
-
 #### 14.4.7 CollectionError
 
 Definition: schema-defined collection rules are violated.
 
 Characteristics:
 
-- concerns domain collection Concepts
-- membership and ordering semantics are incorrect
+- concerns schema-defined collection Concepts
+- membership, ordering, or cardinality rules are violated
+
+See §11 for collection constraint definitions.
 
 Examples (illustrative):
 
@@ -4974,23 +4956,21 @@ Examples (illustrative):
 - duplicate membership where forbidden
 - member count outside required bounds
 
-`CollectionError` is fatal.
-
 #### 14.4.8 ContextError
 
 Definition: a Concept or Trait is used outside its schema-defined context.
 
 Characteristics:
 
-- the name may be valid
-- but it is misapplied due to containment or scope rules
+- the Concept or Trait name is valid
+- the usage violates containment or scope rules
+
+See §11 for context constraint definitions.
 
 Examples (illustrative):
 
-- Concept permitted only under a specific parent appears elsewhere
-- Trait permitted only in a particular context appears outside it
-
-`ContextError` is fatal.
+- Concept allowed only under a specific parent appears elsewhere
+- Trait allowed only in a particular context appears outside it
 
 #### 14.4.9 ConstraintError
 
@@ -5008,13 +4988,13 @@ Examples (illustrative):
 - value range violations
 - domain-specific invariant failures
 
-`ConstraintError` is fatal.
+See §11 for constraint definitions.
 
 ### 14.5 Error Severity
 Codex errors are not warnings.
 
 - any failure halts compilation or processing
-- no best-effort recovery is permitted
+- tools MUST NOT attempt best-effort recovery
 - tools MUST NOT silently reinterpret invalid data
 
 ### 14.6 Reporting Requirements
