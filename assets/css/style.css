@@ -13,11 +13,10 @@
 }
 
 body {
-	color: hsl(252, 87%, 16%);
-	background-color: hsl(355, 129%, 25%);
-	color: hsl(359, 120%, 91%);
-	background-color: color(display-p3 0.513725 0.043137 0.043137 / 1);
-	color: color(display-p3 0.984314 0.815686 0.815686 / 1);
+	color: hsl(355, 129%, 25%);
+	background-color: hsl(359, 120%, 91%);
+	color: color(display-p3 0.513725 0.043137 0.043137 / 1);
+	background-color: color(display-p3 0.984314 0.815686 0.815686 / 1);
 	font-family: "Maple Mono", monospace;
 	font-size: 20px;
 	line-height: 1.5;
