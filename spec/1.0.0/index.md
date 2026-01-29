@@ -349,7 +349,7 @@ This requirement applies to:
 
 In the Surface Form, Numeric Values MUST be spelled using the numeric literal grammar defined by this specification.
 
-Numeric Values MUST NOT include infinity, NaN, or other non-finite representations. Codex defines only finite numeric literals.
+Numeric Values MUST NOT include NaN. The literal spellings `Infinity` and `-Infinity` are permitted; `+Infinity` is not permitted. When compiled to XSD, `Infinity` MUST be translated to `INF` and `-Infinity` MUST be translated to `-INF`.
 
 The literal spelling `-0` is permitted and MUST be preserved distinct from `0`.
 
@@ -402,7 +402,7 @@ The temporal kind MUST be determined by the first matching alternative in the fo
 5. `MonthDay`
 6. `Time`
 7. `Duration`
-8. `ReservedTemporal`
+8. `TemporalKeyword`
 
 Temporal Values MUST NOT be treated as Enumerated Token Values, even when the braced payload is a reserved literal such as `now` or `today`.
 
@@ -5033,7 +5033,7 @@ It defines what kind of error occurred, not how it is presented.
 
 ## Appendix A. Formal Grammar
 
-This appendix defines the formal grammar of the Codex surface form.
+This appendix defines the formal grammar of the Codex surface form (§8).
 
 Two grammar notations are provided:
 
@@ -5043,7 +5043,7 @@ Two grammar notations are provided:
 ### A.1 EBNF
 #### A.1.1 Notation
 
-This grammar uses ISO/IEC 14977 EBNF notation:
+This grammar is based on ISO/IEC 14977 EBNF notation with extensions:
 
 * `=` defines a production
 * `,` concatenation
@@ -5069,10 +5069,11 @@ Character classes use the following extensions:
 #### A.1.2 Document Structure
 
 ```ebnf
-(* A Codex document contains exactly one root Concept. *)
+(* A Codex document contains exactly one root Concept and MUST end with
+   a trailing newline followed by EOF (§8.2). *)
 
 Document
-	= OptionalLeadingAnnotations, RootConcept, OptionalTrailingBlankLines
+	= OptionalLeadingAnnotations, RootConcept, OptionalTrailingBlankLines, EOF
 	;
 
 OptionalLeadingAnnotations
@@ -5083,12 +5084,17 @@ OptionalTrailingBlankLines
 	= { BlankLine }
 	;
 
+EOF
+	= (* end of input; no further characters *)
+	;
+
 RootConcept
 	= ConceptAtColumn0
 	;
 
 ConceptAtColumn0
-	= ConceptLineStart0, Concept, [ ConceptLineEnd ]
+	= ConceptLineStart0, BlockConcept
+	| ConceptLineStart0, SelfClosingConcept, Newline
 	;
 
 ConceptLineStart0
@@ -5096,14 +5102,9 @@ ConceptLineStart0
 	  [ Newline ]
 	;
 
-ConceptLineEnd
-	= (* a structural line ends with a newline *)
-	  Newline
-	;
-
 (* A general or grouping annotation block may appear before the root concept.
 	This grammar admits them structurally; their kind/attachment rules are checked
-	by the surface-form rules. *)
+	by the surface-form rules (§8.9). *)
 GeneralOrGroupingAnnotationBlock
 	= { BlankLine }, Annotation, { BlankLine }
 	;
@@ -5119,7 +5120,7 @@ Concept
 
 ```ebnf
 (* Block concepts contain either children or content.
-	The parser consults the governing schema (ContentRules) to select the Body production.
+	The parser consults the governing schema (§11) to select the Body production.
 	This is schema-directed dispatch, not syntactic ambiguity. *)
 
 BlockConcept
@@ -5142,9 +5143,9 @@ ClosingMarker
 	= "</", ConceptName, ">"
 	;
 
-(* Body is selected by schema lookup on ConceptName:
-	- If schema indicates children mode (ForbidsContent): ChildrenBody
-	- If schema indicates content mode (AllowsContent): ContentBody *)
+(* Body is selected by schema lookup on ConceptName (§11):
+	- If schema indicates children mode: ChildrenBody
+	- If schema indicates content mode: ContentBody *)
 Body
 	= ChildrenBody | ContentBody
 	;
@@ -5156,7 +5157,7 @@ ChildrenBody
 (* A ChildItem is either:
 	- an annotation line/block, or
 	- a child concept (block or self-closing), each on its own structural line.
-	Blank-line legality is enforced by surface-form rules; the grammar admits both. *)
+	Blank-line legality is enforced by surface-form rules (§8); the grammar admits both. *)
 ChildItem
 	= ( BlankLine
 	  | AnnotationLine
@@ -5169,12 +5170,11 @@ ConceptLine
 	= Indentation, ConceptMarkerOrConcept, Newline
 	;
 
-(* Within a children body, a child concept begins on a line and is either:
-	- a self-closing marker, or
-	- an opening marker line followed by its body and closing marker line. *)
+(* Within a children body, a child concept is either a self-closing marker
+	or a nested block concept (handled by the Concept production). *)
 ConceptMarkerOrConcept
 	= SelfClosingMarker
-	| OpeningMarker (* followed by Body and ClosingMarkerLine in BlockConcept *)
+	| Concept
 	;
 
 ContentBody
@@ -5197,7 +5197,8 @@ ContentEscape
 	= "\\", ( "<" | "[" )
 	;
 
-(* Raw '<' is forbidden anywhere in content. Raw '[' is forbidden at line start only. *)
+(* Raw '<' is forbidden anywhere in content; raw '[' at line start is
+	validated by surface-form rules (§8.8). *)
 ContentSafeChar
 	= AnyCharExceptNewline - "<"
 	;
@@ -5223,7 +5224,7 @@ SelfClosingMarker
 
 ```ebnf
 (* Naming rule details beyond basic lexical form (e.g., no runs of uppercase)
-	are enforced by surface-form validation. *)
+	are enforced by surface-form validation (§4). *)
 
 ConceptName
 	= UppercaseLetter, { Letter | Digit }
@@ -5263,7 +5264,7 @@ Trait
 	= TraitName, "=", Value
 	;
 
-(* Naming rule details beyond basic lexical form are enforced by surface-form validation. *)
+(* Naming rule details beyond basic lexical form are enforced by surface-form validation (§4). *)
 TraitName
 	= LowercaseLetter, { Letter | Digit }
 	;
@@ -5417,8 +5418,10 @@ PrecisionNumber
 	= DecimalNumber, "p", [ IntegerDigits ]
 	;
 
+(* Infinity and -Infinity are permitted; +Infinity is not (§5.4).
+	Compiles to XSD INF and -INF respectively. *)
 Infinity
-	= [ Sign ], "Infinity"
+	= [ "-" ], "Infinity"
 	;
 
 Fraction
@@ -5478,6 +5481,8 @@ TemporalValue
 	= "{", TemporalBody, "}"
 	;
 
+(* Temporal kind is determined by the first matching alternative
+   in the order listed below (§5.6.1). *)
 TemporalBody
 	= ZonedDateTime
 	| LocalDateTime
@@ -5486,7 +5491,7 @@ TemporalBody
 	| MonthDay
 	| Time
 	| Duration
-	| ReservedTemporal
+	| TemporalKeyword
 	;
 
 Date
@@ -5522,11 +5527,12 @@ TimeZoneIdChar
 	;
 
 Time
-	= Hour, ":", Minute, [ ":", Second, [ ".", Milliseconds ] ]
+	= Hour, ":", Minute, [ ":", Second, [ ".", FractionalSeconds ] ]
 	;
 
 Duration
-	= "P", { DurationComponent }, [ "T", { TimeDurationComponent } ]
+	= "P", DurationComponent, { DurationComponent }, [ "T", { TimeDurationComponent } ]
+	| "P", "T", TimeDurationComponent, { TimeDurationComponent }
 	;
 
 DurationComponent
@@ -5537,7 +5543,7 @@ TimeDurationComponent
 	= DigitSequence, [ ".", DigitSequence ], ( "H" | "M" | "S" )
 	;
 
-ReservedTemporal
+TemporalKeyword
 	= "now" | "today"
 	;
 
@@ -5565,7 +5571,7 @@ Second
 	= Digit, Digit
 	;
 
-Milliseconds
+FractionalSeconds
 	= Digit, { Digit }
 	;
 ```
@@ -5576,7 +5582,8 @@ Milliseconds
 
 ```ebnf
 (* Color values are accepted as declarative spellings; tools MUST NOT normalize,
-	convert, or interpret them. This grammar admits the permitted surface spellings. *)
+	convert, or interpret them (§5.7). Hex digits, function names, and color space
+	tokens are case-insensitive for parsing; lowercase is canonical. *)
 
 ColorValue
 	= HexColor
@@ -5589,6 +5596,7 @@ HexColor
 	| "#", HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, [ HexDigit, HexDigit ]
 	;
 
+(* Named colors use the & sigil followed by a name from Appendix B. *)
 NamedColor
 	= "&", LowercaseLetter, { LowercaseLetter }
 	;
@@ -5664,18 +5672,22 @@ ColorSpace
 	| "xyz-d65"
 	;
 
-(* The payload is accepted as an uninterpreted balanced-parentheses token sequence,
-	subject only to Value termination rules (see A.1.27). *)
+(* The payload is an uninterpreted balanced-parentheses token sequence (§A.1.27). *)
 ColorFuncPayload
-	= { ColorPayloadChar }
+	= { ColorPayloadToken }
 	;
 
 ColorFuncTail
-	= { ColorPayloadChar }
+	= { ColorPayloadToken }
+	;
+
+ColorPayloadToken
+	= "(", ColorFuncPayload, ")"
+	| ColorPayloadChar
 	;
 
 ColorPayloadChar
-	= AnyCharExceptRightParenNewline
+	= AnyCharExceptParensNewline
 	;
 ```
 
@@ -5684,6 +5696,8 @@ ColorPayloadChar
 #### A.1.16 UUID Values
 
 ```ebnf
+(* UUID format: 8-4-4-4-12 hex digits (§5.8).
+	Hex digits are case-insensitive for parsing; lowercase is canonical. *)
 UuidValue
 	= HexOctet, HexOctet, HexOctet, HexOctet, "-",
 	  HexOctet, HexOctet, "-",
@@ -5702,8 +5716,8 @@ HexOctet
 #### A.1.17 IRI Reference Values
 
 ```ebnf
-(* IRI references are unquoted tokens containing a ':'.
-	They terminate at Value termination (see A.1.27). *)
+(* IRI references are unquoted tokens containing a ':' (§5.9).
+	They terminate at Value termination (§A.1.27). *)
 
 IriReference
 	= IriScheme, ":", IriTokenBody
@@ -5717,9 +5731,9 @@ IriTokenBody
 	= { IriTokenChar }
 	;
 
-(* This is a token-level placeholder: the exact admissible character set is RFC 3987
-	profiled by this specification. Surface-form validation enforces the disallowed
-	Unicode categories; the grammar enforces only token termination exclusions. *)
+(* Token-level placeholder: the exact admissible character set is RFC 3987
+	profiled by §5.9. Surface-form validation (§8) enforces disallowed Unicode
+	categories; the grammar enforces only token termination exclusions. *)
 IriTokenChar
 	= AnyCharExceptValueTerminator
 	;
@@ -5730,6 +5744,7 @@ IriTokenChar
 #### A.1.18 Lookup Token Values
 
 ```ebnf
+(* Lookup tokens reference document-scoped keys (§5.10). *)
 LookupToken
 	= "~", LowercaseLetter, { Letter | Digit }
 	;
@@ -5740,6 +5755,7 @@ LookupToken
 #### A.1.19 List Values
 
 ```ebnf
+(* List Values are ordered sequences of zero or more elements (§5.12). *)
 ListValue
 	= "[", { Whitespace }, [ ListItems ], { Whitespace }, "]"
 	;
@@ -5754,6 +5770,7 @@ ListItems
 #### A.1.20 Set Values
 
 ```ebnf
+(* Set Values are unordered collections; duplicate elements are a ParseError (§5.14, §14). *)
 SetValue
 	= "set", "[", { Whitespace }, [ SetItems ], { Whitespace }, "]"
 	;
@@ -5768,6 +5785,7 @@ SetItems
 #### A.1.21 Map Values
 
 ```ebnf
+(* Map Values are key-value collections; duplicate keys are a ParseError (§5.15, §14). *)
 MapValue
 	= "map", "[", { Whitespace }, [ MapItems ], { Whitespace }, "]"
 	;
@@ -5798,6 +5816,7 @@ MapIdentifier
 #### A.1.22 Tuple Values
 
 ```ebnf
+(* Tuple Values require at least one element (§5.16). *)
 TupleValue
 	= "(", { Whitespace }, TupleItems, { Whitespace }, ")"
 	;
@@ -5812,6 +5831,7 @@ TupleItems
 #### A.1.23 Range Values
 
 ```ebnf
+(* Range Values are declarative intervals with optional step (§5.17). *)
 RangeValue
 	= RangeStart, "..", RangeEnd, [ "s", StepValue ]
 	;
@@ -5834,10 +5854,10 @@ StepValue
 #### A.1.24 Annotations
 
 ```ebnf
-(* Codex defines two surface forms for annotations:
+(* Codex defines two surface forms for annotations (§8.9):
 	- Inline: '[' ... ']' on a single line
 	- Block: '[' on its own line, then content lines, then ']' on its own line
-	The attachment/grouping/general-kind rules are surface-form validation rules. *)
+	The attachment/grouping/general-kind rules are surface-form validation rules (§8.9). *)
 
 Annotation
 	= AnnotationLine | AnnotationBlock
@@ -5884,6 +5904,7 @@ UnescapedAnnotationBlockChar
 #### A.1.25 Whitespace and Structural Elements
 
 ```ebnf
+(* Indentation uses tabs only; spaces in indentation are errors (§8.3). *)
 Whitespace
 	= WhitespaceChar, { WhitespaceChar }
 	;
@@ -5904,10 +5925,9 @@ Newline
 	= "\n"
 	;
 
-(* A blank line is a line that contains no characters after normalization.
-	This grammar admits optional spaces/tabs on an otherwise empty line. *)
+(* A blank line contains only a newline; no spaces or tabs are permitted. *)
 BlankLine
-	= { " " | "\t" }, Newline
+	= Newline
 	;
 
 Indentation
@@ -5925,10 +5945,9 @@ The following character classes are used but not fully enumerated:
 * `AnyCharExceptQuoteBackslashNewline` — any Unicode scalar except `"`, `\\`, U+000A
 * `AnyCharExceptApostropheBackslashNewline` — any Unicode scalar except `'`, `\\`, U+000A
 * `AnyCharExceptBacktick` — any Unicode scalar except `` ` ``
-* `AnyCharExceptBacktickBackslash` — any Unicode scalar except `` ` ``, `\\`
 * `AnyCharExceptRightParenNewline` — any Unicode scalar except `)`, U+000A
+* `AnyCharExceptParensNewline` — any Unicode scalar except `(`, `)`, U+000A
 * `AnyCharExceptRightBracketNewline` — any Unicode scalar except `]`, U+000A
-* `AnyCharExceptRightBracketBackslashNewline` — any Unicode scalar except `]`, `\\`, U+000A
 * `AnyCharExceptBackslashNewline` — any Unicode scalar except `\\`, U+000A
 * `AnyCharExceptValueTerminator` — any Unicode scalar except a Value terminator (defined in §A.1.27)
 
@@ -6012,9 +6031,8 @@ TrailingBlankLines <- BlankLine*
 
 RootConcept <- ConceptAtColumn0
 
-ConceptAtColumn0 <- (BOL ConceptLine0)
-
-ConceptLine0 <- Concept Newline?
+ConceptAtColumn0 <- BOL BlockConcept
+                 / BOL SelfClosingConcept Newline
 
 BOL <- &(StartOfFile / Newline)
 StartOfFile <- !.
@@ -6039,9 +6057,9 @@ ClosingMarkerLine <- Indentation ClosingMarker Newline
 OpeningMarker <- '<' ConceptName Traits? '>'
 ClosingMarker <- '</' ConceptName '>'
 
-# Body is selected by schema lookup on ConceptName:
-# - children mode (ForbidsContent): ChildrenBody
-# - content mode (AllowsContent): ContentBody
+# Body is selected by schema lookup on ConceptName (§11):
+# - children mode: ChildrenBody
+# - content mode: ContentBody
 Body <- ChildrenBody / ContentBody
 
 # ChildrenBody admits BlankLine and Annotation; their legality and attachment kinds
@@ -6050,9 +6068,7 @@ ChildrenBody <- ChildItem*
 
 ChildItem <- BlankLine / AnnotationLine / AnnotationBlock / ConceptLine
 
-ConceptLine <- Indentation (SelfClosingMarker / OpeningMarker) Newline
-# Note: A full BlockConcept begins with OpeningMarkerLine and ends at its ClosingMarkerLine.
-# This line-level production is used for child-start recognition only.
+ConceptLine <- Indentation (SelfClosingMarker / Concept) Newline
 
 ContentBody <- ContentLine*
 
@@ -6187,7 +6203,7 @@ NumericValue <- ComplexNumber
 ComplexNumber <- (Integer / DecimalNumber) ([+-]) (Integer / DecimalNumber) 'i'
 ImaginaryNumber <- (Integer / DecimalNumber) 'i'
 Fraction <- Integer '/' IntDigits
-Infinity <- Sign? 'Infinity'
+Infinity <- '-'? 'Infinity'
 PrecisionNumber <- DecimalNumber 'p' IntDigits?
 ScientificNumber <- (Integer / DecimalNumber) [eE] Sign? IntDigits
 DecimalNumber <- Sign? IntDigits '.' Digits
@@ -6227,7 +6243,7 @@ LookupToken <- '~' LowercaseLetter (Letter / Digit)*
 ```peg
 TemporalValue <- '{' TemporalBody '}'
 
-TemporalBody <- ZonedDateTime / LocalDateTime / Date / YearMonth / MonthDay / Time / Duration / ReservedTemporal
+TemporalBody <- ZonedDateTime / LocalDateTime / Date / YearMonth / MonthDay / Time / Duration / TemporalKeyword
 
 Date <- Year '-' Month '-' Day
 YearMonth <- Year '-' Month
@@ -6240,13 +6256,14 @@ TimeZoneOffset <- 'Z' / ([+-] Hour ':' Minute)
 TimeZoneId <- '[' TimeZoneIdChar+ ']'
 TimeZoneIdChar <- Letter / Digit / '/' / '_' / '-'
 
-Time <- Hour ':' Minute (':' Second ('.' Milliseconds)?)?
+Time <- Hour ':' Minute (':' Second ('.' FractionalSeconds)?)?
 
-Duration <- 'P' DurationComponent* ('T' TimeDurationComponent*)?
+Duration <- 'P' DurationComponent+ ('T' TimeDurationComponent*)?
+          / 'P' 'T' TimeDurationComponent+
 DurationComponent <- Digits [YMWD]
 TimeDurationComponent <- Digits ('.' Digits)? [HMS]
 
-ReservedTemporal <- 'now' / 'today'
+TemporalKeyword <- 'now' / 'today'
 
 Year <- Digit Digit Digit Digit
 Month <- Digit Digit
@@ -6254,7 +6271,7 @@ Day <- Digit Digit
 Hour <- Digit Digit
 Minute <- Digit Digit
 Second <- Digit Digit
-Milliseconds <- Digit+
+FractionalSeconds <- Digit+
 ```
 
 ---
@@ -6262,7 +6279,7 @@ Milliseconds <- Digit+
 #### A.2.16 List Values
 
 ```peg
-# Lists MAY contain arbitrary whitespace (including newlines) between tokens.
+# Lists permit arbitrary whitespace (including newlines) between tokens.
 
 ListValue <- '[' WS* ListItems? WS* ']'
 ListItems <- Value (WS* ',' WS* Value)*
@@ -6314,10 +6331,8 @@ StepValue <- TemporalValue / NumericValue
 #### A.2.21 UUID Values
 
 ```peg
-UuidValue <- Hex8 '-' Hex4 '-' Hex4 '-' Hex4 '-' Hex12
-Hex8 <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
-Hex4 <- HexDigit HexDigit HexDigit HexDigit
-Hex12 <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+UuidValue <- HexOctet HexOctet HexOctet HexOctet '-' HexOctet HexOctet '-' HexOctet HexOctet '-' HexOctet HexOctet '-' HexOctet HexOctet HexOctet HexOctet HexOctet HexOctet
+HexOctet <- HexDigit HexDigit
 ```
 
 ---
@@ -6330,11 +6345,10 @@ Hex12 <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
 
 ColorValue <- HexColor / NamedColor / ColorFunction
 
-HexColor <- '#' (Hex3 / Hex4 / Hex6 / Hex8)
-Hex3 <- HexDigit HexDigit HexDigit
-Hex4 <- HexDigit HexDigit HexDigit HexDigit
-Hex6 <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
-Hex8 <- HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+HexColor <- '#' (HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+              / HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+              / HexDigit HexDigit HexDigit HexDigit
+              / HexDigit HexDigit HexDigit)
 
 NamedColor <- '&' [a-z]+
 
@@ -6342,8 +6356,9 @@ ColorFunction <- ColorFuncName '(' ColorPayload ')'
 ColorFuncName <- 'rgb' / 'rgba' / 'hsl' / 'hsla' / 'hwb' / 'lab' / 'lch' / 'oklab' / 'oklch' / 'color'
               / 'color-mix' / 'device-cmyk'
 
-# Accept payload as any chars except ')' and '\n' (conservative, still token-terminated by marker rules).
-ColorPayload <- (!(')' / '\n') .)*
+# Payload with balanced parentheses support.
+ColorPayload <- ColorPayloadToken*
+ColorPayloadToken <- '(' ColorPayload ')' / (![()\n] .)
 ```
 
 ---
@@ -6393,7 +6408,7 @@ WhitespaceNoNewline <- [ \t]+
 
 WS <- [ \t\n]
 
-BlankLine <- [ \t]* Newline
+BlankLine <- Newline
 
 Indentation <- '\t'*
 
