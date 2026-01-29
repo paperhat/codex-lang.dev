@@ -14,7 +14,10 @@
 
 body {
 	color: hsl(252, 87%, 16%);
-	background-color: hsl(251, 98%, 91%);
+	background-color: hsl(355, 129%, 25%);
+	color: hsl(359, 120%, 91%);
+	background-color: color(display-p3 0.513725 0.043137 0.043137 / 1);
+	color: color(display-p3 0.984314 0.815686 0.815686 / 1);
 	font-family: "Maple Mono", monospace;
 	font-size: 20px;
 	line-height: 1.5;
@@ -27,21 +30,23 @@ body {
  * ========================= */
 
 .token.marker {
-  color: #444;
+	color: #444;
 }
 
 .token.concept-name {
-  color: #1f6feb;
-  font-weight: 600; /* ontology/type */
+	color: #1f6feb;
+	font-weight: 600;
+	/* ontology/type */
 }
 
 .token.trait-name {
-  color: #8250df; /* predicate */
+	color: #8250df;
+	/* predicate */
 }
 
 .token.operator,
 .token.punctuation {
-  color: #666;
+	color: #666;
 }
 
 /* =========================
@@ -50,17 +55,17 @@ body {
 
 .token.iri,
 .token.uuid {
-  color: #0a7a6a;
-  font-style: italic;
+	color: #0a7a6a;
+	font-style: italic;
 }
 
 .token.lookup-token {
-  color: #0550ae;
+	color: #0550ae;
 }
 
 .token.enum-token {
-  color: #cf222e;
-  font-weight: 600;
+	color: #cf222e;
+	font-weight: 600;
 }
 
 /* =========================
@@ -69,11 +74,11 @@ body {
 
 .token.string,
 .token.string-backtick {
-  color: #0a3069;
+	color: #0a3069;
 }
 
 .token.character {
-  color: #116329;
+	color: #116329;
 }
 
 /* =========================
@@ -83,17 +88,18 @@ body {
 .token.number-integer,
 .token.number-decimal,
 .token.number-scientific {
-  color: #953800;
+	color: #953800;
 }
 
 .token.number-precision {
-  color: #bc4c00;
-  font-weight: 600; /* precision is semantic */
+	color: #bc4c00;
+	font-weight: 600;
+	/* precision is semantic */
 }
 
 .token.number-infinity {
-  color: #8b949e;
-  font-style: italic;
+	color: #8b949e;
+	font-style: italic;
 }
 
 /* =========================
@@ -101,8 +107,8 @@ body {
  * ========================= */
 
 .token.temporal {
-  color: #0550ae;
-  font-weight: 500;
+	color: #0550ae;
+	font-weight: 500;
 }
 
 /* =========================
@@ -110,12 +116,12 @@ body {
  * ========================= */
 
 .token.range {
-  color: #7a3e9d;
+	color: #7a3e9d;
 }
 
 .token.range-step {
-  color: #7a3e9d;
-  font-weight: 600;
+	color: #7a3e9d;
+	font-weight: 600;
 }
 
 /* =========================
@@ -125,8 +131,8 @@ body {
 .token.color-hex,
 .token.color-named,
 .token.color-function {
-  color: #0969da;
-  font-family: monospace;
+	color: #0969da;
+	font-family: monospace;
 }
 
 /* =========================
@@ -137,7 +143,7 @@ body {
 .token.set,
 .token.map,
 .token.tuple {
-  color: #57606a;
+	color: #57606a;
 }
 
 /* =========================
@@ -145,9 +151,9 @@ body {
  * ========================= */
 
 .token.annotation {
-  color: #777;
-  padding: 0.1em 0.25em;
-  border-radius: 3px;
+	color: #777;
+	padding: 0.1em 0.25em;
+	border-radius: 3px;
 }
 
 /* =========================
@@ -156,9 +162,10 @@ body {
 
 .token.content {
 	font-family: Georgia, 'Times New Roman', Times, serif;
-  color: #24292f;
+	color: #24292f;
 }
 
 .token.content .token {
-  all: unset; /* content must not look like code */
+	all: unset;
+	/* content must not look like code */
 }

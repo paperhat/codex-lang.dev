@@ -1,5 +1,9 @@
 # Codex Language — AI Reference
 
+## Specification Lock
+
+**The specification (`spec/1.0.0/index.md`) is LOCKED.** Do not edit the specification without explicit permission from the human. This includes adding, removing, or modifying any normative requirements, examples, or appendices.
+
 ## Critical: No Conventions Without Approval
 
 Codex eliminates ambiguity for byte-identical output across implementations. Standard spec conventions (RFC 2119, precedence clauses, optional features) introduce the ambiguity Codex rejects.
@@ -54,7 +58,7 @@ Declarative semantic markup for the Paperhat Workshop system, backed by RDF/OWL2
 
 §1-2: Front matter, invariants · §3: Core model · §4: Naming (PascalCase/camelCase) · §5: Value literals · §6: Identity · §7: Reference Traits · §8: Surface form · §9: Schema architecture, Canonical Representation, SHACL · §10: Canonicalization · §11: Schema definition · §12: Bootstrapping · §13: Versioning · §14: Errors · Appendix A: Grammars · Appendix B: Named colors
 
-## Established Decisions (§1–§8)
+## Established Decisions (§1–§14)
 
 Do not regress:
 
@@ -91,6 +95,27 @@ Do not regress:
 - **§8.4**: No leading blank line. No consecutive blanks outside content/annotations. One blank between siblings. No blank at start/end of children block.
 - **§8.5–6**: Empty block `<X></X>` is error; use self-closing. No whitespace around `=`. 1–2 traits inline; 3+ multiline with `>` or `/>` on own line.
 - **§8.7**: No Value type inference. No Value type coercion.
-- **§8.8**: Content is opaque. Escaping: `\<` and `\[` (line-initial only). Indentation stripped (schema-free). `whitespaceMode`: `$Preformatted` (preserve) or `$Flow` (collapse, wrap 100 chars) — schema-directed.
+- **§8.8**: Content is opaque. Escaping: `\<` anywhere; `\[` line-initial only. Indentation stripped (schema-free). `whitespaceMode`: `$Preformatted` (preserve) or `$Flow` (collapse, wrap 100 chars) — schema-directed.
 - **§8.9**: Three annotation kinds: attached, grouping, general. Block directives: `FLOW:`, `CODE:`, `MARKDOWN:`.
+- **§8.9.7**: GROUP/END must match via stack-based nesting.
+- **§9.1**: External inputs (environment, config, registries, network, clocks, randomness) MUST NOT influence processing.
+- **§9.4**: Exactly one authoring mode per schema (`$SimplifiedMode` or `$CanonicalMode`). No mixing.
+- **§9.6**: Canonical Representation: no RDF blank nodes. All RDF nodes MUST be IRIs. Deterministic skolem IRIs.
+- **§9.7**: Instance graph `nodeIri` MUST NOT derive from `id` trait. Declared `id` stored via `codex:declaredId`.
+- **§9.8**: Lookup bindings MUST NOT be inferred, synthesized, or imported implicitly.
+- **§9.10**: Fail with error rather than guess when required info is missing or ambiguous.
 - **§10.5**: Two-phase canonicalization: Phase 1 (schema-free) for encoding/indentation/layout; Phase 2 (schema-directed) for content whitespace mode.
+- **§10.5.1**: `$Unordered` collection sort: Concept name → `id` → `key` → source order.
+- **§11.2**: Schemas are declarative data, not executable. All authorization explicit.
+- **§11.4.3–4**: Default closed-world: traits/children not explicitly allowed/required are forbidden.
+- **§11.6.4**: Built-in enumerated sets (`ConceptKind`, `EntityEligibility`, `CompatibilityClass`, `Ordering`, `Cardinality`) MUST NOT be redefined.
+- **§11.7**: Constraints MUST NOT execute code or depend on implicit inference.
+- **§11.12**: Derived representations MUST NOT introduce semantics beyond spec/schema. MUST NOT override/weaken Codex validation.
+- **§12.2**: Governing schema must be explicit. MUST NOT substitute, infer, or override.
+- **§12.3**: Bootstrap schema-of-schemas: built-in, immutable. Root `Schema` = schema document. Not substitutable for instance docs.
+- **§13.3**: `id`, `version`, `versionScheme` all required on root `Schema`.
+- **§13.4.1**: Four version schemes: `$Semver`, `$DateYYYYMM`, `$DateYYYYMMDD`, `$Lexical`.
+- **§13.5**: Four compatibility classes: `$Initial`, `$BackwardCompatible`, `$ForwardCompatible`, `$Breaking`. First version MUST use `$Initial`.
+- **§13.8**: Validation strictly per declared version. MUST NOT infer, substitute, or relax.
+- **§14.3**: Closed set of 9 error classes. No additional classes. Halt at first failure.
+- **§14.5**: Errors are not warnings. No best-effort recovery.
