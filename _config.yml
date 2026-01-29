@@ -22,3 +22,6 @@ exclude:
   - conformance
   - notes
   - tools
+  - CLAUDE.md
+  - AI_CONVENTIONS.md
+  - READINESS.md
