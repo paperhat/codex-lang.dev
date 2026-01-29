@@ -135,3 +135,20 @@
   Prism.languages.codex = Prism.languages.cdx;
 
 })(Prism);
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('pre code.language-cdx').forEach(block => {
+    const lines = block.innerHTML.split('\n');
+
+    block.innerHTML = lines.map(line => {
+      // One tab indent + NOT a marker, annotation, or trait
+      if (
+        line.startsWith('\t') &&
+        !/^\t\s*(<|\[|[a-z][A-Za-z0-9]*=)/.test(line)
+      ) {
+        return `<span class="token content">${line}</span>`;
+      }
+      return line;
+    }).join('\n');
+  });
+});
