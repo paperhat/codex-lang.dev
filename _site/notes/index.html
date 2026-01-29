@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>My Codex Site</title>
+
+	<!-- Your Prism CSS -->
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="/assets/css/style.css" media="all">
+
+	<!-- Optional: Add basic styling if removing theme -->
+	<style>
+		body {
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+		}
+
+		pre {
+			background: #f6f8fa;
+			padding: 16px;
+			border-radius: 6px;
+			overflow: auto;
+		}
+
+		code {
+			font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+		}
+	</style>
+</head>
+
+<body>
+	<h1 id="trait-values-in-codex">Trait Values in Codex</h1>
+
+<p>This guide explains all the different kinds of values you can use with Traits in Codex.</p>
+
+<p>A Trait is a name-value pair attached to a Concept. The name tells you what the Trait represents. The value is the actual data. This guide focuses on values — what they look like and how to write them.</p>
+
+<hr />
+
+<h2 id="strings">Strings</h2>
+
+<p>Strings are text. Wrap them in double quotes.</p>
+
+<pre><code class="language-cdx">title="Spaghetti Bolognese"
+author="Jane Doe"
+description="A classic Italian pasta dish."
+</code></pre>
+
+<p>Strings must stay on one line. If you need special characters, use escapes:</p>
+
+<pre><code class="language-cdx">message="She said \"hello\" to me."
+path="C:\\Users\\Jane"
+multiline="Line one\nLine two"
+</code></pre>
+
+<p>Available escapes:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">\"</code> for a literal quote</li>
+  <li><code class="language-plaintext highlighter-rouge">\\</code> for a literal backslash</li>
+  <li><code class="language-plaintext highlighter-rouge">\n</code> for a newline</li>
+  <li><code class="language-plaintext highlighter-rouge">\r</code> for a carriage return</li>
+  <li><code class="language-plaintext highlighter-rouge">\t</code> for a tab</li>
+  <li><code class="language-plaintext highlighter-rouge">\uXXXX</code> for a Unicode character (4 hex digits)</li>
+  <li><code class="language-plaintext highlighter-rouge">\u{XXXXXX}</code> for a Unicode character (1-6 hex digits)</li>
+</ul>
+
+<hr />
+
+<h2 id="backtick-strings">Backtick Strings</h2>
+
+<p>Backtick strings let you write text across multiple lines in your source file. The whitespace gets collapsed into single spaces, producing a one-line result.</p>
+
+<pre><code class="language-cdx">summary=`This is a long description
+	that spans multiple lines in the source
+	but becomes a single line when parsed.`
+</code></pre>
+
+<p>This becomes equivalent to:</p>
+
+<pre><code class="language-cdx">summary="This is a long description that spans multiple lines in the source but becomes a single line when parsed."
+</code></pre>
+
+<p>Use backticks sparingly. If you need a lot of text, consider using Content instead of a Trait.</p>
+
+<hr />
+
+<h2 id="characters">Characters</h2>
+
+<p>A character is a single Unicode character. Wrap it in single quotes.</p>
+
+<pre><code class="language-cdx">grade='A'
+separator='-'
+newline='\n'
+emoji='\u{1F600}'
+</code></pre>
+
+<p>Characters are not strings. <code class="language-plaintext highlighter-rouge">'A'</code> is a character. <code class="language-plaintext highlighter-rouge">"A"</code> is a string containing one character.</p>
+
+<hr />
+
+<h2 id="booleans">Booleans</h2>
+
+<p>Two possible values: <code class="language-plaintext highlighter-rouge">true</code> or <code class="language-plaintext highlighter-rouge">false</code>. No quotes.</p>
+
+<pre><code class="language-cdx">isPublished=true
+isDraft=false
+</code></pre>
+
+<hr />
+
+<h2 id="numbers">Numbers</h2>
+
+<h3 id="integers">Integers</h3>
+
+<p>Whole numbers, positive or negative.</p>
+
+<pre><code class="language-cdx">count=42
+temperature=-5
+zero=0
+</code></pre>
+
+<h3 id="decimals">Decimals</h3>
+
+<p>Numbers with a decimal point.</p>
+
+<pre><code class="language-cdx">price=19.99
+ratio=0.5
+pi=3.14159
+</code></pre>
+
+<h3 id="scientific-notation">Scientific Notation</h3>
+
+<p>For very large or very small numbers.</p>
+
+<pre><code class="language-cdx">distance=1.5e11
+tiny=2.5e-10
+</code></pre>
+
+<h3 id="infinity">Infinity</h3>
+
+<pre><code class="language-cdx">maximum=Infinity
+minimum=-Infinity
+</code></pre>
+
+<h3 id="fractions">Fractions</h3>
+
+<p>Written with a slash.</p>
+
+<pre><code class="language-cdx">proportion=3/4
+half=1/2
+</code></pre>
+
+<h3 id="imaginary-numbers">Imaginary Numbers</h3>
+
+<p>For complex math. Use the <code class="language-plaintext highlighter-rouge">i</code> suffix.</p>
+
+<pre><code class="language-cdx">imaginary=2i
+alsoImaginary=3.5i
+</code></pre>
+
+<h3 id="complex-numbers">Complex Numbers</h3>
+
+<p>Combine real and imaginary parts.</p>
+
+<pre><code class="language-cdx">complex=2+3i
+another=1.5-2.5i
+</code></pre>
+
+<h3 id="precision-significant-numbers">Precision-Significant Numbers</h3>
+
+<p>When the precision of a number matters (like in scientific measurements), use the <code class="language-plaintext highlighter-rouge">p</code> suffix. The number of decimal places you write determines the precision, or you can specify it explicitly.</p>
+
+<pre><code class="language-cdx">measurement=3.1415p
+moreZeros=3.141500p
+explicit=3.1415p6
+simple=2.0p
+twoDecimals=2.00p
+</code></pre>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">3.1415p</code> has precision 4 (four decimal places)</li>
+  <li><code class="language-plaintext highlighter-rouge">3.141500p</code> has precision 6 (trailing zeros count)</li>
+  <li><code class="language-plaintext highlighter-rouge">3.1415p6</code> has precision 6 (explicitly stated)</li>
+  <li><code class="language-plaintext highlighter-rouge">2.0p</code> has precision 1</li>
+  <li><code class="language-plaintext highlighter-rouge">2.00p</code> has precision 2</li>
+</ul>
+
+<hr />
+
+<h2 id="enumerated-tokens">Enumerated Tokens</h2>
+
+<p>These are fixed values from a predefined set. They start with <code class="language-plaintext highlighter-rouge">$</code> and use PascalCase.</p>
+
+<pre><code class="language-cdx">status=$Draft
+difficulty=$Medium
+color=$Red
+priority=$High
+dayOfWeek=$Monday
+</code></pre>
+
+<p>The available tokens are defined by the schema. You cannot make up your own — they must be declared.</p>
+
+<hr />
+
+<h2 id="lookup-tokens">Lookup Tokens</h2>
+
+<p>These reference other Concepts by their <code class="language-plaintext highlighter-rouge">key</code> Trait. They start with <code class="language-plaintext highlighter-rouge">~</code> and use camelCase.</p>
+
+<pre><code class="language-cdx">author=~janeDoe
+recipe=~spaghettiCarbonara
+category=~mainDishes
+parent=~recipe42
+</code></pre>
+
+<p>Somewhere else in the document, there must be a Concept with a matching <code class="language-plaintext highlighter-rouge">key</code>:</p>
+
+<pre><code class="language-cdx">&lt;Author key=~janeDoe name="Jane Doe" /&gt;
+</code></pre>
+
+<hr />
+
+<h2 id="iri-references">IRI References</h2>
+
+<p>IRIs (Internationalized Resource Identifiers) are used for identity and references. They contain a colon separating a scheme from the rest. No quotes.</p>
+
+<pre><code class="language-cdx">id=recipe:spaghetti
+reference=book:the-hobbit
+target=https://example.org/resource/123
+</code></pre>
+
+<hr />
+
+<h2 id="uuids">UUIDs</h2>
+
+<p>UUIDs are written in the standard 8-4-4-4-12 format. No quotes, no braces.</p>
+
+<pre><code class="language-cdx">id=550e8400-e29b-41d4-a716-446655440000
+session=a1b2c3d4-e5f6-7890-abcd-ef1234567890
+</code></pre>
+
+<p>Case does not matter, but lowercase is the canonical form.</p>
+
+<hr />
+
+<h2 id="lists">Lists</h2>
+
+<p>Ordered collections. Use square brackets with comma-separated values.</p>
+
+<pre><code class="language-cdx">tags=["italian", "pasta", "dinner"]
+numbers=[1, 2, 3, 4, 5]
+mixed=["hello", 42, true]
+empty=[]
+</code></pre>
+
+<p>Lists can be nested:</p>
+
+<pre><code class="language-cdx">matrix=[[1, 2], [3, 4], [5, 6]]
+</code></pre>
+
+<p>Lists can contain any value type, and can mix types:</p>
+
+<pre><code class="language-cdx">dates=[{2024-01-01}, {2024-06-15}, {2024-12-31}]
+tokens=[$Red, $Green, $Blue]
+mixed=["hello", 42, true, {2024-01-01}, $Draft, ~someReference]
+</code></pre>
+
+<hr />
+
+<h2 id="sets">Sets</h2>
+
+<p>Unordered collections with unique values. Use <code class="language-plaintext highlighter-rouge">set[]</code> syntax.</p>
+
+<pre><code class="language-cdx">categories=set[$Featured, $Sale, $New]
+colors=set["red", "green", "blue"]
+numbers=set[1, 2, 3]
+emptySet=set[]
+</code></pre>
+
+<p>Duplicates are ignored — <code class="language-plaintext highlighter-rouge">set[1, 1, 2]</code> is the same as <code class="language-plaintext highlighter-rouge">set[1, 2]</code>.</p>
+
+<p>Sets can contain any value type:</p>
+
+<pre><code class="language-cdx">references=set[~apple, ~banana, ~cherry]
+nested=set[map[a: 1], map[b: 2]]
+</code></pre>
+
+<hr />
+
+<h2 id="maps">Maps</h2>
+
+<p>Key-value collections. Use <code class="language-plaintext highlighter-rouge">map[]</code> syntax with colons.</p>
+
+<pre><code class="language-cdx">dimensions=map[width: 100, height: 200]
+person=map[name: "John", age: 30]
+emptyMap=map[]
+</code></pre>
+
+<p>Keys can be:</p>
+<ul>
+  <li>Unquoted identifiers (start lowercase, letters and digits only)</li>
+  <li>Strings (for keys with spaces or special characters)</li>
+  <li>Characters</li>
+  <li>Integers</li>
+  <li>Enumerated tokens</li>
+</ul>
+
+<pre><code class="language-cdx">simple=map[name: "John", age: 30]
+stringKeys=map["first name": "John", "last name": "Doe"]
+tokenKeys=map[$Red: "#ff0000", $Green: "#00ff00"]
+intKeys=map[1: "one", 2: "two", 3: "three"]
+charKeys=map['A': "alpha", 'B': "bravo"]
+</code></pre>
+
+<p>Maps can be nested:</p>
+
+<pre><code class="language-cdx">config=map[
+	database: map[host: "localhost", port: 5432],
+	cache: map[enabled: true, ttl: 3600]
+]
+</code></pre>
+
+<hr />
+
+<h2 id="tuples">Tuples</h2>
+
+<p>Fixed-length, ordered collections where position determines meaning. Use parentheses.</p>
+
+<pre><code class="language-cdx">point=(10, 20)
+point3d=(10, 20, 30)
+person=("John", "Doe", 30)
+boundingBox=((0, 0), (100, 100))
+</code></pre>
+
+<p>Tuples differ from lists:</p>
+<ul>
+  <li>Lists are for collections of similar things</li>
+  <li>Tuples are for fixed structures where each position has specific meaning</li>
+  <li>A 2D point is <code class="language-plaintext highlighter-rouge">(x, y)</code>, not <code class="language-plaintext highlighter-rouge">[x, y]</code></li>
+</ul>
+
+<p>Tuples must have at least one value.</p>
+
+<hr />
+
+<h2 id="ranges">Ranges</h2>
+
+<p>Ranges define intervals between two values of the same type. Use <code class="language-plaintext highlighter-rouge">..</code> between the endpoints.</p>
+
+<h3 id="numeric-ranges">Numeric Ranges</h3>
+
+<pre><code class="language-cdx">oneToTen=1..10
+negativeToPositive=-10..10
+decimal=0.0..1.0
+</code></pre>
+
+<p>With a step value (use <code class="language-plaintext highlighter-rouge">s</code> for step):</p>
+
+<pre><code class="language-cdx">odds=1..100s2
+byFives=0..100s5
+decimalStep=0.0..1.0s0.1
+</code></pre>
+
+<h3 id="character-ranges">Character Ranges</h3>
+
+<pre><code class="language-cdx">uppercase='A'..'Z'
+lowercase='a'..'z'
+digits='0'..'9'
+everyOther='A'..'Z's2
+</code></pre>
+
+<h3 id="temporal-ranges">Temporal Ranges</h3>
+
+<pre><code class="language-cdx">year2024={2024-01-01}..{2024-12-31}
+dailyStep={2024-01-01}..{2024-12-31}s{P1D}
+monthlyStep={2024-01}..{2024-12}s{P1M}
+workHours={09:00}..{17:00}s{PT1H}
+</code></pre>
+
+<hr />
+
+<h2 id="temporal-values">Temporal Values</h2>
+
+<p>Dates, times, and durations are wrapped in curly braces.</p>
+
+<h3 id="year-month">Year-Month</h3>
+
+<pre><code class="language-cdx">month={2024-06}
+fiscalStart={2024-01}
+</code></pre>
+
+<h3 id="month-day">Month-Day</h3>
+
+<pre><code class="language-cdx">birthday={03-15}
+holiday={12-25}
+</code></pre>
+
+<h3 id="date">Date</h3>
+
+<pre><code class="language-cdx">published={2024-06-15}
+deadline={2025-01-01}
+</code></pre>
+
+<h3 id="time">Time</h3>
+
+<pre><code class="language-cdx">startTime={09:30}
+precise={14:30:45}
+withMillis={14:30:45.500}
+</code></pre>
+
+<h3 id="local-date-time">Local Date-Time</h3>
+
+<p>No timezone information.</p>
+
+<pre><code class="language-cdx">meeting={2024-06-15T09:30}
+withSeconds={2024-06-15T14:30:45}
+withMillis={2024-06-15T14:30:45.500}
+</code></pre>
+
+<h3 id="zoned-date-time">Zoned Date-Time</h3>
+
+<p>With timezone information.</p>
+
+<pre><code class="language-cdx">utc={2024-06-15T09:30:00Z}
+offset={2024-06-15T09:30:00+05:30}
+withTimezone={2024-06-15T09:30:00-05:00[America/New_York]}
+tokyo={2024-06-15T09:30:00+09:00[Asia/Tokyo]}
+</code></pre>
+
+<h3 id="duration">Duration</h3>
+
+<p>ISO 8601 duration format.</p>
+
+<pre><code class="language-cdx">oneDay={P1D}
+oneWeek={P7D}
+oneMonth={P1M}
+oneYear={P1Y}
+twoHours={PT2H}
+thirtyMinutes={PT30M}
+complex={P1Y2M3DT4H5M6S}
+</code></pre>
+
+<h3 id="reserved-literals">Reserved Literals</h3>
+
+<pre><code class="language-cdx">timestamp={now}
+date={today}
+</code></pre>
+
+<hr />
+
+<h2 id="colors">Colors</h2>
+
+<p>Colors are first-class values, not strings.</p>
+
+<h3 id="hexadecimal">Hexadecimal</h3>
+
+<pre><code class="language-cdx">red=#f00
+redWithAlpha=#f00a
+fullRed=#ff0000
+fullRedWithAlpha=#ff0000aa
+</code></pre>
+
+<h3 id="rgb">RGB</h3>
+
+<p>Legacy (comma-separated):</p>
+
+<pre><code class="language-cdx">orange=rgb(255, 128, 0)
+orangeAlpha=rgba(255, 128, 0, 0.5)
+</code></pre>
+
+<p>Modern (space-separated):</p>
+
+<pre><code class="language-cdx">orange=rgb(255 128 0)
+orangeAlpha=rgb(255 128 0 / 50%)
+</code></pre>
+
+<h3 id="hsl">HSL</h3>
+
+<p>Legacy:</p>
+
+<pre><code class="language-cdx">orange=hsl(30, 100%, 50%)
+orangeAlpha=hsla(30, 100%, 50%, 0.5)
+</code></pre>
+
+<p>Modern:</p>
+
+<pre><code class="language-cdx">orange=hsl(30 100% 50%)
+orangeAlpha=hsl(30 100% 50% / 50%)
+</code></pre>
+
+<h3 id="lab-and-lch">Lab and LCH</h3>
+
+<pre><code class="language-cdx">labColor=lab(70% 20 -30)
+labAlpha=lab(70% 20 -30 / 50%)
+lchColor=lch(70% 45 30)
+lchAlpha=lch(70% 45 30 / 50%)
+</code></pre>
+
+<h3 id="oklab-and-oklch">OKLab and OKLCH</h3>
+
+<pre><code class="language-cdx">oklabColor=oklab(0.7 -0.1 0.1)
+oklabAlpha=oklab(0.7 -0.1 0.1 / 50%)
+oklchColor=oklch(0.7 0.15 180)
+oklchAlpha=oklch(0.7 0.15 180 / 50%)
+</code></pre>
+
+<h3 id="wide-gamut-color-function">Wide Gamut (color function)</h3>
+
+<pre><code class="language-cdx">p3Color=color(display-p3 1 0.5 0)
+p3Alpha=color(display-p3 1 0.5 0 / 50%)
+srgb=color(srgb 1 0.5 0)
+rec2020=color(rec2020 0.7 0.2 0.1)
+xyz=color(xyz-d65 0.5 0.4 0.3)
+</code></pre>
+
+<p>Supported color spaces: <code class="language-plaintext highlighter-rouge">srgb</code>, <code class="language-plaintext highlighter-rouge">srgb-linear</code>, <code class="language-plaintext highlighter-rouge">display-p3</code>, <code class="language-plaintext highlighter-rouge">a98-rgb</code>, <code class="language-plaintext highlighter-rouge">prophoto-rgb</code>, <code class="language-plaintext highlighter-rouge">rec2020</code>, <code class="language-plaintext highlighter-rouge">xyz</code>, <code class="language-plaintext highlighter-rouge">xyz-d50</code>, <code class="language-plaintext highlighter-rouge">xyz-d65</code>.</p>
+
+<h3 id="named-colors">Named Colors</h3>
+
+<p>Named colors must be strings:</p>
+
+<pre><code class="language-cdx">color="red"
+special="rebeccapurple"
+clear="transparent"
+</code></pre>
+
+<hr />
+
+<h2 id="quick-reference">Quick Reference</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>String</td>
+      <td><code class="language-plaintext highlighter-rouge">"hello world"</code></td>
+    </tr>
+    <tr>
+      <td>Backtick String</td>
+      <td><code class="language-plaintext highlighter-rouge">`multi line text`</code></td>
+    </tr>
+    <tr>
+      <td>Character</td>
+      <td><code class="language-plaintext highlighter-rouge">'A'</code></td>
+    </tr>
+    <tr>
+      <td>Boolean</td>
+      <td><code class="language-plaintext highlighter-rouge">true</code>, <code class="language-plaintext highlighter-rouge">false</code></td>
+    </tr>
+    <tr>
+      <td>Integer</td>
+      <td><code class="language-plaintext highlighter-rouge">42</code>, <code class="language-plaintext highlighter-rouge">-5</code></td>
+    </tr>
+    <tr>
+      <td>Decimal</td>
+      <td><code class="language-plaintext highlighter-rouge">3.14</code></td>
+    </tr>
+    <tr>
+      <td>Scientific</td>
+      <td><code class="language-plaintext highlighter-rouge">1.5e10</code></td>
+    </tr>
+    <tr>
+      <td>Infinity</td>
+      <td><code class="language-plaintext highlighter-rouge">Infinity</code>, <code class="language-plaintext highlighter-rouge">-Infinity</code></td>
+    </tr>
+    <tr>
+      <td>Fraction</td>
+      <td><code class="language-plaintext highlighter-rouge">3/4</code></td>
+    </tr>
+    <tr>
+      <td>Imaginary</td>
+      <td><code class="language-plaintext highlighter-rouge">2i</code></td>
+    </tr>
+    <tr>
+      <td>Complex</td>
+      <td><code class="language-plaintext highlighter-rouge">2+3i</code></td>
+    </tr>
+    <tr>
+      <td>Precision</td>
+      <td><code class="language-plaintext highlighter-rouge">3.14p</code>, <code class="language-plaintext highlighter-rouge">3.14p4</code></td>
+    </tr>
+    <tr>
+      <td>Enum Token</td>
+      <td><code class="language-plaintext highlighter-rouge">$Draft</code></td>
+    </tr>
+    <tr>
+      <td>Lookup Token</td>
+      <td><code class="language-plaintext highlighter-rouge">~recipe</code></td>
+    </tr>
+    <tr>
+      <td>IRI</td>
+      <td><code class="language-plaintext highlighter-rouge">recipe:pasta</code></td>
+    </tr>
+    <tr>
+      <td>UUID</td>
+      <td><code class="language-plaintext highlighter-rouge">550e8400-e29b-41d4-a716-446655440000</code></td>
+    </tr>
+    <tr>
+      <td>List</td>
+      <td><code class="language-plaintext highlighter-rouge">[1, 2, 3]</code></td>
+    </tr>
+    <tr>
+      <td>Set</td>
+      <td><code class="language-plaintext highlighter-rouge">set[1, 2, 3]</code></td>
+    </tr>
+    <tr>
+      <td>Map</td>
+      <td><code class="language-plaintext highlighter-rouge">map[a: 1, b: 2]</code></td>
+    </tr>
+    <tr>
+      <td>Tuple</td>
+      <td><code class="language-plaintext highlighter-rouge">(10, 20)</code></td>
+    </tr>
+    <tr>
+      <td>Range</td>
+      <td><code class="language-plaintext highlighter-rouge">1..10</code>, <code class="language-plaintext highlighter-rouge">1..10s2</code></td>
+    </tr>
+    <tr>
+      <td>Date</td>
+      <td><code class="language-plaintext highlighter-rouge">{2024-06-15}</code></td>
+    </tr>
+    <tr>
+      <td>Time</td>
+      <td><code class="language-plaintext highlighter-rouge">{09:30}</code></td>
+    </tr>
+    <tr>
+      <td>DateTime</td>
+      <td><code class="language-plaintext highlighter-rouge">{2024-06-15T09:30}</code></td>
+    </tr>
+    <tr>
+      <td>Zoned</td>
+      <td><code class="language-plaintext highlighter-rouge">{2024-06-15T09:30Z}</code></td>
+    </tr>
+    <tr>
+      <td>Duration</td>
+      <td><code class="language-plaintext highlighter-rouge">{P1D}</code>, <code class="language-plaintext highlighter-rouge">{PT2H}</code></td>
+    </tr>
+    <tr>
+      <td>Hex Color</td>
+      <td><code class="language-plaintext highlighter-rouge">#ff0000</code></td>
+    </tr>
+    <tr>
+      <td>RGB</td>
+      <td><code class="language-plaintext highlighter-rouge">rgb(255 0 0)</code></td>
+    </tr>
+    <tr>
+      <td>HSL</td>
+      <td><code class="language-plaintext highlighter-rouge">hsl(0 100% 50%)</code></td>
+    </tr>
+  </tbody>
+</table>
+
+
+	<!-- Your Prism JS -->
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="/assets/js/prism-cdx.js"></script>
+</body>
+
+</html>

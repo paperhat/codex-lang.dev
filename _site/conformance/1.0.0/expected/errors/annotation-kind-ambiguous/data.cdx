@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$ParseError notes="The annotation is neither attached (not immediately followed by a concept marker), nor a grouping annotation, nor a general annotation (not surrounded by exactly one blank-line boundary above and below)." />

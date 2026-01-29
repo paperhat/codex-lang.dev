@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$ParseError notes="List values require comma-separated values; a trailing comma without a following value is not permitted." />

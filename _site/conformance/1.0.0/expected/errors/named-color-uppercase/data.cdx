@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$ParseError notes="Named Color Values require an '&' keyword of ASCII lowercase letters only; '&Red' is not a valid named color token." />

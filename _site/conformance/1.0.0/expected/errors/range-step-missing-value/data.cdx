@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$ParseError notes="Range step syntax is 's' followed by a step value. This input includes 's' but omits the step value." />

@@ -1,0 +1,4 @@
+<Description>
+	This is literal: \</Description>
+	So the block does not close early.
+</Description>

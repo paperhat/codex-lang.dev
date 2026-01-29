@@ -1,0 +1,13 @@
+<Thing
+	id=thing:one
+	uuid=550e8400-e29b-41d4-a716-446655440000
+	list=[1,2,3]
+	set=set[$A,$B]
+	map=map[a:1,b:2]
+	tuple=(1,2)
+	range=1..10s2
+	date={2026-01-22}
+	color=&rebeccapurple
+	lookup=~foo
+	iri=https://example.com/alpha?x=1#y
+/>

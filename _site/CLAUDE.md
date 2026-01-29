@@ -59,38 +59,28 @@ Declarative semantic markup for the Paperhat Workshop system, backed by RDF/OWL2
 Do not regress:
 
 - **§1.3**: Only must/must not. may undefined.
-- **§1.3.1**: Conflicts are defects to report, not resolve via precedence.
-- **§2.2**: Determinism: no heuristics.
 - **§4.1**: Names: ASCII letters/digits, non-empty. PascalCase uppercase-first, camelCase lowercase-first.
 - **§4.2**: No 3+ consecutive uppercase (mechanically enforces acronym-as-word).
 - **§4.3**: Authors must treat acronyms as words (not fully mechanical).
 - **§5.1**: Empty strings permitted.
-- **§5.3**: Boolean is exactly `true` or `false`. No other spellings.
-- **§5.4**: No NaN. `Infinity`/`-Infinity` permitted; `+Infinity` not permitted. `-0` distinct from `0`. No leading zeros (sign excluded). Precision `p` on any numeric (inferred from decimal places; explicit overrides).
+- **§5.4**: No infinity/NaN. `-0` distinct from `0`. No leading zeros (sign excluded). Precision `p` on any numeric (inferred from decimal places; explicit overrides).
 - **§5.5**: Enumerated tokens: `$` + PascalCase.
 - **§5.6**: Two grammars: Temporal Value (braced literal) vs Temporal Body (content).
 - **§5.7**: Lowercase canonical: hex digits, function names, color space tokens. Named colors: `&` + lowercase (Appendix B).
 - **§5.8**: UUID: lowercase hex canonical.
-- **§5.9**: IRI must contain `:`. No whitespace/control/bidi/private-use chars. Compared as opaque strings. Never dereferenced.
 - **§5.10**: Lookup tokens: `~` + camelCase.
 - **§5.11**: Character literal delimiter: single quote (`'`).
 - **§5.13**: Value equality over parsed values. Case-insensitive: hex/function names/color space tokens (Colors), hex (UUIDs).
 - **§5.14–15**: Set/Map duplicates are errors. Canonical order = source order.
-- **§5.16**: Tuple must have ≥1 element.
-- **§5.17**: Range endpoints inclusive. Ranges never enumerated.
 - **§6.1**: Two identity mechanisms: `id` (IRI, global scope) and `key` (Lookup Token, document scope).
-- **§6.2.1**: Tools MUST NOT synthesize `id` or `key` traits.
-- **§6.2.2**: Entity must have exactly one `id`; non-Entity must not have `id`. Values unique within document.
-- **§6.2.3**: `id` stability: changing `id` = creating new Entity.
+- **§6.2**: Entity must have exactly one `id`; non-Entity must not have `id`. Values unique within document.
 - **§6.3**: Concept has zero or one `key`. Resolution via §9.8 bindings.
 - **§7.1**: Exactly three reference traits: `reference`, `target`, `for`. Values: IRI or Lookup Token. must not imply dereferencing/loading/execution/transformation.
 - **§7.2–4**: Intent statements are non-normative guidance for schema authors.
 - **§7.5**: Singleton rule via `ReferenceConstraint(type=ReferenceSingleton)`.
 - **§8.1–2**: UTF-8 default (no BOM); UTF-16 requires BOM. LF canonical; CRLF normalized; bare CR error; trailing LF required.
 - **§8.3**: Tabs only (U+0009) for indentation. Spaces in indentation = error.
-- **§8.4**: No leading blank line. No consecutive blanks outside content/annotations. One blank between siblings. No blank at start/end of children block.
 - **§8.5–6**: Empty block `<X></X>` is error; use self-closing. No whitespace around `=`. 1–2 traits inline; 3+ multiline with `>` or `/>` on own line.
-- **§8.7**: No Value type inference. No Value type coercion.
 - **§8.8**: Content is opaque. Escaping: `\<` and `\[` (line-initial only). Indentation stripped (schema-free). `whitespaceMode`: `$Preformatted` (preserve) or `$Flow` (collapse, wrap 100 chars) — schema-directed.
 - **§8.9**: Three annotation kinds: attached, grouping, general. Block directives: `FLOW:`, `CODE:`, `MARKDOWN:`.
 - **§10.5**: Two-phase canonicalization: Phase 1 (schema-free) for encoding/indentation/layout; Phase 2 (schema-directed) for content whitespace mode.

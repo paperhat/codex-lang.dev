@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>My Codex Site</title>
+
+	<!-- Your Prism CSS -->
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="/assets/css/style.css" media="all">
+
+	<!-- Optional: Add basic styling if removing theme -->
+	<style>
+		body {
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+		}
+
+		pre {
+			background: #f6f8fa;
+			padding: 16px;
+			border-radius: 6px;
+			overflow: auto;
+		}
+
+		code {
+			font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+		}
+	</style>
+</head>
+
+<body>
+	<h1 id="codex-semantic-markup-language">Codex Semantic Markup Language</h1>
+
+<p><strong>Codex</strong> is a declarative semantic markup language for expressing structured meaning independent of runtime, presentation, or target platform.</p>
+
+<hr />
+
+<h2 id="core-constructs">Core Constructs</h2>
+
+<p>Codex documents are built from four primitives:</p>
+
+<h3 id="concept">Concept</h3>
+
+<p>A <strong>Concept</strong> is the primary unit of structure. Concepts have names, may declare Traits, and may contain child Concepts or Content.</p>
+
+<pre><code class="language-cdx">&lt;Recipe id=recipe:pasta title="Spaghetti Carbonara"&gt;
+	&lt;Ingredients&gt;
+		&lt;Ingredient name="pasta" amount=400 unit=$Grams /&gt;
+		&lt;Ingredient name="eggs" amount=4 /&gt;
+	&lt;/Ingredients&gt;
+&lt;/Recipe&gt;
+</code></pre>
+
+<p>Concepts are not elements, components, tags, or nodes.</p>
+
+<h3 id="trait">Trait</h3>
+
+<p>A <strong>Trait</strong> binds a name to a Value. Traits are declared inline on Concepts and are schema-authorized.</p>
+
+<pre><code class="language-cdx">&lt;Person id=person:alice name="Alice" age=30 active=true /&gt;
+</code></pre>
+
+<p>Traits are not properties, attributes, fields, or parameters.</p>
+
+<h3 id="value">Value</h3>
+
+<p>A <strong>Value</strong> is a literal datum. Codex supports:</p>
+
+<ul>
+  <li>Strings, characters, backtick strings</li>
+  <li>Booleans (<code class="language-plaintext highlighter-rouge">true</code>, <code class="language-plaintext highlighter-rouge">false</code>)</li>
+  <li>Numbers (integers, decimals, scientific, fractions, complex)</li>
+  <li>Enumerated tokens (<code class="language-plaintext highlighter-rouge">$Draft</code>, <code class="language-plaintext highlighter-rouge">$Published</code>)</li>
+  <li>Lists, sets, maps, tuples</li>
+  <li>Temporal values, colors, UUIDs, ranges</li>
+  <li>IRI references, lookup tokens</li>
+</ul>
+
+<p>Values are parsed but not evaluated. Typing is a schema responsibility.</p>
+
+<h3 id="content">Content</h3>
+
+<p><strong>Content</strong> is opaque narrative text. Codex preserves it without interpretation.</p>
+
+<pre><code class="language-cdx">&lt;Description&gt;
+	This recipe makes a classic Roman pasta dish.
+	The key is using fresh eggs and quality guanciale.
+&lt;/Description&gt;
+</code></pre>
+
+<p>Content is distinct from Values. Schemas determine what Content may contain.</p>
+
+<hr />
+
+<h2 id="entities-and-identity">Entities and Identity</h2>
+
+<p>An <strong>Entity</strong> is a Concept with stable identity that can be referenced by other Concepts.</p>
+
+<p>Entity eligibility is <strong>schema-controlled</strong>:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">$MustBeEntity</code> — the Concept must declare an <code class="language-plaintext highlighter-rouge">id</code></li>
+  <li><code class="language-plaintext highlighter-rouge">$MayBeEntity</code> — the Concept may declare an <code class="language-plaintext highlighter-rouge">id</code></li>
+  <li><code class="language-plaintext highlighter-rouge">$MustNotBeEntity</code> — the Concept must not declare an <code class="language-plaintext highlighter-rouge">id</code></li>
+</ul>
+
+<pre><code class="language-cdx">&lt;Book id=book:1984 title="1984" author=person:orwell /&gt;
+</code></pre>
+
+<p>This prevents identity proliferation. Schemas deliberately restrict which Concepts may be Entities to maintain low semantic density. Adding <code class="language-plaintext highlighter-rouge">id</code> to a Concept where the schema forbids it is a validation error.</p>
+
+<hr />
+
+<h2 id="annotations">Annotations</h2>
+
+<p><strong>Annotations</strong> are editorial metadata preserved through the pipeline. They attach to the next Concept and do not affect validation.</p>
+
+<pre><code class="language-cdx">[Review: verify cooking times]
+&lt;Recipe id=recipe:risotto&gt;
+</code></pre>
+
+<p>Annotations are not comments.</p>
+
+<hr />
+
+<h2 id="key-characteristics">Key Characteristics</h2>
+
+<ul>
+  <li><strong>Declarative</strong>: Codex expresses what, not how</li>
+  <li><strong>Schema-driven</strong>: Meaning is defined by schema, not inferred</li>
+  <li><strong>Closed-world</strong>: Validation is deterministic; everything is explicit</li>
+  <li><strong>Canonical</strong>: Every valid document has exactly one surface form</li>
+  <li><strong>No evaluation</strong>: Values are parsed, not computed</li>
+</ul>
+
+<hr />
+
+<h2 id="specification">Specification</h2>
+
+<p>The authoritative specification is in <a href="spec/0.1/"><code class="language-plaintext highlighter-rouge">spec/0.1/</code></a>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Document</th>
+      <th>Scope</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="spec/0.1/language/">Language</a></td>
+      <td>Conceptual model and terminology</td>
+    </tr>
+    <tr>
+      <td><a href="spec/0.1/surface-form/">Surface Form</a></td>
+      <td>Syntax and structure</td>
+    </tr>
+    <tr>
+      <td><a href="spec/0.1/naming-and-values/">Naming and Values</a></td>
+      <td>Vocabulary and literal forms</td>
+    </tr>
+    <tr>
+      <td><a href="spec/0.1/grammar/ebnf/">Grammar (EBNF)</a></td>
+      <td>Normative formal grammar</td>
+    </tr>
+    <tr>
+      <td><a href="spec/0.1/grammar/peg/">Grammar (PEG)</a></td>
+      <td>Informative parsing grammar</td>
+    </tr>
+    <tr>
+      <td><a href="spec/0.1/formatting-and-canonicalization/">Formatting</a></td>
+      <td>Canonicalization rules</td>
+    </tr>
+    <tr>
+      <td><a href="spec/0.1/schema-definition/">Schema Definition</a></td>
+      <td>Schema authoring</td>
+    </tr>
+    <tr>
+      <td><a href="spec/0.1/identifiers/">Identifiers</a></td>
+      <td>Identity rules</td>
+    </tr>
+    <tr>
+      <td><a href="spec/0.1/reference-traits/">Reference Traits</a></td>
+      <td>Reference semantics</td>
+    </tr>
+    <tr>
+      <td><a href="spec/0.1/validation-errors/">Validation Errors</a></td>
+      <td>Error taxonomy</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="readiness-repo-gate">Readiness (Repo Gate)</h2>
+
+<p>This repo treats “production ready for implementation” as a <strong>repeatable gate</strong>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 tools/readiness_check.py
+</code></pre></div></div>
+
+<p>See <a href="/READINESS.html">READINESS.md</a> and <a href="/AI_CONVENTIONS.html">AI_CONVENTIONS.md</a>.</p>
+
+<hr />
+
+<h2 id="governance">Governance</h2>
+
+<p>Codex is maintained under editorial governance. Normative content is authoritative. Changes to locked documents are versioned.</p>
+
+<p>See <a href="/GOVERNANCE.html"><code class="language-plaintext highlighter-rouge">GOVERNANCE.md</code></a>.</p>
+
+<hr />
+
+<h2 id="license">License</h2>
+
+<p>Documentation is licensed under <a href="/LICENSE.md">CC BY 4.0</a>.</p>
+
+<p>See <a href="/COPYRIGHT.html"><code class="language-plaintext highlighter-rouge">COPYRIGHT.md</code></a> for details.</p>
+
+<hr />
+
+<p><em>This repository is a reference specification, not a tutorial or community forum.</em></p>
+
+
+	<!-- Your Prism JS -->
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="/assets/js/prism-cdx.js"></script>
+</body>
+
+</html>
