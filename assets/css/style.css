@@ -21,3 +21,136 @@ body {
 	margin: 20px;
 	padding: 0;
 }
+
+/* ============================
+ * Core structure
+ * ============================ */
+
+.token.marker {
+  color: #444;
+}
+
+.token.concept-name {
+  color: #1f6feb;           /* strong type color */
+  font-weight: 600;
+}
+
+.token.trait-name {
+  color: #8250df;           /* property / predicate */
+}
+
+.token.operator {
+  color: #666;
+}
+
+.token.punctuation {
+  color: #555;
+}
+
+/* ============================
+ * Identity & reference
+ * ============================ */
+
+.token.iri,
+.token.uuid {
+  color: #0a7a6a;           /* stable identity */
+  font-style: italic;
+}
+
+.token.lookup-token {
+  color: #0550ae;           /* local reference */
+}
+
+.token.enum-token {
+  color: #cf222e;           /* closed semantic choice */
+  font-weight: 600;
+}
+
+/* ============================
+ * Strings & characters
+ * ============================ */
+
+.token.string,
+.token.string-backtick {
+  color: #0a3069;
+}
+
+.token.character {
+  color: #116329;
+}
+
+/* ============================
+ * Numbers
+ * ============================ */
+
+.token.number-integer,
+.token.number-decimal,
+.token.number-scientific {
+  color: #953800;
+}
+
+.token.number-precision {
+  color: #bc4c00;           /* precision is semantically important */
+  font-weight: 600;
+}
+
+.token.number-infinity {
+  color: #8b949e;
+  font-style: italic;
+}
+
+/* ============================
+ * Temporal
+ * ============================ */
+
+.token.temporal {
+  color: #0550ae;           /* distinct from numeric */
+  font-weight: 500;
+}
+
+/* ============================
+ * Ranges
+ * ============================ */
+
+.token.range {
+  color: #7a3e9d;
+}
+
+.token.range-step {
+  color: #7a3e9d;
+  font-weight: 600;         /* step changes meaning */
+}
+
+/* ============================
+ * Colors
+ * ============================ */
+
+.token.color-hex,
+.token.color-function,
+.token.color-named {
+  color: #0969da;
+  font-family: monospace;
+}
+
+/* ============================
+ * Collections
+ * ============================ */
+
+.token.list,
+.token.set,
+.token.map,
+.token.tuple {
+  color: #57606a;
+}
+
+/* ============================
+ * Annotations
+ * ============================ */
+
+.token.annotation {
+  color: #6e7781;
+  font-style: italic;
+  background: rgba(175,184,193,0.15);
+  padding: 0.1em 0.25em;
+  border-radius: 3px;
+}
