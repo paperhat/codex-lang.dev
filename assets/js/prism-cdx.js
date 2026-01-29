@@ -1,73 +1,129 @@
 // assets/js/prism-cdx.js
 (function (Prism) {
-  
-  // Define reusable patterns
-  const enumToken = /\$[A-Z][A-Za-z0-9]*/;
-  const lookupToken = /~[a-z][A-Za-z0-9]*/;
-  const temporal = /\{[^}]+\}/;
-  const precisionNumber = /\b-?\d+(?:\.\d+)?p\d+\b/;
-  const rangeStep = /\b.+?\.\..+?s\d+\b/;
-  const range = /\b.+?\.\..+?\b/;
-  const colorHex = /#[0-9a-fA-F]{3,8}\b/;
-  const colorNamed = /&[a-z]+\b/;
-  const stringBacktick = /`[\s\S]*?`/;
-  const stringQuoted = /"(?:\\.|[^\\"])*"/;
-  const character = /'(?:\\.|[^\\'])'/;
-  const number = /\b-?\d+(?:\.\d+)?\b/;
-  
-  // Create a combined pattern for trait values
-  const traitValuePattern = new RegExp(
-    '(' +
-    enumToken.source + '|' +
-    lookupToken.source + '|' +
-    temporal.source + '|' +
-    precisionNumber.source + '|' +
-    rangeStep.source + '|' +
-    range.source + '|' +
-    colorHex.source + '|' +
-    colorNamed.source + '|' +
-    stringBacktick.source + '|' +
-    stringQuoted.source + '|' +
-    character.source + '|' +
-    number.source +
-    ')'
-  );
-  
+
+  /* ============================
+   * Value primitives (Appendix A)
+   * ============================ */
+
+  // Tokens
+  const enumToken       = /\$[A-Z][A-Za-z0-9]*/;
+  const lookupToken     = /~[a-z][A-Za-z0-9]*/;
+
+  // Strings
+  const stringQuoted    = /"(?:\\.|[^\\"])*"/;
+  const stringBacktick  = /`[\s\S]*?`/;
+
+  // Characters
+  const character       = /'(?:\\.|[^\\'])'/;
+
+  // Numbers
+  const infinity        = /-?Infinity\b/;
+  const precisionNumber = /-?(?:0|[1-9]\d*)(?:\.\d+)?p\d+\b/;
+  const scientific      = /-?(?:0|[1-9]\d*)(?:\.\d+)?[eE][+-]?\d+\b/;
+  const decimal         = /-?(?:0|[1-9]\d*)\.\d+\b/;
+  const integer         = /-?(?:0|[1-9]\d*)\b/;
+
+  // Temporal
+  const temporal        = /\{[^}\r\n]+\}/;
+
+  // UUID
+  const uuid            = /\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b/;
+
+  // IRI reference
+  const iri             = /\b[a-zA-Z][a-zA-Z0-9+.-]*:[^\s>]+/;
+
+  // Colors
+  const colorHex        = /#[0-9a-fA-F]{3,8}\b/;
+  const colorNamed      = /&[a-z]+\b/;
+  const colorFunction   = /\b(?:rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color|color-mix|device-cmyk)\([^)]*\)/i;
+
+  // Collections (opaque but balanced)
+  const list            = /\[(?:[^\[\]]|\[[^\]]*\])*\]/;
+  const set             = /set\[(?:[^\[\]]|\[[^\]]*\])*\]/;
+  const map             = /map\[(?:[^\[\]]|\[[^\]]*\])*\]/;
+  const tuple           = /\((?:[^()]+|\([^)]*\))*\)/;
+
+  // Ranges
+  const rangeStep       = /(?:'[^']'|\{[^}]+\}|-?(?:0|[1-9]\d*)(?:\.\d+)?)(?:\.\.)(?:'[^']'|\{[^}]+\}|-?(?:0|[1-9]\d*)(?:\.\d+)?)(?:s-?(?:0|[1-9]\d*)(?:\.\d+)?)\b/;
+  const range           = /(?:'[^']'|\{[^}]+\}|-?(?:0|[1-9]\d*)(?:\.\d+)?)(?:\.\.)(?:'[^']'|\{[^}]+\}|-?(?:0|[1-9]\d*)(?:\.\d+)?)\b/;
+
+  /* ============================
+   * Prism language definition
+   * ============================ */
+
   Prism.languages.cdx = {
+
+    /* ---------- Annotations ---------- */
+
     'annotation': {
       pattern: /^\s*\[[\s\S]*?\]/m,
       greedy: true
     },
-    
+
+    /* ---------- Markers ---------- */
+
     'marker': {
       pattern: /<\/?[A-Z][A-Za-z0-9]*[\s\S]*?>/,
       greedy: true,
       inside: {
+
         'punctuation': /^<\/?|\/?>$/,
+
         'concept-name': {
           pattern: /<\/?([A-Z][A-Za-z0-9]*)/,
           lookbehind: true
         },
+
         'trait': {
           pattern: /\b[a-z][A-Za-z0-9]*=[^\s>]+/,
           inside: {
+
             'trait-name': /^[a-z][A-Za-z0-9]*(?==)/,
             'operator': /=/,
+
+            /* ---------- Trait value (flat) ---------- */
+
             'value': {
               pattern: /[^\s>]+$/,
               inside: {
+
+                // Identity & reference
+                'iri': iri,
+                'uuid': uuid,
+
+                // Tokens
                 'enum-token': enumToken,
                 'lookup-token': lookupToken,
-                'temporal': temporal,
-                'number-precision': precisionNumber,
-                'range-step': rangeStep,
-                'range': range,
-                'color-hex': colorHex,
-                'color-named': colorNamed,
+
+                // Strings & chars
                 'string-backtick': stringBacktick,
                 'string': stringQuoted,
                 'character': character,
-                'number': number
+
+                // Temporal
+                'temporal': temporal,
+
+                // Ranges
+                'range-step': rangeStep,
+                'range': range,
+
+                // Numbers (ordered by specificity)
+                'number-infinity': infinity,
+                'number-precision': precisionNumber,
+                'number-scientific': scientific,
+                'number-decimal': decimal,
+                'number-integer': integer,
+
+                // Colors
+                'color-hex': colorHex,
+                'color-named': colorNamed,
+                'color-function': colorFunction,
+
+                // Collections
+                'set': set,
+                'map': map,
+                'list': list,
+                'tuple': tuple
               }
             }
           }
@@ -75,7 +131,7 @@
       }
     }
   };
-  
+
   Prism.languages.codex = Prism.languages.cdx;
-  
+
 })(Prism);
