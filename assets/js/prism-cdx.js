@@ -73,7 +73,11 @@ Prism.languages.cdx = {
 
 Prism.languages.codex = Prism.languages.cdx;
 
-  
+if (typeof window !== 'undefined' && window.Prism) {
+  // Register with autoloader
+  window.Prism.languages.cdx = Prism.languages.cdx;
+}
+
 })(typeof globalThis !== 'undefined' ? globalThis.Prism : typeof window !== 'undefined' ? window.Prism : undefined);
 
 
