@@ -1,0 +1,23 @@
+<!-- Before </body> in your layout file -->
+
+<!-- Prism Core -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+
+<!-- Optional Prism plugins -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+<!-- Your custom language definition -->
+<script src="{{ '/assets/js/prism-cdx.js' | relative_url }}"></script>
+
+<!-- Initialize Prism (if not using autoloader) -->
+<script>
+	// Prism will auto-highlight on DOMContentLoaded
+	// For dynamic content, you might need:
+	// document.addEventListener('DOMContentLoaded', function() {
+	//   Prism.highlightAll();
+	// });
+</script>
