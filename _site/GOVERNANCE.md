@@ -1,6 +1,6 @@
 Status: NORMATIVE
 Lock State: LOCKED
-Version: 0.1
+Version: 1.0.0
 Editor: Charles F. Munat
 
 # Codex Language Documentation Governance
@@ -136,4 +136,4 @@ Any interpretation of Codex documentation must be consistent with this governanc
 
 ---
 
-**End of Codex Language Documentation Governance v0.1**
+**End of Codex Language Documentation Governance v1.0.0**

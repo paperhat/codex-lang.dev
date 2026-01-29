@@ -1,1 +1,0 @@
-<ErrorExpectation primaryClass=$ParseError notes="Map entries require ':' between key and value. This input omits the ':' delimiter." />

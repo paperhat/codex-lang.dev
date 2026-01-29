@@ -1,13 +1,13 @@
 Status: NORMATIVE  
 Lock State: UNLOCKED  
-Version: 1.0.0 BETA  
+Version: 1.0.0  
 Editor: Charles F. Munat
 
-# Codex Language Specification — Version 1.0.0 BETA
+# Codex Language Specification — Version 1.0.0
 
-This document is the authoritative language specification for Codex 1.0.0 BETA.
+This document is the authoritative language specification for Codex 1.0.0.
 
-All normative requirements for Codex 1.0.0 BETA MUST appear exactly once in this document.
+All normative requirements for Codex 1.0.0 MUST appear exactly once in this document.
 
 ---
 
@@ -33,7 +33,7 @@ Well-formedness checking does not require a schema; semantic validation does. Se
 
 ### 1.2 Non-Goals
 
-Codex 1.0.0 BETA does not define:
+Codex 1.0.0 does not define:
 
 - a programming, scripting, or templating language
 - an execution model, runtime, or pipeline orchestration
@@ -65,7 +65,7 @@ This specification contains no internal conflicts.
 
 Appendix A.1 (EBNF) formalizes the syntactic rules described in the prose. The prose defines semantic meaning and processing obligations. These two forms address distinct concerns and do not conflict.
 
-The bootstrap schemas (`bootstrap-schema/schema.cdx` and `bootstrap-schema/expanded/schema.cdx`) instantiate the schema-definition rules defined in this specification. They are derived artifacts, not independent sources of authority.
+The bootstrap schemas (`bootstrap-schema/schema.cdx` and `bootstrap-schema/simplified/schema.cdx`) instantiate the schema-definition rules defined in this specification. They are derived artifacts, not independent sources of authority.
 
 If an implementer discovers an apparent conflict between any parts of this specification or between this specification and the bootstrap schemas, that conflict is a defect. Implementers MUST NOT guess which source prevails. Implementers MUST report the defect.
 
@@ -2990,7 +2990,7 @@ This section does not:
 
 ## 11. Schema Definition Language
 
-This section normatively defines the schema definition language for Codex 1.0.0 BETA.
+This section normatively defines the schema definition language for Codex 1.0.0.
 
 It specifies how **schemas themselves are authored in Codex**, including:
 
@@ -6597,4 +6597,4 @@ The following keywords are valid Codex named colors but do not have a single fix
 
 ---
 
-**End of Codex Language Specification v1.0.0 BETA**
+**End of Codex Language Specification v1.0.0**

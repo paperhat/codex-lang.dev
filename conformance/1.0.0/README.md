@@ -1,9 +1,9 @@
 Status: INFORMATIVE
-Version: 1.0.0 BETA
+Version: 1.0.0
 
-# Codex 1.0.0 BETA Conformance Fixtures
+# Codex 1.0.0 Conformance Fixtures
 
-This directory contains **versioned conformance fixtures** for Codex Language Specification v1.0.0 BETA.
+This directory contains **versioned conformance fixtures** for Codex Language Specification v1.0.0.
 
 These fixtures are intentionally stored **outside** `spec/1.0.0/`.
 

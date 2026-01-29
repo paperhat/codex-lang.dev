@@ -69,7 +69,6 @@ An **Entity** is a Concept with stable identity that can be referenced by other 
 Entity eligibility is **schema-controlled**:
 
 - `$MustBeEntity` — the Concept must declare an `id`
-- `$MayBeEntity` — the Concept may declare an `id`
 - `$MustNotBeEntity` — the Concept must not declare an `id`
 
 ```cdx
@@ -105,20 +104,7 @@ Annotations are not comments.
 
 ## Specification
 
-The authoritative specification is in [`spec/0.1/`](spec/0.1/).
-
-| Document | Scope |
-|----------|-------|
-| [Language](spec/0.1/language/) | Conceptual model and terminology |
-| [Surface Form](spec/0.1/surface-form/) | Syntax and structure |
-| [Naming and Values](spec/0.1/naming-and-values/) | Vocabulary and literal forms |
-| [Grammar (EBNF)](spec/0.1/grammar/ebnf/) | Normative formal grammar |
-| [Grammar (PEG)](spec/0.1/grammar/peg/) | Informative parsing grammar |
-| [Formatting](spec/0.1/formatting-and-canonicalization/) | Canonicalization rules |
-| [Schema Definition](spec/0.1/schema-definition/) | Schema authoring |
-| [Identifiers](spec/0.1/identifiers/) | Identity rules |
-| [Reference Traits](spec/0.1/reference-traits/) | Reference semantics |
-| [Validation Errors](spec/0.1/validation-errors/) | Error taxonomy |
+The authoritative specification is [`spec/1.0.0/index.md`](spec/1.0.0/index.md).
 
 ---
 

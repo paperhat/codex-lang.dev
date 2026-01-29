@@ -51,7 +51,7 @@ Declarative semantic markup for the Paperhat Workshop system, backed by RDF/OWL2
 |------|---------|
 | `spec/1.0.0/index.md` | Normative specification |
 | `spec/1.0.0/bootstrap-schema/schema.cdx` | Canonical Authoring Mode bootstrap (SHACL) |
-| `spec/1.0.0/bootstrap-schema/expanded/schema.cdx` | Simplified Authoring Mode bootstrap (human-readable) |
+| `spec/1.0.0/bootstrap-schema/simplified/schema.cdx` | Simplified Authoring Mode bootstrap (human-readable) |
 | `conformance/1.0.0/` | Conformance test suite |
 
 ## Specification Structure

@@ -4,7 +4,7 @@
 	compatibilityClass=$BackwardCompatible
 	authoringMode=$CanonicalMode
 	title="Codex Bootstrap Schema-of-Schemas"
-	description="Bootstrap schema for schema-validating Codex schema documents. This canonical-mode schema expresses the schema-of-schemas as SHACL triples (including SHACL-SPARQL where required). See expanded/schema.cdx for the equivalent simplified-mode representation."
+	description="Bootstrap schema for schema-validating Codex schema documents. This canonical-mode schema expresses the schema-of-schemas as SHACL triples (including SHACL-SPARQL where required). See simplified/schema.cdx for the equivalent simplified-mode representation."
 >
 	<RdfGraph>
 
@@ -14,7 +14,7 @@
 			SHACL triples, including SHACL-SPARQL constraints for rules that cannot be
 			expressed in SHACL Core (e.g., cross-trait comparisons like min <= max).
 
-			The expanded/schema.cdx file contains the equivalent simplified-mode representation
+			The simplified/schema.cdx file contains the equivalent simplified-mode representation
 			for human readability.
 
 			Namespace prefixes (not used in actual IRIs):

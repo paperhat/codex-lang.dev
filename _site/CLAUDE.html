@@ -33,6 +33,10 @@
 <body>
 	<h1 id="codex-language--ai-reference">Codex Language — AI Reference</h1>
 
+<h2 id="specification-lock">Specification Lock</h2>
+
+<p><strong>The specification (<code class="language-plaintext highlighter-rouge">spec/1.0.0/index.md</code>) is LOCKED.</strong> Do not edit the specification without explicit permission from the human. This includes adding, removing, or modifying any normative requirements, examples, or appendices.</p>
+
 <h2 id="critical-no-conventions-without-approval">Critical: No Conventions Without Approval</h2>
 
 <p>Codex eliminates ambiguity for byte-identical output across implementations. Standard spec conventions (RFC 2119, precedence clauses, optional features) introduce the ambiguity Codex rejects.</p>
@@ -101,7 +105,7 @@
       <td>Canonical Authoring Mode bootstrap (SHACL)</td>
     </tr>
     <tr>
-      <td><code class="language-plaintext highlighter-rouge">spec/1.0.0/bootstrap-schema/expanded/schema.cdx</code></td>
+      <td><code class="language-plaintext highlighter-rouge">spec/1.0.0/bootstrap-schema/simplified/schema.cdx</code></td>
       <td>Simplified Authoring Mode bootstrap (human-readable)</td>
     </tr>
     <tr>
@@ -115,37 +119,68 @@
 
 <p>§1-2: Front matter, invariants · §3: Core model · §4: Naming (PascalCase/camelCase) · §5: Value literals · §6: Identity · §7: Reference Traits · §8: Surface form · §9: Schema architecture, Canonical Representation, SHACL · §10: Canonicalization · §11: Schema definition · §12: Bootstrapping · §13: Versioning · §14: Errors · Appendix A: Grammars · Appendix B: Named colors</p>
 
-<h2 id="established-decisions-18">Established Decisions (§1–§8)</h2>
+<h2 id="established-decisions-114">Established Decisions (§1–§14)</h2>
 
 <p>Do not regress:</p>
 
 <ul>
   <li><strong>§1.3</strong>: Only must/must not. may undefined.</li>
+  <li><strong>§1.3.1</strong>: Conflicts are defects to report, not resolve via precedence.</li>
+  <li><strong>§2.2</strong>: Determinism: no heuristics.</li>
   <li><strong>§4.1</strong>: Names: ASCII letters/digits, non-empty. PascalCase uppercase-first, camelCase lowercase-first.</li>
   <li><strong>§4.2</strong>: No 3+ consecutive uppercase (mechanically enforces acronym-as-word).</li>
   <li><strong>§4.3</strong>: Authors must treat acronyms as words (not fully mechanical).</li>
   <li><strong>§5.1</strong>: Empty strings permitted.</li>
-  <li><strong>§5.4</strong>: No infinity/NaN. <code class="language-plaintext highlighter-rouge">-0</code> distinct from <code class="language-plaintext highlighter-rouge">0</code>. No leading zeros (sign excluded). Precision <code class="language-plaintext highlighter-rouge">p</code> on any numeric (inferred from decimal places; explicit overrides).</li>
+  <li><strong>§5.3</strong>: Boolean is exactly <code class="language-plaintext highlighter-rouge">true</code> or <code class="language-plaintext highlighter-rouge">false</code>. No other spellings.</li>
+  <li><strong>§5.4</strong>: No NaN. <code class="language-plaintext highlighter-rouge">Infinity</code>/<code class="language-plaintext highlighter-rouge">-Infinity</code> permitted; <code class="language-plaintext highlighter-rouge">+Infinity</code> not permitted. <code class="language-plaintext highlighter-rouge">-0</code> distinct from <code class="language-plaintext highlighter-rouge">0</code>. No leading zeros (sign excluded). Precision <code class="language-plaintext highlighter-rouge">p</code> on any numeric (inferred from decimal places; explicit overrides).</li>
   <li><strong>§5.5</strong>: Enumerated tokens: <code class="language-plaintext highlighter-rouge">$</code> + PascalCase.</li>
   <li><strong>§5.6</strong>: Two grammars: Temporal Value (braced literal) vs Temporal Body (content).</li>
   <li><strong>§5.7</strong>: Lowercase canonical: hex digits, function names, color space tokens. Named colors: <code class="language-plaintext highlighter-rouge">&amp;</code> + lowercase (Appendix B).</li>
   <li><strong>§5.8</strong>: UUID: lowercase hex canonical.</li>
+  <li><strong>§5.9</strong>: IRI must contain <code class="language-plaintext highlighter-rouge">:</code>. No whitespace/control/bidi/private-use chars. Compared as opaque strings. Never dereferenced.</li>
   <li><strong>§5.10</strong>: Lookup tokens: <code class="language-plaintext highlighter-rouge">~</code> + camelCase.</li>
   <li><strong>§5.11</strong>: Character literal delimiter: single quote (<code class="language-plaintext highlighter-rouge">'</code>).</li>
   <li><strong>§5.13</strong>: Value equality over parsed values. Case-insensitive: hex/function names/color space tokens (Colors), hex (UUIDs).</li>
   <li><strong>§5.14–15</strong>: Set/Map duplicates are errors. Canonical order = source order.</li>
+  <li><strong>§5.16</strong>: Tuple must have ≥1 element.</li>
+  <li><strong>§5.17</strong>: Range endpoints inclusive. Ranges never enumerated.</li>
   <li><strong>§6.1</strong>: Two identity mechanisms: <code class="language-plaintext highlighter-rouge">id</code> (IRI, global scope) and <code class="language-plaintext highlighter-rouge">key</code> (Lookup Token, document scope).</li>
-  <li><strong>§6.2</strong>: Entity must have exactly one <code class="language-plaintext highlighter-rouge">id</code>; non-Entity must not have <code class="language-plaintext highlighter-rouge">id</code>. Values unique within document.</li>
+  <li><strong>§6.2.1</strong>: Tools MUST NOT synthesize <code class="language-plaintext highlighter-rouge">id</code> or <code class="language-plaintext highlighter-rouge">key</code> traits.</li>
+  <li><strong>§6.2.2</strong>: Entity must have exactly one <code class="language-plaintext highlighter-rouge">id</code>; non-Entity must not have <code class="language-plaintext highlighter-rouge">id</code>. Values unique within document.</li>
+  <li><strong>§6.2.3</strong>: <code class="language-plaintext highlighter-rouge">id</code> stability: changing <code class="language-plaintext highlighter-rouge">id</code> = creating new Entity.</li>
   <li><strong>§6.3</strong>: Concept has zero or one <code class="language-plaintext highlighter-rouge">key</code>. Resolution via §9.8 bindings.</li>
   <li><strong>§7.1</strong>: Exactly three reference traits: <code class="language-plaintext highlighter-rouge">reference</code>, <code class="language-plaintext highlighter-rouge">target</code>, <code class="language-plaintext highlighter-rouge">for</code>. Values: IRI or Lookup Token. must not imply dereferencing/loading/execution/transformation.</li>
   <li><strong>§7.2–4</strong>: Intent statements are non-normative guidance for schema authors.</li>
   <li><strong>§7.5</strong>: Singleton rule via <code class="language-plaintext highlighter-rouge">ReferenceConstraint(type=ReferenceSingleton)</code>.</li>
   <li><strong>§8.1–2</strong>: UTF-8 default (no BOM); UTF-16 requires BOM. LF canonical; CRLF normalized; bare CR error; trailing LF required.</li>
   <li><strong>§8.3</strong>: Tabs only (U+0009) for indentation. Spaces in indentation = error.</li>
+  <li><strong>§8.4</strong>: No leading blank line. No consecutive blanks outside content/annotations. One blank between siblings. No blank at start/end of children block.</li>
   <li><strong>§8.5–6</strong>: Empty block <code class="language-plaintext highlighter-rouge">&lt;X&gt;&lt;/X&gt;</code> is error; use self-closing. No whitespace around <code class="language-plaintext highlighter-rouge">=</code>. 1–2 traits inline; 3+ multiline with <code class="language-plaintext highlighter-rouge">&gt;</code> or <code class="language-plaintext highlighter-rouge">/&gt;</code> on own line.</li>
-  <li><strong>§8.8</strong>: Content is opaque. Escaping: <code class="language-plaintext highlighter-rouge">\&lt;</code> and <code class="language-plaintext highlighter-rouge">\[</code> (line-initial only). Indentation stripped (schema-free). <code class="language-plaintext highlighter-rouge">whitespaceMode</code>: <code class="language-plaintext highlighter-rouge">$Preformatted</code> (preserve) or <code class="language-plaintext highlighter-rouge">$Flow</code> (collapse, wrap 100 chars) — schema-directed.</li>
+  <li><strong>§8.7</strong>: No Value type inference. No Value type coercion.</li>
+  <li><strong>§8.8</strong>: Content is opaque. Escaping: <code class="language-plaintext highlighter-rouge">\&lt;</code> anywhere; <code class="language-plaintext highlighter-rouge">\[</code> line-initial only. Indentation stripped (schema-free). <code class="language-plaintext highlighter-rouge">whitespaceMode</code>: <code class="language-plaintext highlighter-rouge">$Preformatted</code> (preserve) or <code class="language-plaintext highlighter-rouge">$Flow</code> (collapse, wrap 100 chars) — schema-directed.</li>
   <li><strong>§8.9</strong>: Three annotation kinds: attached, grouping, general. Block directives: <code class="language-plaintext highlighter-rouge">FLOW:</code>, <code class="language-plaintext highlighter-rouge">CODE:</code>, <code class="language-plaintext highlighter-rouge">MARKDOWN:</code>.</li>
+  <li><strong>§8.9.7</strong>: GROUP/END must match via stack-based nesting.</li>
+  <li><strong>§9.1</strong>: External inputs (environment, config, registries, network, clocks, randomness) MUST NOT influence processing.</li>
+  <li><strong>§9.4</strong>: Exactly one authoring mode per schema (<code class="language-plaintext highlighter-rouge">$SimplifiedMode</code> or <code class="language-plaintext highlighter-rouge">$CanonicalMode</code>). No mixing.</li>
+  <li><strong>§9.6</strong>: Canonical Representation: no RDF blank nodes. All RDF nodes MUST be IRIs. Deterministic skolem IRIs.</li>
+  <li><strong>§9.7</strong>: Instance graph <code class="language-plaintext highlighter-rouge">nodeIri</code> MUST NOT derive from <code class="language-plaintext highlighter-rouge">id</code> trait. Declared <code class="language-plaintext highlighter-rouge">id</code> stored via <code class="language-plaintext highlighter-rouge">codex:declaredId</code>.</li>
+  <li><strong>§9.8</strong>: Lookup bindings MUST NOT be inferred, synthesized, or imported implicitly.</li>
+  <li><strong>§9.10</strong>: Fail with error rather than guess when required info is missing or ambiguous.</li>
   <li><strong>§10.5</strong>: Two-phase canonicalization: Phase 1 (schema-free) for encoding/indentation/layout; Phase 2 (schema-directed) for content whitespace mode.</li>
+  <li><strong>§10.5.1</strong>: <code class="language-plaintext highlighter-rouge">$Unordered</code> collection sort: Concept name → <code class="language-plaintext highlighter-rouge">id</code> → <code class="language-plaintext highlighter-rouge">key</code> → source order.</li>
+  <li><strong>§11.2</strong>: Schemas are declarative data, not executable. All authorization explicit.</li>
+  <li><strong>§11.4.3–4</strong>: Default closed-world: traits/children not explicitly allowed/required are forbidden.</li>
+  <li><strong>§11.6.4</strong>: Built-in enumerated sets (<code class="language-plaintext highlighter-rouge">ConceptKind</code>, <code class="language-plaintext highlighter-rouge">EntityEligibility</code>, <code class="language-plaintext highlighter-rouge">CompatibilityClass</code>, <code class="language-plaintext highlighter-rouge">Ordering</code>, <code class="language-plaintext highlighter-rouge">Cardinality</code>) MUST NOT be redefined.</li>
+  <li><strong>§11.7</strong>: Constraints MUST NOT execute code or depend on implicit inference.</li>
+  <li><strong>§11.12</strong>: Derived representations MUST NOT introduce semantics beyond spec/schema. MUST NOT override/weaken Codex validation.</li>
+  <li><strong>§12.2</strong>: Governing schema must be explicit. MUST NOT substitute, infer, or override.</li>
+  <li><strong>§12.3</strong>: Bootstrap schema-of-schemas: built-in, immutable. Root <code class="language-plaintext highlighter-rouge">Schema</code> = schema document. Not substitutable for instance docs.</li>
+  <li><strong>§13.3</strong>: <code class="language-plaintext highlighter-rouge">id</code>, <code class="language-plaintext highlighter-rouge">version</code>, <code class="language-plaintext highlighter-rouge">versionScheme</code> all required on root <code class="language-plaintext highlighter-rouge">Schema</code>.</li>
+  <li><strong>§13.4.1</strong>: Four version schemes: <code class="language-plaintext highlighter-rouge">$Semver</code>, <code class="language-plaintext highlighter-rouge">$DateYYYYMM</code>, <code class="language-plaintext highlighter-rouge">$DateYYYYMMDD</code>, <code class="language-plaintext highlighter-rouge">$Lexical</code>.</li>
+  <li><strong>§13.5</strong>: Four compatibility classes: <code class="language-plaintext highlighter-rouge">$Initial</code>, <code class="language-plaintext highlighter-rouge">$BackwardCompatible</code>, <code class="language-plaintext highlighter-rouge">$ForwardCompatible</code>, <code class="language-plaintext highlighter-rouge">$Breaking</code>. First version MUST use <code class="language-plaintext highlighter-rouge">$Initial</code>.</li>
+  <li><strong>§13.8</strong>: Validation strictly per declared version. MUST NOT infer, substitute, or relax.</li>
+  <li><strong>§14.3</strong>: Closed set of 9 error classes. No additional classes. Halt at first failure.</li>
+  <li><strong>§14.5</strong>: Errors are not warnings. No best-effort recovery.</li>
 </ul>
 
 

@@ -19,3 +19,6 @@ highlighter: rouge  # Disable Jekyll's highlighting since we use Prism
 exclude:
   - Gemfile
   - Gemfile.lock
+  - conformance
+  - notes
+  - tools
