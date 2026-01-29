@@ -1,1 +1,21 @@
-theme: jekyll-theme-primer
+title: "My Codex Site"
+description: "Documentation for Codex language"
+
+# Keep or remove theme - your choice
+# theme: jekyll-theme-primer
+
+# Use your custom layout
+defaults:
+  - scope:
+      path: ""  # All files
+    values:
+      layout: "default"
+
+# Essential Jekyll settings
+markdown: kramdown
+highlighter: rouge  # Disable Jekyll's highlighting since we use Prism
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
