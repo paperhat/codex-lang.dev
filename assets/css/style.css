@@ -150,9 +150,10 @@ body {
  * ========================= */
 
 .token.annotation {
-	color: #777;
+	color: #555;
 	padding: 0.1em 0.25em;
 	border-radius: 3px;
+	font-size: 85%;
 }
 
 /* =========================

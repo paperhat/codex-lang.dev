@@ -1,4 +1,4 @@
-# Codex Language
+# Codex Semantic Markup Language
 
 **Codex** is a declarative semantic markup language designed for expressing structured meaning with deterministic, schema-driven validation.
 
