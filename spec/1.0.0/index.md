@@ -391,20 +391,22 @@ Codex itself defines no temporal evaluation, normalization, ordering, time zone 
 Codex-conforming tools MUST NOT derive temporal meaning, perform evaluation, apply defaults, or check real-world correctness (for example, month length or leap seconds) except as explicitly defined by the governing schema or consuming system.
 
 #### 5.6.1 Temporal Kind Determination
-To classify a Temporal Value as a specific temporal kind (for example, `ZonedDateTime` or `Date`), tools MUST parse the braced payload using the Temporal Body grammar in Appendix A.
+To classify a Temporal Value as a specific temporal kind (for example, `ZonedDateTime` or `PlainDate`), tools MUST parse the braced payload using the Temporal Body grammar in Appendix A.
 
 This classification is purely syntactic and depends only on the braced payload; it does not imply temporal evaluation or interpretation.
 
 The temporal kind MUST be determined by the first matching alternative in the following ordered list:
 
 1. `ZonedDateTime`
-2. `LocalDateTime`
-3. `Date`
-4. `YearMonth`
-5. `MonthDay`
-6. `Time`
-7. `Duration`
-8. `TemporalKeyword`
+2. `Instant`
+3. `PlainDateTime`
+4. `PlainDate`
+5. `YearWeek`
+6. `PlainYearMonth`
+7. `PlainMonthDay`
+8. `PlainTime`
+9. `Duration`
+10. `TemporalKeyword`
 
 Temporal Values MUST NOT be treated as Enumerated Token Values, even when the braced payload is a reserved literal such as `now` or `today`.
 
@@ -5425,7 +5427,7 @@ NumericValue
 	| Fraction
 	| Infinity
 	| PrecisionNumber
-	| ScientificNumber
+	| ExponentialNumber
 	| DecimalNumber
 	| Integer
 	;
@@ -5442,7 +5444,7 @@ DecimalNumber
 	= [ Sign ], IntegerDigits, ".", DigitSequence
 	;
 
-ScientificNumber
+ExponentialNumber
 	= ( Integer | DecimalNumber ), ( "e" | "E" ), [ Sign ], IntegerDigits
 	;
 
@@ -5517,33 +5519,47 @@ TemporalValue
    in the order listed below (§5.6.1). *)
 TemporalBody
 	= ZonedDateTime
-	| LocalDateTime
-	| Date
-	| YearMonth
-	| MonthDay
-	| Time
+	| Instant
+	| PlainDateTime
+	| PlainDate
+	| YearWeek
+	| PlainYearMonth
+	| PlainMonthDay
+	| PlainTime
 	| Duration
 	| TemporalKeyword
 	;
 
-Date
+PlainDate
 	= Year, "-", Month, "-", Day
 	;
 
-YearMonth
+YearWeek
+	= Year, "-", ( "W" | "w" ), WeekNumber
+	;
+
+WeekNumber
+	= Digit, Digit
+	;
+
+PlainYearMonth
 	= Year, "-", Month
 	;
 
-MonthDay
+PlainMonthDay
 	= Month, "-", Day
 	;
 
-LocalDateTime
-	= Date, "T", Time
+PlainDateTime
+	= PlainDate, "T", PlainTime
+	;
+
+Instant
+	= PlainDateTime, TimeZoneOffset
 	;
 
 ZonedDateTime
-	= LocalDateTime, TimeZoneOffset, [ TimeZoneId ]
+	= PlainDateTime, TimeZoneOffset, TimeZoneId
 	;
 
 TimeZoneOffset
@@ -5558,7 +5574,7 @@ TimeZoneIdChar
 	= Letter | Digit | "/" | "_" | "-"
 	;
 
-Time
+PlainTime
 	= Hour, ":", Minute, [ ":", Second, [ ".", FractionalSeconds ] ]
 	;
 
@@ -6252,7 +6268,7 @@ NumericValue <- ComplexNumber
              / Fraction
              / Infinity
              / PrecisionNumber
-             / ScientificNumber
+             / ExponentialNumber
              / DecimalNumber
              / Integer
 
@@ -6261,7 +6277,7 @@ ImaginaryNumber <- (Integer / DecimalNumber) 'i'
 Fraction <- Integer '/' IntDigits
 Infinity <- '-'? 'Infinity'
 PrecisionNumber <- DecimalNumber 'p' IntDigits?
-ScientificNumber <- (Integer / DecimalNumber) [eE] Sign? IntDigits
+ExponentialNumber <- (Integer / DecimalNumber) [eE] Sign? IntDigits
 DecimalNumber <- Sign? IntDigits '.' Digits
 Integer <- Sign? IntDigits
 
@@ -6299,20 +6315,23 @@ LookupToken <- '~' LowercaseLetter (Letter / Digit)*
 ```peg
 TemporalValue <- '{' TemporalBody '}'
 
-TemporalBody <- ZonedDateTime / LocalDateTime / Date / YearMonth / MonthDay / Time / Duration / TemporalKeyword
+TemporalBody <- ZonedDateTime / Instant / PlainDateTime / PlainDate / YearWeek / PlainYearMonth / PlainMonthDay / PlainTime / Duration / TemporalKeyword
 
-Date <- Year '-' Month '-' Day
-YearMonth <- Year '-' Month
-MonthDay <- Month '-' Day
+PlainDate <- Year '-' Month '-' Day
+YearWeek <- Year '-' [Ww] WeekNumber
+WeekNumber <- Digit Digit
+PlainYearMonth <- Year '-' Month
+PlainMonthDay <- Month '-' Day
 
-LocalDateTime <- Date 'T' Time
-ZonedDateTime <- LocalDateTime TimeZoneOffset TimeZoneId?
+PlainDateTime <- PlainDate 'T' PlainTime
+Instant <- PlainDateTime TimeZoneOffset
+ZonedDateTime <- PlainDateTime TimeZoneOffset TimeZoneId
 
 TimeZoneOffset <- 'Z' / ([+-] Hour ':' Minute)
 TimeZoneId <- '[' TimeZoneIdChar+ ']'
 TimeZoneIdChar <- Letter / Digit / '/' / '_' / '-'
 
-Time <- Hour ':' Minute (':' Second ('.' FractionalSeconds)?)?
+PlainTime <- Hour ':' Minute (':' Second ('.' FractionalSeconds)?)?
 
 Duration <- 'P' DurationComponent+ ('T' TimeDurationComponent*)?
           / 'P' 'T' TimeDurationComponent+

@@ -118,19 +118,59 @@
 			key=~valueType
 			name="ValueType"
 		>
+			[Scalar types]
 			<Member value="String" />
 			<Member value="Char" />
 			<Member value="Boolean" />
-			<Member value="Number" />
+
+			[Numeric types (per spec A.1.12)]
+			<Member value="Number" description="Any numeric value." />
 			<Member value="Integer" />
+			<Member value="DecimalNumber" description="Number with decimal point." />
+			<Member value="ExponentialNumber" description="Number with exponent." />
+			<Member value="PrecisionNumber" description="Decimal with explicit precision." />
+			<Member value="Fraction" description="Rational number." />
+			<Member value="ImaginaryNumber" description="Pure imaginary." />
+			<Member value="ComplexNumber" description="Real + imaginary." />
+			<Member value="Infinity" description="Infinity or -Infinity." />
 			<Member value="NonNegativeInteger" description="An integer >= 0." />
 			<Member value="PositiveInteger" description="An integer >= 1." />
+
+			[Temporal types (per spec A.1.14)]
+			<Member value="Temporal" description="Any temporal value." />
+			<Member value="ZonedDateTime" description="Date, time, and timezone." />
+			<Member value="Instant" description="Absolute point in time with offset." />
+			<Member value="PlainDateTime" description="Date and time." />
+			<Member value="PlainDate" description="Calendar date." />
+			<Member value="YearWeek" description="ISO year and week." />
+			<Member value="PlainYearMonth" description="Year and month." />
+			<Member value="PlainMonthDay" description="Month and day." />
+			<Member value="PlainTime" description="Wall-clock time." />
+			<Member value="Duration" description="Length of time." />
+			<Member value="TemporalKeyword" description="now or today." />
+
+			[Identity types]
 			<Member value="EnumeratedToken" />
 			<Member value="IriReference" />
 			<Member value="LookupToken" />
 			<Member value="Uuid" />
-			<Member value="Color" />
-			<Member value="Temporal" />
+
+			[Color types (per spec §5.7)]
+			<Member value="Color" description="Any color value." />
+			<Member value="HexColor" description="Hexadecimal color (#RGB, #RRGGBB, etc.)." />
+			<Member value="NamedColor" description="Named color (&red, &blue, etc.)." />
+			<Member value="RgbColor" description="RGB color function." />
+			<Member value="HslColor" description="HSL color function." />
+			<Member value="HwbColor" description="HWB color function." />
+			<Member value="LabColor" description="CIE Lab color function." />
+			<Member value="LchColor" description="CIE LCH color function." />
+			<Member value="OklabColor" description="Oklab color function." />
+			<Member value="OklchColor" description="Oklch color function." />
+			<Member value="ColorFunction" description="Generic color() function." />
+			<Member value="ColorMix" description="color-mix() function." />
+			<Member value="DeviceCmyk" description="device-cmyk() function." />
+
+			[Collection types]
 			<Member value="List" />
 			<Member value="Set" />
 			<Member value="Map" />
