@@ -4,6 +4,17 @@
 
 **The specification (`spec/1.0.0/index.md`) is LOCKED.** Do not edit the specification without explicit permission from the human. This includes adding, removing, or modifying any normative requirements, examples, or appendices.
 
+**"Editing" includes any change to the specification text**, regardless of intent. The following all require explicit permission:
+
+- Rewording for "clarity" or "readability"
+- Restructuring sections or paragraphs
+- Adding explanatory text or examples
+- Fixing perceived inconsistencies or ambiguities
+- Correcting what appears to be an error
+- Improving formatting or style
+
+If something in the specification appears unclear, inconsistent, or wrong, **report it rather than fix it**. The specification's exact wording is deliberate.
+
 ## Critical: No Conventions Without Approval
 
 Codex eliminates ambiguity for byte-identical output across implementations. Standard spec conventions (RFC 2119, precedence clauses, optional features) introduce the ambiguity Codex rejects.

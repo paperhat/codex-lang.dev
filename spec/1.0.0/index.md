@@ -1,7 +1,9 @@
-Status: NORMATIVE  
-Lock State: UNLOCKED  
-Version: 1.0.0  
+Status: NORMATIVE
+Lock State: LOCKED
+Version: 1.0.0
 Editor: Charles F. Munat
+
+**This specification is locked. No modifications—including clarifications, corrections, or improvements—are permitted without explicit approval from the editor.**
 
 # Codex Language Specification — Version 1.0.0
 
@@ -535,7 +537,7 @@ A List Value MUST represent exactly the elements explicitly present in its liter
 For schema-level type constraints on list contents, see §5.18.
 
 ### 5.13 Value Equality for Collection Uniqueness
-For purposes of detecting duplicates in Set Values and Map Values, Codex-conforming tools MUST use the following Value equality relation.
+For purposes of detecting duplicates in Set Values, Map Values, and Record Values, Codex-conforming tools MUST use the following Value equality relation.
 
 Equality is defined over parsed Values (after interpreting escape sequences, backtick-string whitespace normalization, and other value-specific decoding rules) and MUST NOT be defined over raw source bytes.
 
@@ -555,6 +557,7 @@ Two Values are equal if and only if they have the same Value kind and satisfy th
 - Range Values: equal if and only if their start endpoints are equal, their end endpoints are equal, and either both omit a step or both include equal step Values.
 - Set Values: equal if and only if they contain the same elements (under this equality relation), regardless of element order.
 - Map Values: equal if and only if they contain the same bindings, where keys are equal and corresponding bound Values are equal, regardless of entry order.
+- Record Values: equal if and only if they contain the same bindings, where field names are equal and corresponding bound Values are equal, regardless of entry order.
 
 ### 5.14 Set Values
 
@@ -663,6 +666,7 @@ The following collection types support parameterization:
 * `$Map<K, V>` — a map where keys conform to `K` and values conform to `V`
 * `$Tuple<T1, T2, ...>` — a tuple where each position conforms to its corresponding type
 * `$Range<T>` — a range where bounds conform to `T`
+* `$Record<V>` — a record where all field values conform to `V`
 
 #### 5.18.2 Type Arguments
 
@@ -697,6 +701,31 @@ For example, `$List<$List<$String>>` specifies a list of lists of strings.
 | `$Tuple<$String, $Integer, $Boolean>` | 3-tuple: (string, integer, boolean) |
 | `$Range<$Integer>` | Range with integer bounds |
 | `$List` | List of any values (unparameterized) |
+| `$Record<$String>` | Record where all fields have string values |
+
+### 5.19 Record Values
+
+A Record Value is a fixed-structure aggregate of named fields. Unlike Map Values, which permit arbitrary keys, Record Values have field names that are schema-defined identifiers.
+
+In the Surface Form, Record Values MUST be spelled using the `record` keyword followed by square brackets containing `field: value` entries (`record[field: value, ...]`). See Appendix A for the full grammar.
+
+A Record Value MUST permit zero fields.
+
+Each entry in a Record Value MUST bind exactly one field name to exactly one Value.
+
+A Record Value MUST permit nesting.
+
+A Record Value MUST contain no duplicate field names.
+
+Duplicate field names MUST be determined using the Value equality relation in §5.13.
+
+If a record literal spelling contains duplicate field names, Codex-conforming tools MUST reject that spelling with a `ParseError` (§14).
+
+For schema-level type constraints on record fields, see §5.18.
+
+#### 5.19.1 Record Field Names
+
+In the Surface Form, a record field name MUST be an unquoted identifier using camelCase.
 
 ---
 
@@ -1669,15 +1698,15 @@ When the Canonical Representation is authored as a Codex graph form, it MUST use
 
 Each `RdfTriple` MUST have these traits:
 
-- `s` (required; IRI Reference Value) — subject
-- `p` (required; IRI Reference Value) — predicate
+- `subject` (required; IRI Reference Value)
+- `predicate` (required; IRI Reference Value)
 
 And exactly one of:
 
-- `o` (required; IRI Reference Value) — object IRI
-- `lex` (required; String Value) — object literal lexical form
+- `object` (required; IRI Reference Value) — object IRI
+- `lexical` (required; String Value) — object literal lexical form
 
-When `lex` is present, the following additional traits are permitted:
+When `lexical` is present, the following additional traits are permitted:
 
 - `datatype` (optional; IRI Reference Value) — RDF datatype IRI
 - `language` (optional; String Value) — RDF language tag
@@ -1688,12 +1717,12 @@ If `datatype` is absent and `language` is absent, the literal datatype MUST be `
 
 #### 9.6.2 Canonical Ordering and Duplicate Removal
 
-In the canonical RDF graph, `RdfTriple` children MUST be sorted in ascending lexicographic order of `(s, p, oKey)`.
+In the canonical RDF graph, `RdfTriple` children MUST be sorted in ascending lexicographic order of `(subject, predicate, objectKey)`.
 
-`oKey` MUST be:
+`objectKey` MUST be:
 
-- `o` when the object is an IRI, and
-- the pair `(datatypeOrDefault, lex)` when the object is a literal.
+- `object` when the object is an IRI, and
+- the pair `(datatypeOrDefault, lexical)` when the object is a literal.
 
 If two triples are identical after this normalization, duplicates MUST be removed.
 
@@ -3073,6 +3102,7 @@ A `Schema` Concept MUST declare the following Traits:
 * `compatibilityClass` (required; Enumerated Token Value)
   One of:
 
+  * `$Initial`
   * `$BackwardCompatible`
   * `$ForwardCompatible`
   * `$Breaking`
@@ -3548,6 +3578,7 @@ The following enumerated value sets are defined by the Codex language itself and
 
 ##### `CompatibilityClass`
 
+* `$Initial`
 * `$BackwardCompatible`
 * `$ForwardCompatible`
 * `$Breaking`
@@ -5290,6 +5321,7 @@ Value
 	| ListValue
 	| SetValue
 	| MapValue
+	| RecordValue
 	| TupleValue
 	| RangeValue
 	;
@@ -5672,7 +5704,7 @@ ColorSpace
 	| "xyz-d65"
 	;
 
-(* The payload is an uninterpreted balanced-parentheses token sequence (§A.1.27). *)
+(* The payload is an uninterpreted balanced-parentheses token sequence (§A.1.28). *)
 ColorFuncPayload
 	= { ColorPayloadToken }
 	;
@@ -5717,7 +5749,7 @@ HexOctet
 
 ```ebnf
 (* IRI references are unquoted tokens containing a ':' (§5.9).
-	They terminate at Value termination (§A.1.27). *)
+	They terminate at Value termination (§A.1.28). *)
 
 IriReference
 	= IriScheme, ":", IriTokenBody
@@ -5813,7 +5845,30 @@ MapIdentifier
 
 ---
 
-#### A.1.22 Tuple Values
+#### A.1.22 Record Values
+
+```ebnf
+(* Record Values have schema-defined field names; duplicate fields are a ParseError (§5.19, §14). *)
+RecordValue
+	= "record", "[", { Whitespace }, [ RecordItems ], { Whitespace }, "]"
+	;
+
+RecordItems
+	= RecordEntry, { { Whitespace }, ",", { Whitespace }, RecordEntry }
+	;
+
+RecordEntry
+	= RecordFieldName, { Whitespace }, ":", { Whitespace }, Value
+	;
+
+RecordFieldName
+	= LowercaseLetter, { Letter | Digit }
+	;
+```
+
+---
+
+#### A.1.23 Tuple Values
 
 ```ebnf
 (* Tuple Values require at least one element (§5.16). *)
@@ -5828,7 +5883,7 @@ TupleItems
 
 ---
 
-#### A.1.23 Range Values
+#### A.1.24 Range Values
 
 ```ebnf
 (* Range Values are declarative intervals with optional step (§5.17). *)
@@ -5851,7 +5906,7 @@ StepValue
 
 ---
 
-#### A.1.24 Annotations
+#### A.1.25 Annotations
 
 ```ebnf
 (* Codex defines two surface forms for annotations (§8.9):
@@ -5901,7 +5956,7 @@ UnescapedAnnotationBlockChar
 
 ---
 
-#### A.1.25 Whitespace and Structural Elements
+#### A.1.26 Whitespace and Structural Elements
 
 ```ebnf
 (* Indentation uses tabs only; spaces in indentation are errors (§8.3). *)
@@ -5937,7 +5992,7 @@ Indentation
 
 ---
 
-#### A.1.26 Character Classes (Informative)
+#### A.1.27 Character Classes (Informative)
 
 The following character classes are used but not fully enumerated:
 
@@ -5949,11 +6004,11 @@ The following character classes are used but not fully enumerated:
 * `AnyCharExceptParensNewline` — any Unicode scalar except `(`, `)`, U+000A
 * `AnyCharExceptRightBracketNewline` — any Unicode scalar except `]`, U+000A
 * `AnyCharExceptBackslashNewline` — any Unicode scalar except `\\`, U+000A
-* `AnyCharExceptValueTerminator` — any Unicode scalar except a Value terminator (defined in §A.1.27)
+* `AnyCharExceptValueTerminator` — any Unicode scalar except a Value terminator (defined in §A.1.28)
 
 ---
 
-#### A.1.27 Value Termination and Disambiguation
+#### A.1.28 Value Termination and Disambiguation
 ```ebnf
 (* Value termination is token-level, not type-level.
 
@@ -6124,7 +6179,7 @@ TraitName <- LowercaseLetter (Letter / Digit)*
 
 ```peg
 # Values are tried in deterministic precedence order.
-# Token termination in markers is governed by the surface rules (see A.1.27);
+# Token termination in markers is governed by the surface rules (see A.1.28);
 # this PEG uses explicit constructs for balanced literals.
 
 Value <- StringValue
@@ -6136,6 +6191,7 @@ Value <- StringValue
       / TemporalValue
       / SetValue
       / MapValue
+      / RecordValue
       / ListValue
       / TupleValue
       / ColorValue
@@ -6308,7 +6364,18 @@ MapIdentifier <- LowercaseLetter (Letter / Digit)*
 
 ---
 
-#### A.2.19 Tuple Values
+#### A.2.19 Record Values
+
+```peg
+RecordValue <- 'record' '[' WS* RecordItems? WS* ']'
+RecordItems <- RecordEntry (WS* ',' WS* RecordEntry)*
+RecordEntry <- RecordFieldName WS* ':' WS* Value
+RecordFieldName <- LowercaseLetter (Letter / Digit)*
+```
+
+---
+
+#### A.2.20 Tuple Values
 
 ```peg
 TupleValue <- '(' WS* TupleItems WS* ')'
@@ -6317,7 +6384,7 @@ TupleItems <- Value (WS* ',' WS* Value)*
 
 ---
 
-#### A.2.20 Range Values
+#### A.2.21 Range Values
 
 ```peg
 RangeValue <- RangeStart '..' RangeEnd ('s' StepValue)?
@@ -6328,7 +6395,7 @@ StepValue <- TemporalValue / NumericValue
 
 ---
 
-#### A.2.21 UUID Values
+#### A.2.22 UUID Values
 
 ```peg
 UuidValue <- HexOctet HexOctet HexOctet HexOctet '-' HexOctet HexOctet '-' HexOctet HexOctet '-' HexOctet HexOctet '-' HexOctet HexOctet HexOctet HexOctet HexOctet HexOctet
@@ -6337,7 +6404,7 @@ HexOctet <- HexDigit HexDigit
 
 ---
 
-#### A.2.22 Color Values
+#### A.2.23 Color Values
 
 ```peg
 # Color spellings are accepted as declarative literals; no semantic evaluation occurs.
@@ -6363,7 +6430,7 @@ ColorPayloadToken <- '(' ColorPayload ')' / (![()\n] .)
 
 ---
 
-#### A.2.23 IRI References
+#### A.2.24 IRI References
 
 ```peg
 # IRI references are fallback unquoted values that contain ':'.
@@ -6377,7 +6444,7 @@ IriTokenChar <- !ValueTerminator .
 
 ---
 
-#### A.2.24 Annotations
+#### A.2.25 Annotations
 
 ```peg
 Annotation <- AnnotationLine / AnnotationBlock
@@ -6396,7 +6463,7 @@ AnnotationBlockChar <- AnnotationEscape / (!'\n' .)
 
 ---
 
-#### A.2.25 Whitespace and Structural Elements
+#### A.2.26 Whitespace and Structural Elements
 
 ```peg
 Newline <- '\n'
@@ -6418,7 +6485,7 @@ ValueTerminator <- [ \t\n] / '>' / '/'
 
 ---
 
-#### A.2.26 End of File
+#### A.2.27 End of File
 
 ```peg
 EOF <- !.

@@ -1,139 +1,82 @@
-# Codex Semantic Markup Language
+# Codex Language
 
-**Codex** is a declarative semantic markup language for expressing structured meaning independent of runtime, presentation, or target platform.
+**Codex** is a declarative semantic markup language designed for expressing structured meaning with deterministic, schema-driven validation.
 
----
+## Design Goals
+
+Codex prioritizes:
+
+- **Determinism**: Given the same inputs, all conforming implementations produce identical outputs.
+- **Closed-world semantics**: Nothing is inferred from omission. All meaning is explicit.
+- **Schema authority**: Validity is defined by schema, not convention or heuristic.
+- **Canonical form**: Every valid document has exactly one surface representation.
+- **Round-trippability**: Documents survive transformation to RDF and back without loss.
 
 ## Core Constructs
 
-Codex documents are built from four primitives:
+Codex documents are composed of four primitives:
 
-### Concept
-
-A **Concept** is the primary unit of structure. Concepts have names, may declare Traits, and may contain child Concepts or Content.
+**Concept** — A named structural unit. Concepts declare Traits and contain either child Concepts or Content, never both.
 
 ```cdx
-<Recipe id=recipe:pasta title="Spaghetti Carbonara">
+<Recipe id=recipe:carbonara title="Spaghetti Carbonara">
 	<Ingredients>
-		<Ingredient name="pasta" amount=400 unit=$Grams />
+		<Ingredient name="guanciale" amount=150 unit=$Grams />
 		<Ingredient name="eggs" amount=4 />
 	</Ingredients>
 </Recipe>
 ```
 
-Concepts are not elements, components, tags, or nodes.
-
-### Trait
-
-A **Trait** binds a name to a Value. Traits are declared inline on Concepts and are schema-authorized.
+**Trait** — A name-value binding declared on a Concept. Traits are schema-authorized.
 
 ```cdx
 <Person id=person:alice name="Alice" age=30 active=true />
 ```
 
-Traits are not properties, attributes, fields, or parameters.
+**Value** — A literal datum. Values are parsed, never evaluated. Codex supports strings, booleans, numbers, enumerated tokens, temporal values, colors, UUIDs, collections (lists, sets, maps, records, tuples), ranges, IRI references, and lookup tokens.
 
-### Value
-
-A **Value** is a literal datum. Codex supports:
-
-- Strings, characters, backtick strings
-- Booleans (`true`, `false`)
-- Numbers (integers, decimals, scientific, fractions, complex)
-- Enumerated tokens (`$Draft`, `$Published`)
-- Lists, sets, maps, tuples
-- Temporal values, colors, UUIDs, ranges
-- IRI references, lookup tokens
-
-Values are parsed but not evaluated. Typing is a schema responsibility.
-
-### Content
-
-**Content** is opaque narrative text. Codex preserves it without interpretation.
+**Content** — Opaque narrative text preserved without interpretation.
 
 ```cdx
 <Description>
-	This recipe makes a classic Roman pasta dish.
-	The key is using fresh eggs and quality guanciale.
+	A classic Roman pasta dish. The key is fresh eggs and quality guanciale.
 </Description>
 ```
 
-Content is distinct from Values. Schemas determine what Content may contain.
+## Entity and Identity
 
----
+An **Entity** is a Concept with stable, referenceable identity. Entity eligibility is schema-controlled:
 
-## Entities and Identity
+- `$MustBeEntity` — the Concept must declare an `id` trait
+- `$MustNotBeEntity` — the Concept must not declare an `id` trait
 
-An **Entity** is a Concept with stable identity that can be referenced by other Concepts.
-
-Entity eligibility is **schema-controlled**:
-
-- `$MustBeEntity` — the Concept must declare an `id`
-- `$MustNotBeEntity` — the Concept must not declare an `id`
-
-```cdx
-<Book id=book:1984 title="1984" author=person:orwell />
-```
-
-This prevents identity proliferation. Schemas deliberately restrict which Concepts may be Entities to maintain low semantic density. Adding `id` to a Concept where the schema forbids it is a validation error.
-
----
+There is no default. Schemas explicitly declare which Concepts may carry identity.
 
 ## Annotations
 
-**Annotations** are editorial metadata preserved through the pipeline. They attach to the next Concept and do not affect validation.
+Annotations are editorial metadata that attach to Concepts. They are preserved through processing but do not affect validation.
 
 ```cdx
-[Review: verify cooking times]
-<Recipe id=recipe:risotto>
+[TODO: verify ingredient quantities]
+<Recipe id=recipe:risotto title="Mushroom Risotto">
 ```
 
-Annotations are not comments.
+## Status
 
----
-
-## Key Characteristics
-
-- **Declarative**: Codex expresses what, not how
-- **Schema-driven**: Meaning is defined by schema, not inferred
-- **Closed-world**: Validation is deterministic; everything is explicit
-- **Canonical**: Every valid document has exactly one surface form
-- **No evaluation**: Values are parsed, not computed
-
----
-
-## Specification
-
-The authoritative specification is [`spec/1.0.0/index.md`](spec/1.0.0/index.md).
-
----
-
-## Readiness (Repo Gate)
-
-This repo treats “production ready for implementation” as a **repeatable gate**:
-
-```bash
-python3 tools/readiness_check.py
-```
-
-See [READINESS.md](READINESS.md) and [AI_CONVENTIONS.md](AI_CONVENTIONS.md).
-
----
+This repository contains the Codex language specification. The specification is currently under development and not yet ready for implementation.
 
 ## Governance
 
-Codex is maintained under editorial governance. Normative content is authoritative. Changes to locked documents are versioned.
+Codex documentation is maintained under editorial governance. Normative documents are authoritative and versioned.
 
-See [`GOVERNANCE.md`](GOVERNANCE.md).
-
----
+See [GOVERNANCE.md](GOVERNANCE.md) for document authority, lock states, and change control.
 
 ## License
 
-Documentation is licensed under [CC BY 4.0](LICENSE.md).
+Documentation is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE.md).
 
-See [`COPYRIGHT.md`](COPYRIGHT.md) for details.
+See [COPYRIGHT.md](COPYRIGHT.md) for copyright and trademark information.
 
 ---
 
-*This repository is a reference specification, not a tutorial or community forum.*
+*This repository is a reference specification, not a tutorial or implementation guide.*

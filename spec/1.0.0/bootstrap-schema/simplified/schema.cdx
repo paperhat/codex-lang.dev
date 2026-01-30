@@ -1,7 +1,8 @@
 <Schema
 	id=urn:codex:bootstrap:1.0.0
 	version="1.0.0"
-	compatibilityClass=$BackwardCompatible
+	versionScheme=$Semver
+	compatibilityClass=$Initial
 	authoringMode=$SimplifiedMode
 	title="Codex Bootstrap Schema-of-Schemas"
 	description="The authoritative schema for schema-validating Codex schema documents."
@@ -51,9 +52,21 @@
 			key=~compatibilityClass
 			name="CompatibilityClass"
 		>
+			<Member value="Initial" label="Initial" description="First version in schema lineage." />
 			<Member value="BackwardCompatible" label="Backward Compatible" />
 			<Member value="ForwardCompatible" label="Forward Compatible" />
 			<Member value="Breaking" label="Breaking" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:VersionScheme
+			key=~versionScheme
+			name="VersionScheme"
+		>
+			<Member value="Semver" label="Semantic Versioning" description="MAJOR.MINOR.PATCH format." />
+			<Member value="DateYYYYMM" label="Date (YYYY-MM)" description="Year-month format." />
+			<Member value="DateYYYYMMDD" label="Date (YYYY-MM-DD)" description="Year-month-day format." />
+			<Member value="Lexical" label="Lexical" description="Unicode codepoint ordering." />
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet
@@ -74,12 +87,30 @@
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:WhitespaceMode
+			key=~whitespaceMode
+			name="WhitespaceMode"
+		>
+			<Member value="Preformatted" label="Preformatted" description="Content whitespace is significant and preserved exactly." />
+			<Member value="Flow" label="Flow" description="Content whitespace is collapsed and trimmed." />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet
 			id=urn:codex:bootstrap:enum:Ordering
 			key=~ordering
 			name="Ordering"
 		>
 			<Member value="Ordered" label="Ordered" />
 			<Member value="Unordered" label="Unordered" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:Cardinality
+			key=~cardinality
+			name="Cardinality"
+		>
+			<Member value="Single" label="Single" description="Trait accepts a single value." />
+			<Member value="List" label="List" description="Trait accepts a list of values." />
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet
@@ -103,6 +134,7 @@
 			<Member value="List" />
 			<Member value="Set" />
 			<Member value="Map" />
+			<Member value="Record" />
 			<Member value="Tuple" />
 			<Member value="Range" />
 		</EnumeratedValueSet>
@@ -154,7 +186,7 @@
 			key=~contentConstraintType
 			name="ContentConstraintType"
 		>
-			<Member value="ContentForbiddenUnlessAllowed" />
+			<Member value="ForbidsContent" />
 			<Member value="ContentRequired" />
 			<Member value="ContentMatchesPattern" />
 		</EnumeratedValueSet>
@@ -200,6 +232,7 @@
 			<TraitRules>
 				<RequiresTrait name="id" />
 				<RequiresTrait name="version" />
+				<RequiresTrait name="versionScheme" />
 				<RequiresTrait name="compatibilityClass" />
 				<RequiresTrait name="authoringMode" />
 				<AllowsTrait name="title" />
@@ -341,7 +374,11 @@
 			name="AllowsContent"
 			conceptKind=$Structural
 			entityEligibility=$MustNotBeEntity
-		/>
+		>
+			<TraitRules>
+				<RequiresTrait name="whitespaceMode" />
+			</TraitRules>
+		</ConceptDefinition>
 
 		<ConceptDefinition
 			id=urn:codex:bootstrap:concept:ForbidsContent
@@ -609,7 +646,7 @@
 				<AllowsTrait name="message" />
 			</TraitRules>
 			<ContentRules>
-				<AllowsContent />
+				<AllowsContent whitespaceMode=$Preformatted />
 			</ContentRules>
 		</ConceptDefinition>
 
@@ -1403,10 +1440,10 @@
 			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
-				<RequiresTrait name="s" />
-				<RequiresTrait name="p" />
-				<AllowsTrait name="o" />
-				<AllowsTrait name="lex" />
+				<RequiresTrait name="subject" />
+				<RequiresTrait name="predicate" />
+				<AllowsTrait name="object" />
+				<AllowsTrait name="lexical" />
 				<AllowsTrait name="datatype" />
 				<AllowsTrait name="language" />
 			</TraitRules>
@@ -1511,6 +1548,17 @@
 		[GROUP: Schema Traits]
 
 		<TraitDefinition
+			id=urn:codex:bootstrap:trait:versionScheme
+			name="versionScheme"
+			defaultValueType=$EnumeratedToken
+			priority=$Primary
+		>
+			<AllowedValues>
+				<EnumeratedConstraint set=~versionScheme />
+			</AllowedValues>
+		</TraitDefinition>
+
+		<TraitDefinition
 			id=urn:codex:bootstrap:trait:compatibilityClass
 			name="compatibilityClass"
 			defaultValueType=$EnumeratedToken
@@ -1533,6 +1581,49 @@
 		</TraitDefinition>
 
 		[END: Schema Traits]
+
+		[GROUP: Content Traits]
+
+		<TraitDefinition
+			id=urn:codex:bootstrap:trait:whitespaceMode
+			name="whitespaceMode"
+			defaultValueType=$EnumeratedToken
+			priority=$Primary
+		>
+			<AllowedValues>
+				<EnumeratedConstraint set=~whitespaceMode />
+			</AllowedValues>
+		</TraitDefinition>
+
+		[END: Content Traits]
+
+		[GROUP: Reference Traits]
+
+		<TraitDefinition
+			id=urn:codex:bootstrap:trait:reference
+			name="reference"
+			defaultValueTypes=[$IriReference, $LookupToken]
+			isReferenceTrait=true
+			priority=$Primary
+		/>
+
+		<TraitDefinition
+			id=urn:codex:bootstrap:trait:target
+			name="target"
+			defaultValueTypes=[$IriReference, $LookupToken]
+			isReferenceTrait=true
+			priority=$Primary
+		/>
+
+		<TraitDefinition
+			id=urn:codex:bootstrap:trait:for
+			name="for"
+			defaultValueTypes=[$IriReference, $LookupToken]
+			isReferenceTrait=true
+			priority=$Primary
+		/>
+
+		[END: Reference Traits]
 
 		[GROUP: Concept Definition Traits]
 
@@ -1788,29 +1879,29 @@
 		[GROUP: RDF Triple Traits]
 
 		<TraitDefinition
-			id=urn:codex:bootstrap:trait:s
-			name="s"
+			id=urn:codex:bootstrap:trait:subject
+			name="subject"
 			defaultValueType=$IriReference
 			priority=$Primary
 		/>
 
 		<TraitDefinition
-			id=urn:codex:bootstrap:trait:p
-			name="p"
+			id=urn:codex:bootstrap:trait:predicate
+			name="predicate"
 			defaultValueType=$IriReference
 			priority=$Primary
 		/>
 
 		<TraitDefinition
-			id=urn:codex:bootstrap:trait:o
-			name="o"
+			id=urn:codex:bootstrap:trait:object
+			name="object"
 			defaultValueType=$IriReference
 			priority=$Primary
 		/>
 
 		<TraitDefinition
-			id=urn:codex:bootstrap:trait:lex
-			name="lex"
+			id=urn:codex:bootstrap:trait:lexical
+			name="lexical"
 			defaultValueType=$String
 			priority=$Primary
 		/>
@@ -1902,7 +1993,7 @@
 		<ConstraintDefinition
 			id=urn:codex:bootstrap:constraint:rdf-triple-object
 			title="RdfTriple requires object"
-			description="An RdfTriple must have either o (IRI object) or lex (literal lexical form), but not both."
+			description="An RdfTriple must have either object (IRI) or lexical (literal lexical form), but not both."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="RdfTriple" />
@@ -1912,20 +2003,20 @@
 					<Rule>
 						<AllOf>
 							<Rule>
-								<TraitExists trait="o" />
+								<TraitExists trait="object" />
 							</Rule>
 							<Rule>
-								<TraitMissing trait="lex" />
+								<TraitMissing trait="lexical" />
 							</Rule>
 						</AllOf>
 					</Rule>
 					<Rule>
 						<AllOf>
 							<Rule>
-								<TraitExists trait="lex" />
+								<TraitExists trait="lexical" />
 							</Rule>
 							<Rule>
-								<TraitMissing trait="o" />
+								<TraitMissing trait="object" />
 							</Rule>
 						</AllOf>
 					</Rule>
@@ -2620,8 +2711,8 @@
 
 		<ConstraintDefinition
 			id=urn:codex:bootstrap:constraint:content-constraint-forbidden-forbids-pattern
-			title="ContentForbiddenUnlessAllowed forbids pattern"
-			description="When ContentConstraint.type is ContentForbiddenUnlessAllowed, pattern and flags must be absent."
+			title="ForbidsContent forbids pattern"
+			description="When ContentConstraint.type is ForbidsContent, pattern and flags must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ContentConstraint" />
@@ -2629,7 +2720,7 @@
 			<Rule>
 				<ConditionalConstraint>
 					<When>
-						<TraitEquals trait="type" value=$ContentForbiddenUnlessAllowed />
+						<TraitEquals trait="type" value=$ForbidsContent />
 					</When>
 					<Then>
 						<AllOf>

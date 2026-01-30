@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$ParseError notes="Record values require comma-separated entries; a trailing comma without a following entry is not permitted." />

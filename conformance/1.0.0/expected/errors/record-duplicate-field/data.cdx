@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$ParseError notes="Record values must not contain duplicate field names. This input has 'a' defined twice." />

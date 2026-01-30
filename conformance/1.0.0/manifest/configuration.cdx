@@ -188,6 +188,27 @@
 	/>
 
 	<Case
+		id="invalid/record-missing-colon"
+		input="cases/invalid/record-missing-colon/data.cdx"
+		expectedError="expected/errors/record-missing-colon/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/record-trailing-comma"
+		input="cases/invalid/record-trailing-comma/data.cdx"
+		expectedError="expected/errors/record-trailing-comma/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/record-duplicate-field"
+		input="cases/invalid/record-duplicate-field/data.cdx"
+		expectedError="expected/errors/record-duplicate-field/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
 		id="invalid/schema-document-missing-version"
 		input="cases/invalid/schema-document-missing-version/data.cdx"
 		expectedError="expected/errors/schema-document-missing-version/data.cdx"
