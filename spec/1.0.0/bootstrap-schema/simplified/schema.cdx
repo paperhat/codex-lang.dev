@@ -343,6 +343,7 @@
 				<RequiresTrait name="conceptKind" />
 				<RequiresTrait name="entityEligibility" />
 				<AllowsTrait name="key" />
+				<AllowsTrait name="description" />
 				<AllowsTrait name="role" />
 			</TraitRules>
 			<ChildRules>
@@ -554,6 +555,7 @@
 				<AllowsTrait name="defaultValueTypes" />
 				<AllowsTrait name="isReferenceTrait" />
 				<AllowsTrait name="priority" />
+				<AllowsTrait name="description" />
 			</TraitRules>
 			<ChildRules>
 				<AllowsChildConcept conceptSelector="AllowedValues" max=1 />
@@ -590,6 +592,7 @@
 				<RequiresTrait name="id" />
 				<RequiresTrait name="name" />
 				<AllowsTrait name="key" />
+				<AllowsTrait name="description" />
 			</TraitRules>
 			<ChildRules>
 				<RequiresChildConcept conceptSelector="Member" min=1 />
