@@ -68,11 +68,11 @@ body {
 }
 
 /* =========================
- * Strings & characters
+ * Text & characters
  * ========================= */
 
-.token.string,
-.token.string-backtick {
+.token.text,
+.token.text-backtick {
 	color: #0a3069;
 }
 

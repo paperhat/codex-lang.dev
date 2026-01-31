@@ -9,9 +9,9 @@
   const enumToken       = /\$[A-Z][A-Za-z0-9]*/;
   const lookupToken     = /~[a-z][A-Za-z0-9]*/;
 
-  // Strings
-  const stringQuoted    = /"(?:\\.|[^\\"])*"/;
-  const stringBacktick  = /`[\s\S]*?`/;
+  // Text
+  const textQuoted    = /"(?:\\.|[^\\"])*"/;
+  const textBacktick  = /`[\s\S]*?`/;
 
   // Characters
   const character       = /'(?:\\.|[^\\'])'/;
@@ -95,9 +95,9 @@
                 'enum-token': enumToken,
                 'lookup-token': lookupToken,
 
-                // Strings & chars
-                'string-backtick': stringBacktick,
-                'string': stringQuoted,
+                // Text & characters
+                'text-backtick': textBacktick,
+                'text': textQuoted,
                 'character': character,
 
                 // Temporal
