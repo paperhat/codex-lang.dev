@@ -8,7 +8,6 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -93,7 +92,7 @@ def _parse_annotations(path: Path, text: str) -> tuple[list[Annotation], list[st
         line = lines[line_index]
         stripped = line.lstrip()
 
-        # An annotation opening '[' must be the first non-whitespace char on its line.
+        # An annotation opening '[' must be the first non-whitespace character on its line.
         if not stripped.startswith("["):
             line_index += 1
             continue
@@ -110,7 +109,9 @@ def _parse_annotations(path: Path, text: str) -> tuple[list[Annotation], list[st
                     break
                 j += 1
             if end_index is None:
-                errors.append(f"{path.relative_to(ROOT)}:{start}: unterminated block annotation (missing closing ']')")
+                errors.append(
+                    f"{path.relative_to(ROOT)}:{start}: unterminated block annotation (missing closing ']')"
+                )
                 break
 
             annotations.append(
@@ -195,7 +196,9 @@ def _lint_file(path: Path) -> list[str]:
         kind = m.group(1)
         label = _canonicalize_inline_text(m.group(2))
         if label == "":
-            errors.append(f"{path.relative_to(ROOT)}:{a.start_line}: grouping annotation label must be non-empty")
+            errors.append(
+                f"{path.relative_to(ROOT)}:{a.start_line}: grouping annotation label must be non-empty"
+            )
             continue
         grouping.append((a, kind, label))
 
@@ -205,7 +208,9 @@ def _lint_file(path: Path) -> list[str]:
             stack.append((label, a.start_line))
         else:
             if not stack:
-                errors.append(f"{path.relative_to(ROOT)}:{a.start_line}: END without open GROUP ({label})")
+                errors.append(
+                    f"{path.relative_to(ROOT)}:{a.start_line}: END without open GROUP ({label})"
+                )
                 continue
             top_label, top_line = stack.pop()
             if top_label != label:
@@ -214,7 +219,9 @@ def _lint_file(path: Path) -> list[str]:
                 )
 
     for label, ln in stack:
-        errors.append(f"{path.relative_to(ROOT)}:{ln}: GROUP not closed (missing END: {label})")
+        errors.append(
+            f"{path.relative_to(ROOT)}:{ln}: GROUP not closed (missing END: {label})"
+        )
 
     # Classify attached annotation stacks.
     annotations_by_start = sorted(annotations, key=lambda a: (a.start_line, a.end_line))
@@ -252,7 +259,11 @@ def _lint_file(path: Path) -> list[str]:
         while k < len(lines) and _is_blank(lines[k]):
             k += 1
 
-        if k < len(lines) and _is_concept_opening_marker(lines[k]) and _count_blank_lines_below(lines, last.end_line) == 0:
+        if (
+            k < len(lines)
+            and _is_concept_opening_marker(lines[k])
+            and _count_blank_lines_below(lines, last.end_line) == 0
+        ):
             for item in stack_items:
                 attached.add(item.start_line)
 
@@ -268,12 +279,19 @@ def _lint_file(path: Path) -> list[str]:
 
         if is_grouping:
             ok_above = _file_boundary_counts_as_blank_above(a.start_line) or above == 1
-            ok_below = _file_boundary_counts_as_blank_below(lines, a.end_line) or below == 1
-            if not ok_above or (above > 1 and not _file_boundary_counts_as_blank_above(a.start_line)):
+            ok_below = (
+                _file_boundary_counts_as_blank_below(lines, a.end_line) or below == 1
+            )
+            if not ok_above or (
+                above > 1 and not _file_boundary_counts_as_blank_above(a.start_line)
+            ):
                 errors.append(
                     f"{path.relative_to(ROOT)}:{a.start_line}: grouping annotation must have exactly one blank line above"
                 )
-            if not ok_below or (below > 1 and not _file_boundary_counts_as_blank_below(lines, a.end_line)):
+            if not ok_below or (
+                below > 1
+                and not _file_boundary_counts_as_blank_below(lines, a.end_line)
+            ):
                 errors.append(
                     f"{path.relative_to(ROOT)}:{a.end_line}: grouping annotation must have exactly one blank line below"
                 )
@@ -300,7 +318,9 @@ def _lint_file(path: Path) -> list[str]:
     return errors
 
 
-def _iter_cdx_files(paths: list[Path], *, include_invalid_conformance_cases: bool) -> list[Path]:
+def _iter_cdx_files(
+    paths: list[Path], *, include_invalid_conformance_cases: bool
+) -> list[Path]:
     out: list[Path] = []
     for p in paths:
         p = p.resolve()
@@ -327,7 +347,9 @@ def _iter_cdx_files(paths: list[Path], *, include_invalid_conformance_cases: boo
 
 
 def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(description="Lint Codex annotations (syntax + §8.9 blank-line/kind rules)")
+    parser = argparse.ArgumentParser(
+        description="Lint Codex annotations (syntax + §8.9 blank-line/kind rules)"
+    )
     parser.add_argument(
         "--include-invalid",
         action="store_true",
@@ -350,7 +372,9 @@ def main(argv: list[str]) -> int:
             ROOT / "conformance" / "1.0.0" / "cases" / "valid",
         ]
 
-    files = _iter_cdx_files(roots, include_invalid_conformance_cases=args.include_invalid)
+    files = _iter_cdx_files(
+        roots, include_invalid_conformance_cases=args.include_invalid
+    )
     all_errors: list[str] = []
     for f in files:
         all_errors.extend(_lint_file(f))

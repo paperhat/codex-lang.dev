@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SurfaceFormError notes="The integer spelling '-0' is prohibited; authors must write '0' or use a non-integer spelling like '-0.0' if they need to preserve a negative-zero surface form." />

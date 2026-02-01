@@ -22,8 +22,8 @@ TRAIT_RE = re.compile(r"\b([a-z][A-Za-z0-9]*)=")
 CONCEPT_RE = re.compile(r"<\s*/?\s*([A-Za-z][A-Za-z0-9]*)\b")
 
 
-def _escape_string(s: str) -> str:
-    return s.replace("\\", "\\\\").replace('"', "\\\"")
+def _escape_text(s: str) -> str:
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
 
 def _read_all_spec_text() -> str:
@@ -96,8 +96,8 @@ def _write_report_cdx(
 ) -> None:
     lines: list[str] = []
     lines.append(
-        '<SchemasVsSpecAuditReport version="0.1" kind="heuristic" '
-        f'schemaFileCount={schema_file_count} schemasRoot="{_escape_string(schemas_root)}" specRoot="{_escape_string(spec_root)}">'
+    '<SchemasVsSpecAuditReport version="0.1" kind="heuristic" '
+    f'schemaFileCount={schema_file_count} schemasRoot="{_escape_text(schemas_root)}" specRoot="{_escape_text(spec_root)}">'
     )
     lines.append("\t<Notes>")
     lines.append(
@@ -111,19 +111,19 @@ def _write_report_cdx(
 
     lines.append("\t<MissingSigils>")
     for s in missing_sigils:
-        lines.append(f'\t\t<Sigil value="{_escape_string(s)}" />')
+         lines.append(f'\t\t<Sigil value="{_escape_text(s)}" />')
     lines.append("\t</MissingSigils>")
     lines.append("")
 
     lines.append("\t<MissingTraits>")
     for t in missing_traits:
-        lines.append(f'\t\t<Trait value="{_escape_string(t)}" />')
+         lines.append(f'\t\t<Trait value="{_escape_text(t)}" />')
     lines.append("\t</MissingTraits>")
     lines.append("")
 
     lines.append("\t<MissingConcepts>")
     for c in missing_concepts:
-        lines.append(f'\t\t<Concept value="{_escape_string(c)}" />')
+         lines.append(f'\t\t<Concept value="{_escape_text(c)}" />')
     lines.append("\t</MissingConcepts>")
     lines.append("</SchemasVsSpecAuditReport>")
 

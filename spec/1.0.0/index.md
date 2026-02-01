@@ -145,7 +145,7 @@ Accordingly:
 * A conforming implementation MUST be able to parse and check well-formedness without a governing schema.
 * A conforming implementation MUST NOT perform schema validation without an explicit governing schema.
 
-Well-formedness checking includes mechanically recognizing and classifying Value spellings into their Value kinds (and any grammar-defined subkinds) by applying this specification's surface-form grammar (§5 and Appendix A).
+Well-formedness checking includes mechanically recognizing and classifying Value spellings into their Value kinds (and any grammar-defined value types) by applying this specification's surface-form grammar (§5 and Appendix A).
 
 Expected types and type constraints for Trait values are schema-defined; checking a Trait value against its expected `ValueType` is part of schema validation and therefore requires an explicit governing schema.
 
@@ -306,26 +306,26 @@ This requirement binds schema authors. It is not fully mechanically enforceable 
 
 ## 5. Value Literal Catalog
 
-### 5.1 String Values
+### 5.1 Text Values
 
-A String Value is a sequence of zero or more Unicode scalar values. An empty String Value (zero scalar values) is permitted.
+A Text Value is a sequence of zero or more Unicode scalar values. An empty Text Value (zero scalar values) is permitted.
 
-In the Surface Form, String Values MUST be spelled as quoted string literals (see Appendix A) or backtick strings (see §5.2).
+In the Surface Form, Text Values MUST be spelled as quoted text literals (see Appendix A) or backtick text (see §5.2).
 
-### 5.2 Backtick Strings
+### 5.2 Backtick Text
 
-A Backtick String is a surface-form spelling of a String Value.
+A Backtick Text is a surface-form spelling of a Text Value.
 
-Within a Backtick String, `` \` `` represents a literal `` ` ``.
+Within a Backtick Text, `` \` `` represents a literal `` ` ``.
 
 A backslash not immediately followed by a backtick is a literal backslash and has no special meaning.
 
-After interpreting the Backtick String's escape sequences, the resulting character sequence MUST be transformed into the resulting String Value by applying the following whitespace normalization:
+After interpreting the Backtick Text's escape sequences, the resulting character sequence MUST be transformed into the resulting Text Value by applying the following whitespace normalization:
 
 - Each maximal run of whitespace characters (spaces, tabs, and line breaks) MUST be replaced with a single U+0020 SPACE.
 - Leading and trailing U+0020 SPACE MUST be removed.
 
-The resulting String Value MUST be single-line.
+The resulting Text Value MUST be single-line.
 
 ### 5.3 Boolean Values
 
@@ -353,7 +353,25 @@ In the Surface Form, Numeric Values MUST be spelled using the numeric literal gr
 
 Numeric Values MUST NOT include NaN. The literal spellings `Infinity` and `-Infinity` are permitted; `+Infinity` is not permitted. When compiled to XSD, `Infinity` MUST be translated to `INF` and `-Infinity` MUST be translated to `-INF`.
 
-The literal spelling `-0` is permitted and MUST be preserved distinct from `0`.
+When classifying a Numeric Value for schema validation purposes (see §11.6), tools MUST distinguish the following cases based on surface spelling:
+
+- `PositiveInfinity`: the literal spelling `Infinity`
+- `NegativeInfinity`: the literal spelling `-Infinity`
+- `Infinity`: either `PositiveInfinity` or `NegativeInfinity`
+
+When classifying an Integer for schema validation purposes (see §11.6), tools MUST distinguish the following cases based on surface spelling:
+
+- `Zero`: the literal spelling `0`
+- `PositiveInteger`: an Integer with no `-` sign whose digit sequence is not `0`
+- `NegativeInteger`: an Integer with a `-` sign (whose digit sequence is not `0`)
+- `NonNegativeInteger`: `Zero` or `PositiveInteger`
+- `NonPositiveInteger`: `Zero` or `NegativeInteger`
+
+The literal spelling `-0` MUST NOT appear as an integer Numeric Value.
+
+Codex-conforming tools MUST reject the integer spelling `-0` as a `SurfaceFormError` (§14).
+
+These integer-only classifiers do not apply to non-integer Numeric Value spellings. For example, the DecimalNumber spelling `-0.0` remains permitted.
 
 The meaning of a Numeric Value beyond its literal spelling MUST be defined by the governing schema or consuming system.
 
@@ -374,7 +392,7 @@ An Enumerated Token Value is a Value drawn from a schema-defined closed set.
 
 In the Surface Form, Enumerated Token Values MUST be spelled with a leading `$` sigil followed by a token name. The token name MUST use PascalCase.
 
-Enumerated Token Values MUST NOT be treated as String Values.
+Enumerated Token Values MUST NOT be treated as Text Values.
 
 Enumerated Token Values MUST NOT be evaluated.
 
@@ -412,7 +430,7 @@ Temporal Values MUST NOT be treated as Enumerated Token Values, even when the br
 
 ### 5.7 Color Values
 
-A Color Value MUST NOT be treated as a String Value.
+A Color Value MUST NOT be treated as a Text Value.
 
 Codex-conforming tools MUST NOT normalize, convert, or interpret Color Values beyond the well-formedness checks defined by this specification.
 
@@ -464,7 +482,7 @@ A UUID Value is a 36-character unquoted token with the form:
 
 where each `x` is a hexadecimal digit.
 
-A UUID Value MUST NOT be a String Value.
+A UUID Value MUST NOT be a Text Value.
 
 A UUID Value MUST NOT include braces, prefixes, or other delimiters.
 
@@ -492,9 +510,9 @@ IRI Reference Values MUST NOT contain Unicode bidirectional control characters.
 
 IRI Reference Values MUST NOT contain Unicode private-use characters.
 
-An IRI Reference Value MUST NOT be a String Value.
+An IRI Reference Value MUST NOT be a Text Value.
 
-IRI Reference Values MUST be compared as opaque strings.
+IRI Reference Values MUST be compared as opaque sequences of Unicode scalar values.
 
 Codex-conforming tools MUST NOT dereference IRI Reference Values.
 
@@ -508,7 +526,7 @@ In the Surface Form, Lookup Token Values MUST be spelled as `~` followed immedia
 
 The token name MUST use camelCase.
 
-A Lookup Token Value MUST NOT be a String Value.
+A Lookup Token Value MUST NOT be a Text Value.
 
 Codex-conforming tools MUST NOT dereference Lookup Token Values.
 
@@ -518,7 +536,7 @@ A Character Value represents exactly one Unicode scalar value.
 
 In the Surface Form, Character Values MUST be spelled as character literals delimited by single quotes (`'`). See Appendix A for the full grammar.
 
-A Character Value MUST NOT be a String Value.
+A Character Value MUST NOT be a Text Value.
 
 After interpreting the character literal's escape sequences, the resulting Character Value MUST contain exactly one Unicode scalar value.
 
@@ -541,11 +559,11 @@ For schema-level type constraints on list contents, see §5.18.
 ### 5.13 Value Equality for Collection Uniqueness
 For purposes of detecting duplicates in Set Values, Map Values, and Record Values, Codex-conforming tools MUST use the following Value equality relation.
 
-Equality is defined over parsed Values (after interpreting escape sequences, backtick-string whitespace normalization, and other value-specific decoding rules) and MUST NOT be defined over raw source bytes.
+Equality is defined over parsed Values (after interpreting escape sequences, backtick-text whitespace normalization, and other value-specific decoding rules) and MUST NOT be defined over raw source bytes.
 
 Two Values are equal if and only if they have the same Value kind and satisfy the following rules (recursively where applicable):
 
-- String Values: equal if and only if they contain the same sequence of Unicode scalar values.
+- Text Values: equal if and only if they contain the same sequence of Unicode scalar values.
 - Boolean Values: equal if and only if both are `true` or both are `false`.
 - Numeric Values: equal if and only if their literal spellings are identical codepoint-for-codepoint.
 - Enumerated Token Values: equal if and only if their literal spellings are identical codepoint-for-codepoint.
@@ -553,6 +571,9 @@ Two Values are equal if and only if they have the same Value kind and satisfy th
 - Color Values: equal if and only if their literal spellings are identical, except that hexadecimal digits, color function names, and color space tokens are compared case-insensitively.
 - UUID Values: equal if and only if they are identical after case-folding hexadecimal digits (i.e., hexadecimal digits are compared case-insensitively).
 - IRI Reference Values: equal if and only if their spellings are identical codepoint-for-codepoint (see §5.9).
+- Host Name Values: equal if and only if their canonical hostnames are identical codepoint-for-codepoint.
+- Email Address Values: equal if and only if their canonical email addresses are identical codepoint-for-codepoint.
+- URL Values: equal if and only if their canonical URL strings are identical codepoint-for-codepoint.
 - Lookup Token Values: equal if and only if their literal spellings are identical codepoint-for-codepoint.
 - Character Values: equal if and only if they contain the same Unicode scalar value.
 - List Values and Tuple Values: equal if and only if they have the same length and corresponding elements are equal.
@@ -606,7 +627,7 @@ For schema-level type constraints on map keys and values, see §5.18.
 In the Surface Form, a map key MUST be one of:
 
 - an unquoted identifier key
-- a String Value
+- a Text Value
 - a Character Value
 - an integer Numeric Value
 - an Enumerated Token Value
@@ -639,7 +660,7 @@ In the Surface Form, Range Values MUST be spelled using `..` between endpoints, 
 
 A Range Value MUST contain a start endpoint and an end endpoint.
 
-The start endpoint and end endpoint MUST be Values of the same base Value kind (e.g., both Integer, both String), independent of any parameterized type constraints.
+The start endpoint and end endpoint MUST be Values of the same base Value kind (e.g., both Integer, both Text), independent of any parameterized type constraints.
 
 A Range Value MUST contain either zero steps or one step.
 
@@ -674,9 +695,9 @@ The following collection types support parameterization:
 
 A type argument MUST be one of:
 
-* A simple value type token (e.g., `$String`)
-* A parameterized value type (e.g., `$List<$String>`)
-* A type union (e.g., `[$String, $Integer]`)
+* A simple value type token (e.g., `$Text`)
+* A parameterized value type (e.g., `$List<$Text>`)
+* A type union (e.g., `[$Text, $Integer]`)
 
 A type union is a bracketed, comma-separated list of value type tokens. A value conforms to a type union if it conforms to any member type.
 
@@ -690,20 +711,20 @@ An unparameterized collection type (e.g., `$List` without `<...>`) permits items
 
 There is no limit on the nesting depth of parameterized types.
 
-For example, `$List<$List<$String>>` specifies a list of lists of strings.
+For example, `$List<$List<$Text>>` specifies a list of lists of text values.
 
 #### 5.18.5 Examples
 
 | Type | Meaning |
 |------|---------|
-| `$List<$String>` | List of strings |
-| `$List<[$String, $Boolean]>` | List where each item is a string or boolean |
+| `$List<$Text>` | List of text values |
+| `$List<[$Text, $Boolean]>` | List where each item is a text value or boolean |
 | `$Set<$Integer>` | Set of integers |
-| `$Map<$String, $List<$Integer>>` | Map from strings to lists of integers |
-| `$Tuple<$String, $Integer, $Boolean>` | 3-tuple: (string, integer, boolean) |
+| `$Map<$Text, $List<$Integer>>` | Map from text values to lists of integers |
+| `$Tuple<$Text, $Integer, $Boolean>` | 3-tuple: (text value, integer, boolean) |
 | `$Range<$Integer>` | Range with integer bounds |
 | `$List` | List of any values (unparameterized) |
-| `$Record<$String>` | Record where all fields have string values |
+| `$Record<$Text>` | Record where all fields have text values |
 
 ### 5.19 Record Values
 
@@ -728,6 +749,102 @@ For schema-level type constraints on record fields, see §5.18.
 #### 5.19.1 Record Field Names
 
 In the Surface Form, a record field name MUST be an unquoted identifier using camelCase.
+
+### 5.20 Host Name Values
+
+A Host Name Value represents a DNS hostname (including internationalized domain names).
+
+In the Surface Form, Host Name Values MUST be spelled as the keyword `host` followed by a parenthesized Text Value:
+
+- `host("<hostname>")`
+
+The keyword `host` MUST be spelled using ASCII lowercase letters.
+
+After interpreting the Text Value's escape sequences, the decoded `hostname` text MUST NOT contain Unicode whitespace characters.
+
+The decoded `hostname` text MUST NOT contain Unicode control characters.
+
+The decoded `hostname` text MUST NOT contain Unicode bidirectional control characters.
+
+The decoded `hostname` text MUST NOT contain Unicode private-use characters.
+
+Host Name Values MUST be canonicalized as follows:
+
+1. Apply Unicode Normalization Form C (NFC) to the decoded `hostname` text using Unicode 16.0.0.
+2. Convert the NFC-normalized hostname to ASCII using UTS #46 ToASCII processing (nontransitional processing; UseSTD3ASCIIRules=true) using Unicode 16.0.0.
+3. Lowercase ASCII letters in the resulting ASCII hostname.
+
+If any step fails, Codex-conforming tools MUST reject the Host Name Value spelling with a `SchemaError` (§14).
+
+In canonical surface form, Host Name Values MUST be spelled as `host("<ascii-hostname>")`, where `<ascii-hostname>` is the lowercase ASCII hostname produced by the canonicalization procedure above.
+
+A Host Name Value MUST NOT be treated as a Text Value.
+
+### 5.21 Email Address Values
+
+An Email Address Value represents an email address with an internationalized local part and an internationalized domain.
+
+In the Surface Form, Email Address Values MUST be spelled as the keyword `email` followed by a parenthesized Text Value:
+
+- `email("<address>")`
+
+The keyword `email` MUST be spelled using ASCII lowercase letters.
+
+After interpreting the Text Value's escape sequences, the decoded `address` text MUST contain exactly one `@` character.
+
+Let `local` be the substring before `@` and `domain` be the substring after `@`.
+
+The decoded `address` text MUST NOT contain Unicode whitespace characters.
+
+The decoded `address` text MUST NOT contain Unicode control characters.
+
+The decoded `address` text MUST NOT contain Unicode bidirectional control characters.
+
+The decoded `address` text MUST NOT contain Unicode private-use characters.
+
+The `local` part MUST be non-empty.
+
+The `domain` part MUST be non-empty.
+
+Email Address Values MUST be canonicalized as follows:
+
+1. Apply Unicode Normalization Form C (NFC) to `local` and `domain` using Unicode 16.0.0.
+2. Canonicalize `domain` using the Host Name Value canonicalization procedure in §5.20 (including UTS #46 ToASCII and ASCII lowercasing).
+3. Preserve the NFC-normalized `local` part codepoint-for-codepoint (no case folding).
+
+If any step fails, Codex-conforming tools MUST reject the Email Address Value spelling with a `SchemaError` (§14).
+
+In canonical surface form, Email Address Values MUST be spelled as `email("<local>@<ascii-domain>")`, where `<local>` is the NFC-normalized local part and `<ascii-domain>` is the canonicalized lowercase ASCII domain.
+
+An Email Address Value MUST NOT be treated as a Text Value.
+
+### 5.22 URL Values
+
+A URL Value represents a structured URL with components defined by the WHATWG URL model.
+
+In the Surface Form, URL Values MUST be spelled using one of the following two forms:
+
+- `url("<absolute-url>")`
+- `url("<base-url>", "<relative-reference>")`
+
+The keyword `url` MUST be spelled using ASCII lowercase letters.
+
+Both arguments MUST be Text Values.
+
+URL Values MUST be parsed, resolved (if applicable), and serialized using the WHATWG URL Standard (the same URL model used by the DOM `new URL()` constructor): https://url.spec.whatwg.org/.
+
+For the two-argument form:
+
+- `base-url` MUST parse as an absolute URL.
+- `relative-reference` MUST be resolved against `base-url` using the WHATWG URL Standard's resolution algorithm.
+
+URL Values MUST be canonicalized by serializing the resulting URL to a canonical URL string using the WHATWG URL Standard's serializer.
+
+If parsing, resolution, or serialization fails, Codex-conforming tools MUST reject the URL Value spelling with a `SchemaError` (§14).
+
+In canonical surface form, URL Values MUST be spelled using the single-argument form `url("<canonical-url>")` where `<canonical-url>` is the canonical serialized URL string.
+
+A URL Value MUST NOT be treated as a Text Value.
 
 ---
 
@@ -1117,7 +1234,7 @@ Within a Concept marker, a Value MUST terminate at the first of the following:
 
 While scanning for Value termination, Codex-conforming tools MUST respect balanced delimiters as required by the Value spellings and the grammar, including `[]`, `{}`, `()`, `''`, and `""`.
 
-Except where permitted by a Value spelling (for example, within string and character literals), leading and trailing whitespace MUST NOT be treated as part of a Value.
+Except where permitted by a Value spelling (for example, within text and character literals), leading and trailing whitespace MUST NOT be treated as part of a Value.
 
 ### 8.7.1 Multiline Value Literals
 
@@ -1415,7 +1532,7 @@ A grouping annotation is a single-line annotation whose canonicalized annotation
 * `GROUP: <label>`
 * `END: <label>`
 
-`<label>` MUST be a non-empty string after trimming.
+`<label>` MUST be non-empty text after trimming.
 
 Grouping recognition MUST be performed after applying the inline annotation canonicalization rules in §8.9.4.1.
 
@@ -1504,7 +1621,7 @@ Schema-less checks are limited to:
 
 - determining whether the input bytes can be decoded as a permitted file encoding
 - determining whether the input matches the surface-form grammar
-- mechanically recognizing and classifying Value spellings into their Value kinds (and any grammar-defined subkinds) using only surface-form grammar rules, without reference to schema-defined value types
+- mechanically recognizing and classifying Value spellings into their Value kinds (and any grammar-defined value types) using only surface-form grammar rules, without reference to schema-defined value types
 - enforcing surface-form structural well-formedness (including marker nesting/matching)
 - enforcing surface-form canonicalization rules defined by this specification
 
@@ -1584,13 +1701,13 @@ To support a total, deterministic projection to derived validation artifacts, si
 
 #### 9.5.1 Pattern Flags
 
-The following atomic constraints MUST support an optional `flags` trait whose value is a string:
+The following atomic constraints MUST support an optional `flags` trait whose value is text:
 
 - `ValueMatchesPattern`
 - `PatternConstraint`
 - `ContentMatchesPattern`
 
-If `flags` is omitted, it MUST be treated as the empty string.
+If `flags` is omitted, it MUST be treated as empty text.
 
 The `pattern` and `flags` semantics MUST be SPARQL 1.1 `REGEX` semantics.
 
@@ -1605,20 +1722,20 @@ Simplified Authoring Mode MUST support explicit validator definitions that make 
 Each `ValidatorDefinition` MUST have these traits:
 
 - `name` (required; Enumerated Token Value)
-- `message` (optional; String Value)
+- `message` (optional; Text Value)
 
 `ValidatorDefinition` names MUST be unique within the Schema.
 
 Each `ValidatorDefinition` MUST be in content mode.
 
-The content of `ValidatorDefinition` MUST be a SPARQL `SELECT` query string.
+The content of `ValidatorDefinition` MUST be a SPARQL `SELECT` query text.
 
 The `SELECT` results MUST follow the SHACL-SPARQL convention (returning one row per violation with `?this` bound to the focus node).
 
 If a derived validation artifact is expressed using SHACL-SPARQL, the embedding contract for `ValueIsValid validatorName=$X` MUST be:
 
 1. Resolve `$X` to exactly one `ValidatorDefinition` in the governing schema.
-2. Emit a SHACL-SPARQL constraint whose `sh:select` string is exactly the `ValidatorDefinition` content.
+2. Emit a SHACL-SPARQL constraint whose `sh:select` text is exactly the `ValidatorDefinition` content.
 
 If `$X` cannot be resolved to exactly one `ValidatorDefinition`, schema processing MUST fail with a `SchemaError` (§14).
 
@@ -1667,7 +1784,7 @@ That member-selection path MUST be either `ChildPath` or `DescendantPath`.
 
 If the member-selection path is not one of these, expansion MUST fail with a `SchemaError` (§14).
 
-For `CollectionAllowsDuplicates` with `allowed=false`, the constraint node MUST include a required `keyTrait` trait whose value is a trait name string.
+For `CollectionAllowsDuplicates` with `allowed=false`, the constraint node MUST include a required `keyTrait` trait whose value is a Trait name.
 
 If `keyTrait` is `id`, it MUST refer to the declared identifier as specified by the instance-graph identity rules.
 
@@ -1706,12 +1823,12 @@ Each `RdfTriple` MUST have these traits:
 And exactly one of:
 
 - `object` (required; IRI Reference Value) — object IRI
-- `lexical` (required; String Value) — object literal lexical form
+- `lexical` (required; Text Value) — object literal lexical form
 
 When `lexical` is present, the following additional traits are permitted:
 
 - `datatype` (optional; IRI Reference Value) — RDF datatype IRI
-- `language` (optional; String Value) — RDF language tag
+- `language` (optional; Text Value) — RDF language tag
 
 If `language` is present, `datatype` MUST be absent.
 
@@ -1747,7 +1864,7 @@ For an RDF list attached as the object of a triple `(subject, predicate, _)`, li
 
 #### 9.6.4 Deterministic IRI Hashing
 
-When a derived IRI embeds another IRI or name as a path component, the embedded value MUST be hashed to produce a fixed-length, path-safe string.
+When a derived IRI embeds another IRI or name as a path component, the embedded value MUST be hashed to produce fixed-length, path-safe text.
 
 `iriHash(value)` MUST be computed as:
 
@@ -1755,7 +1872,7 @@ When a derived IRI embeds another IRI or name as a path component, the embedded 
 2. Compute the SHA-256 hash of that byte sequence.
 3. Encode the hash as lowercase hexadecimal (64 characters).
 
-The result is a deterministic, fixed-length string safe for use in IRI paths.
+The result is deterministic, fixed-length text safe for use in IRI paths.
 
 #### 9.6.5 Deterministic Derived IRIs (One Way To Say It)
 
@@ -1963,7 +2080,7 @@ Both `valueDatatypeIri(v)` and `valueLex(v)` MUST be derived by parsing `v` acco
 
 `valueDatatypeIri(v)` MUST be:
 
-- `xsd:string` for String Values
+ `xsd:string` for Text Values
 - `xsd:string` for Character Values
 - `xsd:boolean` for Boolean Values
 - `xsd:integer` for Integer Values
@@ -1976,10 +2093,10 @@ where `<T>` is the Codex value type token name (for example, `Uuid`, `Color`, `T
 
 `valueLex(v)` MUST be:
 
-- the decoded Unicode string value for String Values
-- the single Unicode scalar value as a Unicode string for Character Values
+ the decoded Unicode text value for Text Values
+ the single Unicode scalar value as Unicode text for Character Values
 - `"true"` or `"false"` for Boolean Values
-- a base-10 integer string for Integer Values
+ base-10 integer text for Integer Values
 
 For all other value types, `valueLex(v)` MUST be the canonical surface spelling of `v`.
 
@@ -1988,15 +2105,15 @@ Lookup Token Values MUST be represented as typed literals with:
 - datatype: `urn:cdx:value-type:LookupToken`
 - lexical form: the canonical surface spelling (for example, `~myToken`)
 
-If a schema constraint requires an interpreted value (for example, numeric comparisons or string length), schema processing MUST either provide the interpreted value in a deterministic RDF representation or fail with a `SchemaError` (§14).
+If a schema constraint requires an interpreted value (for example, numeric comparisons or text length), schema processing MUST either provide the interpreted value in a deterministic RDF representation or fail with a `SchemaError` (§14).
 
 #### 9.7.8 Content
 
 If a concept instance is in content mode, the mapping MUST emit:
 
-- `(nodeIri(C), codex:content, contentString)`
+- `(nodeIri(C), codex:content, contentText)`
 
-`contentString` MUST be an `xsd:string` literal containing the concept's content after applying the Codex content escaping rules.
+`contentText` MUST be an `xsd:string` literal containing the concept's content after applying the Codex content escaping rules.
 
 #### 9.7.9 Deterministic Predicate IRIs
 
@@ -2028,6 +2145,12 @@ Each Concept instance MUST emit an RDF type triple:
 If `conceptClassIri(X)` cannot be resolved to exactly one `ConceptDefinition`, schema-driven validation MUST fail with a `SchemaError` (§14).
 
 All aspects of the instance graph mapping required by this specification are defined in this section.
+
+#### 9.7.11 Conformance Graph (`G₁`)
+
+For a Codex instance document processed under a governing schema and an explicit `documentBaseIri`, let `G₁` be the RDF instance graph produced by the Codex→RDF instance graph mapping defined in §9.7.
+
+For purposes of conformance testing and byte-identical comparison, a conforming implementation MUST emit `G₁` in the Codex `RdfGraph` form defined in §9.6.1 and MUST apply the canonical ordering and duplicate-removal rules defined in §9.6.2.
 
 ### 9.8 Lookup Token Bindings
 Lookup Token Values (`~name`) are symbolic references that require an explicit binding to a target identifier in order to be resolved.
@@ -2127,7 +2250,7 @@ If a derived validation artifact is produced as a SHACL graph, it MUST be canoni
 	- for a child class IRI `Q`: `PS = propertyShapeIri(S,Q)` and the artifact MUST include `(PS, sh:path, childPredicateIri(K,Q))`
 	- for a predicate IRI `p`: `PS = predicatePropertyShapeIri(S,p)` and the artifact MUST include `(PS, sh:path, p)`
 
-If a derived validation artifact expresses any constraint using SHACL-SPARQL, the `sh:select` string MUST be a SPARQL 1.1 `SELECT` query that returns one row per violating focus node using the SHACL-SPARQL convention:
+If a derived validation artifact expresses any constraint using SHACL-SPARQL, the `sh:select` text MUST be a SPARQL 1.1 `SELECT` query that returns one row per violating focus node using the SHACL-SPARQL convention:
 
 - the focus node variable MUST be `?this`
 - a row returned by the query MUST indicate a violation
@@ -2255,7 +2378,7 @@ EXISTS {
 }
 ```
 
-where `p` is the required pattern and `f` is the flags string if present. If `flags` is absent, the generated constraint MUST use the 2-argument `REGEX(text, pattern)` form.
+where `p` is the required pattern and `f` is the flags text if present. If `flags` is absent, the generated constraint MUST use the 2-argument `REGEX(text, pattern)` form.
 
 #### 9.9.7 Uniqueness Constraints
 
@@ -2444,7 +2567,7 @@ The expansion MUST fail with a `SchemaError` (§14) if any precondition defined 
 
 #### 9.11.4 TraitRules → SHACL Property Shapes
 
-For each trait rule attached to a concept definition with node shape IRI `NS`, let `t` be the trait name string.
+For each trait rule attached to a concept definition with node shape IRI `NS`, let `t` be the trait name.
 
 The expansion MUST emit one SHACL property shape node `PS` with:
 
@@ -2775,9 +2898,9 @@ The embedding contract MUST be purely textual and deterministic.
 
 The embedding contract MUST be:
 
-- The validator content MUST be a SPARQL `SELECT` query string whose results follow the SHACL-SPARQL convention (returning a row per violation with `?this`).
+- The validator content MUST be a SPARQL `SELECT` query text whose results follow the SHACL-SPARQL convention (returning a row per violation with `?this`).
 
-The derived `sh:select` string MUST be exactly the validator content.
+The derived `sh:select` text MUST be exactly the validator content.
 
 ---
 
@@ -2892,7 +3015,7 @@ Canonicalization is divided into two phases:
 - canonical Trait layout (1–2 Traits on one line; 3+ Traits on separate lines)
 - canonical placement of self-closing markers
 - canonical inline-annotation whitespace collapse
-- canonical string escaping
+- canonical text escaping
 - preservation of Concept, Trait, and Content order
 - content indentation normalization (§8.8.3)
 
@@ -3093,7 +3216,7 @@ A `Schema` Concept MUST declare the following Traits:
 * `id` (required; IRI Reference Value)
   The globally unique identifier for the schema. This value is used as `schemaIri` throughout schema processing, instance-graph mapping, and derived-artifact generation.
 
-* `version` (required; String Value)
+* `version` (required; Text Value)
 
   A schema version identifier whose ordering is defined by `versionScheme`.
 
@@ -3111,8 +3234,8 @@ A `Schema` Concept MUST declare the following Traits:
 
 The following Traits are optional:
 
-* `title` (optional; String Value)
-* `description` (optional; String Value)
+* `title` (optional; Text Value)
+* `description` (optional; Text Value)
 
 The `Schema` Concept MUST declare exactly one authoring mode via the `authoringMode` Trait, as defined in §9.4.
 
@@ -3177,7 +3300,7 @@ A `ConceptDefinition` is an Entity.
 ##### Traits
 * `id` (required; IRI Reference Value)
 * `key` (optional; Lookup Token Value)
-* `name` (required; Concept name string, per §4 Naming Rules)
+* `name` (required; Concept name, per §4 Naming Rules)
 * `conceptKind` (required; `$Semantic | $Structural | $ValueLike`)
 * `entityEligibility` (required; `$MustBeEntity | $MustNotBeEntity`)
 
@@ -3247,19 +3370,19 @@ Each rule applies to exactly one trait name.
 
 Traits:
 
-* `name` (required; Trait name string, per §4)
+* `name` (required; Trait name, per §4)
 
 ###### `AllowsTrait`
 
 Traits:
 
-* `name` (required; Trait name string, per §4)
+* `name` (required; Trait name, per §4)
 
 ###### `ForbidsTrait`
 
 Traits:
 
-* `name` (required; Trait name string, per §4)
+* `name` (required; Trait name, per §4)
 
 ##### Defaults
 
@@ -3288,7 +3411,7 @@ If no child rules are needed, omit the `ChildRules` container entirely.
 
 Traits:
 
-* `conceptSelector` (required; Concept name string)
+* `conceptSelector` (required; Concept name)
 * `min` (optional; non-negative integer; default `0`)
 * `max` (optional; positive integer; omitted means unbounded)
 
@@ -3296,7 +3419,7 @@ Traits:
 
 Traits:
 
-* `conceptSelector` (required; Concept name string)
+* `conceptSelector` (required; Concept name)
 * `min` (optional; positive integer; default `1`)
 * `max` (optional; positive integer; omitted means unbounded)
 
@@ -3306,7 +3429,7 @@ Traits:
 
 Traits:
 
-* `conceptSelector` (required; Concept name string)
+* `conceptSelector` (required; Concept name)
 
 ##### Defaults
 
@@ -3378,7 +3501,7 @@ Trait definitions establish the value type and constraints for a Trait that may 
 
 ###### Traits
 * `id` (optional; IRI reference)
-* `name` (required; Trait name string per §4 Naming Rules)
+* `name` (required; Trait name per §4 Naming Rules)
 * `defaultValueType` (required unless `defaultValueTypes` is provided; value type token, optionally parameterized per §5.17)
 * `defaultValueTypes` (required unless `defaultValueType` is provided; list of one or more value type tokens, optionally parameterized per §5.17)
 * `isReferenceTrait` (optional; boolean)
@@ -3398,11 +3521,11 @@ If `defaultValueType` specifies a single type, the value MUST conform to that ty
 If `defaultValueTypes` specifies multiple types, the value MUST conform to exactly one of the listed types.
 
 ##### Collection Type Semantics
-If a trait's value type is a parameterized collection type (e.g., `$List<$String>`), each element of the collection MUST conform to the declared item type.
+If a trait's value type is a parameterized collection type (e.g., `$List<$Text>`), each element of the collection MUST conform to the declared item type.
 
 If a trait's value type is an unparameterized collection type (e.g., `$List`), elements are permitted to be of any type.
 
-If a trait's value type is a union containing both scalar and collection types (e.g., `[$String, $List<$String>]`), the value MUST conform to exactly one member of the union.
+If a trait's value type is a union containing both scalar and collection types (e.g., `[$Text, $List<$Text>]`), the value MUST conform to exactly one member of the union.
 
 ##### Trait Presence
 
@@ -3431,12 +3554,12 @@ Whether a trait must, may, or must not appear on a Concept instance is governed 
 
 <TraitDefinition
 	name="tags"
-	defaultValueType=$List<$String>
+	defaultValueType=$List<$Text>
 />
 
 <TraitDefinition
 	name="role"
-	defaultValueTypes=[$String, $List<$String>]
+	defaultValueTypes=[$Text, $List<$Text>]
 />
 ```
 
@@ -3475,22 +3598,62 @@ Value types in schemas are **classifiers**, not evaluators. They constrain which
 #### 11.6.1 Built-In Value Type Tokens
 Schemas are permitted to reference the following built-in value type tokens.
 
-Each token corresponds to a Value category defined in §5 (Value Literal Catalog).
+Each token corresponds to a Value category defined in §5 (Value Literal Catalog) or to a surface-distinct Numeric Value type (§5.4).
 
-* `$String`
-* `$Char`
+* `$Text`
+* `$Character`
 * `$Boolean`
 * `$Number`
 * `$Integer`
+* `$Zero`
+* `$NegativeInteger`
+* `$NonPositiveInteger`
+* `$DecimalNumber`
+* `$ExponentialNumber`
+* `$PrecisionNumber`
+* `$Fraction`
+* `$ImaginaryNumber`
+* `$ComplexNumber`
+* `$NonNegativeInteger`
+* `$PositiveInteger`
+* `$PositiveInfinity`
+* `$NegativeInfinity`
+* `$Infinity`
 * `$EnumeratedToken`
 * `$IriReference`
 * `$LookupToken`
 * `$Uuid`
+* `$HostName`
+* `$EmailAddress`
+* `$Url`
 * `$Color`
+* `$HexColor`
+* `$NamedColor`
+* `$RgbColor`
+* `$HslColor`
+* `$HwbColor`
+* `$LabColor`
+* `$LchColor`
+* `$OklabColor`
+* `$OklchColor`
+* `$ColorFunction`
+* `$ColorMix`
+* `$DeviceCmyk`
 * `$Temporal`
+* `$PlainDate`
+* `$PlainTime`
+* `$PlainDateTime`
+* `$PlainYearMonth`
+* `$PlainMonthDay`
+* `$YearWeek`
+* `$Instant`
+* `$ZonedDateTime`
+* `$Duration`
+* `$TemporalKeyword`
 * `$List`
 * `$Set`
 * `$Map`
+* `$Record`
 * `$Tuple`
 * `$Range`
 
@@ -3515,7 +3678,7 @@ Schema-defined value types are referenced using Enumerated Token Values whose na
 
 ##### Traits
 * `id` (optional; IRI Reference Value)
-* `name` (required; Concept name string per §4 Naming Rules)
+* `name` (required; Concept name per §4 Naming Rules)
 * `baseValueType` (required; built-in value type token)
 * `validatorName` (optional; Enumerated Token Value identifying a `ValidatorDefinition`)
 
@@ -3546,7 +3709,7 @@ Enumerated value sets are used exclusively by constraints and Trait definitions;
 Defines a closed set of enumerated tokens.
 
 ###### Traits
-* `name` (required; Concept name string per §4 Naming Rules)
+* `name` (required; Concept name per §4 Naming Rules)
 
 ###### Children
 One or more `Member` children.
@@ -3557,8 +3720,8 @@ Defines one member of an enumerated value set.
 
 ###### Traits
 * `value` (required; token name without `$`)
-* `label` (optional; String Value)
-* `description` (optional; String Value)
+* `label` (optional; Text Value)
+* `description` (optional; Text Value)
 
 Each `value` MUST be unique within its `EnumeratedValueSet`.
 
@@ -3633,8 +3796,8 @@ A `ConstraintDefinition` is itself an Entity.
 
 ##### Traits
 * `id` (required; IRI Reference Value)
-* `title` (optional; String Value)
-* `description` (optional; String Value)
+* `title` (optional; Text Value)
+* `description` (optional; Text Value)
 
 ##### Children
 Exactly two children, in any order:
@@ -3667,7 +3830,7 @@ If `Targets` contains no children, schema processing MUST fail with a `SchemaErr
 Applies the constraint to instances of a specific Concept.
 
 ###### Traits
-* `conceptSelector` (required; Concept name string)
+* `conceptSelector` (required; Concept name)
 
 The selector MUST resolve to exactly one `ConceptDefinition`.
 Otherwise, schema processing MUST fail with a `SchemaError` (§14).
@@ -3679,7 +3842,7 @@ Otherwise, schema processing MUST fail with a `SchemaError` (§14).
 Applies the constraint relative to a context.
 
 ###### Traits
-* `contextSelector` (required; Concept name string or the literal string `"Document"`)
+* `contextSelector` (required; Concept name or the literal text `"Document"`)
 
 If `contextSelector` is not `"Document"`, it MUST resolve to exactly one `ConceptDefinition`.
 Otherwise, schema processing MUST fail with a `SchemaError` (§14).
@@ -3828,7 +3991,7 @@ Each path node MUST declare exactly the traits required for its form.
 Selects values of a Trait on the focus Concept instance.
 
 ###### Traits
-* `traitName` (required; Trait name string per the Naming Rules in §4)
+* `traitName` (required; Trait name per the Naming Rules in §4)
 
 ##### Semantics
 
@@ -3841,7 +4004,7 @@ Selects each value bound to the named Trait on the focus node.
 Selects direct child Concept instances of a given Concept type.
 
 ###### Traits
-* `conceptSelector` (required; Concept name string)
+* `conceptSelector` (required; Concept name)
 
 ##### Semantics
 
@@ -3854,7 +4017,7 @@ Selects each direct child of the focus node whose Concept type matches `conceptS
 Selects descendant Concept instances at any depth of a given Concept type.
 
 ###### Traits
-* `conceptSelector` (required; Concept name string)
+* `conceptSelector` (required; Concept name)
 
 ##### Semantics
 
@@ -3872,7 +4035,7 @@ None.
 
 ##### Semantics
 
-Selects the content string if and only if the focus Concept instance is in content mode.
+Selects the content text if and only if the focus Concept instance is in content mode.
 
 ---
 
@@ -3963,7 +4126,7 @@ Trait constraints apply to Traits declared on the focus Concept instance.
 The named Trait MUST be present.
 
 ###### Traits
-* `trait` (required; Trait name string per §4)
+* `trait` (required; Trait name per §4)
 
 ---
 
@@ -3972,7 +4135,7 @@ The named Trait MUST be present.
 The named Trait MUST be absent.
 
 ###### Traits
-* `trait` (required; Trait name string per §4)
+* `trait` (required; Trait name per §4)
 
 ---
 
@@ -3981,7 +4144,7 @@ The named Trait MUST be absent.
 The named Trait MUST have at least one value equal to the specified value.
 
 ###### Traits
-* `trait` (required; Trait name string per §4)
+* `trait` (required; Trait name per §4)
 * `value` (required; Value)
 
 ---
@@ -3991,7 +4154,7 @@ The named Trait MUST have at least one value equal to the specified value.
 Constrains the number of values bound to a Trait.
 
 ###### Traits
-* `trait` (required; Trait name string per §4)
+* `trait` (required; Trait name per §4)
 * `min` (optional; non-negative integer)
 * `max` (optional; positive integer)
 
@@ -4004,7 +4167,7 @@ At least one of `min` or `max` MUST be present.
 Constrains the value type of a Trait.
 
 ###### Traits
-* `trait` (required; Trait name string per §4)
+* `trait` (required; Trait name per §4)
 * `valueType` (required; value type token)
 
 ---
@@ -4027,8 +4190,8 @@ The value MUST be one of the explicitly listed values.
 The value MUST match a regular expression.
 
 ###### Traits
-* `pattern` (required; regex string)
-* `flags` (optional; string; SPARQL 1.1 `REGEX` flags)
+* `pattern` (required; regex text)
+* `flags` (optional; text; SPARQL 1.1 `REGEX` flags)
 
 ---
 
@@ -4037,15 +4200,15 @@ The value MUST match a regular expression.
 Constrains a specific Trait value to match a regular expression.
 
 ###### Traits
-* `trait` (required; Trait name string per §4)
-* `pattern` (required; regex string)
-* `flags` (optional; string; SPARQL 1.1 `REGEX` flags)
+* `trait` (required; Trait name per §4)
+* `pattern` (required; regex text)
+* `flags` (optional; text; SPARQL 1.1 `REGEX` flags)
 
 ---
 
 ##### `ValueLength`
 
-Constrains the length of a string value.
+Constrains the length of a text value.
 
 ###### Traits
 * `min` (optional; non-negative integer)
@@ -4074,7 +4237,7 @@ If comparison semantics are not explicitly defined for the active value type, sc
 
 The value MUST be present and non-empty.
 
-This constraint applies to string-like values only.
+This constraint applies to text-like values only.
 If applied to an incompatible value type, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
@@ -4101,7 +4264,7 @@ Generic child constraint using explicit type dispatch.
 
 ###### Traits
 * `type` (required; one of `RequiresChildConcept | AllowsChildConcept | ForbidsChildConcept`)
-* `conceptSelector` (required; Concept name string)
+* `conceptSelector` (required; Concept name)
 
 This form is provided for compatibility and normalization.
 Its semantics MUST be equivalent to the corresponding explicit child-rule form defined in §11.4.4.
@@ -4113,7 +4276,7 @@ Its semantics MUST be equivalent to the corresponding explicit child-rule form d
 Constrains child Concept instances using a nested rule.
 
 ###### Traits
-* `conceptSelector` (required; Concept name string)
+* `conceptSelector` (required; Concept name)
 
 ###### Children
 * Exactly one `Rule` child
@@ -4197,8 +4360,8 @@ The rule MUST be evaluated for each matching collection member.
 Constrains Trait values to be unique within a scope.
 
 ###### Traits
-* `trait` (required; Trait name string per §4)
-* `scope` (required; Concept name string defining the uniqueness scope)
+* `trait` (required; Trait name per §4)
+* `scope` (required; Concept name defining the uniqueness scope)
 
 Uniqueness semantics MUST follow the deterministic scope rules defined in §9.9.7.
 
@@ -4212,7 +4375,7 @@ Constrains the ordering of collection elements by a trait value.
 
 ###### Traits
 * `type` (required; one of the order constraint types defined below)
-* `byTrait` (required; Trait name string per §4)
+* `byTrait` (required; Trait name per §4)
 
 ###### Types
 * `Ascending`: Elements must be in ascending order by the specified trait value.
@@ -4254,9 +4417,9 @@ Constrains entity and identifier semantics.
 
 ###### Traits
 * `type` (required; one of the identity constraint types defined below)
-* `scope` (optional; Concept name string defining an identity uniqueness scope)
-* `pattern` (optional; regex string)
-* `flags` (optional; string; SPARQL 1.1 `REGEX` flags)
+* `scope` (optional; Concept name defining an identity uniqueness scope)
+* `pattern` (optional; regex text)
+* `flags` (optional; text; SPARQL 1.1 `REGEX` flags)
 
 ###### Types
 * `MustBeEntity`: Instance must be an entity. The `scope`, `pattern`, and `flags` traits MUST NOT be present.
@@ -4292,7 +4455,7 @@ Constrains the structural context in which a Concept instance may appear.
 
 ###### Traits
 * `type` (required; one of the context constraint types defined below)
-* `contextSelector` (Concept name string; see type-specific requirements below)
+* `contextSelector` (Concept name; see type-specific requirements below)
 
 ###### Types
 * `OnlyValidUnderParent`: Requires the immediate parent is of the type specified by the `TargetContext` in this constraint's `Targets` block. The `ContextConstraint` itself MUST NOT have a `contextSelector` trait.
@@ -4637,7 +4800,7 @@ The root `Schema` Concept’s `versionScheme` Trait MUST be one of the following
 If `versionScheme` is not one of these values, schema processing MUST fail with a `SchemaError` (§14).
 
 #### 13.4.2 Version Comparison Rules
-For all schemes below, if a `version` string does not conform to the required scheme-specific syntax, schema processing MUST fail with a `SchemaError` (§14).
+For all schemes below, if a `version` text does not conform to the required scheme-specific syntax, schema processing MUST fail with a `SchemaError` (§14).
 
 `$Semver`
 
@@ -4656,8 +4819,8 @@ For all schemes below, if a `version` string does not conform to the required sc
 
 `$Lexical`
 
-* Syntax: any String Value.
-* Comparison: compare the `version` String Values by Unicode scalar value codepoint order, left-to-right; if all compared codepoints are equal, the shorter string is less than the longer string.
+* Syntax: any Text Value.
+* Comparison: compare the `version` Text Values by Unicode scalar value codepoint order, left-to-right; if all compared codepoints are equal, the shorter text is less than the longer text.
 
 ### 13.5 Compatibility Classes
 Each schema version MUST declare exactly one compatibility class. For all versions except the first, the compatibility class declares the relationship to the immediately preceding version in the same schema lineage.
@@ -4879,7 +5042,7 @@ Characteristics:
 Examples (illustrative):
 
 - unbalanced Concept markers
-- invalid string literal escaping
+- invalid text literal escaping
 - malformed Traits
 - unterminated Annotation (missing closing `]`)
 - structurally invalid nesting of markers
@@ -5084,8 +5247,8 @@ This grammar is based on ISO/IEC 14977 EBNF notation with extensions:
 * `[ ... ]` optional (zero or one)
 * `{ ... }` repetition (zero or more)
 * `( ... )` grouping
-* `" ... "` terminal string
-* `' ... '` terminal string (alternative)
+* " ... " terminal literal
+* ' ... ' terminal literal (alternative)
 * `(* ... *)` comment
 * `-` exception
 * `;` end of production
@@ -5219,10 +5382,10 @@ ContentLine
 	;
 
 ContentText
-	= { ContentChar }
+	= { ContentCharacter }
 	;
 
-ContentChar
+ContentCharacter
 	= ContentEscape | ContentSafeChar
 	;
 
@@ -5309,15 +5472,18 @@ TraitName
 
 ```ebnf
 Value
-	= StringValue
+	= TextValue
 	| CharValue
-	| BacktickString
+	| BacktickText
 	| BooleanValue
 	| NumericValue
 	| EnumeratedToken
 	| TemporalValue
 	| ColorValue
 	| UuidValue
+	| HostNameValue
+	| EmailAddressValue
+	| UrlValue
 	| LookupToken
 	| IriReference
 	| ListValue
@@ -5327,22 +5493,34 @@ Value
 	| TupleValue
 	| RangeValue
 	;
+
+HostNameValue
+	= "host", "(", { Whitespace }, TextValue, { Whitespace }, ")"
+	;
+
+EmailAddressValue
+	= "email", "(", { Whitespace }, TextValue, { Whitespace }, ")"
+	;
+
+UrlValue
+	= "url", "(", { Whitespace }, TextValue, { Whitespace }, [ ",", { Whitespace }, TextValue, { Whitespace } ], ")"
+	;
 ```
 
 ---
 
-#### A.1.8 String Values
+#### A.1.8 Text Values
 
 ```ebnf
-StringValue
-	= '"', { StringChar }, '"'
+TextValue
+	= '"', { TextCharacter }, '"'
 	;
 
-StringChar
-	= UnescapedStringChar | EscapeSequence
+TextCharacter
+	= UnescapedTextCharacter | EscapeSequence
 	;
 
-UnescapedStringChar
+UnescapedTextCharacter
 	= AnyCharExceptQuoteBackslashNewline
 	;
 
@@ -5386,10 +5564,10 @@ CharEscapeSequence
 
 ---
 
-#### A.1.10 Backtick Strings
+#### A.1.10 Backtick Text
 
 ```ebnf
-BacktickString
+BacktickText
 	= "`", { BacktickChar }, "`"
 	;
 
@@ -5437,7 +5615,7 @@ Sign
 	;
 
 Integer
-	= [ Sign ], IntegerDigits
+	= "0" | [ Sign ], NonZeroDigit, { Digit }
 	;
 
 DecimalNumber
@@ -5455,7 +5633,15 @@ PrecisionNumber
 (* Infinity and -Infinity are permitted; +Infinity is not (§5.4).
 	Compiles to XSD INF and -INF respectively. *)
 Infinity
-	= [ "-" ], "Infinity"
+	= PositiveInfinity | NegativeInfinity
+	;
+
+PositiveInfinity
+	= "Infinity"
+	;
+
+NegativeInfinity
+	= "-", "Infinity"
 	;
 
 Fraction
@@ -5848,7 +6034,7 @@ MapEntry
 
 MapKey
 	= MapIdentifier
-	| StringValue
+	| TextValue
 	| CharValue
 	| Integer
 	| EnumeratedToken
@@ -6044,7 +6230,7 @@ The following character classes are used but not fully enumerated:
 
 	Precedence (highest first):
 
-	1. Delimited: StringValue, CharValue, BacktickString
+	1. Delimited: TextValue, CharValue, BacktickText, HostNameValue, EmailAddressValue, UrlValue
 	2. BooleanValue ("true" | "false")
 	3. EnumeratedToken ($...)
 	4. LookupToken (~...)
@@ -6080,8 +6266,8 @@ This grammar uses standard PEG notation:
 * `&` positive lookahead
 * `!` negative lookahead
 * `( ... )` grouping
-* `" ... "` literal string
-* `' ... '` literal string (alternative)
+* " ... " literal
+* ' ... ' literal (alternative)
 * `[ ... ]` character class
 * `.` any character
 * `#` comment to end of line
@@ -6145,8 +6331,8 @@ ContentBody <- ContentLine*
 
 ContentLine <- Indentation ContentText Newline
 
-ContentText <- ContentChar*
-ContentChar <- ContentEscape / ContentSafeChar
+ContentText <- ContentCharacter*
+ContentCharacter <- ContentEscape / ContentSafeChar
 ContentEscape <- '\\' ('<' / '[')
 ContentSafeChar <- !Newline !'<' .
 ```
@@ -6198,9 +6384,12 @@ TraitName <- LowercaseLetter (Letter / Digit)*
 # Token termination in markers is governed by the surface rules (see A.1.28);
 # this PEG uses explicit constructs for balanced literals.
 
-Value <- StringValue
+Value <- TextValue
       / CharValue
-      / BacktickString
+	/ BacktickText
+	/ HostNameValue
+	/ EmailAddressValue
+	/ UrlValue
       / BooleanValue
       / EnumeratedToken
       / LookupToken
@@ -6215,15 +6404,19 @@ Value <- StringValue
       / RangeValue
       / NumericValue
       / IriReference
+
+HostNameValue <- 'host' '(' WS* TextValue WS* ')'
+EmailAddressValue <- 'email' '(' WS* TextValue WS* ')'
+UrlValue <- 'url' '(' WS* TextValue WS* (',' WS* TextValue WS*)? ')'
 ```
 
 ---
 
-#### A.2.8 String Values
+#### A.2.8 Text Values
 
 ```peg
-StringValue <- '"' StringChar* '"'
-StringChar <- EscapeSequence / (!["\\\n] .)
+TextValue <- '"' TextCharacter* '"'
+TextCharacter <- EscapeSequence / (!["\\\n] .)
 EscapeSequence <- '\\' ( ["\\nrt] / UnicodeEscape )
 UnicodeEscape <- 'u' HexDigit HexDigit HexDigit HexDigit
              / 'u{' HexDigit+ '}'
@@ -6242,10 +6435,10 @@ CharEscapeSequence <- '\\' ( ["'\\nrt] / UnicodeEscape )
 
 ---
 
-#### A.2.10 Backtick Strings
+#### A.2.10 Backtick Text
 
 ```peg
-BacktickString <- '`' BacktickChar* '`'
+BacktickText <- '`' BacktickChar* '`'
 BacktickChar <- BacktickEscape / (!'`' .)
 BacktickEscape <- '\\' '`'
 ```
@@ -6275,11 +6468,14 @@ NumericValue <- ComplexNumber
 ComplexNumber <- (Integer / DecimalNumber) ([+-]) (Integer / DecimalNumber) 'i'
 ImaginaryNumber <- (Integer / DecimalNumber) 'i'
 Fraction <- Integer '/' IntDigits
-Infinity <- '-'? 'Infinity'
 PrecisionNumber <- DecimalNumber 'p' IntDigits?
 ExponentialNumber <- (Integer / DecimalNumber) [eE] Sign? IntDigits
 DecimalNumber <- Sign? IntDigits '.' Digits
-Integer <- Sign? IntDigits
+Infinity <- PositiveInfinity / NegativeInfinity
+PositiveInfinity <- 'Infinity'
+NegativeInfinity <- '-' 'Infinity'
+
+Integer <- '0' / Sign? [1-9] Digit*
 
 Sign <- [+-]
 Digits <- Digit+
@@ -6377,7 +6573,7 @@ SetItems <- Value (WS* ',' WS* Value)*
 MapValue <- 'map' '[' WS* MapItems? WS* ']'
 MapItems <- MapEntry (WS* ',' WS* MapEntry)*
 MapEntry <- MapKey WS* ':' WS* Value
-MapKey <- MapIdentifier / StringValue / CharValue / Integer / EnumeratedToken
+MapKey <- MapIdentifier / TextValue / CharValue / Integer / EnumeratedToken
 MapIdentifier <- LowercaseLetter (Letter / Digit)*
 ```
 

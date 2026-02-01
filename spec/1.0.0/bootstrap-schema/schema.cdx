@@ -248,9 +248,9 @@
 		/>
 
 		[Scalar types]
-		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/1 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="String" />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/1 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="Text" />
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/1 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/2 />
-		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/2 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="Char" />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/2 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="Character" />
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/2 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/3 />
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/3 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="Boolean" />
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/3 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/4 />
@@ -271,9 +271,19 @@
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/10 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="ImaginaryNumber" />
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/10 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/11 />
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/11 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="ComplexNumber" />
-		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/11 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/12 />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/11 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/12a />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12a predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="PositiveInfinity" />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12a predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/12b />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12b predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="NegativeInfinity" />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12b predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/12 />
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="Infinity" />
-		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/13 />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/12c />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12c predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="Zero" />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12c predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/12d />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12d predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="NegativeInteger" />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12d predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/12e />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12e predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="NonPositiveInteger" />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/12e predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/13 />
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/13 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="NonNegativeInteger" />
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/13 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/14 />
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/14 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="PositiveInteger" />
@@ -311,7 +321,13 @@
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/28 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="LookupToken" />
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/28 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/29 />
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/29 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="Uuid" />
-		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/29 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/30 />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/29 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/29a />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/29a predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="HostName" />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/29a predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/29b />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/29b predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="EmailAddress" />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/29b predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/29c />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/29c predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="Url" />
+		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/29c predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest object=urn:codex:bootstrap:enum:ValueType#list/30 />
 
 		[Color types (per spec §5.7)]
 		<RdfTriple subject=urn:codex:bootstrap:enum:ValueType#list/30 predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first lexical="Color" />
@@ -1465,6 +1481,9 @@
 
 		[GROUP: Trait PropertyShape Metadata]
 
+		<RdfTriple subject=urn:codex:bootstrap:datatype:text predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/2000/01/rdf-schema#Datatype />
+		<RdfTriple subject=urn:codex:bootstrap:datatype:text predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="text" />
+
 		[GROUP: Common Traits]
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:id predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
@@ -1477,27 +1496,27 @@
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:name predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:name predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="name" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:name predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:name predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:title predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:title predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="title" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:title predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:title predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:description predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:description predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="description" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:description predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:description predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:version predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:version predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="version" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:version predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:version predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:label predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:label predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="label" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:label predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:label predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:value predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:value predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="value" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:value predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:value predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:values predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:values predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="values" />
@@ -1505,7 +1524,7 @@
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:message predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:message predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="message" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:message predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:message predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:role predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:role predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="role" />
@@ -1539,11 +1558,11 @@
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:conceptSelector predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:conceptSelector predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="conceptSelector" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:conceptSelector predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:conceptSelector predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:contextSelector predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:contextSelector predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="contextSelector" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:contextSelector predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:contextSelector predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		[END: Concept Definition Traits]
 
@@ -1571,7 +1590,7 @@
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:validatorName predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:validatorName predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="validatorName" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:validatorName predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:validatorName predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		[END: Trait Definition Traits]
 
@@ -1619,7 +1638,7 @@
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:keyTrait predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:keyTrait predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="keyTrait" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:keyTrait predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:keyTrait predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		[END: Collection Rule Traits]
 
@@ -1627,15 +1646,15 @@
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:trait predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:trait predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="trait" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:trait predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:trait predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:traitName predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:traitName predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="traitName" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:traitName predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:traitName predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:byTrait predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:byTrait predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="byTrait" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:byTrait predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:byTrait predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:valueType predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:valueType predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="valueType" />
@@ -1643,15 +1662,15 @@
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:pattern predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:pattern predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="pattern" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:pattern predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:pattern predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:flags predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:flags predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="flags" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:flags predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:flags predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:scope predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:scope predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="scope" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:scope predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:scope predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:set predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:set predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="set" />
@@ -1679,7 +1698,7 @@
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:lexical predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:lexical predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="lexical" />
-		<RdfTriple subject=urn:codex:bootstrap:trait:lexical predicate=http://www.w3.org/2000/01/rdf-schema#range object=http://www.w3.org/2001/XMLSchema#string />
+		<RdfTriple subject=urn:codex:bootstrap:trait:lexical predicate=http://www.w3.org/2000/01/rdf-schema#range object=urn:codex:bootstrap:datatype:text />
 
 		<RdfTriple subject=urn:codex:bootstrap:trait:datatype predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property />
 		<RdfTriple subject=urn:codex:bootstrap:trait:datatype predicate=http://www.w3.org/2000/01/rdf-schema#label lexical="datatype" />

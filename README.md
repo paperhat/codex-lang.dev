@@ -33,7 +33,7 @@ Codex documents are composed of four primitives:
 <Person id=person:alice name="Alice" age=30 active=true />
 ```
 
-**Value** — A literal datum. Values are parsed, never evaluated. Codex supports strings, booleans, numbers, enumerated tokens, temporal values, colors, UUIDs, collections (lists, sets, maps, records, tuples), ranges, IRI references, and lookup tokens.
+**Value** — A literal datum. Values are parsed, never evaluated. Codex supports text values, booleans, numbers, enumerated tokens, temporal values, colors, UUIDs, collections (lists, sets, maps, records, tuples), ranges, IRI references, and lookup tokens.
 
 **Content** — Opaque narrative text preserved without interpretation.
 

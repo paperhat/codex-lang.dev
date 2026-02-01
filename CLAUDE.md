@@ -28,7 +28,7 @@ Codex eliminates ambiguity for byte-identical output across implementations. Sta
 - **No conflict clauses**: Conflicts are defects to fix, not resolve via precedence.
 - **Round-trippability**: Applies to canonical form. Canonicalization normalizes first.
 - **Ordering**: No semantic meaning to Codex; preserved for round-trippability.
-- **Content vs children**: First non-indentation char `<` or `[` = children mode; else content mode.
+- **Content vs children**: First non-indentation character `<` or `[` = children mode; else content mode.
 - **Bootstrap schema**: Hardcoded, not loaded at runtime.
 
 ## What Codex Is
@@ -79,14 +79,14 @@ Do not regress:
 - **§4.1**: Names: ASCII letters/digits, non-empty. PascalCase uppercase-first, camelCase lowercase-first.
 - **§4.2**: No 3+ consecutive uppercase (mechanically enforces acronym-as-word).
 - **§4.3**: Authors must treat acronyms as words (not fully mechanical).
-- **§5.1**: Empty strings permitted.
+- **§5.1**: Empty text values permitted.
 - **§5.3**: Boolean is exactly `true` or `false`. No other spellings.
 - **§5.4**: No NaN. `Infinity`/`-Infinity` permitted; `+Infinity` not permitted. `-0` distinct from `0`. No leading zeros (sign excluded). Precision `p` on any numeric (inferred from decimal places; explicit overrides).
 - **§5.5**: Enumerated tokens: `$` + PascalCase.
 - **§5.6**: Two grammars: Temporal Value (braced literal) vs Temporal Body (content).
 - **§5.7**: Lowercase canonical: hex digits, function names, color space tokens. Named colors: `&` + lowercase (Appendix B).
 - **§5.8**: UUID: lowercase hex canonical.
-- **§5.9**: IRI must contain `:`. No whitespace/control/bidi/private-use chars. Compared as opaque strings. Never dereferenced.
+- **§5.9**: IRI must contain `:`. No whitespace/control/bidi/private-use characters. Compared as opaque sequences of Unicode scalar values. Never dereferenced.
 - **§5.10**: Lookup tokens: `~` + camelCase.
 - **§5.11**: Character literal delimiter: single quote (`'`).
 - **§5.13**: Value equality over parsed values. Case-insensitive: hex/function names/color space tokens (Colors), hex (UUIDs).
@@ -106,7 +106,7 @@ Do not regress:
 - **§8.4**: No leading blank line. No consecutive blanks outside content/annotations. One blank between siblings. No blank at start/end of children block.
 - **§8.5–6**: Empty block `<X></X>` is error; use self-closing. No whitespace around `=`. 1–2 traits inline; 3+ multiline with `>` or `/>` on own line.
 - **§8.7**: No Value type inference. No Value type coercion.
-- **§8.8**: Content is opaque. Escaping: `\<` anywhere; `\[` line-initial only. Indentation stripped (schema-free). `whitespaceMode`: `$Preformatted` (preserve) or `$Flow` (collapse, wrap 100 chars) — schema-directed.
+- **§8.8**: Content is opaque. Escaping: `\<` anywhere; `\[` line-initial only. Indentation stripped (schema-free). `whitespaceMode`: `$Preformatted` (preserve) or `$Flow` (collapse, wrap 100 characters) — schema-directed.
 - **§8.9**: Three annotation kinds: attached, grouping, general. Block directives: `FLOW:`, `CODE:`, `MARKDOWN:`.
 - **§8.9.7**: GROUP/END must match via stack-based nesting.
 - **§9.1**: External inputs (environment, config, registries, network, clocks, randomness) MUST NOT influence processing.

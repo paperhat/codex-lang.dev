@@ -48,7 +48,7 @@ These include, but are not limited to:
 * semantic and interpretive constraints
 * formally declared invariants
 
-Normative documents may be marked **LOCKED** or **DRAFT**.
+Normative documents may be marked **LOCKED** or **UNLOCKED**.
 
 ### 3.2 Non-Normative Documents
 
@@ -76,11 +76,13 @@ A document marked **LOCKED**:
 
 ### 4.2 DRAFT
 
-A document marked **DRAFT**:
+A document marked **UNLOCKED**:
 
 * is under active development
 * may change without notice
 * must not be treated as authoritative
+
+Note: **DRAFT** is a document status (see document front matter), not a lock state.
 
 ---
 

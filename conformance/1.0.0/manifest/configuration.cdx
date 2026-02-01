@@ -72,6 +72,18 @@
 	/>
 
 	<Case
+		id="valid/decimal-negative-zero"
+		input="cases/valid/decimal-negative-zero/data.cdx"
+		expectedCanonical="expected/canonical/decimal-negative-zero/data.cdx"
+	/>
+
+	<Case
+		id="valid/integer-zero"
+		input="cases/valid/integer-zero/data.cdx"
+		expectedCanonical="expected/canonical/integer-zero/data.cdx"
+	/>
+
+	<Case
 		id="valid/content-escaped-leading-angle"
 		input="cases/valid/content-escaped-leading-angle/data.cdx"
 		expectedCanonical="expected/canonical/content-escaped-leading-angle/data.cdx"
@@ -121,6 +133,13 @@
 		id="invalid/empty-block-not-allowed"
 		input="cases/invalid/empty-block-not-allowed/data.cdx"
 		expectedError="expected/errors/empty-block-not-allowed/data.cdx"
+		expectedPrimaryErrorClass=$SurfaceFormError
+	/>
+
+	<Case
+		id="invalid/integer-negative-zero"
+		input="cases/invalid/integer-negative-zero/data.cdx"
+		expectedError="expected/errors/integer-negative-zero/data.cdx"
 		expectedPrimaryErrorClass=$SurfaceFormError
 	/>
 

@@ -19,15 +19,22 @@ This document specifies the complete type system for Behavior expressions includ
 | Type | Description |
 |------|-------------|
 | `Integer` | Exact integer (unbounded) |
+| `Zero` | The integer zero (`0`) |
+| `NegativeInteger` | Integer with a `-` sign (digits are not `0`) |
+| `NonPositiveInteger` | `Zero` or `NegativeInteger` |
+| `NonNegativeInteger` | `Zero` or `PositiveInteger` |
+| `PositiveInteger` | Integer with no `-` sign (digits are not `0`) |
 | `DecimalNumber` | Number with decimal point (`3.14`) |
 | `ExponentialNumber` | Number with exponent (`3.14e10`) |
 | `PrecisionNumber` | Decimal with explicit precision (`3.14p2`) |
 | `Fraction` | Exact rational (`3/4`) |
 | `ImaginaryNumber` | Pure imaginary (`2i`) |
 | `ComplexNumber` | Real + imaginary (`2+3i`) |
+| `PositiveInfinity` | Positive infinity (`Infinity`) |
+| `NegativeInfinity` | Negative infinity (`-Infinity`) |
 | `Infinity` | `Infinity` or `-Infinity` |
 
-**Special Values:** `Infinity`, `-Infinity`, `-0` (NaN is prohibited per Codex §5.4)
+**Special Values:** `Infinity`, `-Infinity` (NaN is prohibited per Codex §5.4; integer `-0` is invalid)
 
 ### 1.3 Derived Numeric Domains
 
@@ -35,7 +42,7 @@ This document specifies the complete type system for Behavior expressions includ
 |--------|------------|
 | `OrderableNumber` | Integer \| Fraction \| PrecisionNumber |
 | `ExactNumber` | Integer \| Fraction |
-| `AnyRealNumber` | Integer \| DecimalNumber \| ExponentialNumber \| PrecisionNumber \| Fraction |
+| `AnyRealNumber` | Integer \| DecimalNumber \| ExponentialNumber \| PrecisionNumber \| Fraction \| Infinity |
 | `AnyNumber` | AnyRealNumber \| ImaginaryNumber \| ComplexNumber |
 
 ### 1.4 Collection Types
@@ -92,6 +99,9 @@ This document specifies the complete type system for Behavior expressions includ
 | `IriReference` | Internationalized Resource Identifier |
 | `LookupToken` | Document-scoped reference |
 | `EnumeratedToken` | Schema-defined token |
+| `HostName` | Host name wrapper value (canonicalized) |
+| `EmailAddress` | Email address wrapper value (canonicalized) |
+| `Url` | URL wrapper value (canonicalized) |
 
 ### 1.8 Missingness
 
@@ -528,7 +538,7 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 
 | Operator | Signature | Description |
 |----------|-----------|-------------|
-| `Concat` | `(Text, Text, ...) → Text` | Concatenate strings |
+| `Concat` | `(Text, Text, ...) → Text` | Concatenate text values |
 | `Join` | `(List<Text>, Text) → Text` | Join with separator |
 | `Repeat` | `(Text, Integer) → Text` | Repeat n times |
 | `PadStart` | `(Text, Integer, Text) → Text` | Pad at start |
@@ -666,8 +676,8 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 | `DecodeUtf8` | `(List<Integer>) → Text` | Decode from UTF-8 bytes |
 | `EncodeBase64` | `(Text) → Text` | Encode to Base64 |
 | `DecodeBase64` | `(Text) → Text` | Decode from Base64 |
-| `EncodeHex` | `(Text) → Text` | Encode to hex string |
-| `DecodeHex` | `(Text) → Text` | Decode from hex string |
+| `EncodeHex` | `(Text) → Text` | Encode to hex text |
+| `DecodeHex` | `(Text) → Text` | Decode from hex text |
 | `EncodeUri` | `(Text) → Text` | URI encode |
 | `DecodeUri` | `(Text) → Text` | URI decode |
 | `EncodeUriComponent` | `(Text) → Text` | URI component encode |
@@ -676,9 +686,9 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 | `UnescapeHtml` | `(Text) → Text` | Unescape HTML entities |
 | `EscapeXml` | `(Text) → Text` | Escape XML entities |
 | `UnescapeXml` | `(Text) → Text` | Unescape XML entities |
-| `EscapeJson` | `(Text) → Text` | Escape JSON string |
-| `UnescapeJson` | `(Text) → Text` | Unescape JSON string |
-| `EscapeRegex` | `(Text) → Text` | Escape regex special chars |
+| `EscapeJson` | `(Text) → Text` | Escape JSON text |
+| `UnescapeJson` | `(Text) → Text` | Unescape JSON text |
+| `EscapeRegex` | `(Text) → Text` | Escape regex special characters |
 
 ### 5.13 Validation
 
@@ -689,11 +699,11 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 | `IsValidIpv4` | `(Text) → Boolean` | Valid IPv4 address |
 | `IsValidIpv6` | `(Text) → Boolean` | Valid IPv6 address |
 | `IsValidUuid` | `(Text) → Boolean` | Valid UUID format |
-| `IsValidHex` | `(Text) → Boolean` | Valid hex string |
-| `IsValidBase64` | `(Text) → Boolean` | Valid Base64 string |
-| `IsValidJson` | `(Text) → Boolean` | Valid JSON string |
-| `IsValidNumeric` | `(Text) → Boolean` | Valid numeric string |
-| `IsValidInteger` | `(Text) → Boolean` | Valid integer string |
+| `IsValidHex` | `(Text) → Boolean` | Valid hex text |
+| `IsValidBase64` | `(Text) → Boolean` | Valid Base64 text |
+| `IsValidJson` | `(Text) → Boolean` | Valid JSON text |
+| `IsValidNumeric` | `(Text) → Boolean` | Valid numeric text |
+| `IsValidInteger` | `(Text) → Boolean` | Valid integer text |
 | `IsValidIdentifier` | `(Text) → Boolean` | Valid identifier |
 | `IsAllUpperCase` | `(Text) → Boolean` | All uppercase |
 | `IsAllLowerCase` | `(Text) → Boolean` | All lowercase |
@@ -898,9 +908,9 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 | `FormatIso8601` | `(Temporal) → Text` | ISO 8601 format |
 | `FormatRfc2822` | `(ZonedDateTime \| Instant) → Text` | RFC 2822 format |
 | `FormatRfc3339` | `(ZonedDateTime \| Instant) → Text` | RFC 3339 format |
-| `ParsePlainDate` | `(Text, Text) → PlainDate` | Parse date from string |
-| `ParsePlainTime` | `(Text, Text) → PlainTime` | Parse time from string |
-| `ParsePlainDateTime` | `(Text, Text) → PlainDateTime` | Parse datetime from string |
+| `ParsePlainDate` | `(Text, Text) → PlainDate` | Parse date from text |
+| `ParsePlainTime` | `(Text, Text) → PlainTime` | Parse time from text |
+| `ParsePlainDateTime` | `(Text, Text) → PlainDateTime` | Parse datetime from text |
 | `ParseInstant` | `(Text) → Instant` | Parse ISO instant |
 
 ### 6.10 Temporal Type Guards
@@ -1151,7 +1161,7 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 | `LchColorFrom` | `(DecimalNumber, DecimalNumber, DecimalNumber) → LchColor` | From L, C, H |
 | `OklabColorFrom` | `(DecimalNumber, DecimalNumber, DecimalNumber) → OklabColor` | From L, a, b |
 | `OklchColorFrom` | `(DecimalNumber, DecimalNumber, DecimalNumber) → OklchColor` | From L, C, H |
-| `HexColorFrom` | `(Text) → HexColor` | From hex string |
+| `HexColorFrom` | `(Text) → HexColor` | From hex text |
 | `NamedColor` | `(Text) → RgbColor` | From CSS color name |
 
 ### 8.2 Decomposition
@@ -1340,6 +1350,21 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 | `IsIriReference` | `(Any) → Boolean` | Is IRI |
 | `IsLookupToken` | `(Any) → Boolean` | Is lookup token |
 | `IsEnumeratedToken` | `(Any) → Boolean` | Is enumerated token |
+| `IsHostName` | `(Any) → Boolean` | Is host name |
+| `IsEmailAddress` | `(Any) → Boolean` | Is email address |
+| `IsUrl` | `(Any) → Boolean` | Is URL |
+
+### 9.6 Host / Email / URL Operations
+
+| Operator | Signature | Description |
+|----------|-----------|-------------|
+| `HostNameFromString` | `(Text) → HostName` | Parse and canonicalize hostname |
+| `HostNameToString` | `(HostName) → Text` | Canonical hostname text |
+| `EmailAddressFromString` | `(Text) → EmailAddress` | Parse and canonicalize email address |
+| `EmailAddressToString` | `(EmailAddress) → Text` | Canonical email address text |
+| `UrlFromString` | `(Text) → Url` | Parse and canonicalize URL |
+| `UrlFromStringWithBase` | `(Text, Text) → Url` | Resolve relative URL against base and canonicalize |
+| `UrlToString` | `(Url) → Text` | Canonical URL text |
 
 ---
 
@@ -1447,22 +1472,30 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 
 | Token | Description |
 |-------|-------------|
-| `$String` | Text value |
-| `$Char` | Character value |
+| `$Text` | Text value |
+| `$Character` | Character value |
 | `$Boolean` | Boolean value |
 
 ### 13.2 Numeric Tokens
 
 | Token | Description |
 |-------|-------------|
+| `$Number` | Any numeric value |
 | `$Integer` | Integer value |
+| `$Zero` | Integer zero |
+| `$NegativeInteger` | Negative integer |
+| `$NonPositiveInteger` | Non-positive integer |
+| `$NonNegativeInteger` | Non-negative integer |
+| `$PositiveInteger` | Positive integer |
 | `$DecimalNumber` | Number with decimal point |
 | `$ExponentialNumber` | Number with exponent |
 | `$PrecisionNumber` | Decimal with explicit precision |
 | `$Fraction` | Fraction value |
 | `$ImaginaryNumber` | Pure imaginary value |
 | `$ComplexNumber` | Complex number |
-| `$Infinity` | Infinity or -Infinity |
+| `$PositiveInfinity` | Positive infinity (`Infinity`) |
+| `$NegativeInfinity` | Negative infinity (`-Infinity`) |
+| `$Infinity` | PositiveInfinity or NegativeInfinity |
 
 ### 13.3 Temporal Tokens
 
@@ -1505,6 +1538,9 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 | `$IriReference` | IRI value |
 | `$LookupToken` | Lookup token value |
 | `$EnumeratedToken` | Schema-defined token |
+| `$HostName` | Host name wrapper value |
+| `$EmailAddress` | Email address wrapper value |
+| `$Url` | URL wrapper value |
 
 ### 13.6 Collection Tokens
 

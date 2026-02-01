@@ -6,9 +6,9 @@ A Trait is a name-value pair attached to a Concept. The name tells you what the 
 
 ---
 
-## Strings
+## Text
 
-Strings are text. Wrap them in double quotes.
+Text values are written in double quotes.
 
 ```cdx
 title="Spaghetti Bolognese"
@@ -16,7 +16,7 @@ author="Jane Doe"
 description="A classic Italian pasta dish."
 ```
 
-Strings must stay on one line. If you need special characters, use escapes:
+Text values must stay on one line. If you need special characters, use escapes:
 
 ```cdx
 message="She said \"hello\" to me."
@@ -35,9 +35,9 @@ Available escapes:
 
 ---
 
-## Backtick Strings
+## Backtick Text
 
-Backtick strings let you write text across multiple lines in your source file. The whitespace gets collapsed into single spaces, producing a one-line result.
+Backtick text lets you write text across multiple lines in your source file. The whitespace gets collapsed into single spaces, producing a one-line result.
 
 ```cdx
 summary=`This is a long description
@@ -65,8 +65,8 @@ separator='-'
 newline='\n'
 emoji='\u{1F600}'
 ```
+Characters are not text values. `'A'` is a character. `"A"` is a text value containing one character.
 
-Characters are not strings. `'A'` is a character. `"A"` is a string containing one character.
 
 ---
 
@@ -287,14 +287,14 @@ emptyMap=map[]
 
 Keys can be:
 - Unquoted identifiers (start lowercase, letters and digits only)
-- Strings (for keys with spaces or special characters)
+- Text (for keys with spaces or special characters)
 - Characters
 - Integers
 - Enumerated tokens
 
 ```cdx
 simple=map[name: "John", age: 30]
-stringKeys=map["first name": "John", "last name": "Doe"]
+textKeys=map["first name": "John", "last name": "Doe"]
 tokenKeys=map[$Red: "#ff0000", $Green: "#00ff00"]
 intKeys=map[1: "one", 2: "two", 3: "three"]
 charKeys=map['A': "alpha", 'B': "bravo"]
@@ -450,7 +450,7 @@ date={today}
 
 ## Colors
 
-Colors are first-class values, not strings.
+Colors are first-class values, not text values.
 
 ### Hexadecimal
 
@@ -525,7 +525,7 @@ Supported color spaces: `srgb`, `srgb-linear`, `display-p3`, `a98-rgb`, `prophot
 
 ### Named Colors
 
-Named colors must be strings:
+Named colors must be text values:
 
 ```cdx
 color="red"
@@ -539,8 +539,8 @@ clear="transparent"
 
 | Type | Example |
 |------|---------|
-| String | `"hello world"` |
-| Backtick String | `` `multi line text` `` |
+| Text | `"hello world"` |
+| Backtick Text | `` `multi line text` `` |
 | Character | `'A'` |
 | Boolean | `true`, `false` |
 | Integer | `42`, `-5` |

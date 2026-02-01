@@ -64,7 +64,7 @@ def _parse_cdx_attrs(tag_text: str) -> dict[str, str]:
         if raw.startswith('$'):
             value = raw[1:]
         else:
-            # JSON string unescape is close enough for our controlled fixtures.
+            # JSON text unescape is close enough for our controlled fixtures.
             value = json.loads(raw)
         attrs[key] = value
     return attrs
@@ -77,7 +77,7 @@ def _cases_from_manifest_entries(entries: Iterable[dict[str, Any]], manifest_dir
     for entry in entries:
         case_id = entry.get("id")
         if not isinstance(case_id, str) or not case_id.strip():
-            _fail("each case must have a non-empty string id")
+            _fail("each case must have a non-empty text id")
         if case_id in seen_ids:
             _fail(f"duplicate case id: {case_id}")
         seen_ids.add(case_id)
@@ -93,7 +93,7 @@ def _cases_from_manifest_entries(entries: Iterable[dict[str, Any]], manifest_dir
             expected_canonical_path = None
         else:
             if not isinstance(canonical_rel, str) or not canonical_rel.strip():
-                _fail(f"case {case_id}: expectedCanonical must be a string or null")
+                _fail(f"case {case_id}: expectedCanonical must be a text or null")
             expected_canonical_path = (manifest_dir / canonical_rel).resolve()
 
         error_rel = entry.get("expectedError")
@@ -102,13 +102,13 @@ def _cases_from_manifest_entries(entries: Iterable[dict[str, Any]], manifest_dir
             expected_error_path = None
         else:
             if not isinstance(error_rel, str) or not error_rel.strip():
-                _fail(f"case {case_id}: expectedError must be a string or null")
+                _fail(f"case {case_id}: expectedError must be a text or null")
             expected_error_path = (manifest_dir / error_rel).resolve()
 
         expected_primary_error_class = entry.get("expectedPrimaryErrorClass")
         if expected_primary_error_class is not None:
             if not isinstance(expected_primary_error_class, str) or not expected_primary_error_class.strip():
-                _fail(f"case {case_id}: expectedPrimaryErrorClass must be a string or null")
+                _fail(f"case {case_id}: expectedPrimaryErrorClass must be a text or null")
             if expected_primary_error_class not in ALLOWED_ERROR_CLASSES:
                 _fail(
                     f"case {case_id}: expectedPrimaryErrorClass must be one of {sorted(ALLOWED_ERROR_CLASSES)}"

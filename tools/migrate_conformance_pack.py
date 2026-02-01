@@ -85,7 +85,7 @@ def _convert_error_json_to_cdx(from_rel: str, to_rel: str) -> None:
     if primary not in ALLOWED_ERROR_CLASSES:
         raise ValueError(f"unexpected primaryClass {primary!r} in {src}")
     if not isinstance(notes, str):
-        raise ValueError(f"notes must be string in {src}")
+        raise ValueError(f"notes must be text in {src}")
 
     # Minimal, schema-free Codex doc for smokecheck purposes.
     # (This file is a test artifact, not a normative Codex schema document.)

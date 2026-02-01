@@ -119,8 +119,8 @@
 			name="ValueType"
 		>
 			[Scalar types]
-			<Member value="String" />
-			<Member value="Char" />
+			<Member value="Text" />
+			<Member value="Character" />
 			<Member value="Boolean" />
 
 			[Numeric types (per spec A.1.12)]
@@ -132,7 +132,12 @@
 			<Member value="Fraction" description="Rational number." />
 			<Member value="ImaginaryNumber" description="Pure imaginary." />
 			<Member value="ComplexNumber" description="Real + imaginary." />
-			<Member value="Infinity" description="Infinity or -Infinity." />
+			<Member value="PositiveInfinity" description="Infinity." />
+			<Member value="NegativeInfinity" description="-Infinity." />
+			<Member value="Infinity" description="PositiveInfinity or NegativeInfinity." />
+			<Member value="Zero" description="The integer zero." />
+			<Member value="NegativeInteger" description="An integer < 0." />
+			<Member value="NonPositiveInteger" description="An integer <= 0." />
 			<Member value="NonNegativeInteger" description="An integer >= 0." />
 			<Member value="PositiveInteger" description="An integer >= 1." />
 
@@ -154,6 +159,9 @@
 			<Member value="IriReference" />
 			<Member value="LookupToken" />
 			<Member value="Uuid" />
+			<Member value="HostName" description="Host name wrapper value (canonicalized)." />
+			<Member value="EmailAddress" description="Email address wrapper value (canonicalized)." />
+			<Member value="Url" description="URL wrapper value (canonicalized)." />
 
 			[Color types (per spec §5.7)]
 			<Member value="Color" description="Any color value." />
@@ -1519,42 +1527,42 @@
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:name
 			name="name"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:title
 			name="title"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:description
 			name="description"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:version
 			name="version"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:label
 			name="label"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:value
 			name="value"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Primary
 		/>
 
@@ -1568,21 +1576,21 @@
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:message
 			name="message"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:role
 			name="role"
-			defaultValueTypes=[$String, $List<$String>]
+			defaultValueTypes=[$Text, $List<$Text>]
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:tag
 			name="tag"
-			defaultValueTypes=[$String, $List<$String>]
+			defaultValueTypes=[$Text, $List<$Text>]
 			priority=$Secondary
 		/>
 
@@ -1695,14 +1703,14 @@
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:conceptSelector
 			name="conceptSelector"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:contextSelector
 			name="contextSelector"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Primary
 		/>
 
@@ -1760,7 +1768,7 @@
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:validatorName
 			name="validatorName"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Primary
 		/>
 
@@ -1842,7 +1850,7 @@
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:keyTrait
 			name="keyTrait"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
@@ -1853,21 +1861,21 @@
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:trait
 			name="trait"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:traitName
 			name="traitName"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:byTrait
 			name="byTrait"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Primary
 		/>
 
@@ -1885,21 +1893,21 @@
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:pattern
 			name="pattern"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:flags
 			name="flags"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:scope
 			name="scope"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Primary
 		/>
 
@@ -1945,7 +1953,7 @@
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:lexical
 			name="lexical"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Primary
 		/>
 
@@ -1959,7 +1967,7 @@
 		<TraitDefinition
 			id=urn:codex:bootstrap:trait:language
 			name="language"
-			defaultValueType=$String
+			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
