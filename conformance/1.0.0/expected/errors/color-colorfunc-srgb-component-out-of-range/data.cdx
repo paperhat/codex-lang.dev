@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="The color spelling is lexically well-formed, but color(srgb ...) numeric components MUST be in [0,1] during semantic validation." />

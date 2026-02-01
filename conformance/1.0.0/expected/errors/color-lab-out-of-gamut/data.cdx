@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="The color spelling is lexically well-formed, but lab(...) converts (per spec §5.7.2) to linear sRGB (D65) with at least one channel outside [0,1]. Tools MUST reject (no clamping or gamut mapping)." />

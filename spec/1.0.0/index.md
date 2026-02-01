@@ -404,9 +404,11 @@ In the Surface Form, Temporal Values MUST be spelled using `{...}`.
 
 Temporal Values MUST conform to the Temporal Value grammar defined by this specification (see Appendix A.1.14 and Appendix A.2.15). The Temporal Value grammar defines the complete braced literal; the Temporal Body grammar defines the content within the braces.
 
-Codex itself defines no temporal evaluation, normalization, ordering, time zone interpretation, or calendrical correctness requirements for Temporal Values. In canonical surface form, Temporal Values MUST be spelled exactly as parsed (no normalization).
+Well-formedness checking and temporal kind determination are purely syntactic.
 
-Codex-conforming tools MUST NOT derive temporal meaning, perform evaluation, apply defaults, or check real-world correctness (for example, month length or leap seconds) except as explicitly defined by the governing schema or consuming system.
+During semantic validation, when a schema declares an expected temporal value type (for example, `$PlainDate`), tools MUST parse the braced payload into that temporal type and MUST reject values that are semantically invalid for that type (for example, an impossible date).
+
+Temporal Keywords (`{now}`, `{today}`, etc.) MUST remain symbolic during semantic validation unless the governing schema explicitly defines otherwise; they MUST NOT be evaluated implicitly.
 
 #### 5.6.1 Temporal Kind Determination
 To classify a Temporal Value as a specific temporal kind (for example, `ZonedDateTime` or `PlainDate`), tools MUST parse the braced payload using the Temporal Body grammar in Appendix A.
@@ -432,7 +434,9 @@ Temporal Values MUST NOT be treated as Enumerated Token Values, even when the br
 
 A Color Value MUST NOT be treated as a Text Value.
 
-Codex-conforming tools MUST NOT normalize, convert, or interpret Color Values beyond the well-formedness checks defined by this specification.
+Well-formedness checking for Color Values is lexical and does not require a schema.
+
+During semantic validation, when a schema declares an expected color value type (for example, `$Color` or a more specific built-in color type), tools MUST interpret the lexical spelling into a semantic color value of the expected type and MUST reject values that cannot be converted into a valid color in that type.
 
 In the Surface Form, Color Values MUST be spelled using one of the following literal forms:
 
@@ -473,6 +477,734 @@ In the Surface Form, a Named Color Value MUST be spelled as `&` followed immedia
 The color name MUST consist only of ASCII lowercase letters (`a` through `z`).
 
 The color name MUST be one of the named color keywords defined in Appendix B; an unrecognized color name is a SchemaError (§14).
+
+During semantic validation, a recognized named color MUST be interpreted as the sRGB RGBA value defined for that keyword in Appendix B.
+
+#### 5.7.2 Deterministic Conversion-Based Validity (Lab/LCH, OKLab/OKLCH)
+
+For `lab(...)`, `lch(...)`, `oklab(...)`, and `oklch(...)`, this specification defines semantic validity by **deterministic conversion** to *linear sRGB* (D65).
+
+This subsection exists because these perceptual color spaces do not admit simple per-component bounds that are both non-arbitrary and interoperable.
+
+During semantic validation, when a schema expects any of:
+
+- `$LabColor` / `$LchColor` / `$OklabColor` / `$OklchColor`, or
+- `$Color` in a position where these color functions are permitted,
+
+tools MUST:
+
+1. Parse the function arguments using this specification's grammar for that function (Appendix A), producing numeric components.
+2. Convert the parsed components to linear sRGB (D65) using the algorithm and constants defined in this subsection.
+3. Reject the value with a `SchemaError` (§14) if the conversion produces any non-finite intermediate value, or if the resulting linear sRGB components are not all within the closed interval `[0,1]`.
+
+Tools MUST NOT clamp, normalize, wrap hues, or apply gamut mapping.
+
+For `lch(...)` and `oklch(...)`, hue is an angle in degrees. Hue values MUST be finite and MUST satisfy `0 <= h < 360`; values outside this range are a `SchemaError`.
+
+**Numeric requirements**
+
+The conversion MUST be computed using a deterministic binary floating-point arithmetic model with precision `p = 256` bits, using round-to-nearest ties-to-even.
+
+Every non-dot-product arithmetic operation used by this subsection (addition, subtraction, multiplication, division, comparisons, and the cube computations used by the `lab(...)` transfer) MUST compute its result in this `p = 256` model, rounding to `p = 256` before any subsequent operation.
+
+All matrix-vector multiplications in this subsection MUST be evaluated using the following single mandated dot-product procedure.
+
+Given a row vector `(a0, a1, a2)` and a column vector `(b0, b1, b2)`, compute:
+
+1. Compute the three products `p_i = a_i * b_i` using precision `p' = 768` bits, round-to-nearest ties-to-even.
+2. Compute the sum `s = p_0 + p_1 + p_2` using precision `p' = 768` bits, round-to-nearest ties-to-even.
+3. Round `s` once to precision `p = 256` bits, round-to-nearest ties-to-even, yielding the dot-product result.
+
+Each matrix-vector product component MUST be computed by applying the above procedure to the corresponding matrix row and input vector.
+
+No additional intermediate rounding to `p = 256` is permitted except the single rounding in step (3) above.
+
+The trigonometric functions `sin` and `cos` used by `lch(...)` and `oklch(...)` MUST be computed as correctly-rounded results in precision `p = 256`.
+
+The functions `sqrt`, `cbrt`, and `atan2` used by §5.7 MUST be computed as correctly-rounded results in precision `p = 256`.
+
+The real-exponent power computations required by §5.7 (for example, raising a channel to `2.4`, `1/2.4`, `563/256`, `256/563`, `1.8`, `1/1.8`, `0.45`, and `1/0.45`) MUST be computed as correctly-rounded results in precision `p = 256`.
+
+Tools MUST NOT use lower-precision arithmetic for any intermediate step, and MUST NOT approximate this procedure using binary64 or binary128.
+
+**Constants**
+
+Define:
+
+- `ε = 216/24389`
+- `κ = 24389/27`
+- `π = 3.141592653589793`
+
+Define reference whites (XYZ, scaled so `Y=1`) from chromaticity coordinates as:
+
+- D50: `x=0.3457`, `y=0.3585`; `X=x/y`, `Y=1`, `Z=(1-x-y)/y`
+- D65: `x=0.3127`, `y=0.3290`; `X=x/y`, `Y=1`, `Z=(1-x-y)/y`
+
+Define the Bradford chromatic adaptation matrix (D50 → D65):
+
+$$
+M_{D50\to D65} =
+\begin{bmatrix}
+0.955473421488075 & -0.02309845494876471 & 0.06325924320057072\\
+-0.0283697093338637 & 1.0099953980813041 & 0.021041441191917323\\
+0.012314014864481998 & -0.020507649298898964 & 1.330365926242124
+\end{bmatrix}
+$$
+
+Define the XYZ (D65) → linear sRGB matrix:
+
+$$
+M_{XYZ\to lin\_sRGB} =
+\begin{bmatrix}
+3.2409699419045226 & -1.537383177570094 & -0.4986107602930034\\
+-0.9692436362808796 & 1.8759675015077202 & 0.04155505740717559\\
+0.05563007969699366 & -0.20397695888897652 & 1.0569715142428786
+\end{bmatrix}
+$$
+
+Define OKLab conversion matrices (OKLab → XYZ D65) as follows.
+
+First define the OKLab-to-LMS mixing matrix:
+
+$$
+M_{OKLab\to LMS} =
+\begin{bmatrix}
+1 & 0.3963377773761749 & 0.2158037573099136\\
+1 & -0.1055613458156586 & -0.0638541728258133\\
+1 & -0.0894841775298119 & -1.2914855480194092
+\end{bmatrix}
+$$
+
+Then define the LMS-to-XYZ matrix:
+
+$$
+M_{LMS\to XYZ} =
+\begin{bmatrix}
+1.2268798758459243 & -0.5578149944602171 & 0.2813910456659647\\
+-0.0405757452148008 & 1.1122868032803170 & -0.0717110580655164\\
+-0.0763729366746601 & -0.4214933324022432 & 1.5869240198367816
+\end{bmatrix}
+$$
+
+**Algorithms**
+
+All matrix multiplications below are standard `3x3` by `3x1` products.
+
+1) `lab(...)` → XYZ D50
+
+Given `(L, a, b)` and a D50 white `(X_n, Y_n, Z_n)`:
+
+- `f1 = (L + 16) / 116`
+- `f0 = a / 500 + f1`
+- `f2 = f1 - b / 200`
+
+Then:
+
+- `x = (f0^3 > ε) ? f0^3 : (116*f0 - 16) / κ`
+- `y = (L > κ*ε) ? ((L + 16) / 116)^3 : L / κ`
+- `z = (f2^3 > ε) ? f2^3 : (116*f2 - 16) / κ`
+
+Return `XYZ_D50 = (x*X_n, y*Y_n, z*Z_n)`.
+
+2) `lch(...)` → `lab(...)`
+
+Given `(L, C, h)` where `h` is degrees:
+
+- `h_r = h * (π/180)`
+- `a = C * cos(h_r)`
+- `b = C * sin(h_r)`
+
+Then proceed as for `lab(...)`.
+
+3) XYZ D50 → XYZ D65
+
+`XYZ_D65 = M_D50_to_D65 * XYZ_D50`
+
+4) `oklab(...)` → XYZ D65
+
+Given `(L, a, b)` (OKLab uses D65):
+
+- `(l', m', s') = M_OKLab_to_LMS * (L, a, b)`
+- `(l, m, s) = (l'^3, m'^3, s'^3)`
+- `XYZ_D65 = M_LMS_to_XYZ * (l, m, s)`
+
+5) `oklch(...)` → `oklab(...)`
+
+Given `(L, C, h)` where `h` is degrees:
+
+- `h_r = h * (π/180)`
+- `a = C * cos(h_r)`
+- `b = C * sin(h_r)`
+
+Then proceed as for `oklab(...)`.
+
+6) XYZ D65 → linear sRGB
+
+`lin_sRGB = M_XYZ_to_lin_sRGB * XYZ_D65`
+
+The value is semantically valid iff all three components of `lin_sRGB` are finite and each is in `[0,1]`.
+
+#### 5.7.3 Schema-Directed Semantic Color IR
+
+This subsection defines the complete semantic color value domains used by schema validation for the built-in color `ValueType` tokens listed in §11.6.1.
+
+These rules apply only during schema-driven semantic validation. They MUST NOT rewrite or normalize the canonical surface spelling.
+
+**Deterministic numeric interpretation**
+
+All arithmetic required by this subsection (including percent conversion, normalization by division, and range comparisons) MUST be performed using the deterministic binary floating-point model defined by §5.7.2 (precision `p=256`, round-to-nearest ties-to-even).
+
+All component inputs and computed intermediates used by this subsection MUST be finite. Any non-finite value (including `Infinity`/`-Infinity`) is a `SchemaError` (§14).
+
+Percent values are interpreted by dividing by 100 in the mandated numeric model.
+
+**Alpha**
+
+Where an alpha component is permitted:
+
+- If alpha is spelled as a percentage, it MUST be in `[0%,100%]` and is interpreted as `alpha` in `[0,1]`.
+- If alpha is spelled as a number, it MUST be in `[0,1]` and is interpreted as `alpha` in `[0,1]`.
+
+If alpha is omitted, `alpha = 1`.
+
+**Hue**
+
+Where a hue component is permitted (in `hsl(...)`, `hwb(...)`, `lch(...)`, and `oklch(...)`), hue is an angle in degrees. Hue values MUST be finite and MUST satisfy `0 <= h < 360`. Hue wrapping/normalization is forbidden.
+
+**Semantic domains by built-in ValueType**
+
+When a schema expects:
+
+- `$HexColor`: tools MUST decode the hex spelling into a semantic RGBA value with 8-bit components.
+	- `#RGB` expands each nibble to a byte (`#abc` → `#aabbcc`) and uses `alpha=255`.
+	- `#RGBA` expands each nibble to a byte and decodes alpha similarly.
+	- `#RRGGBB` and `#RRGGBBAA` decode each pair as a byte.
+
+- `$NamedColor`: tools MUST validate that the name is a keyword in Appendix B and compile the semantic value as the corresponding sRGB RGBA value defined by Appendix B.
+
+- `$RgbColor`: tools MUST parse `rgb(...)`/`rgba(...)` using Appendix A and compile a semantic sRGB value `(r,g,b,alpha)` where each component is in `[0,1]`.
+	- For each `RgbComponent`:
+		- If spelled as a percentage, it MUST be in `[0%,100%]` and is interpreted by dividing by 100.
+		- If spelled as a number, it MUST be in `[0,255]` and is interpreted by dividing by 255.
+
+- `$HslColor`: tools MUST parse `hsl(...)`/`hsla(...)` using Appendix A and compile a semantic HSL value `(h,s,l,alpha)` where:
+	- `h` is degrees and satisfies the Hue rule above.
+	- `s` and `l` are percentages in `[0%,100%]` interpreted as fractions in `[0,1]`.
+
+- `$HwbColor`: tools MUST parse `hwb(...)` using Appendix A and compile a semantic HWB value `(h,w,b,alpha)` where:
+	- `h` is degrees and satisfies the Hue rule above.
+	- `w` and `b` are percentages in `[0%,100%]` interpreted as fractions in `[0,1]`.
+	- Additionally, `w + b` MUST satisfy `<= 1`.
+
+- `$LabColor`: tools MUST parse `lab(...)` using Appendix A and compile a semantic Lab value `(L,a,b,alpha)` where:
+	- `L` is a percentage in `[0%,100%]` interpreted as `L` in `[0,100]`.
+	- `a` and `b` are finite real numbers.
+	- The value MUST additionally satisfy the deterministic conversion validity rule in §5.7.2.
+
+- `$LchColor`: tools MUST parse `lch(...)` using Appendix A and compile a semantic LCH value `(L,C,h,alpha)` where:
+	- `L` is a percentage in `[0%,100%]` interpreted as `L` in `[0,100]`.
+	- `C` MUST be finite and MUST satisfy `C >= 0`.
+	- `h` satisfies the Hue rule above.
+	- The value MUST additionally satisfy the deterministic conversion validity rule in §5.7.2.
+
+- `$OklabColor`: tools MUST parse `oklab(...)` using Appendix A and compile a semantic OKLab value `(L,a,b,alpha)` where:
+	- `L` MUST be in `[0,1]`.
+	- `a` and `b` are finite real numbers.
+	- The value MUST additionally satisfy the deterministic conversion validity rule in §5.7.2.
+
+- `$OklchColor`: tools MUST parse `oklch(...)` using Appendix A and compile a semantic OKLCH value `(L,C,h,alpha)` where:
+	- `L` MUST be in `[0,1]`.
+	- `C` MUST be finite and MUST satisfy `C >= 0`.
+	- `h` satisfies the Hue rule above.
+	- The value MUST additionally satisfy the deterministic conversion validity rule in §5.7.2.
+
+
+- `$DeviceCmyk`: tools MUST parse `device-cmyk(...)` using Appendix A and compile a semantic device-CMYK value `(c,m,y,k,alpha)` where each of `c,m,y,k,alpha` is in `[0,1]`.
+	- If a CMYK component is spelled as a percentage, it MUST be in `[0%,100%]` and is interpreted as a fraction in `[0,1]`.
+	- If a CMYK component is spelled as a number, it MUST be in `[0,1]`.
+
+- `$ColorMix`: tools MUST parse `color-mix(...)` using Appendix A and compile a semantic color-mix value `(space, stops)`.
+	- `space` is the `ColorSpace` token.
+	- `stops` is an ordered list of at least two stops.
+	- Each stop is `(color, weight?)` where `weight`, if present, is a percentage in `[0%,100%]`.
+	- The nested `color` value in each stop MUST be semantically valid as `$Color`.
+	- When a schema expects `$Color` and the spelling is `color-mix(...)`, tools MUST additionally evaluate the mix deterministically as specified by §5.7.6.
+
+
+- `$ColorFunction`: tools MUST accept any function-based Color Value spelling and compile the corresponding semantic function-domain value (including `rgb(...)`, `hsl(...)`, `hwb(...)`, `lab(...)`, `lch(...)`, `oklab(...)`, `oklch(...)`, `color(...)`, `color-mix(...)`, relative-color forms, and `device-cmyk(...)`).
+	- If the spelling is a relative color form, tools MUST interpret `from <color>` deterministically as specified by §5.7.7.
+	- If the spelling is `color-mix(...)`, tools MUST interpret the stop list deterministically as specified by §5.7.6.
+
+- `$Color`: tools MUST accept any Color Value spelling and compile a semantic color value as follows.
+	- For `device-cmyk(...)`, the semantic value is the device-CMYK domain value `(c,m,y,k,alpha)`.
+	- For all other Color Value spellings, the semantic value is the `XYZ_D65` interchange form `(X,Y,Z,alpha)` computed deterministically by §5.7.4.
+
+If a schema expects a specific built-in color ValueType token and the Trait value uses a different Color Value form, schema validation MUST fail with a `SchemaError` (§14).
+
+#### 5.7.4 Deterministic Conversions for `color(...)` Spaces (XYZ D65 Interchange)
+
+This subsection defines a single deterministic conversion graph for all `ColorSpace` tokens used by `color(...)`, `color-mix(...)`, and `color(from <color> ...)`.
+
+The mandated interchange form for convertible colors is `XYZ_D65` with alpha.
+
+- `XYZ_D65` is a triple `(X,Y,Z)` using the D65 reference white and the scaling convention `Y=1` for the reference white.
+- `alpha` is a fraction in `[0,1]`.
+
+All arithmetic required by this subsection MUST use the deterministic numeric model of §5.7.2.
+
+All matrix-vector multiplications required by §5.7.4–§5.7.7 MUST use the single mandated dot-product procedure defined by §5.7.2.
+
+Tools MUST reject (SchemaError) any semantic conversion step that produces a non-finite intermediate value.
+
+Tools MUST NOT clamp, normalize, wrap hues, or apply gamut mapping.
+
+##### 5.7.4.1 Transfer Functions
+
+For RGB spaces that use a transfer function, each channel value is represented as an encoded fraction in `[0,1]`.
+
+Define the sRGB transfer functions (used by `srgb` and `display-p3`) as:
+
+- `srgb_decode(v)` (encoded → linear):
+	- Require `0 <= v <= 1`.
+	- If `v <= 0.04045`, return `v / 12.92`.
+	- Otherwise return `((v + 0.055) / 1.055) ^ 2.4`.
+
+- `srgb_encode(L)` (linear → encoded):
+	- Require `0 <= L <= 1`.
+	- If `L <= 0.0031308`, return `12.92 * L`.
+	- Otherwise return `1.055 * (L ^ (1/2.4)) - 0.055`.
+
+Define the Adobe RGB (1998) transfer functions (used by `a98-rgb`) as:
+
+- `a98_decode(v)` (encoded → linear): Require `0 <= v <= 1`; return `v ^ (563/256)`.
+- `a98_encode(L)` (linear → encoded): Require `0 <= L <= 1`; return `L ^ (256/563)`.
+
+Define the ProPhoto RGB transfer functions (used by `prophoto-rgb`) as:
+
+- `prophoto_decode(v)` (encoded → linear):
+	- Require `0 <= v <= 1`.
+	- If `v < 16/512`, return `v / 16`.
+	- Otherwise return `v ^ 1.8`.
+
+- `prophoto_encode(L)` (linear → encoded):
+	- Require `0 <= L <= 1`.
+	- If `L < 1/512`, return `16 * L`.
+	- Otherwise return `L ^ (1/1.8)`.
+
+Define the Rec. 2020 transfer functions (used by `rec2020`) as:
+
+- `rec2020_decode(v)` (encoded → linear):
+	- Require `0 <= v <= 1`.
+	- If `v < 0.08145`, return `v / 4.5`.
+	- Otherwise return `((v + 0.0993) / 1.0993) ^ (1/0.45)`.
+
+- `rec2020_encode(L)` (linear → encoded):
+	- Require `0 <= L <= 1`.
+	- If `L < 0.0181`, return `4.5 * L`.
+	- Otherwise return `1.0993 * (L ^ 0.45) - 0.0993`.
+
+##### 5.7.4.2 Matrices and Chromatic Adaptation
+
+Define the linear sRGB (D65) matrix (linear sRGB → XYZ D65):
+
+```text
+M_lin_sRGB_to_XYZ_D65 =
+[ 0.41239079926595934  0.35758433938387796  0.18048078840183430 ]
+[ 0.21263900587151027  0.71516867876775593  0.07219231536073371 ]
+[ 0.01933081871559182  0.11919477979462598  0.95053215224966069 ]
+```
+
+Define the inverse matrix (XYZ D65 → linear sRGB): this is `M_XYZ_to_lin_sRGB` as defined in §5.7.2.
+
+Define the Display P3 (D65) matrices:
+
+```text
+M_lin_display_p3_to_XYZ_D65 =
+[ 0.48657094864821620  0.26566769316909306  0.19821728523436250 ]
+[ 0.22897456406974880  0.69173852183650640  0.07928691409374500 ]
+[ 0.00000000000000000  0.04511338185890264  1.04394436890097600 ]
+
+M_XYZ_D65_to_lin_display_p3 =
+[ 2.49349691194142500 -0.93138361791912390 -0.40271078445071684 ]
+[-0.82948896956157470  1.76266406031834630  0.02362468584194358 ]
+[ 0.03584583024378447 -0.07617238926804182  0.95688452400768720 ]
+```
+
+Define the Adobe RGB (1998) (D65) matrices:
+
+```text
+M_lin_a98_rgb_to_XYZ_D65 =
+[ 0.57673090000000000  0.18555400000000000  0.18818520000000000 ]
+[ 0.29737690000000000  0.62734910000000000  0.07527410000000000 ]
+[ 0.02703430000000000  0.07068720000000000  0.99110850000000000 ]
+
+M_XYZ_D65_to_lin_a98_rgb =
+[ 2.04136900000000000 -0.56494640000000000 -0.34469440000000000 ]
+[-0.96926600000000000  1.87601080000000000  0.04155600000000000 ]
+[ 0.01344740000000000 -0.11838970000000000  1.01540960000000000 ]
+```
+
+Define the ProPhoto RGB matrices relative to XYZ D50:
+
+```text
+M_lin_prophoto_rgb_to_XYZ_D50 =
+[ 0.79767490000000000  0.13519170000000000  0.03135340000000000 ]
+[ 0.28804020000000000  0.71187410000000000  0.00008570000000000 ]
+[ 0.00000000000000000  0.00000000000000000  0.82521000000000000 ]
+
+M_XYZ_D50_to_lin_prophoto_rgb =
+[ 1.34594330000000000 -0.25560750000000000 -0.05111180000000000 ]
+[-0.54459890000000000  1.50816730000000000  0.02053510000000000 ]
+[ 0.00000000000000000  0.00000000000000000  1.21181280000000000 ]
+```
+
+Define the Rec. 2020 (D65) matrices:
+
+```text
+M_lin_rec2020_to_XYZ_D65 =
+[ 0.63695804830129140  0.14461690358620832  0.16888097516417210 ]
+[ 0.26270021201126710  0.67799807151887080  0.05930171646986196 ]
+[ 0.00000000000000000  0.02807269304908743  1.06098505771079100 ]
+
+M_XYZ_D65_to_lin_rec2020 =
+[ 1.71665118797126800 -0.35567078377639200 -0.25336628137366000 ]
+[-0.66668435183248900  1.61648123663493900  0.01576854581391110 ]
+[ 0.01763985744531100 -0.04277061325780800  0.94210312123547400 ]
+```
+
+Define the Bradford chromatic adaptation matrix (D50 → D65) as `M_D50_to_D65` from §5.7.2.
+
+Define the inverse adaptation matrix (D65 → D50):
+
+```text
+M_D65_to_D50 =
+[ 1.04792982084054880  0.02294679334101909 -0.05019222954313557 ]
+[ 0.02962781568815934  0.99043448457324900 -0.01707382502938514 ]
+[-0.00924305815259118  0.01505514489657790  0.75187428995800080 ]
+```
+
+##### 5.7.4.3 Converting Between a `ColorSpace` and `XYZ_D65`
+
+For a `ColorSpace` token `S` and components `(c1,c2,c3,alpha)`:
+
+- If `S` is `xyz`, interpret it as `xyz-d65`.
+
+To convert `color(S ...)` to `XYZ_D65`:
+
+- For `srgb`:
+	- Interpret `(c1,c2,c3)` as encoded sRGB fractions.
+	- Compute linear channels `(r,g,b) = (srgb_decode(c1), srgb_decode(c2), srgb_decode(c3))`.
+	- Compute `XYZ_D65 = M_lin_sRGB_to_XYZ_D65 * (r,g,b)`.
+
+- For `srgb-linear`:
+	- Interpret `(c1,c2,c3)` as linear sRGB fractions.
+	- Compute `XYZ_D65 = M_lin_sRGB_to_XYZ_D65 * (c1,c2,c3)`.
+
+- For `display-p3`:
+	- Interpret `(c1,c2,c3)` as encoded Display P3 fractions.
+	- Compute linear channels `(r,g,b) = (srgb_decode(c1), srgb_decode(c2), srgb_decode(c3))`.
+	- Compute `XYZ_D65 = M_lin_display_p3_to_XYZ_D65 * (r,g,b)`.
+
+- For `a98-rgb`:
+	- Interpret `(c1,c2,c3)` as encoded Adobe RGB fractions.
+	- Compute linear channels `(r,g,b) = (a98_decode(c1), a98_decode(c2), a98_decode(c3))`.
+	- Compute `XYZ_D65 = M_lin_a98_rgb_to_XYZ_D65 * (r,g,b)`.
+
+- For `prophoto-rgb`:
+	- Interpret `(c1,c2,c3)` as encoded ProPhoto fractions.
+	- Compute linear channels `(r,g,b) = (prophoto_decode(c1), prophoto_decode(c2), prophoto_decode(c3))`.
+	- Compute `XYZ_D50 = M_lin_prophoto_rgb_to_XYZ_D50 * (r,g,b)`.
+	- Compute `XYZ_D65 = M_D50_to_D65 * XYZ_D50`.
+
+- For `rec2020`:
+	- Interpret `(c1,c2,c3)` as encoded Rec. 2020 fractions.
+	- Compute linear channels `(r,g,b) = (rec2020_decode(c1), rec2020_decode(c2), rec2020_decode(c3))`.
+	- Compute `XYZ_D65 = M_lin_rec2020_to_XYZ_D65 * (r,g,b)`.
+
+- For `xyz-d65`:
+	- Interpret `(c1,c2,c3)` as `XYZ_D65 = (c1,c2,c3)`.
+
+- For `xyz-d50`:
+	- Interpret `(c1,c2,c3)` as `XYZ_D50 = (c1,c2,c3)`.
+	- Compute `XYZ_D65 = M_D50_to_D65 * XYZ_D50`.
+
+To convert from `XYZ_D65` to a `ColorSpace` token `S` (used by relative colors and by `color-mix(in S, ...)`):
+
+- For `srgb`:
+	- Compute `(r,g,b) = M_XYZ_to_lin_sRGB * XYZ_D65`.
+	- Require each of `r,g,b` to be in `[0,1]`.
+	- Return encoded channels `(srgb_encode(r), srgb_encode(g), srgb_encode(b))`.
+
+- For `srgb-linear`:
+	- Compute `(r,g,b) = M_XYZ_to_lin_sRGB * XYZ_D65`.
+	- Require each of `r,g,b` to be in `[0,1]`.
+	- Return `(r,g,b)`.
+
+- For `display-p3`:
+	- Compute `(r,g,b) = M_XYZ_D65_to_lin_display_p3 * XYZ_D65`.
+	- Require each of `r,g,b` to be in `[0,1]`.
+	- Return encoded channels `(srgb_encode(r), srgb_encode(g), srgb_encode(b))`.
+
+- For `a98-rgb`:
+	- Compute `(r,g,b) = M_XYZ_D65_to_lin_a98_rgb * XYZ_D65`.
+	- Require each of `r,g,b` to be in `[0,1]`.
+	- Return encoded channels `(a98_encode(r), a98_encode(g), a98_encode(b))`.
+
+- For `prophoto-rgb`:
+	- Compute `XYZ_D50 = M_D65_to_D50 * XYZ_D65`.
+	- Compute `(r,g,b) = M_XYZ_D50_to_lin_prophoto_rgb * XYZ_D50`.
+	- Require each of `r,g,b` to be in `[0,1]`.
+	- Return encoded channels `(prophoto_encode(r), prophoto_encode(g), prophoto_encode(b))`.
+
+- For `rec2020`:
+	- Compute `(r,g,b) = M_XYZ_D65_to_lin_rec2020 * XYZ_D65`.
+	- Require each of `r,g,b` to be in `[0,1]`.
+	- Return encoded channels `(rec2020_encode(r), rec2020_encode(g), rec2020_encode(b))`.
+
+- For `xyz` and `xyz-d65`:
+	- Return `(X,Y,Z) = XYZ_D65`.
+
+- For `xyz-d50`:
+	- Return `XYZ_D50 = M_D65_to_D50 * XYZ_D65`.
+
+##### 5.7.4.4 Converting Any Convertible Color Value to `XYZ_D65`
+
+This subsection defines the conversion to interchange for all Color Value spellings except `device-cmyk(...)`.
+
+Tools MUST reject (SchemaError) any conversion that produces a non-finite intermediate value.
+
+**Hexadecimal and Named colors**
+
+- For a Hex Color spelling, decode the bytes as specified by §5.7.3 (`#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`).
+	- Let encoded sRGB channels be `r = R/255`, `g = G/255`, `b = B/255`.
+	- Let alpha be `alpha = A/255` (with `A=255` when alpha is absent).
+	- Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.4.3.
+
+- For a Named Color spelling `&name`, obtain its hex value from Appendix B and interpret it exactly as if that hex spelling had appeared.
+
+**`rgb(...)` / `rgba(...)`**
+
+- Interpret each `RgbComponent` as specified by §5.7.3 for `$RgbColor`.
+	- Percent form yields an encoded fraction in `[0,1]` by dividing by 100.
+	- Number form yields an encoded fraction in `[0,1]` by dividing by 255.
+- Interpret alpha per §5.7.3.
+- Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.4.3.
+
+**`hsl(...)` / `hsla(...)`**
+
+- Interpret `h` (degrees), `s` (fraction), `l` (fraction), and alpha per §5.7.3.
+- Convert HSL to encoded sRGB as follows.
+
+Let `h` be degrees with `0 <= h < 360`. Let `s` and `l` be fractions in `[0,1]`.
+
+1. Compute `c = (1 - abs(2*l - 1)) * s`.
+2. Compute `h' = h / 60`.
+3. Compute `x = c * (1 - abs((h' mod 2) - 1))`.
+4. Determine `(r1,g1,b1)` by the interval containing `h'`:
+	- If `0 <= h' < 1`: `(c, x, 0)`
+	- If `1 <= h' < 2`: `(x, c, 0)`
+	- If `2 <= h' < 3`: `(0, c, x)`
+	- If `3 <= h' < 4`: `(0, x, c)`
+	- If `4 <= h' < 5`: `(x, 0, c)`
+	- If `5 <= h' < 6`: `(c, 0, x)`
+5. Compute `m = l - c/2`.
+6. The encoded sRGB channels are `(r,g,b) = (r1+m, g1+m, b1+m)`.
+- Require each of `r,g,b` to be in `[0,1]` (reject-only semantics).
+- Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.4.3.
+
+**`hwb(...)`**
+
+- Interpret `h` (degrees), `w` (fraction), `b` (fraction), and alpha per §5.7.3.
+- Additionally, require `w + b <= 1`. If `w + b > 1`, it is a `SchemaError`.
+
+To convert HWB to encoded sRGB:
+
+1. Compute the base pure hue color as encoded sRGB with saturation 1 and lightness 0.5: let `(rh,gh,bh)` be the result of converting `hsl(h, 100%, 50%)` using the HSL algorithm above.
+2. Compute the scale factor `t = 1 - w - b`.
+3. The encoded sRGB channels are `(r,g,b) = (rh*t + w, gh*t + w, bh*t + w)`.
+- Require each of `r,g,b` to be in `[0,1]`.
+- Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.4.3.
+
+**`lab(...)` / `lch(...)` / `oklab(...)` / `oklch(...)`**
+
+- For `lab(...)` and `lch(...)`, compute `XYZ_D65` by applying steps (1)–(3) of §5.7.2.
+- For `oklab(...)` and `oklch(...)`, compute `XYZ_D65` by applying step (4) of §5.7.2.
+
+##### 5.7.4.5 Inverse Conversions Needed by Relative Colors
+
+Relative color forms require extracting base-channel values from a base interchange color.
+
+**Encoded sRGB → HSL/HWB**
+
+Given encoded sRGB `(r,g,b)` in `[0,1]`:
+
+1. Let `max = max(r,g,b)`, `min = min(r,g,b)`, `delta = max - min`.
+2. Compute lightness fraction `l = (max + min) / 2`.
+3. If `delta = 0`, set hue degrees `h = 0` and saturation fraction `s = 0`.
+4. Otherwise:
+	- Compute saturation fraction `s = delta / (1 - abs(2*l - 1))`.
+	- Compute hue fraction `h6` as:
+		- If `max = r`: `h6 = ((g - b) / delta)`.
+		- If `max = g`: `h6 = ((b - r) / delta) + 2`.
+		- If `max = b`: `h6 = ((r - g) / delta) + 4`.
+	- Compute hue degrees `h = 60 * h6`.
+	- If `h < 0`, set `h = h + 360`.
+	- If `h = 360`, set `h = 0`.
+
+The base HSL channel tokens used by relative colors are:
+
+- `h` is degrees `h`.
+- `s` is percentage `100*s`.
+- `l` is percentage `100*l`.
+
+The base HWB channel tokens used by relative colors are:
+
+- `h` is the same degrees `h`.
+- `w` is percentage `100 * min`.
+- `b` is percentage `100 * (1 - max)`.
+
+**XYZ D50 → Lab (D50)**
+
+Let D50 white be `(X_n, Y_n, Z_n)` as defined in §5.7.2. Given `XYZ_D50 = (X,Y,Z)`:
+
+1. Compute `x = X / X_n`, `y = Y / Y_n`, `z = Z / Z_n`.
+2. Define the helper `f(t)`:
+	- If `t > ε`, return `t ^ (1/3)`.
+	- Otherwise return `(κ*t + 16) / 116`.
+3. Compute `fx = f(x)`, `fy = f(y)`, `fz = f(z)`.
+4. Compute Lab:
+	- `L = 116*fy - 16`
+	- `a = 500*(fx - fy)`
+	- `b = 200*(fy - fz)`
+
+Relative channel tokens use:
+
+- `l` as the percentage `L` (in `[0,100]`).
+- `a` and `b` as the Lab components.
+- `c = sqrt(a^2 + b^2)`.
+- `h` as degrees computed from `atan2(b,a)` mapped into `[0,360)`.
+
+**XYZ D65 → OKLab (D65)**
+
+Given `XYZ_D65 = (X,Y,Z)`, compute OKLab as follows.
+
+Define:
+
+```text
+M_XYZ_D65_to_LMS =
+[ 0.8189330101  0.3618667424 -0.1288597137 ]
+[ 0.0329845436  0.9293118715  0.0361456387 ]
+[ 0.0482003018  0.2643662691  0.6338517070 ]
+
+M_LMS_to_OKLab =
+[ 0.2104542553  0.7936177850 -0.0040720468 ]
+[ 1.9779984951 -2.4285922050  0.4505937099 ]
+[ 0.0259040371  0.7827717662 -0.8086757660 ]
+```
+
+1. Compute `(l',m',s') = M_XYZ_D65_to_LMS * (X,Y,Z)`.
+2. Compute `(l,m,s) = (cbrt(l'), cbrt(m'), cbrt(s'))`.
+3. Compute `(L,a,b) = M_LMS_to_OKLab * (l,m,s)`.
+
+Relative channel tokens use:
+
+- `l` as `L` (in `[0,1]`).
+- `a` and `b` as the OKLab components.
+- `c = sqrt(a^2 + b^2)`.
+- `h` as degrees computed from `atan2(b,a)` mapped into `[0,360)`.
+
+#### 5.7.5 Semantic Interpretation of `color(...)`
+
+When a schema expects a `color(...)` spelling as `$Color` or `$ColorFunction`, tools MUST interpret the components and alpha as follows.
+
+For `color(S c1 c2 c3 / alpha?)` where `S` is an RGB `ColorSpace` (`srgb`, `srgb-linear`, `display-p3`, `a98-rgb`, `prophoto-rgb`, `rec2020`):
+
+- If a component is spelled as a percentage, it MUST be in `[0%,100%]` and is interpreted by dividing by 100.
+- If a component is spelled as a number, it MUST be in `[0,1]` and is interpreted as-is.
+
+For `color(S x y z / alpha?)` where `S` is an XYZ `ColorSpace` (`xyz`, `xyz-d50`, `xyz-d65`):
+
+- Each of `x`, `y`, and `z` MUST be finite and MUST satisfy `>= 0`.
+
+Alpha is interpreted per §5.7.3 (percentage in `[0%,100%]` or number in `[0,1]`; default `alpha=1`).
+
+#### 5.7.6 Deterministic Semantic Evaluation of `color-mix(...)`
+
+When a schema expects `$Color` and the Trait value is `color-mix(in S, stop1, stop2, ...)`, tools MUST evaluate the mix deterministically.
+
+1. Let `S` be the interpolation `ColorSpace` token.
+2. Each stop MUST be `(color, weight?)` where `color` is a Color Value.
+	- If no stop provides a weight, each stop has equal weight.
+	- If any stop provides a weight, then every stop MUST provide a weight; otherwise it is a `SchemaError`.
+	- Each provided weight MUST be in `[0%,100%]`.
+3. Evaluate each stop color as `$Color`.
+	- If the stop is `device-cmyk(...)`, evaluation fails with `SchemaError` (device-CMYK is not convertible for mixing).
+	- Otherwise, obtain its interchange value `(XYZ_D65, alpha)`.
+4. Convert each stop to interpolation space `S` using §5.7.4.3:
+	- If `S` is an RGB space, convert `XYZ_D65` to the *linear* channels for `S` and require each linear channel in `[0,1]`.
+	- If `S` is `xyz`/`xyz-d65`, use `XYZ_D65`.
+	- If `S` is `xyz-d50`, use `XYZ_D50 = M_D65_to_D50 * XYZ_D65`.
+5. Interpolate using premultiplied alpha in the interpolation space:
+	- Let each stop have components vector `v_i` (either linear RGB or XYZ) and alpha `a_i`.
+	- Let weights be normalized to fractions `w_i` summing to 1.
+	- Compute `a_out = sum_i (w_i * a_i)`.
+	- Compute `v_out_premul = sum_i (w_i * v_i * a_i)`.
+	- If `a_out = 0`, set `v_out` to the zero vector.
+	- Otherwise set `v_out = v_out_premul / a_out`.
+6. Convert the mixed result back to interchange `XYZ_D65`:
+	- If `S` is `xyz`/`xyz-d65`, the mixed XYZ is already `XYZ_D65`.
+	- If `S` is `xyz-d50`, compute `XYZ_D65 = M_D50_to_D65 * XYZ_D50`.
+	- If `S` is an RGB space, compute `XYZ_D65` using the RGB-to-XYZ path of §5.7.4.3 with the *linear* channels (no encoding step).
+7. The semantic `$Color` value is `(XYZ_D65, a_out)`.
+
+#### 5.7.7 Deterministic Semantic Evaluation of Relative Colors (`from <color>`)
+
+When a schema expects `$Color` or `$ColorFunction` and the Trait value is a relative color form, tools MUST evaluate `from <color>` deterministically as follows.
+
+Common requirements:
+
+1. Evaluate the base Color Value after `from` as `$Color`.
+	- If the base is `device-cmyk(...)`, evaluation fails with `SchemaError` (device-CMYK is not convertible for relative colors).
+	- Otherwise, obtain base interchange `(XYZ_D65_base, alpha_base)`.
+2. Convert the base interchange value to the function's source domain:
+	- For `rgb(from ...)`, convert `XYZ_D65_base` to `srgb` encoded channels `(r,g,b)` using §5.7.4.3.
+	- For `hsl(from ...)` and `hwb(from ...)`, convert `XYZ_D65_base` to `srgb` encoded channels and then compute base HSL/HWB using §5.7.4.5.
+	- For `lab(from ...)` and `lch(from ...)`, convert `XYZ_D65_base` to `xyz-d50`, then compute base Lab (D50) using §5.7.4.5.
+	- For `oklab(from ...)` and `oklch(from ...)`, compute base OKLab (D65) using §5.7.4.5.
+	- For `color(from ... S ...)`, convert `XYZ_D65_base` to `S` using §5.7.4.3.
+3. For each component position in the relative argument list:
+	- If it is a literal numeric/percentage component, interpret it as if it appeared in the corresponding non-relative function form.
+	- If it is a channel token (such as `r`, `g`, `b`, `x`, `y`, `z`, `l`, `a`, `c`, `h`, or `a` for alpha), substitute the base channel value in the same unit system defined below.
+4. Interpret alpha:
+	- If alpha is omitted, use `alpha_base`.
+	- If alpha is spelled as `a`, use `alpha_base`.
+	- If alpha is spelled as a literal, interpret it per the Alpha rule in §5.7.3.
+5. After substitution, the resulting non-relative color spelling MUST satisfy the semantic rules for that function/value type (including hue and range rules). Otherwise it is a `SchemaError`.
+
+Units for channel substitution:
+
+- `rgb(from ...)` / `rgba(from ...)`:
+	- Base `r`, `g`, `b` channel tokens substitute the base sRGB encoded channel in the number-form unit: `255 * channel`.
+
+- `hsl(from ...)` / `hsla(from ...)` and `hwb(from ...)`:
+	- Base hue token `h` substitutes the base hue in degrees in `[0,360)`.
+	- Base `s`, `l`, `w`, `b` tokens substitute the base percentage in `[0,100]` (not the fraction).
+
+- `lab(from ...)` / `lch(from ...)`:
+	- Base `l` substitutes the base `L` percentage in `[0,100]` (not the `L` value in `[0,100]`).
+	- Base `a` and `b` substitute the base Lab `a`/`b` components.
+	- Base `c` substitutes chroma `C = sqrt(a^2 + b^2)`.
+	- Base `h` substitutes hue in degrees computed from `atan2(b,a)` mapped into `[0,360)`.
+
+- `oklab(from ...)` / `oklch(from ...)`:
+	- Base `l` substitutes the base OKLab `L` component in `[0,1]`.
+	- Base `a` and `b` substitute the base OKLab `a`/`b` components.
+	- Base `c` substitutes chroma `C = sqrt(a^2 + b^2)`.
+	- Base `h` substitutes hue in degrees computed from `atan2(b,a)` mapped into `[0,360)`.
+
+- `color(from ... S ...)`:
+	- If `S` is an RGB space, base `r`, `g`, `b` substitute the encoded channel fractions in `[0,1]`.
+	- If `S` is an XYZ space, base `x`, `y`, `z` substitute the XYZ components.
 
 ### 5.8 UUID Values
 
@@ -3593,7 +4325,9 @@ One or more value constraints:
 
 This section defines how schemas constrain the **Value types** permitted for Trait values.
 
-Value types in schemas are **classifiers**, not evaluators. They constrain which surface-form Value spellings (§5) are permitted and how those values may participate in schema-defined constraints.
+Value types in schemas are classifiers and constraints. They constrain which surface-form Value spellings (§5) are permitted and which semantic value domain is compiled during schema validation.
+
+Value type checking MUST be deterministic and MUST NOT perform implicit evaluation (for example, resolving `{now}` to a concrete time) unless explicitly required by the governing schema.
 
 #### 11.6.1 Built-In Value Type Tokens
 Schemas are permitted to reference the following built-in value type tokens.
@@ -3657,12 +4391,13 @@ Each token corresponds to a Value category defined in §5 (Value Literal Catalog
 * `$Tuple`
 * `$Range`
 
-A built-in value type token constrains only **surface-form validity and structural classification**.
-It MUST NOT imply evaluation, normalization, or conversion beyond what is defined in §5.
+A built-in value type token constrains both the permitted surface-form spelling and the semantic value domain compiled during schema validation.
+
+If a schema constrains a Trait value using a built-in value type token, semantic validation MUST convert that value into the corresponding typed IR value (when applicable) and MUST reject values that are syntactically well-formed but semantically invalid for the expected type.
 
 See §2.5 and §9.2 for the distinction between schema-less Value-kind classification and schema validation of expected `ValueType` constraints.
 
-If a schema constrains a value using a built-in value type token, and a Trait value does not match that Value type's surface grammar, schema-driven validation MUST fail with a `SchemaError` (§14).
+If a schema constrains a value using a built-in value type token, and a Trait value does not match that Value type's surface grammar (or cannot be converted into a valid value of that type), schema-driven validation MUST fail with a `SchemaError` (§14).
 
 ---
 
@@ -5394,7 +6129,7 @@ ContentEscape
 	;
 
 (* Raw '<' is forbidden anywhere in content; raw '[' at line start is
-	validated by surface-form rules (§8.8). *)
+	checked by surface-form rules (§8.8). *)
 ContentSafeChar
 	= AnyCharExceptNewline - "<"
 	;
@@ -5816,8 +6551,11 @@ FractionalSeconds
 
 ```ebnf
 (* Color values are accepted as declarative spellings; tools MUST NOT normalize,
-	convert, or interpret them (§5.7). Hex digits, function names, and color space
-	tokens are case-insensitive for parsing; lowercase is canonical. *)
+	rewrite, or "best-effort" correct them (§5.7). During semantic validation,
+	tools MUST interpret and convert a color value to a semantic color type for the
+	purposes of schema validation and evaluation, but this MUST NOT change the
+	canonical surface spelling. Hex digits, function names, and color space tokens
+	are case-insensitive for parsing; lowercase is canonical. *)
 
 ColorValue
 	= HexColor
@@ -5850,78 +6588,319 @@ FunctionColor
 	;
 
 RgbFunc
-	= ( "rgb" | "rgba" ), "(", ColorFuncPayload, ")"
+	= ( "rgb" | "rgba" ), "(", ColorWsOpt, RgbArgs, ColorWsOpt, ")"
 	;
 
 HslFunc
-	= ( "hsl" | "hsla" ), "(", ColorFuncPayload, ")"
+	= ( "hsl" | "hsla" ), "(", ColorWsOpt, HslArgs, ColorWsOpt, ")"
 	;
 
 HwbFunc
-	= "hwb", "(", ColorFuncPayload, ")"
+	= "hwb", "(", ColorWsOpt, HwbArgs, ColorWsOpt, ")"
 	;
 
 LabFunc
-	= "lab", "(", ColorFuncPayload, ")"
+	= "lab", "(", ColorWsOpt, LabArgs, ColorWsOpt, ")"
 	;
 
 LchFunc
-	= "lch", "(", ColorFuncPayload, ")"
+	= "lch", "(", ColorWsOpt, LchArgs, ColorWsOpt, ")"
 	;
 
 OklabFunc
-	= "oklab", "(", ColorFuncPayload, ")"
+	= "oklab", "(", ColorWsOpt, OklabArgs, ColorWsOpt, ")"
 	;
 
 OklchFunc
-	= "oklch", "(", ColorFuncPayload, ")"
+	= "oklch", "(", ColorWsOpt, OklchArgs, ColorWsOpt, ")"
 	;
 
 ColorFunc
-	= "color", "(", ColorSpace, WhitespaceNoNewline, ColorFuncPayload, ")"
+	= "color", "(", ColorWsOpt, ( RgbColorSpace, ColorWs, ColorRgbArgs | XyzColorSpace, ColorWs, ColorXyzArgs ), ColorWsOpt, ")"
 	;
 
 ColorMixFunc
-	= "color-mix", "(", ColorFuncPayload, ")"
+	= "color-mix", "(", ColorWsOpt, "in", ColorWs, ColorSpace, ColorComma, ColorMixStop,
+	  { ColorComma, ColorMixStop }, ColorWsOpt, ")"
 	;
 
 RelativeColorFunc
-	= ( "rgb" | "rgba" | "hsl" | "hsla" | "hwb" | "lab" | "lch" | "oklab" | "oklch" | "color" ),
-	  "(", "from", WhitespaceNoNewline, ColorValue, ColorFuncTail, ")"
+	= RelativeRgbFunc
+	| RelativeHslFunc
+	| RelativeHwbFunc
+	| RelativeLabFunc
+	| RelativeLchFunc
+	| RelativeOklabFunc
+	| RelativeOklchFunc
+	| RelativeColorFuncColor
 	;
 
 DeviceCmykFunc
-	= "device-cmyk", "(", ColorFuncPayload, ")"
+	= "device-cmyk", "(", ColorWsOpt, DeviceCmykArgs, ColorWsOpt, ")"
 	;
 
 ColorSpace
+	= RgbColorSpace | XyzColorSpace
+	;
+
+RgbColorSpace
 	= "srgb"
 	| "srgb-linear"
 	| "display-p3"
 	| "a98-rgb"
 	| "prophoto-rgb"
 	| "rec2020"
-	| "xyz"
+	;
+
+XyzColorSpace
+	= "xyz"
 	| "xyz-d50"
 	| "xyz-d65"
 	;
 
-(* The payload is an uninterpreted balanced-parentheses token sequence (§A.1.28). *)
-ColorFuncPayload
-	= { ColorPayloadToken }
+(* All supported color function spellings have explicit argument grammar.
+	Newlines are not permitted in any function spelling.
+
+	Numeric forms in color functions are a restricted subset of NumericValue:
+	ColorRealNumber excludes complex and imaginary numbers.
+*)
+
+ColorWs
+	= WhitespaceNoNewline
 	;
 
-ColorFuncTail
-	= { ColorPayloadToken }
+ColorWsOpt
+	= { WhitespaceNoNewlineChar }
 	;
 
-ColorPayloadToken
-	= "(", ColorFuncPayload, ")"
-	| ColorPayloadChar
+ColorRealNumber
+	= Fraction
+	| Infinity
+	| PrecisionNumber
+	| ExponentialNumber
+	| DecimalNumber
+	| Integer
 	;
 
-ColorPayloadChar
-	= AnyCharExceptParensNewline
+ColorPercentage
+	= ColorRealNumber, "%"
+	;
+
+ColorAlpha
+	= ColorPercentage
+	| ColorRealNumber
+	;
+
+ColorComma
+	= ColorWsOpt, ",", ColorWsOpt
+	;
+
+RgbComponent
+	= ColorPercentage
+	| ColorRealNumber
+	;
+
+CmykComponent
+	= ColorPercentage
+	| ColorRealNumber
+	;
+
+HueComponent
+	= ColorRealNumber
+	;
+
+RgbArgs
+	= RgbLegacyArgs
+	| RgbModernArgs
+	;
+
+RgbLegacyArgs
+	= RgbComponent, ColorComma, RgbComponent, ColorComma, RgbComponent,
+	  [ ColorComma, ColorAlpha ]
+	;
+
+RgbModernArgs
+	= RgbComponent, ColorWs, RgbComponent, ColorWs, RgbComponent,
+	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	;
+
+HslArgs
+	= HslLegacyArgs
+	| HslModernArgs
+	;
+
+HslLegacyArgs
+	= HueComponent, ColorComma, ColorPercentage, ColorComma, ColorPercentage,
+	  [ ColorComma, ColorAlpha ]
+	;
+
+HslModernArgs
+	= HueComponent, ColorWs, ColorPercentage, ColorWs, ColorPercentage,
+	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	;
+
+HwbArgs
+	= HueComponent, ColorWs, ColorPercentage, ColorWs, ColorPercentage,
+	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	;
+
+ColorRgbArgs
+	= RgbComponent, ColorWs, RgbComponent, ColorWs, RgbComponent,
+	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	;
+
+ColorXyzArgs
+	= ColorRealNumber, ColorWs, ColorRealNumber, ColorWs, ColorRealNumber,
+	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	;
+
+DeviceCmykArgs
+	= CmykComponent, ColorWs, CmykComponent, ColorWs, CmykComponent, ColorWs, CmykComponent,
+	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	;
+
+LabArgs
+	= ColorPercentage, ColorWs, ColorRealNumber, ColorWs, ColorRealNumber,
+	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	;
+
+LchArgs
+	= ColorPercentage, ColorWs, ColorRealNumber, ColorWs, ColorRealNumber,
+	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	;
+
+OklabArgs
+	= ColorRealNumber, ColorWs, ColorRealNumber, ColorWs, ColorRealNumber,
+	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	;
+
+OklchArgs
+	= ColorRealNumber, ColorWs, ColorRealNumber, ColorWs, ColorRealNumber,
+	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	;
+
+ColorMixStop
+	= ColorValue, [ ColorWs, ColorPercentage ]
+	;
+
+RelativeRgbFunc
+	= ( "rgb" | "rgba" ), "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeRgbArgs, ColorWsOpt, ")"
+	;
+
+RelativeHslFunc
+	= ( "hsl" | "hsla" ), "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeHslArgs, ColorWsOpt, ")"
+	;
+
+RelativeHwbFunc
+	= "hwb", "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeHwbArgs, ColorWsOpt, ")"
+	;
+
+RelativeLabFunc
+	= "lab", "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeLabArgs, ColorWsOpt, ")"
+	;
+
+RelativeLchFunc
+	= "lch", "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeLchArgs, ColorWsOpt, ")"
+	;
+
+RelativeOklabFunc
+	= "oklab", "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeOklabArgs, ColorWsOpt, ")"
+	;
+
+RelativeOklchFunc
+	= "oklch", "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeOklchArgs, ColorWsOpt, ")"
+	;
+
+RelativeColorFuncColor
+	= "color", "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, ColorSpace, ColorWs, RelativeColorArgs, ColorWsOpt, ")"
+	;
+
+RelativeRgbChannel
+	= "r" | "g" | "b"
+	;
+
+RelativeHslChannel
+	= "h" | "s" | "l"
+	;
+
+RelativeHwbChannel
+	= "h" | "w" | "b"
+	;
+
+RelativeLabChannel
+	= "l" | "a" | "b"
+	;
+
+RelativeLchChannel
+	= "l" | "c" | "h"
+	;
+
+RelativeOklabChannel
+	= "l" | "a" | "b"
+	;
+
+RelativeOklchChannel
+	= "l" | "c" | "h"
+	;
+
+RelativeAlphaComponent
+	= ColorAlpha
+	| "a"
+	;
+
+RelativeRgbComponent
+	= RgbComponent
+	| RelativeRgbChannel
+	;
+
+RelativeRgbArgs
+	= RelativeRgbComponent, ColorWs, RelativeRgbComponent, ColorWs, RelativeRgbComponent,
+	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	;
+
+RelativeHslArgs
+	= ( HueComponent | RelativeHslChannel ), ColorWs, ( ColorPercentage | "s" ), ColorWs, ( ColorPercentage | "l" ),
+	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	;
+
+RelativeHwbArgs
+	= ( HueComponent | "h" ), ColorWs, ( ColorPercentage | "w" ), ColorWs, ( ColorPercentage | "b" ),
+	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	;
+
+RelativeLabArgs
+	= ( ColorPercentage | "l" ), ColorWs, ( ColorRealNumber | "a" ), ColorWs, ( ColorRealNumber | "b" ),
+	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	;
+
+RelativeLchArgs
+	= ( ColorPercentage | "l" ), ColorWs, ( ColorRealNumber | "c" ), ColorWs, ( ColorRealNumber | "h" ),
+	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	;
+
+RelativeOklabArgs
+	= ( ColorRealNumber | "l" ), ColorWs, ( ColorRealNumber | "a" ), ColorWs, ( ColorRealNumber | "b" ),
+	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	;
+
+RelativeOklchArgs
+	= ( ColorRealNumber | "l" ), ColorWs, ( ColorRealNumber | "c" ), ColorWs, ( ColorRealNumber | "h" ),
+	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	;
+
+RelativeColorChannel
+	= "r" | "g" | "b" | "x" | "y" | "z"
+	;
+
+RelativeColorComponent
+	= ColorRealNumber
+	| ColorPercentage
+	| RelativeColorChannel
+	;
+
+RelativeColorArgs
+	= RelativeColorComponent, ColorWs, RelativeColorComponent, ColorWs, RelativeColorComponent,
+	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
 	;
 ```
 
@@ -6622,10 +7601,10 @@ HexOctet <- HexDigit HexDigit
 #### A.2.23 Color Values
 
 ```peg
-# Color spellings are accepted as declarative literals; no semantic evaluation occurs.
-# For function spellings, we accept any balanced-parentheses payload up to ')'.
+# Color spellings are accepted as declarative literals; semantic validity is checked
+# during schema-driven semantic validation (§5.7).
 
-ColorValue <- HexColor / NamedColor / ColorFunction
+ColorValue <- HexColor / NamedColor / RgbFunc / HslFunc / HwbFunc / LabFunc / LchFunc / OklabFunc / OklchFunc / ColorFunc / ColorMixFunc / DeviceCmykFunc / RelativeColorFunc
 
 HexColor <- '#' (HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
               / HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
@@ -6634,13 +7613,91 @@ HexColor <- '#' (HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit 
 
 NamedColor <- '&' [a-z]+
 
-ColorFunction <- ColorFuncName '(' ColorPayload ')'
-ColorFuncName <- 'rgb' / 'rgba' / 'hsl' / 'hsla' / 'hwb' / 'lab' / 'lch' / 'oklab' / 'oklch' / 'color'
-              / 'color-mix' / 'device-cmyk'
+ColorWS <- [ \t]*
+ColorWSP <- [ \t]+
 
-# Payload with balanced parentheses support.
-ColorPayload <- ColorPayloadToken*
-ColorPayloadToken <- '(' ColorPayload ')' / (![()\n] .)
+# Real-number subset of NumericValue used in color function arguments.
+ColorRealNumber <- Fraction / Infinity / PrecisionNumber / ExponentialNumber / DecimalNumber / Integer
+ColorPercentage <- ColorRealNumber '%'
+ColorAlpha <- ColorPercentage / ColorRealNumber
+
+ColorComma <- ColorWS ',' ColorWS
+
+RgbComponent <- ColorPercentage / ColorRealNumber
+HueComponent <- ColorRealNumber
+
+RgbColorSpaceToken <- 'srgb' / 'srgb-linear' / 'display-p3' / 'a98-rgb' / 'prophoto-rgb' / 'rec2020'
+XyzColorSpaceToken <- 'xyz' / 'xyz-d50' / 'xyz-d65'
+
+ColorRgbArgs <- RgbComponent ColorWSP RgbComponent ColorWSP RgbComponent (ColorWS '/' ColorWS ColorAlpha)?
+ColorXyzArgs <- ColorRealNumber ColorWSP ColorRealNumber ColorWSP ColorRealNumber (ColorWS '/' ColorWS ColorAlpha)?
+
+ColorFunc <- 'color' '(' ColorWS (RgbColorSpaceToken ColorWSP ColorRgbArgs / XyzColorSpaceToken ColorWSP ColorXyzArgs) ColorWS ')'
+
+RgbFunc <- ('rgb' / 'rgba') '(' ColorWS RgbArgs ColorWS ')'
+RgbArgs <- RgbLegacyArgs / RgbModernArgs
+RgbLegacyArgs <- RgbComponent ColorComma RgbComponent ColorComma RgbComponent (ColorComma ColorAlpha)?
+RgbModernArgs <- RgbComponent ColorWSP RgbComponent ColorWSP RgbComponent (ColorWS '/' ColorWS ColorAlpha)?
+
+HslFunc <- ('hsl' / 'hsla') '(' ColorWS HslArgs ColorWS ')'
+HslArgs <- HslLegacyArgs / HslModernArgs
+HslLegacyArgs <- HueComponent ColorComma ColorPercentage ColorComma ColorPercentage (ColorComma ColorAlpha)?
+HslModernArgs <- HueComponent ColorWSP ColorPercentage ColorWSP ColorPercentage (ColorWS '/' ColorWS ColorAlpha)?
+
+HwbFunc <- 'hwb' '(' ColorWS HwbArgs ColorWS ')'
+HwbArgs <- HueComponent ColorWSP ColorPercentage ColorWSP ColorPercentage (ColorWS '/' ColorWS ColorAlpha)?
+
+LabFunc <- 'lab' '(' ColorWS LabArgs ColorWS ')'
+LabArgs <- ColorPercentage ColorWSP ColorRealNumber ColorWSP ColorRealNumber (ColorWS '/' ColorWS ColorAlpha)?
+
+LchFunc <- 'lch' '(' ColorWS LchArgs ColorWS ')'
+LchArgs <- ColorPercentage ColorWSP ColorRealNumber ColorWSP ColorRealNumber (ColorWS '/' ColorWS ColorAlpha)?
+
+OklabFunc <- 'oklab' '(' ColorWS OklabArgs ColorWS ')'
+OklabArgs <- ColorRealNumber ColorWSP ColorRealNumber ColorWSP ColorRealNumber (ColorWS '/' ColorWS ColorAlpha)?
+
+OklchFunc <- 'oklch' '(' ColorWS OklchArgs ColorWS ')'
+OklchArgs <- ColorRealNumber ColorWSP ColorRealNumber ColorWSP ColorRealNumber (ColorWS '/' ColorWS ColorAlpha)?
+
+CmykComponent <- ColorPercentage / ColorRealNumber
+
+DeviceCmykFunc <- 'device-cmyk' '(' ColorWS DeviceCmykArgs ColorWS ')'
+DeviceCmykArgs <- CmykComponent ColorWSP CmykComponent ColorWSP CmykComponent ColorWSP CmykComponent (ColorWS '/' ColorWS ColorAlpha)?
+
+ColorMixFunc <- 'color-mix' '(' ColorWS 'in' ColorWSP (RgbColorSpaceToken / XyzColorSpaceToken) ColorComma ColorMixStop (ColorComma ColorMixStop)+ ColorWS ')'
+ColorMixStop <- ColorValue (ColorWSP ColorPercentage)?
+
+RelativeColorFunc <- RelativeRgbFunc / RelativeHslFunc / RelativeHwbFunc / RelativeLabFunc / RelativeLchFunc / RelativeOklabFunc / RelativeOklchFunc / RelativeColorFuncColor
+
+RelativeAlphaComponent <- ColorAlpha / 'a'
+
+RelativeRgbChannel <- 'r' / 'g' / 'b'
+RelativeRgbComponent <- RgbComponent / RelativeRgbChannel
+RelativeRgbArgs <- RelativeRgbComponent ColorWSP RelativeRgbComponent ColorWSP RelativeRgbComponent (ColorWS '/' ColorWS RelativeAlphaComponent)?
+RelativeRgbFunc <- ('rgb' / 'rgba') '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeRgbArgs ColorWS ')'
+
+RelativeHslArgs <- (HueComponent / 'h') ColorWSP (ColorPercentage / 's') ColorWSP (ColorPercentage / 'l') (ColorWS '/' ColorWS RelativeAlphaComponent)?
+RelativeHslFunc <- ('hsl' / 'hsla') '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeHslArgs ColorWS ')'
+
+RelativeHwbArgs <- (HueComponent / 'h') ColorWSP (ColorPercentage / 'w') ColorWSP (ColorPercentage / 'b') (ColorWS '/' ColorWS RelativeAlphaComponent)?
+RelativeHwbFunc <- 'hwb' '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeHwbArgs ColorWS ')'
+
+RelativeLabArgs <- (ColorPercentage / 'l') ColorWSP (ColorRealNumber / 'a') ColorWSP (ColorRealNumber / 'b') (ColorWS '/' ColorWS RelativeAlphaComponent)?
+RelativeLabFunc <- 'lab' '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeLabArgs ColorWS ')'
+
+RelativeLchArgs <- (ColorPercentage / 'l') ColorWSP (ColorRealNumber / 'c') ColorWSP (ColorRealNumber / 'h') (ColorWS '/' ColorWS RelativeAlphaComponent)?
+RelativeLchFunc <- 'lch' '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeLchArgs ColorWS ')'
+
+RelativeOklabArgs <- (ColorRealNumber / 'l') ColorWSP (ColorRealNumber / 'a') ColorWSP (ColorRealNumber / 'b') (ColorWS '/' ColorWS RelativeAlphaComponent)?
+RelativeOklabFunc <- 'oklab' '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeOklabArgs ColorWS ')'
+
+RelativeOklchArgs <- (ColorRealNumber / 'l') ColorWSP (ColorRealNumber / 'c') ColorWSP (ColorRealNumber / 'h') (ColorWS '/' ColorWS RelativeAlphaComponent)?
+RelativeOklchFunc <- 'oklch' '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeOklchArgs ColorWS ')'
+
+RelativeColorChannel <- 'r' / 'g' / 'b' / 'x' / 'y' / 'z'
+RelativeColorComponent <- ColorRealNumber / ColorPercentage / RelativeColorChannel
+RelativeColorArgs <- RelativeColorComponent ColorWSP RelativeColorComponent ColorWSP RelativeColorComponent (ColorWS '/' ColorWS RelativeAlphaComponent)?
+RelativeColorFuncColor <- 'color' '(' ColorWS 'from' ColorWSP ColorValue ColorWSP (RgbColorSpaceToken / XyzColorSpaceToken) ColorWSP RelativeColorArgs ColorWS ')'
 ```
 
 ---
@@ -6715,7 +7772,12 @@ Aliases and duplicates (for example, `gray`/`grey`, `cyan`/`aqua`) are intention
 
 ### B.1 Named Color Keyword Table
 
-Each entry defines a valid Codex Named Color Value (`&name`). The sRGB hex column is informative and does not define Codex color semantics.
+Each entry defines a valid Codex Named Color Value (`&name`).
+
+During schema-driven semantic validation (§5.7), a Named Color Value MUST be interpreted as the sRGB color given by its `sRGB hex` value in this table:
+
+- A 6-digit hex form `#RRGGBB` is interpreted as the corresponding sRGB color with `alpha=1`.
+- An 8-digit hex form `#RRGGBBAA` is interpreted as the corresponding sRGB color with the given alpha byte.
 
 | Named color             |  sRGB hex |
 | ----------------------- | --------: |
@@ -6860,6 +7922,7 @@ Each entry defines a valid Codex Named Color Value (`&name`). The sRGB hex colum
 | `&teal`                 | `#008080` |
 | `&thistle`              | `#d8bfd8` |
 | `&tomato`               | `#ff6347` |
+| `&transparent`          | `#00000000` |
 | `&turquoise`            | `#40e0d0` |
 | `&violet`               | `#ee82ee` |
 | `&wheat`                | `#f5deb3` |
@@ -6867,15 +7930,6 @@ Each entry defines a valid Codex Named Color Value (`&name`). The sRGB hex colum
 | `&whitesmoke`           | `#f5f5f5` |
 | `&yellow`               | `#ffff00` |
 | `&yellowgreen`          | `#9acd32` |
-
-### B.2 Context-Dependent Keywords
-
-The following keywords are valid Codex named colors but do not have a single fixed sRGB value in all contexts. Codex does not define any fixed expansion or interpretation for them.
-
-| Named color     | Notes                                                                                       |
-| --------------- | ------------------------------------------------------------------------------------------- |
-| `&transparent`  | Context-dependent; informative reference sRGB form: `#00000000`.                            |
-| `&currentcolor` | Context-dependent.                                                                          |
 
 ---
 

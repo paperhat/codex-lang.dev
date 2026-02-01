@@ -84,6 +84,66 @@
 	/>
 
 	<Case
+		id="valid/infinities-in-list"
+		input="cases/valid/infinities-in-list/data.cdx"
+		expectedCanonical="expected/canonical/infinities-in-list/data.cdx"
+	/>
+
+	<Case
+		id="valid/collection-literal-order-preserved"
+		input="cases/valid/collection-literal-order-preserved/data.cdx"
+		expectedCanonical="expected/canonical/collection-literal-order-preserved/data.cdx"
+	/>
+
+	<Case
+		id="valid/map-keys-various-kinds"
+		input="cases/valid/map-keys-various-kinds/data.cdx"
+		expectedCanonical="expected/canonical/map-keys-various-kinds/data.cdx"
+	/>
+
+	<Case
+		id="valid/range-character"
+		input="cases/valid/range-character/data.cdx"
+		expectedCanonical="expected/canonical/range-character/data.cdx"
+	/>
+
+	<Case
+		id="valid/range-temporal-plain-date"
+		input="cases/valid/range-temporal-plain-date/data.cdx"
+		expectedCanonical="expected/canonical/range-temporal-plain-date/data.cdx"
+	/>
+
+	<Case
+		id="valid/temporal-keyword-now"
+		input="cases/valid/temporal-keyword-now/data.cdx"
+		expectedCanonical="expected/canonical/temporal-keyword-now/data.cdx"
+	/>
+
+	<Case
+		id="valid/temporal-plain-date"
+		input="cases/valid/temporal-plain-date/data.cdx"
+		expectedCanonical="expected/canonical/temporal-plain-date/data.cdx"
+	/>
+
+	<Case
+		id="valid/temporal-plain-datetime"
+		input="cases/valid/temporal-plain-datetime/data.cdx"
+		expectedCanonical="expected/canonical/temporal-plain-datetime/data.cdx"
+	/>
+
+	<Case
+		id="valid/temporal-instant-z"
+		input="cases/valid/temporal-instant-z/data.cdx"
+		expectedCanonical="expected/canonical/temporal-instant-z/data.cdx"
+	/>
+
+	<Case
+		id="valid/temporal-zoneddatetime-offset-tzid"
+		input="cases/valid/temporal-zoneddatetime-offset-tzid/data.cdx"
+		expectedCanonical="expected/canonical/temporal-zoneddatetime-offset-tzid/data.cdx"
+	/>
+
+	<Case
 		id="valid/content-escaped-leading-angle"
 		input="cases/valid/content-escaped-leading-angle/data.cdx"
 		expectedCanonical="expected/canonical/content-escaped-leading-angle/data.cdx"
@@ -207,6 +267,128 @@
 	/>
 
 	<Case
+		id="invalid/map-duplicate-key"
+		input="cases/invalid/map-duplicate-key/data.cdx"
+		expectedError="expected/errors/map-duplicate-key/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/map-duplicate-key-identifier-vs-text"
+		input="cases/invalid/map-duplicate-key-identifier-vs-text/data.cdx"
+		expectedError="expected/errors/map-duplicate-key-identifier-vs-text/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/temporal-timezone-offset-missing-colon"
+		input="cases/invalid/temporal-timezone-offset-missing-colon/data.cdx"
+		expectedError="expected/errors/temporal-timezone-offset-missing-colon/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/temporal-plain-date-semantic-invalid"
+		input="cases/invalid/temporal-plain-date-semantic-invalid/data.cdx"
+		schema="cases/invalid/temporal-plain-date-semantic-invalid/schema.cdx"
+		expectedError="expected/errors/temporal-plain-date-semantic-invalid/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/color-lch-hue-wrap-forbidden"
+		input="cases/invalid/color-lch-hue-wrap-forbidden/data.cdx"
+		schema="cases/invalid/color-lch-hue-wrap-forbidden/schema.cdx"
+		expectedError="expected/errors/color-lch-hue-wrap-forbidden/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/color-lch-hue-negative-forbidden"
+		input="cases/invalid/color-lch-hue-negative-forbidden/data.cdx"
+		schema="cases/invalid/color-lch-hue-negative-forbidden/schema.cdx"
+		expectedError="expected/errors/color-lch-hue-negative-forbidden/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/color-lab-out-of-gamut"
+		input="cases/invalid/color-lab-out-of-gamut/data.cdx"
+		schema="cases/invalid/color-lab-out-of-gamut/schema.cdx"
+		expectedError="expected/errors/color-lab-out-of-gamut/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/color-oklab-out-of-gamut"
+		input="cases/invalid/color-oklab-out-of-gamut/data.cdx"
+		schema="cases/invalid/color-oklab-out-of-gamut/schema.cdx"
+		expectedError="expected/errors/color-oklab-out-of-gamut/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="valid/color-mix-hex-uppercase-normalizes"
+		input="cases/valid/color-mix-hex-uppercase-normalizes/data.cdx"
+		expectedCanonical="expected/canonical/color-mix-hex-uppercase-normalizes/data.cdx"
+	/>
+
+	<Case
+		id="invalid/color-hwb-w-plus-b-exceeds-one"
+		input="cases/invalid/color-hwb-w-plus-b-exceeds-one/data.cdx"
+		schema="cases/invalid/color-hwb-w-plus-b-exceeds-one/schema.cdx"
+		expectedError="expected/errors/color-hwb-w-plus-b-exceeds-one/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/color-colorfunc-srgb-component-out-of-range"
+		input="cases/invalid/color-colorfunc-srgb-component-out-of-range/data.cdx"
+		schema="cases/invalid/color-colorfunc-srgb-component-out-of-range/schema.cdx"
+		expectedError="expected/errors/color-colorfunc-srgb-component-out-of-range/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/color-mix-mixed-stop-weights"
+		input="cases/invalid/color-mix-mixed-stop-weights/data.cdx"
+		schema="cases/invalid/color-mix-mixed-stop-weights/schema.cdx"
+		expectedError="expected/errors/color-mix-mixed-stop-weights/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/color-mix-stop-device-cmyk"
+		input="cases/invalid/color-mix-stop-device-cmyk/data.cdx"
+		schema="cases/invalid/color-mix-stop-device-cmyk/schema.cdx"
+		expectedError="expected/errors/color-mix-stop-device-cmyk/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/relative-color-base-device-cmyk"
+		input="cases/invalid/relative-color-base-device-cmyk/data.cdx"
+		schema="cases/invalid/relative-color-base-device-cmyk/schema.cdx"
+		expectedError="expected/errors/relative-color-base-device-cmyk/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="valid/color-lab-near-gamut-edge-in"
+		input="cases/valid/color-lab-near-gamut-edge-in/data.cdx"
+		schema="cases/valid/color-lab-near-gamut-edge-in/schema.cdx"
+		expectedCanonical="expected/canonical/color-lab-near-gamut-edge-in/data.cdx"
+	/>
+
+	<Case
+		id="invalid/color-lab-near-gamut-edge-out"
+		input="cases/invalid/color-lab-near-gamut-edge-out/data.cdx"
+		schema="cases/invalid/color-lab-near-gamut-edge-out/schema.cdx"
+		expectedError="expected/errors/color-lab-near-gamut-edge-out/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
 		id="invalid/record-missing-colon"
 		input="cases/invalid/record-missing-colon/data.cdx"
 		expectedError="expected/errors/record-missing-colon/data.cdx"
@@ -224,6 +406,13 @@
 		id="invalid/record-duplicate-field"
 		input="cases/invalid/record-duplicate-field/data.cdx"
 		expectedError="expected/errors/record-duplicate-field/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/set-duplicate-element"
+		input="cases/invalid/set-duplicate-element/data.cdx"
+		expectedError="expected/errors/set-duplicate-element/data.cdx"
 		expectedPrimaryErrorClass=$ParseError
 	/>
 

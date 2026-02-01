@@ -118,15 +118,9 @@ Implementations of Codex:
 
 ## 7. Licensing
 
-All documentation in this repository is licensed under the **Creative Commons Attribution 4.0 International License (CC BY 4.0)** as specified in the repository's `LICENSE` file.
+All content in this repository is licensed under the **Apache License, Version 2.0** as specified in the repository's `LICENSE` file.
 
-The license applies to **textual, diagrammatic, and illustrative content only**.
-
-No rights are granted to:
-
-* trademarks, service marks, or logos
-* project, language, or specification names
-* software implementations, unless explicitly stated otherwise
+No rights are granted to trademarks, service marks, logos, or project/language/specification names. See [TRADEMARK.md](TRADEMARK.md) for trademark information.
 
 ---
 

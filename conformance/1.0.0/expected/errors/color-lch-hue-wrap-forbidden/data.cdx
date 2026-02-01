@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="The color spelling is lexically well-formed, but lch(...) hue MUST satisfy 0 ≤ h < 360 during semantic validation; hue wrapping/normalization is forbidden." />

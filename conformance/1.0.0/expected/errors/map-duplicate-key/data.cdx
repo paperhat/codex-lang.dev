@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$ParseError notes="Map values must not contain duplicate keys. This input defines the key 'a' twice." />

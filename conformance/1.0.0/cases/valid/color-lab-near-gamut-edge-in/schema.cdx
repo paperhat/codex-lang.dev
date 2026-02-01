@@ -1,0 +1,17 @@
+<Schema id=example:schema:color-lab-near-gamut-edge-in version="0.1" compatibilityClass=$BackwardCompatible>
+	<ConceptDefinitions>
+		<ConceptDefinition
+			id=example:concept:Root
+			name="Root"
+			conceptKind=$Semantic
+			entityEligibility=$MustNotBeEntity
+		>
+			<TraitRules>
+				<AllowsTrait name="c" />
+			</TraitRules>
+		</ConceptDefinition>
+	</ConceptDefinitions>
+	<TraitDefinitions>
+		<TraitDefinition id=example:trait:c name="c" defaultValueType=$LabColor />
+	</TraitDefinitions>
+</Schema>

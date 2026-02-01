@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="The color spelling is lexically well-formed, but device-cmyk(...) is not convertible for color-mix evaluation; reject-only semantics forbid any device-dependent conversion." />

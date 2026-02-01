@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$ParseError notes="Temporal timezone offsets must be 'Z' or of the form ±HH:MM. This input uses '+0530' (missing colon)." />

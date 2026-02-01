@@ -8,7 +8,9 @@ This repo contains normative language specifications and conformance artifacts.
 
 ## Normativity
 - Use RFC 2119/8174 requirement keywords with discipline (use the capitalized forms defined by the spec, in the spec).
-- Do not use **SHOULD** and **SHOULD NOT**.
+- Do not use **should** and **should not**.
+- Do not use **may**, **optional**, **legacy**, **deprecated**, or **future** language.
+- Write exactly one mandatory standard: prefer unambiguous `must` / `must not` requirements with no permitted alternatives.
 - When changing grammar or surface syntax, update all authoritative forms (e.g., EBNF + PEG) in lockstep.
 
 ## Determinism

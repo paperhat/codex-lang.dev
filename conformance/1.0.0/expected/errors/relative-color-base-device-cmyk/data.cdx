@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="The relative color spelling is lexically well-formed, but device-cmyk(...) is not convertible for relative colors; semantic validation must reject." />

@@ -27,6 +27,7 @@ ALLOWED_ERROR_CLASSES = {
 class Case:
     case_id: str
     input_path: Path
+    schema_path: Path | None
     expected_canonical_path: Path | None
     expected_error_path: Path | None
     expected_primary_error_class: str | None
@@ -87,6 +88,15 @@ def _cases_from_manifest_entries(entries: Iterable[dict[str, Any]], manifest_dir
             _fail(f"case {case_id}: missing input")
         input_path = (manifest_dir / input_rel).resolve()
 
+        schema_rel = entry.get("schema")
+        schema_path: Path | None
+        if schema_rel is None:
+            schema_path = None
+        else:
+            if not isinstance(schema_rel, str) or not schema_rel.strip():
+                _fail(f"case {case_id}: schema must be a text or null")
+            schema_path = (manifest_dir / schema_rel).resolve()
+
         canonical_rel = entry.get("expectedCanonical")
         expected_canonical_path: Path | None
         if canonical_rel is None:
@@ -128,6 +138,7 @@ def _cases_from_manifest_entries(entries: Iterable[dict[str, Any]], manifest_dir
             Case(
                 case_id=case_id,
                 input_path=input_path,
+                schema_path=schema_path,
                 expected_canonical_path=expected_canonical_path,
                 expected_error_path=expected_error_path,
                 expected_primary_error_class=expected_primary_error_class,
@@ -178,6 +189,7 @@ def _load_manifest_cdx(path: Path) -> list[Case]:
         entry: dict[str, Any] = {
             "id": attrs.get("id"),
             "input": attrs.get("input"),
+            "schema": attrs.get("schema"),
             "expectedCanonical": attrs.get("expectedCanonical"),
             "expectedError": attrs.get("expectedError"),
             "expectedPrimaryErrorClass": attrs.get("expectedPrimaryErrorClass"),
@@ -243,6 +255,11 @@ def main(argv: list[str]) -> int:
         input_text = _read_text(c.input_path)
         _assert_lf_newlines(input_text, c.input_path)
         _assert_trailing_newline(input_text, c.input_path)
+
+        if c.schema_path is not None:
+            schema_text = _read_text(c.schema_path)
+            _assert_lf_newlines(schema_text, c.schema_path)
+            _assert_trailing_newline(schema_text, c.schema_path)
 
         if c.expected_canonical_path is not None:
             canonical_text = _read_text(c.expected_canonical_path)

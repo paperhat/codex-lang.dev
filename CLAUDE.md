@@ -33,7 +33,7 @@ Codex eliminates ambiguity for byte-identical output across implementations. Sta
 
 ## What Codex Is
 
-Declarative semantic markup for the Paperhat Workshop system, backed by RDF/OWL2/SHACL/SPARQL. Primary use: ontologies and instance data in triple stores. Design goal: constrain LLM output via closed-world semantics and deterministic validation.
+Declarative semantic markup for the Paperhat system, backed by RDF/OWL2/SHACL/SPARQL. Primary use: ontologies and instance data in triple stores. Design goal: constrain LLM output via closed-world semantics and deterministic validation.
 
 ## Core Primitives
 
@@ -94,7 +94,7 @@ Do not regress:
 - **§5.16**: Tuple must have ≥1 element.
 - **§5.17**: Range endpoints inclusive. Ranges never enumerated.
 - **§6.1**: Two identity mechanisms: `id` (IRI, global scope) and `key` (Lookup Token, document scope).
-- **§6.2.1**: Tools MUST NOT synthesize `id` or `key` traits.
+- **§6.2.1**: Tools must not synthesize `id` or `key` traits.
 - **§6.2.2**: Entity must have exactly one `id`; non-Entity must not have `id`. Values unique within document.
 - **§6.2.3**: `id` stability: changing `id` = creating new Entity.
 - **§6.3**: Concept has zero or one `key`. Resolution via §9.8 bindings.
@@ -109,24 +109,24 @@ Do not regress:
 - **§8.8**: Content is opaque. Escaping: `\<` anywhere; `\[` line-initial only. Indentation stripped (schema-free). `whitespaceMode`: `$Preformatted` (preserve) or `$Flow` (collapse, wrap 100 characters) — schema-directed.
 - **§8.9**: Three annotation kinds: attached, grouping, general. Block directives: `FLOW:`, `CODE:`, `MARKDOWN:`.
 - **§8.9.7**: GROUP/END must match via stack-based nesting.
-- **§9.1**: External inputs (environment, config, registries, network, clocks, randomness) MUST NOT influence processing.
+- **§9.1**: External inputs (environment, config, registries, network, clocks, randomness) must not influence processing.
 - **§9.4**: Exactly one authoring mode per schema (`$SimplifiedMode` or `$CanonicalMode`). No mixing.
-- **§9.6**: Canonical Representation: no RDF blank nodes. All RDF nodes MUST be IRIs. Deterministic skolem IRIs.
-- **§9.7**: Instance graph `nodeIri` MUST NOT derive from `id` trait. Declared `id` stored via `codex:declaredId`.
-- **§9.8**: Lookup bindings MUST NOT be inferred, synthesized, or imported implicitly.
+- **§9.6**: Canonical Representation: no RDF blank nodes. All RDF nodes must be IRIs. Deterministic skolem IRIs.
+- **§9.7**: Instance graph `nodeIri` must not derive from `id` trait. Declared `id` stored via `codex:declaredId`.
+- **§9.8**: Lookup bindings must not be inferred, synthesized, or imported implicitly.
 - **§9.10**: Fail with error rather than guess when required info is missing or ambiguous.
 - **§10.5**: Two-phase canonicalization: Phase 1 (schema-free) for encoding/indentation/layout; Phase 2 (schema-directed) for content whitespace mode.
 - **§10.5.1**: `$Unordered` collection sort: Concept name → `id` → `key` → source order.
 - **§11.2**: Schemas are declarative data, not executable. All authorization explicit.
 - **§11.4.3–4**: Default closed-world: traits/children not explicitly allowed/required are forbidden.
-- **§11.6.4**: Built-in enumerated sets (`ConceptKind`, `EntityEligibility`, `CompatibilityClass`, `Ordering`, `Cardinality`) MUST NOT be redefined.
-- **§11.7**: Constraints MUST NOT execute code or depend on implicit inference.
-- **§11.12**: Derived representations MUST NOT introduce semantics beyond spec/schema. MUST NOT override/weaken Codex validation.
-- **§12.2**: Governing schema must be explicit. MUST NOT substitute, infer, or override.
+- **§11.6.4**: Built-in enumerated sets (`ConceptKind`, `EntityEligibility`, `CompatibilityClass`, `Ordering`, `Cardinality`) must not be redefined.
+- **§11.7**: Constraints must not execute code or depend on implicit inference.
+- **§11.12**: Derived representations must not introduce semantics beyond spec/schema. Must not override/weaken Codex validation.
+- **§12.2**: Governing schema must be explicit. Must not substitute, infer, or override.
 - **§12.3**: Bootstrap schema-of-schemas: built-in, immutable. Root `Schema` = schema document. Not substitutable for instance docs.
 - **§13.3**: `id`, `version`, `versionScheme` all required on root `Schema`.
 - **§13.4.1**: Four version schemes: `$Semver`, `$DateYYYYMM`, `$DateYYYYMMDD`, `$Lexical`.
-- **§13.5**: Four compatibility classes: `$Initial`, `$BackwardCompatible`, `$ForwardCompatible`, `$Breaking`. First version MUST use `$Initial`.
-- **§13.8**: Validation strictly per declared version. MUST NOT infer, substitute, or relax.
+- **§13.5**: Four compatibility classes: `$Initial`, `$BackwardCompatible`, `$ForwardCompatible`, `$Breaking`. First version must use `$Initial`.
+- **§13.8**: Validation strictly per declared version. Must not infer, substitute, or relax.
 - **§14.3**: Closed set of 9 error classes. No additional classes. Halt at first failure.
 - **§14.5**: Errors are not warnings. No best-effort recovery.

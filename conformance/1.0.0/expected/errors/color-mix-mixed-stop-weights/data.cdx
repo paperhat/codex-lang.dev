@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="The color spelling is lexically well-formed, but during semantic validation color-mix requires either all stops to have explicit weights or none; mixed presence is forbidden." />

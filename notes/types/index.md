@@ -41,6 +41,7 @@ This document specifies the complete type system for Behavior expressions includ
 | Domain | Definition |
 |--------|------------|
 | `OrderableNumber` | Integer \| Fraction \| PrecisionNumber |
+| `OrderableRealNumber` | OrderableNumber \| Infinity |
 | `ExactNumber` | Integer \| Fraction |
 | `AnyRealNumber` | Integer \| DecimalNumber \| ExponentialNumber \| PrecisionNumber \| Fraction \| Infinity |
 | `AnyNumber` | AnyRealNumber \| ImaginaryNumber \| ComplexNumber |
@@ -54,11 +55,28 @@ This document specifies the complete type system for Behavior expressions includ
 | `Tuple<T1, T2, ...>` | Fixed-length, positional |
 | `Map<K, V>` | Key-value pairs (keys: Text, Character, Integer, EnumeratedToken) |
 | `Record<V>` | Text-keyed Map (equivalent to `Map<Text, V>`) |
-| `Range<T>` | Interval with start, end, optional step |
+| `Range<T>` | Declarative interval (common: numeric, temporal, character, text; other semantics schema-defined) |
 
 **Unparameterized collection types accept values of any type.** When a schema specifies `$List` without a type parameter, the list may contain values of any type. To constrain element types, use the parameterized form (e.g., `$List<Integer>`).
 
 ### 1.5 Temporal Types
+
+Temporal Values are spelled as `{...}` in Codex surface form and are first recognized and classified syntactically (per the spec’s Temporal Body grammar).
+
+At the semantic layer (schema validation), when a governing schema expects a temporal value type (e.g., `$PlainDate`, `$Instant`), the implementation must convert the parsed temporal spelling into a corresponding semantic temporal value (i.e., a concrete runtime type in the reference implementation). If conversion fails, validation must fail with a `SchemaError`.
+
+`{now}` and `{today}` are a special case: they must be represented as **unevaluated** `TemporalKeyword` values and must not be converted to an `Instant` or `PlainDate` during validation or evaluation. Their meaning is resolved only when a consuming system explicitly renders or otherwise interprets them.
+
+If a schema expects a deterministic temporal type (e.g., `$Instant`, `$PlainDate`) and the provided value is a `TemporalKeyword`, validation must fail with a `SchemaError` unless the schema explicitly permits `$TemporalKeyword` (or `$Temporal`) at that location.
+
+Canonical surface form still preserves the original parsed spelling; semantic conversion is for validation and evaluation, not for rewriting the source spelling.
+
+**Derived temporal domains**
+
+| Domain | Definition |
+|--------|------------|
+| `DeterministicTemporal` | PlainDate \| PlainTime \| PlainDateTime \| PlainYearMonth \| PlainMonthDay \| YearWeek \| Instant \| ZonedDateTime \| Duration |
+| `Temporal` | DeterministicTemporal \| TemporalKeyword |
 
 | Type | Description |
 |------|-------------|
@@ -90,6 +108,8 @@ This document specifies the complete type system for Behavior expressions includ
 | `ColorFunction` | Generic `color()` function |
 | `ColorMix` | `color-mix()` function |
 | `DeviceCmyk` | `device-cmyk()` function |
+
+Semantic validity rules for perceptual color functions (Lab/LCH and OKLab/OKLCH), including the deterministic conversion-based in-gamut check and mandated numeric requirements, are specified normatively in [spec/1.0.0/index.md](../../spec/1.0.0/index.md#572-deterministic-conversion-based-validity-lablch-oklaboklch).
 
 ### 1.7 Identity Types
 
@@ -191,9 +211,9 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 
 | Operator | Signature | Description |
 |----------|-----------|-------------|
-| `Minimum` | `(OrderableNumber, OrderableNumber, ...) → OrderableNumber` | Smallest value |
-| `Maximum` | `(OrderableNumber, OrderableNumber, ...) → OrderableNumber` | Largest value |
-| `Clamp` | `(OrderableNumber, OrderableNumber, OrderableNumber) → OrderableNumber` | Constrain to range |
+| `Minimum` | `(OrderableRealNumber, OrderableRealNumber, ...) → OrderableRealNumber` | Smallest value |
+| `Maximum` | `(OrderableRealNumber, OrderableRealNumber, ...) → OrderableRealNumber` | Largest value |
+| `Clamp` | `(OrderableRealNumber, OrderableRealNumber, OrderableRealNumber) → OrderableRealNumber` | Constrain to range |
 
 ### 4.6 Rounding
 
@@ -274,7 +294,7 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 | `ArithmeticMean` | `(List<AnyNumber>) → AnyRealNumber` | Average |
 | `GeometricMean` | `(List<AnyRealNumber>) → AnyRealNumber` | Geometric average |
 | `HarmonicMean` | `(List<AnyRealNumber>) → AnyRealNumber` | Harmonic average |
-| `Median` | `(List<OrderableNumber>) → OrderableNumber` | Middle value |
+| `Median` | `(List<OrderableRealNumber>) → OrderableRealNumber` | Middle value |
 | `Mode` | `(List<T>) → List<T>` | Most frequent value(s) |
 | `Variance` | `(List<AnyNumber>) → AnyRealNumber` | Population variance |
 | `SampleVariance` | `(List<AnyNumber>) → AnyRealNumber` | Sample variance |
@@ -283,10 +303,10 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 | `Covariance` | `(List<AnyNumber>, List<AnyNumber>) → AnyRealNumber` | Population covariance |
 | `SampleCovariance` | `(List<AnyNumber>, List<AnyNumber>) → AnyRealNumber` | Sample covariance |
 | `PearsonCorrelation` | `(List<AnyNumber>, List<AnyNumber>) → AnyRealNumber` | Pearson r |
-| `SpearmanCorrelation` | `(List<OrderableNumber>, List<OrderableNumber>) → AnyRealNumber` | Spearman ρ |
-| `Percentile` | `(List<OrderableNumber>, AnyRealNumber) → OrderableNumber` | Percentile value |
-| `Quantile` | `(List<OrderableNumber>, AnyRealNumber) → OrderableNumber` | Quantile value |
-| `InterquartileRange` | `(List<OrderableNumber>) → OrderableNumber` | IQR |
+| `SpearmanCorrelation` | `(List<OrderableRealNumber>, List<OrderableRealNumber>) → AnyRealNumber` | Spearman ρ |
+| `Percentile` | `(List<OrderableRealNumber>, AnyRealNumber) → OrderableRealNumber` | Percentile value |
+| `Quantile` | `(List<OrderableRealNumber>, AnyRealNumber) → OrderableRealNumber` | Quantile value |
+| `InterquartileRange` | `(List<OrderableRealNumber>) → OrderableRealNumber` | IQR |
 | `MeanAbsoluteDeviation` | `(List<AnyNumber>) → AnyRealNumber` | MAD |
 | `RootMeanSquare` | `(List<AnyNumber>) → AnyRealNumber` | RMS |
 | `Skewness` | `(List<AnyNumber>) → AnyRealNumber` | Distribution skewness |
@@ -746,6 +766,12 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 
 ## 6. Temporal Operators
 
+Temporal operators operate on **semantic temporal values** produced by schema validation (see §1.5). Codex surface parsing and canonicalization remain purely lexical; semantic temporal conversion and correctness checks are governed by the schema’s expected value types.
+
+This section is a **Workshop/consuming-system operator set**, not Codex core. Codex defines surface recognition and schema value-type conformance; these operators define evaluation over the resulting semantic values.
+
+Some operators additionally depend on runtime services (e.g., a clock for `Now`, a time zone database for `TimeZone`/`ZonedDateTime`). If a required runtime service is unavailable, evaluators must return `Invalid([...])`.
+
 ### 6.1 Construction
 
 | Operator | Signature | Description |
@@ -829,8 +855,8 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 
 | Operator | Signature | Description |
 |----------|-----------|-------------|
-| `AddDuration` | `(Temporal, Duration) → Temporal` | Add duration |
-| `SubtractDuration` | `(Temporal, Duration) → Temporal` | Subtract duration |
+| `AddDuration` | `(DeterministicTemporal, Duration) → DeterministicTemporal` | Add duration |
+| `SubtractDuration` | `(DeterministicTemporal, Duration) → DeterministicTemporal` | Subtract duration |
 | `AddYears` | `(PlainDate \| PlainDateTime \| ZonedDateTime, Integer) → Same` | Add years |
 | `AddMonths` | `(PlainDate \| PlainDateTime \| ZonedDateTime, Integer) → Same` | Add months |
 | `AddWeeks` | `(PlainDate \| PlainDateTime \| ZonedDateTime, Integer) → Same` | Add weeks |
@@ -839,15 +865,15 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 | `AddMinutes` | `(PlainTime \| PlainDateTime \| ZonedDateTime \| Instant, Integer) → Same` | Add minutes |
 | `AddSeconds` | `(PlainTime \| PlainDateTime \| ZonedDateTime \| Instant, Integer) → Same` | Add seconds |
 | `AddMilliseconds` | `(PlainTime \| PlainDateTime \| ZonedDateTime \| Instant, Integer) → Same` | Add milliseconds |
-| `DurationBetween` | `(Temporal, Temporal) → Duration` | Duration between |
-| `DifferenceInYears` | `(Temporal, Temporal) → Integer` | Years between |
-| `DifferenceInMonths` | `(Temporal, Temporal) → Integer` | Months between |
-| `DifferenceInWeeks` | `(Temporal, Temporal) → Integer` | Weeks between |
-| `DifferenceInDays` | `(Temporal, Temporal) → Integer` | Days between |
-| `DifferenceInHours` | `(Temporal, Temporal) → Integer` | Hours between |
-| `DifferenceInMinutes` | `(Temporal, Temporal) → Integer` | Minutes between |
-| `DifferenceInSeconds` | `(Temporal, Temporal) → Integer` | Seconds between |
-| `DifferenceInMilliseconds` | `(Temporal, Temporal) → Integer` | Milliseconds between |
+| `DurationBetween` | `(DeterministicTemporal, DeterministicTemporal) → Duration` | Duration between |
+| `DifferenceInYears` | `(DeterministicTemporal, DeterministicTemporal) → Integer` | Years between |
+| `DifferenceInMonths` | `(DeterministicTemporal, DeterministicTemporal) → Integer` | Months between |
+| `DifferenceInWeeks` | `(DeterministicTemporal, DeterministicTemporal) → Integer` | Weeks between |
+| `DifferenceInDays` | `(DeterministicTemporal, DeterministicTemporal) → Integer` | Days between |
+| `DifferenceInHours` | `(DeterministicTemporal, DeterministicTemporal) → Integer` | Hours between |
+| `DifferenceInMinutes` | `(DeterministicTemporal, DeterministicTemporal) → Integer` | Minutes between |
+| `DifferenceInSeconds` | `(DeterministicTemporal, DeterministicTemporal) → Integer` | Seconds between |
+| `DifferenceInMilliseconds` | `(DeterministicTemporal, DeterministicTemporal) → Integer` | Milliseconds between |
 | `NegateDuration` | `(Duration) → Duration` | Negate duration |
 | `AbsoluteDuration` | `(Duration) → Duration` | Absolute value |
 | `MultiplyDuration` | `(Duration, Integer) → Duration` | Multiply duration |
@@ -857,17 +883,17 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 
 | Operator | Signature | Description |
 |----------|-----------|-------------|
-| `IsBefore` | `(Temporal, Temporal) → Boolean` | First is before second |
-| `IsAfter` | `(Temporal, Temporal) → Boolean` | First is after second |
-| `IsSameOrBefore` | `(Temporal, Temporal) → Boolean` | First is same or before |
-| `IsSameOrAfter` | `(Temporal, Temporal) → Boolean` | First is same or after |
-| `IsSameInstant` | `(Temporal, Temporal) → Boolean` | Same point in time |
-| `IsSameDay` | `(Temporal, Temporal) → Boolean` | Same calendar day |
-| `IsSameMonth` | `(Temporal, Temporal) → Boolean` | Same month |
-| `IsSameYear` | `(Temporal, Temporal) → Boolean` | Same year |
-| `IsInRange` | `(Temporal, Temporal, Temporal) → Boolean` | In range (inclusive) |
-| `EarliestOf` | `(Temporal, Temporal, ...) → Temporal` | Earliest temporal |
-| `LatestOf` | `(Temporal, Temporal, ...) → Temporal` | Latest temporal |
+| `IsBefore` | `(DeterministicTemporal, DeterministicTemporal) → Boolean` | First is before second |
+| `IsAfter` | `(DeterministicTemporal, DeterministicTemporal) → Boolean` | First is after second |
+| `IsSameOrBefore` | `(DeterministicTemporal, DeterministicTemporal) → Boolean` | First is same or before |
+| `IsSameOrAfter` | `(DeterministicTemporal, DeterministicTemporal) → Boolean` | First is same or after |
+| `IsSameInstant` | `(DeterministicTemporal, DeterministicTemporal) → Boolean` | Same point in time |
+| `IsSameDay` | `(DeterministicTemporal, DeterministicTemporal) → Boolean` | Same calendar day |
+| `IsSameMonth` | `(DeterministicTemporal, DeterministicTemporal) → Boolean` | Same month |
+| `IsSameYear` | `(DeterministicTemporal, DeterministicTemporal) → Boolean` | Same year |
+| `IsInRange` | `(DeterministicTemporal, DeterministicTemporal, DeterministicTemporal) → Boolean` | In range (inclusive), per the semantic temporal model |
+| `EarliestOf` | `(DeterministicTemporal, DeterministicTemporal, ...) → DeterministicTemporal` | Earliest value, per the semantic temporal model |
+| `LatestOf` | `(DeterministicTemporal, DeterministicTemporal, ...) → DeterministicTemporal` | Latest value, per the semantic temporal model |
 
 ### 6.7 Rounding
 
@@ -904,8 +930,8 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 
 | Operator | Signature | Description |
 |----------|-----------|-------------|
-| `FormatTemporal` | `(Temporal, Text) → Text` | Format with pattern |
-| `FormatIso8601` | `(Temporal) → Text` | ISO 8601 format |
+| `FormatTemporal` | `(Temporal, Text) → Text` | Format with pattern (keywords pass through unless renderer resolves them) |
+| `FormatIso8601` | `(Temporal) → Text` | ISO 8601 format (keywords pass through unless renderer resolves them) |
 | `FormatRfc2822` | `(ZonedDateTime \| Instant) → Text` | RFC 2822 format |
 | `FormatRfc3339` | `(ZonedDateTime \| Instant) → Text` | RFC 3339 format |
 | `ParsePlainDate` | `(Text, Text) → PlainDate` | Parse date from text |
@@ -959,8 +985,8 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 | `ReduceElements` | `(List<T>, (U, T) → U, U) → U` | Reduce to single value |
 | `FlatMapElements` | `(List<T>, T → List<U>) → List<U>` | Map and flatten |
 | `Reverse` | `(List<T>) → List<T>` | Reverse order |
-| `SortBy` | `(List<T>, T → OrderableNumber) → List<T>` | Sort by key |
-| `SortByDescending` | `(List<T>, T → OrderableNumber) → List<T>` | Sort descending |
+| `SortBy` | `(List<T>, T → OrderableRealNumber) → List<T>` | Sort by key |
+| `SortByDescending` | `(List<T>, T → OrderableRealNumber) → List<T>` | Sort descending |
 | `SortWith` | `(List<T>, (T, T) → Integer) → List<T>` | Sort with comparator |
 | `Distinct` | `(List<T>) → List<T>` | Remove duplicates |
 | `DistinctBy` | `(List<T>, T → U) → List<T>` | Remove duplicates by key |
@@ -1034,10 +1060,10 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 |----------|-----------|-------------|
 | `Sum` | `(List<AnyNumber>) → AnyNumber` | Sum of elements |
 | `Product` | `(List<AnyNumber>) → AnyNumber` | Product of elements |
-| `Minimum` | `(List<OrderableNumber>) → OrderableNumber \| Absent` | Minimum element |
-| `Maximum` | `(List<OrderableNumber>) → OrderableNumber \| Absent` | Maximum element |
-| `MinimumBy` | `(List<T>, T → OrderableNumber) → T \| Absent` | Element with min key |
-| `MaximumBy` | `(List<T>, T → OrderableNumber) → T \| Absent` | Element with max key |
+| `Minimum` | `(List<OrderableRealNumber>) → OrderableRealNumber \| Absent` | Minimum element |
+| `Maximum` | `(List<OrderableRealNumber>) → OrderableRealNumber \| Absent` | Maximum element |
+| `MinimumBy` | `(List<T>, T → OrderableRealNumber) → T \| Absent` | Element with min key |
+| `MaximumBy` | `(List<T>, T → OrderableRealNumber) → T \| Absent` | Element with max key |
 | `Average` | `(List<AnyNumber>) → AnyRealNumber` | Arithmetic mean |
 
 ### 7.9 Set Operations
@@ -1118,6 +1144,12 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 
 ### 7.13 Range Operations
 
+Range Values are declarative intervals. Per Codex §5.17, Codex-conforming tools must not enumerate Range Values; evaluators therefore must not expand a range into its member values.
+
+In practice, the most common ranges are numeric, temporal, and character ranges. Text ranges can also be useful when a schema defines a lexical ordering. Other range semantics are permitted but must be defined by the governing schema or consuming system.
+
+Ranges are declarative endpoints; they do not imply enumeration of intermediate values.
+
 | Operator | Signature | Description |
 |----------|-----------|-------------|
 | `RangeFrom` | `(T, T) → Range<T>` | Create range |
@@ -1126,8 +1158,8 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 | `RangeEnd` | `(Range<T>) → T` | End value |
 | `RangeStep` | `(Range<T>) → T \| Absent` | Step value |
 | `RangeContains` | `(Range<T>, T) → Boolean` | Contains value |
-| `RangeToList` | `(Range<Integer>) → List<Integer>` | Enumerate to list |
-| `RangeLength` | `(Range<Integer>) → Integer` | Number of values |
+| `RangeToList` | `(Range<Integer>) → List<Integer>` | Enumerate to list (non-conforming; must return Invalid) |
+| `RangeLength` | `(Range<Integer>) → Integer` | Number of values (non-conforming; must return Invalid) |
 | `RangeIsEmpty` | `(Range<T>) → Boolean` | Is empty range |
 | `RangeOverlaps` | `(Range<T>, Range<T>) → Boolean` | Ranges overlap |
 | `RangeIntersection` | `(Range<T>, Range<T>) → Range<T> \| Absent` | Intersection |
@@ -1383,13 +1415,13 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 
 | Operator | Signature | Description |
 |----------|-----------|-------------|
-| `IsLessThan` | `(OrderableNumber, OrderableNumber) → Boolean` | Less than |
-| `IsLessThanOrEqualTo` | `(OrderableNumber, OrderableNumber) → Boolean` | Less than or equal |
-| `IsGreaterThan` | `(OrderableNumber, OrderableNumber) → Boolean` | Greater than |
-| `IsGreaterThanOrEqualTo` | `(OrderableNumber, OrderableNumber) → Boolean` | Greater or equal |
-| `Compare` | `(OrderableNumber, OrderableNumber) → Integer` | -1, 0, or 1 |
-| `IsBetween` | `(OrderableNumber, OrderableNumber, OrderableNumber) → Boolean` | In range (inclusive) |
-| `IsBetweenExclusive` | `(OrderableNumber, OrderableNumber, OrderableNumber) → Boolean` | In range (exclusive) |
+| `IsLessThan` | `(OrderableRealNumber, OrderableRealNumber) → Boolean` | Less than |
+| `IsLessThanOrEqualTo` | `(OrderableRealNumber, OrderableRealNumber) → Boolean` | Less than or equal |
+| `IsGreaterThan` | `(OrderableRealNumber, OrderableRealNumber) → Boolean` | Greater than |
+| `IsGreaterThanOrEqualTo` | `(OrderableRealNumber, OrderableRealNumber) → Boolean` | Greater or equal |
+| `Compare` | `(OrderableRealNumber, OrderableRealNumber) → Integer` | -1, 0, or 1 |
+| `IsBetween` | `(OrderableRealNumber, OrderableRealNumber, OrderableRealNumber) → Boolean` | In range (inclusive) |
+| `IsBetweenExclusive` | `(OrderableRealNumber, OrderableRealNumber, OrderableRealNumber) → Boolean` | In range (exclusive) |
 
 ### 10.3 Boolean Composition
 

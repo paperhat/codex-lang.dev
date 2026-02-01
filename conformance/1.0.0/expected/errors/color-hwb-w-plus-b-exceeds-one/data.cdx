@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="The color spelling is lexically well-formed, but during semantic validation HWB requires w+b <= 1; no normalization is permitted." />

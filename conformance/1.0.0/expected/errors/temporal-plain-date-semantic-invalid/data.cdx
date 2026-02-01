@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="The temporal spelling is lexically well-formed but cannot be converted to PlainDate (invalid calendar date) during schema validation." />
