@@ -6029,6 +6029,30 @@ If any of the above information is not applicable, the tool MUST omit it explici
 
 Error wording, formatting, and presentation are tool-defined, but classification and attribution MUST be precise and deterministic.
 
+#### 14.6.1 Error Payload Shape (Recommended)
+
+This specification does not mandate a serialization format (JSON, CBOR, exceptions, etc.).
+However, to ensure cross-tool interoperability and stable automated testing, tools SHOULD expose errors in a structured form with stable fields.
+
+When a tool exposes a structured error payload, it SHOULD include the following fields:
+
+* `primaryClass` (required): one of the top-level error classes in §14.3.
+* `code` (required): a stable machine identifier for the specific rule violation (for example, `parse.unterminated-annotation` or `schema.value-type-mismatch`).
+	- `code` values MUST be stable across patch releases.
+	- A `code` MUST NOT depend on message text.
+* `message` (optional): a human-readable description.
+* `notes` (optional): a list of additional human-readable strings.
+* `span` (recommended when a precise location is available): a source location with:
+	- `startByteOffset` and `endByteOffset` in the UTF-8 encoded source file, and
+	- `startLine`/`startColumn` and `endLine`/`endColumn` (1-based), where line breaks are LF (U+000A).
+* `conceptPath` (optional): a deterministic Concept path identifying the closest relevant Concept instance.
+* `traitName` (optional): the relevant Trait name, when applicable.
+* `ruleRef` (optional): a stable reference identifying the violated rule or constraint.
+* `causes` (optional): a list of nested errors (each with the same shape), ordered from most-direct to least-direct cause.
+
+Tools MAY include additional fields.
+When an error payload includes both a `span` and a `conceptPath`, the `span` MUST identify the precise surface-form location for the same failing construct.
+
 ### 14.7 Non-Goals
 
 This section does not:

@@ -29,6 +29,16 @@ This fixture pack is **Codex-first**. JSON is not used for normative fixture dat
 - `expected/canonical/<case-id>/data.cdx` — expected canonical form for some valid inputs.
 - `expected/errors/<case-id>/data.cdx` — expected primary error class for invalid inputs.
 
+## ValueType matrix
+
+Codex does not mandate a specific parser AST or internal IR representation.
+Instead, interoperability is defined by observable behavior: which inputs are accepted/rejected under schema constraints, and what canonical surface form is produced.
+
+The `value-type-matrix` cases enforce that implementations treat each built-in `$ValueType` token as a distinct schema constraint (not merely as a generic “number/text/etc” bucket).
+
+- `cases/valid/value-type-matrix/` provides a shared schema and one document that exercises all built-in `$ValueType` tokens with representative valid values.
+- `cases/invalid/value-type-matrix/*-rejects/` provides one minimal negative case per built-in `$ValueType`, expected to fail schema validation with `$SchemaError`.
+
 ## Running the smoke check
 
 From the repo root:

@@ -183,6 +183,461 @@
 	/>
 
 	<Case
+		id="valid/value-type-matrix"
+		input="cases/valid/value-type-matrix/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedCanonical="expected/canonical/value-type-matrix/data.cdx"
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/text-rejects"
+		input="cases/invalid/value-type-matrix/text-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/character-rejects"
+		input="cases/invalid/value-type-matrix/character-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/boolean-rejects"
+		input="cases/invalid/value-type-matrix/boolean-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/number-rejects"
+		input="cases/invalid/value-type-matrix/number-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/integer-rejects"
+		input="cases/invalid/value-type-matrix/integer-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/zero-rejects"
+		input="cases/invalid/value-type-matrix/zero-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/negativeInteger-rejects"
+		input="cases/invalid/value-type-matrix/negativeInteger-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/nonPositiveInteger-rejects"
+		input="cases/invalid/value-type-matrix/nonPositiveInteger-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/decimalNumber-rejects"
+		input="cases/invalid/value-type-matrix/decimalNumber-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/exponentialNumber-rejects"
+		input="cases/invalid/value-type-matrix/exponentialNumber-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/precisionNumber-rejects"
+		input="cases/invalid/value-type-matrix/precisionNumber-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/fraction-rejects"
+		input="cases/invalid/value-type-matrix/fraction-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/imaginaryNumber-rejects"
+		input="cases/invalid/value-type-matrix/imaginaryNumber-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/complexNumber-rejects"
+		input="cases/invalid/value-type-matrix/complexNumber-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/nonNegativeInteger-rejects"
+		input="cases/invalid/value-type-matrix/nonNegativeInteger-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/positiveInteger-rejects"
+		input="cases/invalid/value-type-matrix/positiveInteger-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/positiveInfinity-rejects"
+		input="cases/invalid/value-type-matrix/positiveInfinity-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/negativeInfinity-rejects"
+		input="cases/invalid/value-type-matrix/negativeInfinity-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/infinity-rejects"
+		input="cases/invalid/value-type-matrix/infinity-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/enumeratedToken-rejects"
+		input="cases/invalid/value-type-matrix/enumeratedToken-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/iriReference-rejects"
+		input="cases/invalid/value-type-matrix/iriReference-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/lookupToken-rejects"
+		input="cases/invalid/value-type-matrix/lookupToken-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/uuid-rejects"
+		input="cases/invalid/value-type-matrix/uuid-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/host-rejects"
+		input="cases/invalid/value-type-matrix/host-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/email-rejects"
+		input="cases/invalid/value-type-matrix/email-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/url-rejects"
+		input="cases/invalid/value-type-matrix/url-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/color-rejects"
+		input="cases/invalid/value-type-matrix/color-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/hexColor-rejects"
+		input="cases/invalid/value-type-matrix/hexColor-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/namedColor-rejects"
+		input="cases/invalid/value-type-matrix/namedColor-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/rgbColor-rejects"
+		input="cases/invalid/value-type-matrix/rgbColor-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/hslColor-rejects"
+		input="cases/invalid/value-type-matrix/hslColor-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/hwbColor-rejects"
+		input="cases/invalid/value-type-matrix/hwbColor-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/labColor-rejects"
+		input="cases/invalid/value-type-matrix/labColor-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/lchColor-rejects"
+		input="cases/invalid/value-type-matrix/lchColor-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/oklabColor-rejects"
+		input="cases/invalid/value-type-matrix/oklabColor-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/oklchColor-rejects"
+		input="cases/invalid/value-type-matrix/oklchColor-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/colorFunction-rejects"
+		input="cases/invalid/value-type-matrix/colorFunction-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/colorMix-rejects"
+		input="cases/invalid/value-type-matrix/colorMix-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/deviceCmyk-rejects"
+		input="cases/invalid/value-type-matrix/deviceCmyk-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/temporal-rejects"
+		input="cases/invalid/value-type-matrix/temporal-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/plainDate-rejects"
+		input="cases/invalid/value-type-matrix/plainDate-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/plainTime-rejects"
+		input="cases/invalid/value-type-matrix/plainTime-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/plainDateTime-rejects"
+		input="cases/invalid/value-type-matrix/plainDateTime-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/plainYearMonth-rejects"
+		input="cases/invalid/value-type-matrix/plainYearMonth-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/plainMonthDay-rejects"
+		input="cases/invalid/value-type-matrix/plainMonthDay-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/yearWeek-rejects"
+		input="cases/invalid/value-type-matrix/yearWeek-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/instant-rejects"
+		input="cases/invalid/value-type-matrix/instant-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/zonedDateTime-rejects"
+		input="cases/invalid/value-type-matrix/zonedDateTime-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/duration-rejects"
+		input="cases/invalid/value-type-matrix/duration-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/temporalKeyword-rejects"
+		input="cases/invalid/value-type-matrix/temporalKeyword-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/list-rejects"
+		input="cases/invalid/value-type-matrix/list-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/set-rejects"
+		input="cases/invalid/value-type-matrix/set-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/map-rejects"
+		input="cases/invalid/value-type-matrix/map-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/record-rejects"
+		input="cases/invalid/value-type-matrix/record-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/tuple-rejects"
+		input="cases/invalid/value-type-matrix/tuple-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/value-type-matrix/range-rejects"
+		input="cases/invalid/value-type-matrix/range-rejects/data.cdx"
+		schema="cases/valid/value-type-matrix/schema.cdx"
+		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
 		id="invalid/iri-missing-colon"
 		input="cases/invalid/iri-missing-colon/data.cdx"
 		expectedError="expected/errors/iri-missing-colon/data.cdx"
