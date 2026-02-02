@@ -741,7 +741,7 @@ When a schema expects:
 
 If a schema expects a specific built-in color ValueType token and the Trait value uses a different Color Value form, schema validation MUST fail with a `SchemaError` (§14).
 
-#### 5.7.4 Deterministic Conversions for `color(...)` Spaces (XYZ D65 Interchange)
+#### 5.7.4 Deterministic Conversions for `color(...)` Spaces (`XYZ_D65` Interchange)
 
 This subsection defines a single deterministic conversion graph for all `ColorSpace` tokens used by `color(...)`, `color-mix(...)`, and `color(from <color> ...)`.
 
@@ -805,7 +805,7 @@ Define the Rec. 2020 transfer functions (used by `rec2020`) as:
 
 ##### 5.7.4.2 Matrices and Chromatic Adaptation
 
-Define the linear sRGB (D65) matrix (linear sRGB → XYZ D65):
+Define the linear sRGB (D65) matrix (linear sRGB → `XYZ_D65`):
 
 ```text
 M_lin_sRGB_to_XYZ_D65 =
@@ -814,7 +814,7 @@ M_lin_sRGB_to_XYZ_D65 =
 [ 0.01933081871559182  0.11919477979462598  0.95053215224966069 ]
 ```
 
-Define the inverse matrix (XYZ D65 → linear sRGB): this is `M_XYZ_to_lin_sRGB` as defined in §5.7.2.
+Define the inverse matrix (`XYZ_D65` → linear sRGB): this is `M_XYZ_to_lin_sRGB` as defined in §5.7.2.
 
 Define the Display P3 (D65) matrices:
 
@@ -844,7 +844,7 @@ M_XYZ_D65_to_lin_a98_rgb =
 [ 0.01344740000000000 -0.11838970000000000  1.01540960000000000 ]
 ```
 
-Define the ProPhoto RGB matrices relative to XYZ D50:
+Define the ProPhoto RGB matrices relative to `XYZ_D50`:
 
 ```text
 M_lin_prophoto_rgb_to_XYZ_D50 =
@@ -1069,7 +1069,7 @@ The base HWB channel tokens used by relative colors are:
 - `w` is percentage `100 * min`.
 - `b` is percentage `100 * (1 - max)`.
 
-**XYZ D50 → Lab (D50)**
+**`XYZ_D50` → Lab (D50)**
 
 Let D50 white be `(X_n, Y_n, Z_n)` as defined in §5.7.2. Given `XYZ_D50 = (X,Y,Z)`:
 
@@ -1094,7 +1094,7 @@ Relative channel tokens use:
 	- If `h < 0`, set `h = h + 360`.
 	- If `h = 360`, set `h = 0`.
 
-**XYZ D65 → OKLab (D65)**
+**`XYZ_D65` → OKLab (D65)**
 
 Given `XYZ_D65 = (X,Y,Z)`, compute OKLab as follows.
 
