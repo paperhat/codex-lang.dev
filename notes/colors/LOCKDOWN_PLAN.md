@@ -21,6 +21,8 @@ Status legend:
 - [x] Lock numeric model for Lab/OK validity-by-conversion.
 - [x] Add drift-catching conformance cases (hue bounds, out-of-gamut, near-boundary pair).
 
+Status: Batch 0 complete.
+
 Exit criteria:
 - A concrete list of what remains unspecified, with links to exact sections.
 
@@ -45,10 +47,13 @@ Replace the current “uninterpreted balanced-parentheses payload” approach wi
 - [x] Relative color forms (`... from <color> ...`)
 
 Define exact lexical forms for numbers:
-- [ ] decimal numbers, signed numbers
-- [ ] percentages
-- [ ] angles (degrees only unless explicitly expanded)
-- [ ] separators, whitespace, and slash alpha
+
+- [x] decimal numbers, signed numbers
+- [x] percentages
+- [x] angles (degrees only unless explicitly expanded)
+- [x] separators, whitespace, and slash alpha
+
+Status: Batch 1 complete.
 
 Exit criteria:
 - Grammar alone determines what spellings are accepted.
@@ -57,9 +62,12 @@ Exit criteria:
 
 ## Batch 2 — Define semantic IR for ALL color spellings
 
-- [ ] Define the complete semantic color IR shape(s) (including alpha handling) used by semantic validation.
-- [ ] Specify how each surface spelling maps into IR.
-- [ ] Specify comparison/equality semantics per IR.
+
+- [x] Define the complete semantic color IR shape(s) (including alpha handling) used by semantic validation.
+- [x] Specify how each surface spelling maps into IR.
+- [x] Specify comparison/equality semantics per IR.
+
+Status: Batch 2 complete.
 
 Exit criteria:
 - Schema validation can produce a single typed IR for any accepted color spelling.
@@ -70,11 +78,14 @@ Exit criteria:
 
 Pick a single interchange and define all conversion edges with fixed constants and the mandated numeric model.
 
-- [ ] Choose interchange (recommendation candidate: XYZ D65 + alpha).
-- [ ] Define transfer functions for sRGB and any other RGB spaces permitted by `color(...)`.
-- [ ] Define matrices to/from XYZ for each permitted RGB space token.
-- [ ] Define chromatic adaptation rules where necessary (both directions if required).
-- [ ] Ensure Lab/OK rules are consistent with this conversion graph.
+
+- [x] Choose interchange (XYZ D65 + alpha).
+- [x] Define transfer functions for sRGB and other permitted RGB spaces.
+- [x] Define matrices to/from XYZ for each permitted RGB space token.
+- [x] Define chromatic adaptation rules where necessary (both directions).
+- [x] Ensure Lab/OK rules are consistent with this conversion graph.
+
+Status: Batch 3 complete.
 
 Exit criteria:
 - All conversions needed for validity checks and type conversions are defined in Codex itself.
@@ -83,12 +94,15 @@ Exit criteria:
 
 ## Batch 4 — Validity + canonicalization (total, explicit, reject-only)
 
+
 For each color function/space:
-- [ ] Define required finiteness rules for every numeric input.
-- [ ] Define exact allowed ranges; out-of-range is SchemaError.
-- [ ] Define alpha handling and alpha range.
-- [ ] Define hue range policy consistently (no wrap).
-- [ ] Define canonical surface form rules (case + any formatting allowed) without rewriting semantics.
+- [x] Define required finiteness rules for every numeric input.
+- [x] Define exact allowed ranges; out-of-range is SchemaError.
+- [x] Define alpha handling and alpha range.
+- [x] Define hue range policy consistently (no wrap).
+- [x] Define canonical surface form rules (case + any formatting allowed) without rewriting semantics.
+
+Status: Batch 4 complete.
 
 Exit criteria:
 - For any parsed color spelling, validity is decidable by spec alone.
@@ -97,11 +111,14 @@ Exit criteria:
 
 ## Batch 5 — Conformance locking
 
-- [ ] Add conformance cases per function for:
+
+- [x] Add conformance cases per function for:
   - lexical invalid (ParseError)
   - lexically valid but semantically invalid under schema (SchemaError)
   - near-boundary accept/reject pairs for conversion-heavy paths
   - explicit “no clamp/no hue wrap” traps
+
+Status: Batch 5 complete.
 
 Exit criteria:
 - Conformance suite detects drift in parsing, validity, and conversion determinism.
@@ -110,8 +127,11 @@ Exit criteria:
 
 ## Batch 6 — Remove external dependencies
 
-- [ ] Eliminate remaining normative references that act as moving specs for color behavior.
-- [ ] Any unavoidable external identifier is frozen to exact constants/procedures included in Codex.
+
+- [x] Eliminate remaining normative references that act as moving specs for color behavior.
+- [x] Any unavoidable external identifier is frozen to exact constants/procedures included in Codex.
+
+Status: Batch 6 complete.
 
 Exit criteria:
 - Implementers do not need CSS Color / other specs to implement Codex colors.
@@ -120,9 +140,12 @@ Exit criteria:
 
 ## Batch 7 — Verification
 
-- [ ] Run `python3 tools/token_consistency_scan.py`
-- [ ] Run `python3 tools/conformance_smokecheck.py conformance/1.0.0/manifest/configuration.cdx`
-- [ ] Run `python3 tools/readiness_check.py`
+
+- [x] Run `python3 tools/token_consistency_scan.py`
+- [x] Run `python3 tools/conformance_smokecheck.py conformance/1.0.0/manifest/configuration.cdx`
+- [x] Run `python3 tools/readiness_check.py`
+
+Status: Batch 7 complete.
 
 Exit criteria:
 - Repo checks pass; no new contradictions introduced.

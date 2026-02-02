@@ -1,4 +1,4 @@
-© 2023–present Charles F. Munat. Codex Language Specification.
+© 2023–present Paperhat, Limited. Codex Language Specification.
 
 Licensed under the Apache License, Version 2.0.
 See [LICENSE](LICENSE) for the full license text.

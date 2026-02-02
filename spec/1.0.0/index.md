@@ -999,16 +999,22 @@ Let `h` be degrees with `0 <= h < 360`. Let `s` and `l` be fractions in `[0,1]`.
 
 1. Compute `c = (1 - abs(2*l - 1)) * s`.
 2. Compute `h' = h / 60`.
-3. Compute `x = c * (1 - abs((h' mod 2) - 1))`.
-4. Determine `(r1,g1,b1)` by the interval containing `h'`:
+3. Compute the remainder of `h'` modulo 2 without using a `mod` operator:
+	- If `0 <= h' < 2`, let `h2 = h'`.
+	- If `2 <= h' < 4`, let `h2 = h' - 2`.
+	- If `4 <= h' < 6`, let `h2 = h' - 4`.
+4. Compute `x = c * (1 - abs(h2 - 1))`.
+
+5. Determine `(r1,g1,b1)` by the interval containing `h'`:
 	- If `0 <= h' < 1`: `(c, x, 0)`
 	- If `1 <= h' < 2`: `(x, c, 0)`
 	- If `2 <= h' < 3`: `(0, c, x)`
 	- If `3 <= h' < 4`: `(0, x, c)`
 	- If `4 <= h' < 5`: `(x, 0, c)`
 	- If `5 <= h' < 6`: `(c, 0, x)`
-5. Compute `m = l - c/2`.
-6. The encoded sRGB channels are `(r,g,b) = (r1+m, g1+m, b1+m)`.
+
+6. Compute `m = l - c/2`.
+7. The encoded sRGB channels are `(r,g,b) = (r1+m, g1+m, b1+m)`.
 - Require each of `r,g,b` to be in `[0,1]` (reject-only semantics).
 - Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.4.3.
 
@@ -1082,7 +1088,11 @@ Relative channel tokens use:
 - `l` as the percentage `L` (in `[0,100]`).
 - `a` and `b` as the Lab components.
 - `c = sqrt(a^2 + b^2)`.
-- `h` as degrees computed from `atan2(b,a)` mapped into `[0,360)`.
+- `h` as degrees computed from `atan2(b,a)` as follows:
+	- Compute `theta = atan2(b,a)` in radians.
+	- Compute `h = theta * (180/π)`.
+	- If `h < 0`, set `h = h + 360`.
+	- If `h = 360`, set `h = 0`.
 
 **XYZ D65 → OKLab (D65)**
 
@@ -1111,7 +1121,7 @@ Relative channel tokens use:
 - `l` as `L` (in `[0,1]`).
 - `a` and `b` as the OKLab components.
 - `c = sqrt(a^2 + b^2)`.
-- `h` as degrees computed from `atan2(b,a)` mapped into `[0,360)`.
+- `h` as degrees computed from `atan2(b,a)` using the same rule as Lab above.
 
 #### 5.7.5 Semantic Interpretation of `color(...)`
 
@@ -1154,7 +1164,12 @@ When a schema expects `$Color` and the Trait value is `color-mix(in S, stop1, st
 6. Convert the mixed result back to interchange `XYZ_D65`:
 	- If `S` is `xyz`/`xyz-d65`, the mixed XYZ is already `XYZ_D65`.
 	- If `S` is `xyz-d50`, compute `XYZ_D65 = M_D50_to_D65 * XYZ_D50`.
-	- If `S` is an RGB space, compute `XYZ_D65` using the RGB-to-XYZ path of §5.7.4.3 with the *linear* channels (no encoding step).
+	- If `S` is an RGB space, treat `v_out` as *linear* channels for `S` and compute `XYZ_D65` as follows:
+		- For `srgb` or `srgb-linear`: `XYZ_D65 = M_lin_sRGB_to_XYZ_D65 * v_out`.
+		- For `display-p3`: `XYZ_D65 = M_lin_display_p3_to_XYZ_D65 * v_out`.
+		- For `a98-rgb`: `XYZ_D65 = M_lin_a98_rgb_to_XYZ_D65 * v_out`.
+		- For `rec2020`: `XYZ_D65 = M_lin_rec2020_to_XYZ_D65 * v_out`.
+		- For `prophoto-rgb`: compute `XYZ_D50 = M_lin_prophoto_rgb_to_XYZ_D50 * v_out`, then `XYZ_D65 = M_D50_to_D65 * XYZ_D50`.
 7. The semantic `$Color` value is `(XYZ_D65, a_out)`.
 
 #### 5.7.7 Deterministic Semantic Evaluation of Relative Colors (`from <color>`)
@@ -1191,16 +1206,16 @@ Units for channel substitution:
 	- Base `s`, `l`, `w`, `b` tokens substitute the base percentage in `[0,100]` (not the fraction).
 
 - `lab(from ...)` / `lch(from ...)`:
-	- Base `l` substitutes the base `L` percentage in `[0,100]` (not the `L` value in `[0,100]`).
+	- Base `l` substitutes the base Lab `L` in the percent unit (a number in `[0,100]`).
 	- Base `a` and `b` substitute the base Lab `a`/`b` components.
 	- Base `c` substitutes chroma `C = sqrt(a^2 + b^2)`.
-	- Base `h` substitutes hue in degrees computed from `atan2(b,a)` mapped into `[0,360)`.
+	- Base `h` substitutes hue degrees computed from `atan2(b,a)` using the rule in §5.7.4.5.
 
 - `oklab(from ...)` / `oklch(from ...)`:
 	- Base `l` substitutes the base OKLab `L` component in `[0,1]`.
 	- Base `a` and `b` substitute the base OKLab `a`/`b` components.
 	- Base `c` substitutes chroma `C = sqrt(a^2 + b^2)`.
-	- Base `h` substitutes hue in degrees computed from `atan2(b,a)` mapped into `[0,360)`.
+	- Base `h` substitutes hue degrees computed from `atan2(b,a)` using the rule in §5.7.4.5.
 
 - `color(from ... S ...)`:
 	- If `S` is an RGB space, base `r`, `g`, `b` substitute the encoded channel fractions in `[0,1]`.

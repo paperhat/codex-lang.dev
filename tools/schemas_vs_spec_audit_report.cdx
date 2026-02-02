@@ -1,4 +1,4 @@
-<SchemasVsSpecAuditReport version="0.1" kind="heuristic" schemaFileCount=4 schemasRoot="paperhat.dev/DRAFT/schemas" specRoot="spec/1.0.0/index.md">
+<SchemasVsSpecAuditReport version="0.1" kind="heuristic" schemaFileCount=2 schemasRoot="codex-lang.dev/spec/1.0.0/bootstrap-schema" specRoot="spec/1.0.0/index.md">
 	<Notes>
 		<Note text="This is a heuristic: it only checks whether a token word appears anywhere in spec Markdown." />
 		<Note text="Items listed as missing are candidates for deeper review, not automatically spec bugs." />
@@ -8,8 +8,12 @@
 	</MissingSigils>
 
 	<MissingTraits>
+		<Trait value="lex" />
+		<Trait value="rangeMin" />
 	</MissingTraits>
 
 	<MissingConcepts>
+		<Concept value="ConceptOption" />
+		<Concept value="ExactlyOneChildOf" />
 	</MissingConcepts>
 </SchemasVsSpecAuditReport>
