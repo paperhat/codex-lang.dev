@@ -308,7 +308,7 @@ This requirement binds schema authors. It is not fully mechanically enforceable 
 
 ### 5.1 Text Values
 
-A Text Value is a sequence of zero or more Unicode scalar values. An empty Text Value (zero scalar values) is permitted.
+A Text Value is a sequence of zero or more Unicode scalar values as defined by Unicode 16.0.0. An empty Text Value (zero scalar values) is permitted.
 
 In the Surface Form, Text Values MUST be spelled as quoted text literals (see Appendix A) or backtick text (see §5.2).
 
@@ -1249,6 +1249,8 @@ In the Surface Form, IRI Reference Values MUST be spelled using the IRI referenc
 
 IRI Reference Values MUST permit non-ASCII Unicode characters directly and MUST permit percent-encoding, as defined for IRI-references by RFC 3987: https://www.rfc-editor.org/rfc/rfc3987.
 
+For all Unicode character classifications referenced by this section (whitespace, control, bidirectional control, and private-use), tools MUST use the Unicode 16.0.0 character property tables.
+
 IRI Reference Values MUST NOT contain Unicode whitespace characters.
 
 IRI Reference Values MUST NOT contain Unicode control characters.
@@ -1259,7 +1261,7 @@ IRI Reference Values MUST NOT contain Unicode private-use characters.
 
 An IRI Reference Value MUST NOT be a Text Value.
 
-IRI Reference Values MUST be compared as opaque sequences of Unicode scalar values.
+IRI Reference Values MUST be compared as opaque sequences of Unicode scalar values (Unicode 16.0.0).
 
 Codex-conforming tools MUST NOT dereference IRI Reference Values.
 
@@ -1499,7 +1501,9 @@ In the Surface Form, a record field name MUST be an unquoted identifier using ca
 
 ### 5.20 Host Name Values
 
-A Host Name Value represents a DNS hostname (including internationalized domain names).
+A Host Name Value represents a DNS hostname in **ASCII form**.
+
+Host Name Values are defined to avoid reliance on external internationalization profiles. Implementations MUST treat Host Name Values as already being in ASCII (for example, A-label form for internationalized names).
 
 In the Surface Form, Host Name Values MUST be spelled as the keyword `host` followed by a parenthesized Text Value:
 
@@ -1515,21 +1519,30 @@ The decoded `hostname` text MUST NOT contain Unicode bidirectional control chara
 
 The decoded `hostname` text MUST NOT contain Unicode private-use characters.
 
+For all Unicode character classifications referenced by this section (whitespace, control, bidirectional control, and private-use), tools MUST use the Unicode 16.0.0 character property tables.
+
 Host Name Values MUST be canonicalized as follows:
 
-1. Apply Unicode Normalization Form C (NFC) to the decoded `hostname` text using Unicode 16.0.0.
-2. Convert the NFC-normalized hostname to ASCII using UTS #46 ToASCII processing (nontransitional processing; UseSTD3ASCIIRules=true) using Unicode 16.0.0.
-3. Lowercase ASCII letters in the resulting ASCII hostname.
+1. Require that the decoded `hostname` text contains only ASCII characters.
+2. Lowercase ASCII letters (`A`–`Z`) in the decoded hostname.
+3. Check the lowercase hostname for well-formedness as a DNS host name using these rules:
+	- The hostname MUST NOT be empty.
+	- The hostname MUST NOT start or end with `.`.
+	- The hostname MUST be at most 253 characters.
+	- The hostname MUST consist of one or more labels separated by `.`.
+	- Each label MUST be 1–63 characters.
+	- Each label MUST contain only ASCII letters `a`–`z`, digits `0`–`9`, and hyphen `-`.
+	- Each label MUST NOT start with `-` and MUST NOT end with `-`.
 
 If any step fails, Codex-conforming tools MUST reject the Host Name Value spelling with a `SchemaError` (§14).
 
-In canonical surface form, Host Name Values MUST be spelled as `host("<ascii-hostname>")`, where `<ascii-hostname>` is the lowercase ASCII hostname produced by the canonicalization procedure above.
+In canonical surface form, Host Name Values MUST be spelled as `host("<hostname>")`, where `<hostname>` is the lowercase ASCII hostname produced by the canonicalization procedure above.
 
 A Host Name Value MUST NOT be treated as a Text Value.
 
 ### 5.21 Email Address Values
 
-An Email Address Value represents an email address with an internationalized local part and an internationalized domain.
+An Email Address Value represents an email address with a Unicode local part and an ASCII domain.
 
 In the Surface Form, Email Address Values MUST be spelled as the keyword `email` followed by a parenthesized Text Value:
 
@@ -1549,14 +1562,16 @@ The decoded `address` text MUST NOT contain Unicode bidirectional control charac
 
 The decoded `address` text MUST NOT contain Unicode private-use characters.
 
+For all Unicode character classifications referenced by this section (whitespace, control, bidirectional control, and private-use), tools MUST use the Unicode 16.0.0 character property tables.
+
 The `local` part MUST be non-empty.
 
 The `domain` part MUST be non-empty.
 
 Email Address Values MUST be canonicalized as follows:
 
-1. Apply Unicode Normalization Form C (NFC) to `local` and `domain` using Unicode 16.0.0.
-2. Canonicalize `domain` using the Host Name Value canonicalization procedure in §5.20 (including UTS #46 ToASCII and ASCII lowercasing).
+1. Apply Unicode Normalization Form C (NFC) to `local` using Unicode 16.0.0.
+2. Canonicalize `domain` using the Host Name Value canonicalization procedure in §5.20.
 3. Preserve the NFC-normalized `local` part codepoint-for-codepoint (no case folding).
 
 If any step fails, Codex-conforming tools MUST reject the Email Address Value spelling with a `SchemaError` (§14).
@@ -1567,7 +1582,9 @@ An Email Address Value MUST NOT be treated as a Text Value.
 
 ### 5.22 URL Values
 
-A URL Value represents a structured URL with components defined by the WHATWG URL model.
+A URL Value represents a **URI** in absolute form.
+
+URL Values are defined to avoid reliance on living URL standards. This specification defines a deterministic parsing, resolution, and canonicalization procedure for a restricted, ASCII-only URI form.
 
 In the Surface Form, URL Values MUST be spelled using one of the following two forms:
 
@@ -1578,16 +1595,72 @@ The keyword `url` MUST be spelled using ASCII lowercase letters.
 
 Both arguments MUST be Text Values.
 
-URL Values MUST be parsed, resolved (if applicable), and serialized using the WHATWG URL Standard (the same URL model used by the DOM `new URL()` constructor): https://url.spec.whatwg.org/.
+For all Unicode character classifications referenced by this section (whitespace, control, bidirectional control, and private-use), tools MUST use the Unicode 16.0.0 character property tables.
 
-For the two-argument form:
+After interpreting Text Value escape sequences, the decoded URL text MUST NOT contain Unicode whitespace characters, Unicode control characters, Unicode bidirectional control characters, or Unicode private-use characters.
 
-- `base-url` MUST parse as an absolute URL.
-- `relative-reference` MUST be resolved against `base-url` using the WHATWG URL Standard's resolution algorithm.
+The decoded URL text MUST contain only ASCII characters.
 
-URL Values MUST be canonicalized by serializing the resulting URL to a canonical URL string using the WHATWG URL Standard's serializer.
+#### 5.22.1 URL Parsing Model
 
-If parsing, resolution, or serialization fails, Codex-conforming tools MUST reject the URL Value spelling with a `SchemaError` (§14).
+Codex URL parsing operates on an ASCII string and produces the components `(scheme, authority?, path, query?, fragment?)`.
+
+- The `scheme` is the substring before the first `:`.
+- The remainder after `:` is parsed as:
+	- If it begins with `//`, it has an `authority` ending at the next `/`, `?`, or `#` (or end of string).
+	- The `path` is the substring from the start of the path to before `?` or `#` (or end of string). If no path is present after an authority, the path is the empty string.
+	- If a `?` is present, `query` is the substring after `?` up to before `#` (or end of string).
+	- If a `#` is present, `fragment` is the substring after `#` to end of string.
+
+Parsing requirements:
+
+1. The decoded URL text MUST contain a `:` character.
+2. The `scheme` MUST be non-empty.
+3. The first character of `scheme` MUST be an ASCII letter (`A`–`Z` or `a`–`z`).
+4. The remaining characters of `scheme` MUST be ASCII letters, digits, `+`, `-`, or `.`.
+5. If an `authority` is present, it MUST be non-empty.
+
+#### 5.22.2 URL Resolution (two-argument form)
+
+For the two-argument form `url("<base-url>", "<relative-reference>")`:
+
+1. Parse `base-url` using §5.22.1.
+2. Require that `base-url` is absolute (it contains a scheme) and that it has an `authority`.
+3. Resolve `relative-reference` against `base-url` using this deterministic procedure:
+	- If `relative-reference` contains a `:` before any `/`, `?`, or `#`, it is treated as an absolute URL text and is parsed directly (the base is ignored).
+	- Otherwise, construct a target by inheriting `scheme` and `authority` from the base and computing the target path/query/fragment:
+		- If `relative-reference` starts with `//`, inherit `scheme` from base and use the `authority` and following components from `relative-reference`.
+		- Else if `relative-reference` starts with `/`, use the base `scheme`/`authority` and set `path` to the relative-reference path.
+		- Else, use the base `scheme`/`authority` and set `path` to the base path with its final segment removed, then append the relative-reference path.
+		- If `relative-reference` includes `?`, use its `query`; otherwise inherit the base `query`.
+		- If `relative-reference` includes `#`, use its `fragment`; otherwise omit `fragment`.
+4. After resolution, apply dot-segment removal to the target `path` using this procedure:
+	- Split the path on `/` into segments.
+	- Process segments left-to-right:
+		- Skip segments equal to `.`.
+		- For a segment equal to `..`, remove the most recent retained non-empty segment if any; otherwise retain nothing.
+		- Otherwise retain the segment.
+	- Re-join with `/`, preserving a leading `/` if the input path had a leading `/`.
+
+If parsing or resolution fails, tools MUST reject with a `SchemaError` (§14).
+
+#### 5.22.3 URL Canonicalization
+
+After obtaining the resolved URL components (one-argument form parses directly; two-argument form resolves then parses), tools MUST canonicalize as follows:
+
+1. Lowercase ASCII letters in `scheme`.
+2. If an `authority` is present:
+	- Lowercase ASCII letters in the `authority` substring.
+	- If the `path` is the empty string, replace it with `/`.
+3. Apply dot-segment removal to `path` as defined in §5.22.2.
+4. Serialize the canonical URL string as:
+	- `scheme`, then `:`, then:
+		- if `authority` is present: `//` + `authority`
+		- then `path`
+		- then, if `query` is present: `?` + `query`
+		- then, if `fragment` is present: `#` + `fragment`
+
+If canonicalization fails at any step, tools MUST reject with a `SchemaError` (§14).
 
 In canonical surface form, URL Values MUST be spelled using the single-argument form `url("<canonical-url>")` where `<canonical-url>` is the canonical serialized URL string.
 

@@ -36,6 +36,27 @@
 	/>
 
 	<Case
+		id="valid/host-uppercase-normalizes"
+		input="cases/valid/host-uppercase-normalizes/data.cdx"
+		schema="cases/valid/host-uppercase-normalizes/schema.cdx"
+		expectedCanonical="expected/canonical/host-uppercase-normalizes/data.cdx"
+	/>
+
+	<Case
+		id="valid/email-domain-uppercase-normalizes"
+		input="cases/valid/email-domain-uppercase-normalizes/data.cdx"
+		schema="cases/valid/email-domain-uppercase-normalizes/schema.cdx"
+		expectedCanonical="expected/canonical/email-domain-uppercase-normalizes/data.cdx"
+	/>
+
+	<Case
+		id="valid/url-uppercase-normalizes"
+		input="cases/valid/url-uppercase-normalizes/data.cdx"
+		schema="cases/valid/url-uppercase-normalizes/schema.cdx"
+		expectedCanonical="expected/canonical/url-uppercase-normalizes/data.cdx"
+	/>
+
+	<Case
 		id="valid/content-allows-blank-lines"
 		input="cases/valid/content-allows-blank-lines/data.cdx"
 		expectedCanonical="expected/canonical/content-allows-blank-lines/data.cdx"
@@ -215,6 +236,30 @@
 		input="cases/invalid/lookup-token-uppercase/data.cdx"
 		expectedError="expected/errors/lookup-token-uppercase/data.cdx"
 		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="invalid/host-unicode-whitespace"
+		input="cases/invalid/host-unicode-whitespace/data.cdx"
+		schema="cases/invalid/host-unicode-whitespace/schema.cdx"
+		expectedError="expected/errors/host-unicode-whitespace/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/email-missing-at"
+		input="cases/invalid/email-missing-at/data.cdx"
+		schema="cases/invalid/email-missing-at/schema.cdx"
+		expectedError="expected/errors/email-missing-at/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/url-parse-fails"
+		input="cases/invalid/url-parse-fails/data.cdx"
+		schema="cases/invalid/url-parse-fails/schema.cdx"
+		expectedError="expected/errors/url-parse-fails/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
 	/>
 
 	<Case

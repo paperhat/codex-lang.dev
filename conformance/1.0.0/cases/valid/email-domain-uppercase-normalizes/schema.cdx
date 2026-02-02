@@ -1,0 +1,17 @@
+<Schema id=example:schema:email-uppercase version="0.1" compatibilityClass=$BackwardCompatible>
+	<ConceptDefinitions>
+		<ConceptDefinition
+			id=example:concept:Root
+			name="Root"
+			conceptKind=$Semantic
+			entityEligibility=$MustNotBeEntity
+		>
+			<TraitRules>
+				<AllowsTrait name="e" />
+			</TraitRules>
+		</ConceptDefinition>
+	</ConceptDefinitions>
+	<TraitDefinitions>
+		<TraitDefinition id=example:trait:e name="e" defaultValueType=$EmailAddress />
+	</TraitDefinitions>
+</Schema>

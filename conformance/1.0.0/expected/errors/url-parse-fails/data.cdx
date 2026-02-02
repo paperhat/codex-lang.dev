@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="Url canonicalization requires WHATWG URL parsing/serialization; this spelling fails to parse as an absolute URL." />

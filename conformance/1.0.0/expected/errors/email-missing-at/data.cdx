@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="EmailAddress requires exactly one '@' after Text escape decoding; this spelling has none." />

@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="HostName canonicalization rejects decoded hostname text containing Unicode whitespace." />

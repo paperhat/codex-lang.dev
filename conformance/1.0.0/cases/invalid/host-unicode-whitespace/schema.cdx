@@ -1,0 +1,17 @@
+<Schema id=example:schema:host-ws version="0.1" compatibilityClass=$BackwardCompatible>
+	<ConceptDefinitions>
+		<ConceptDefinition
+			id=example:concept:Root
+			name="Root"
+			conceptKind=$Semantic
+			entityEligibility=$MustNotBeEntity
+		>
+			<TraitRules>
+				<AllowsTrait name="h" />
+			</TraitRules>
+		</ConceptDefinition>
+	</ConceptDefinitions>
+	<TraitDefinitions>
+		<TraitDefinition id=example:trait:h name="h" defaultValueType=$HostName />
+	</TraitDefinitions>
+</Schema>
