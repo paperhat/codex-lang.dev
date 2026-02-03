@@ -1,6 +1,6 @@
-Status: NORMATIVE
-Lock State: LOCKED
-Version: 1.0.0
+Status: NORMATIVE  
+Lock State: LOCKED  
+Version: 1.0.0  
 Editor: Charles F. Munat
 
 **This specification is locked. No modifications—including clarifications, corrections, or improvements—are permitted without explicit approval from the editor.**
