@@ -6040,7 +6040,7 @@ When a tool exposes a structured error payload, it SHOULD include the following 
 * `code` (required): a stable machine identifier for the specific rule violation (for example, `parse.unterminated-annotation` or `schema.value-type-mismatch`).
 	- `code` values MUST be stable across patch releases.
 	- A `code` MUST NOT depend on message text.
-* `message` (optional): a human-readable description.
+* `message` (required): a human-readable description.
 * `notes` (optional): a list of additional human-readable strings.
 * `span` (recommended when a precise location is available): a source location with:
 	- `startByteOffset` and `endByteOffset` in the UTF-8 encoded source file, and
