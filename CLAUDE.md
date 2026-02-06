@@ -81,7 +81,7 @@ Do not regress:
 - **§4.3**: Authors must treat acronyms as words (not fully mechanical).
 - **§5.1**: Empty text values permitted.
 - **§5.3**: Boolean is exactly `true` or `false`. No other spellings.
-- **§5.4**: No NaN. `Infinity`/`-Infinity` permitted; `+Infinity` not permitted. `-0` distinct from `0`. No leading zeros (sign excluded). Precision `p` on any numeric (inferred from decimal places; explicit overrides).
+- **§5.4**: No NaN. `Infinity`/`-Infinity` permitted; `+Infinity` not permitted. Explicit `+` signs not permitted on any numeric value. `-0` distinct from `0`. No leading zeros (sign excluded). Precision `p` on any numeric (inferred from decimal places; explicit overrides).
 - **§5.5**: Enumerated tokens: `$` + PascalCase.
 - **§5.6**: Two grammars: Temporal Value (braced literal) vs Temporal Body (content).
 - **§5.7**: Lowercase canonical: hex digits, function names, color space tokens. Named colors: `&` + lowercase (Appendix B).

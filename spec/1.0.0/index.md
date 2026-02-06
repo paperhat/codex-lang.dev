@@ -337,7 +337,7 @@ No other spellings are permitted.
 
 ### 5.4 Numeric Values
 
-Codex performs no arithmetic and no numeric normalization. Numeric spellings MUST be preserved exactly.
+Codex performs no arithmetic and no numeric normalization. Numeric spellings MUST be preserved exactly. Explicit `+` signs are not permitted; absence of a sign indicates a positive value.
 
 Integer components in Numeric Value spellings MUST NOT contain leading zeros, except that the single digit `0` is permitted. A sign character (if present) is not part of the integer component.
 
@@ -1407,9 +1407,11 @@ A Range Value is a declarative interval.
 
 In the Surface Form, Range Values MUST be spelled using `..` between endpoints, with an optional `s` suffix for step (`x..y` or `x..ysz` where `x` is the starting value, `y` is the ending value, and `z` is the step). See Appendix A for the full grammar.
 
+Range endpoints and step values MUST be ordered numeric types (Integer, DecimalNumber, Fraction, ExponentialNumber, or PrecisionNumber), Temporal Values, or Character Values (Character Values are permitted as endpoints only, not as step values). ComplexNumber, ImaginaryNumber, and Infinity MUST NOT appear as range endpoints or step values.
+
 A Range Value MUST contain a start endpoint and an end endpoint.
 
-The start endpoint and end endpoint MUST be Values of the same base Value kind (e.g., both Integer, both Text), independent of any parameterized type constraints.
+The start endpoint and end endpoint MUST be Values of the same base Value kind (e.g., both Integer, both PlainDate), independent of any parameterized type constraints.
 
 A Range Value MUST contain either zero steps or one step.
 
@@ -5445,17 +5447,19 @@ Its goals are to:
 
 ### 12.2 Schema Provision
 
-A conforming implementation MUST require explicit provision of a governing schema.
+A conforming implementation MUST require explicit provision of a governing schema for semantic validation.
 
-The governing schema is provided directly by the caller as an explicit input:
+Schema-less formatting and well-formedness checks (§9.2, §10.2.1) do not require a governing schema and MUST NOT be blocked by the absence of one.
+
+For semantic validation, the governing schema is provided directly by the caller as an explicit input:
 
 ```
-parse(documentBytes, governingSchema) → parsedDocument
+validate(documentBytes, governingSchema) → validatedDocument
 ```
 
 The implementation MUST use the provided schema and MUST NOT attempt to substitute, infer, or override it.
 
-If no governing schema is provided, parsing MUST fail with a `ParseError` (§14).
+If no governing schema is provided and semantic validation is requested, the implementation MUST fail with a `SchemaError` (§14).
 
 External systems for schema storage, discovery, or distribution do not affect the parsing, validation, or canonicalization of Codex documents and are outside the scope of this specification.
 
@@ -6462,11 +6466,11 @@ Sign
 	;
 
 Integer
-	= "0" | [ Sign ], NonZeroDigit, { Digit }
+	= "0" | [ "-" ], NonZeroDigit, { Digit }
 	;
 
 DecimalNumber
-	= [ Sign ], IntegerDigits, ".", DigitSequence
+	= [ "-" ], IntegerDigits, ".", DigitSequence
 	;
 
 ExponentialNumber
@@ -7179,21 +7183,33 @@ TupleItems
 #### A.1.24 Range Values
 
 ```ebnf
-(* Range Values are declarative intervals with optional step (§5.17). *)
+(* Range Values are declarative intervals with optional step (§5.17).
+   Range endpoints and steps use OrderedNumericValue, which excludes
+   ComplexNumber, ImaginaryNumber, and Infinity. *)
 RangeValue
 	= RangeStart, "..", RangeEnd, [ "s", StepValue ]
 	;
 
 RangeStart
-	= NumericValue | TemporalValue | CharValue
+	= OrderedNumericValue | TemporalValue | CharValue
 	;
 
 RangeEnd
-	= NumericValue | TemporalValue | CharValue
+	= OrderedNumericValue | TemporalValue | CharValue
 	;
 
 StepValue
-	= NumericValue | TemporalValue
+	= OrderedNumericValue | TemporalValue
+	;
+
+(* Numeric types with a total ordering, suitable for range intervals.
+   Excludes ComplexNumber, ImaginaryNumber, and Infinity. *)
+OrderedNumericValue
+	= PrecisionNumber
+	| ExponentialNumber
+	| Fraction
+	| DecimalNumber
+	| Integer
 	;
 ```
 
@@ -7561,12 +7577,12 @@ ImaginaryNumber <- (Integer / DecimalNumber) 'i'
 Fraction <- Integer '/' IntDigits
 PrecisionNumber <- DecimalNumber 'p' IntDigits?
 ExponentialNumber <- (Integer / DecimalNumber) [eE] Sign? IntDigits
-DecimalNumber <- Sign? IntDigits '.' Digits
+DecimalNumber <- '-'? IntDigits '.' Digits
 Infinity <- PositiveInfinity / NegativeInfinity
 PositiveInfinity <- 'Infinity'
 NegativeInfinity <- '-' 'Infinity'
 
-Integer <- '0' / Sign? [1-9] Digit*
+Integer <- '0' / '-'? [1-9] Digit*
 
 Sign <- [+-]
 Digits <- Digit+
@@ -7694,9 +7710,10 @@ TupleItems <- Value (WS* ',' WS* Value)*
 
 ```peg
 RangeValue <- RangeStart '..' RangeEnd ('s' StepValue)?
-RangeStart <- TemporalValue / CharValue / NumericValue
-RangeEnd <- TemporalValue / CharValue / NumericValue
-StepValue <- TemporalValue / NumericValue
+RangeStart <- TemporalValue / CharValue / OrderedNumericValue
+RangeEnd <- TemporalValue / CharValue / OrderedNumericValue
+StepValue <- TemporalValue / OrderedNumericValue
+OrderedNumericValue <- PrecisionNumber / ExponentialNumber / Fraction / DecimalNumber / Integer
 ```
 
 ---
