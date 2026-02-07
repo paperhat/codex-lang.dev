@@ -310,7 +310,7 @@
 			name="ConceptDefinitions"
 		>
 			<ChildRules>
-				<AllowsChildConcept conceptSelector="ConceptDefinition" min=1 />
+				<RequiresChildConcept conceptSelector="ConceptDefinition" />
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -322,7 +322,7 @@
 			name="TraitDefinitions"
 		>
 			<ChildRules>
-				<AllowsChildConcept conceptSelector="TraitDefinition" min=1 />
+				<RequiresChildConcept conceptSelector="TraitDefinition" />
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -1176,8 +1176,8 @@
 			name="ValueInNumericRange"
 		>
 			<TraitRules>
-				<AllowsTrait name="rangeMin" />
-				<AllowsTrait name="rangeMax" />
+				<AllowsTrait name="min" />
+				<AllowsTrait name="max" />
 			</TraitRules>
 		</ConceptDefinition>
 
@@ -1777,14 +1777,14 @@
 		[GROUP: Child Rule Traits]
 
 		<TraitDefinition
-			defaultValueType=$NonNegativeInteger
+			defaultValueType=$Number
 			id=urn:codex:bootstrap:trait:min
 			name="min"
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
-			defaultValueType=$PositiveInteger
+			defaultValueType=$Number
 			id=urn:codex:bootstrap:trait:max
 			name="max"
 			priority=$Secondary
@@ -1801,20 +1801,6 @@
 			defaultValueType=$PositiveInteger
 			id=urn:codex:bootstrap:trait:maxCount
 			name="maxCount"
-			priority=$Secondary
-		/>
-
-		<TraitDefinition
-			defaultValueType=$Number
-			id=urn:codex:bootstrap:trait:rangeMin
-			name="rangeMin"
-			priority=$Secondary
-		/>
-
-		<TraitDefinition
-			defaultValueType=$Number
-			id=urn:codex:bootstrap:trait:rangeMax
-			name="rangeMax"
 			priority=$Secondary
 		/>
 
@@ -2120,7 +2106,7 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
-			description="ValueInNumericRange must have rangeMin or rangeMax (or both)."
+			description="ValueInNumericRange must have min or max (or both)."
 			id=urn:codex:bootstrap:constraint:value-in-numeric-range-requires-bound
 			title="ValueInNumericRange requires at least one bound"
 		>
@@ -2130,10 +2116,10 @@
 			<Rule>
 				<AnyOf>
 					<Rule>
-						<TraitExists trait="rangeMin" />
+						<TraitExists trait="min" />
 					</Rule>
 					<Rule>
-						<TraitExists trait="rangeMax" />
+						<TraitExists trait="max" />
 					</Rule>
 				</AnyOf>
 			</Rule>
@@ -2244,7 +2230,7 @@
 						<OnPathExists>
 							<TraitPath traitName="min" />
 							<Rule>
-								<ValueInNumericRange rangeMin=1 />
+								<ValueInNumericRange min=1 />
 							</Rule>
 						</OnPathExists>
 					</Then>

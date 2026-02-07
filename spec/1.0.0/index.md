@@ -324,7 +324,7 @@ A backslash not immediately followed by a backtick is a literal backslash and ha
 
 After interpreting the Backtick Text's escape sequences, the resulting character sequence MUST be transformed into the resulting Text Value by applying the following whitespace normalization:
 
-- Each maximal run of whitespace characters (spaces, tabs, and line breaks) MUST be replaced with a single U+0020 SPACE.
+- Each maximal run of whitespace characters (spaces and tabs) MUST be replaced with a single U+0020 SPACE.
 - Leading and trailing U+0020 SPACE MUST be removed.
 
 The resulting Text Value MUST be single-line.
@@ -478,7 +478,7 @@ In the Surface Form, a Named Color Value MUST be spelled as `&` followed immedia
 
 The color name MUST consist only of ASCII lowercase letters (`a` through `z`).
 
-The color name MUST be one of the named color keywords defined in Appendix B; an unrecognized color name is a SchemaError (§14).
+The color name MUST be one of the named color keywords defined in Appendix B; an unrecognized color name is a ParseError (§14).
 
 During semantic validation, a recognized named color MUST be interpreted as the sRGB RGBA value defined for that keyword in Appendix B.
 
@@ -1942,7 +1942,7 @@ An opening marker MUST be spelled as:
 
 An opening marker includes zero or more Traits.
 
-If multiple Traits are present, canonical form MUST order them alphabetically by Trait name.
+If multiple Traits are present, they MUST be ordered per §8.6.
 
 #### 8.5.2 Closing Marker
 
@@ -2539,7 +2539,7 @@ Simplified Authoring Mode MUST support explicit validator definitions that make 
 
 Each `ValidatorDefinition` MUST have these traits:
 
-- `name` (required; Enumerated Token Value)
+- `name` (required; Concept name per §4 Naming Rules)
 - `message` (optional; Text Value)
 
 `ValidatorDefinition` names MUST be unique within the Schema.
@@ -2673,6 +2673,8 @@ All RDF list nodes MUST be IRIs.
 
 Where the RDF list encoding would otherwise use blank nodes, the Canonical Representation MUST use deterministically derived skolem IRIs instead.
 
+At most one RDF list MUST be attached as the object of triples sharing a given `(subject, predicate)` pair.
+
 For an RDF list attached as the object of a triple `(subject, predicate, _)`, list node IRIs MUST be derived as follows:
 
 - Let `listAnchor = subject + "/list/" + iriHash(predicate)`.
@@ -2769,8 +2771,8 @@ Let `parent(C)` be the direct parent Concept instance of `C`, or the Document co
 
 Let `siblings(C)` be:
 
-- the ordered list of all top-level Concept instances in the document (in source order) if `parent(C)` is the Document context, or
-- the ordered list of all direct child Concept instances of `parent(C)` (in source order) otherwise.
+- the ordered list of all top-level Concept instances in the document (in canonical order) if `parent(C)` is the Document context, or
+- the ordered list of all direct child Concept instances of `parent(C)` (in canonical order) otherwise.
 
 Let `ordinalIndex(C)` be the unique integer `i` such that `siblings(C)[i]` is `C`.
 
@@ -2867,7 +2869,7 @@ For each Concept instance `D`, let:
 
 - `p = nodeIri(C)` if `D` is a direct child of parent Concept instance `C`; `p = documentBaseIri` if `D` is a root Concept instance
 - `d = nodeIri(D)`
-- `i` be the ordinal position of `D` among all sibling items (Concept instances and annotations) at the same nesting level, in source order, starting from 0
+- `i` be the ordinal position of `D` among all sibling items (Concept instances and annotations) at the same nesting level, in canonical order, starting from 0
 
 The mapping MUST emit an edge node `e` and three triples:
 
@@ -2879,7 +2881,7 @@ The edge node IRI MUST be:
 
 - `e = p + "/__childEdge/" + i`
 
-The index `i` is a unified sibling index: it counts all items (Concept instances and annotations) at the same nesting level in source order. This is distinct from `ordinalIndex(C)` (§9.7.2.1), which counts only Concept siblings for the purpose of stable node identity derivation.
+The index `i` is a unified sibling index: it counts all items (Concept instances and annotations) at the same nesting level in canonical order. This is distinct from `ordinalIndex(C)` (§9.7.2.1), which counts only Concept siblings for the purpose of stable node identity derivation.
 
 `codex:parentNode` is distinct from `codex:parent`:
 
@@ -2890,7 +2892,7 @@ The index `i` is a unified sibling index: it counts all items (Concept instances
 
 This section defines the canonical annotation encoding.
 
-Annotations appear only in children-mode contexts (§8.9). Annotations in a children context are interleaved with child Concept instances in source order. The unified sibling index defined in §9.7.6 assigns each annotation a position in the same index space as child Concept instances.
+Annotations appear only in children-mode contexts (§8.9). Annotations in a children context are interleaved with child Concept instances in canonical order. The unified sibling index defined in §9.7.6 assigns each annotation a position in the same index space as child Concept instances.
 
 For each annotation `A` at a given nesting level, let:
 
@@ -2929,6 +2931,8 @@ Exception:
 
 - If `t` is `id`, the mapping MUST NOT emit a `traitPredicateIri("id")` triple.
 - Instead, `id` MUST be represented only by `codex:declaredId`, with the `id` value as an IRI (not a literal).
+
+Because `id` has no `traitPredicateIri` representation in the instance graph, schema definitions MUST NOT target `id` through generic trait mechanisms (`TraitRules`, `TraitPath`, `TraitExists`, `TraitMissing`, `TraitEquals`). The `id` trait is governed by `entityEligibility` (§6.1) and identity constraints (§9.9.6, §9.9.7). If a generic trait mechanism references `id`, derived validation artifact generation MUST fail with a `SchemaError` (§14).
 
 `valueTerm(v)` MUST be:
 
@@ -3065,6 +3069,7 @@ Derived validation artifact generation MUST fail with a `SchemaError` (§14) if 
 - any `ConceptDefinition` lacks an `id`
 - any required selector (concept name, trait name) cannot be resolved to a unique definition
 - any schema rule produces a semantic constraint that cannot be expressed under the chosen Codex→RDF instance graph mapping
+- any generic trait mechanism (`TraitRules`, `TraitPath`, `TraitExists`, `TraitMissing`, `TraitEquals`) targets the `id` trait (see §9.7.8)
 
 Codex permits derived validation artifacts expressed as SHACL.
 
@@ -3224,9 +3229,9 @@ where `p` is the required pattern and `f` is the flags text if present. If `flag
 
 #### 9.9.7 Uniqueness Constraints
 
-Derived validation artifacts MUST support the following uniqueness constraints.
+Derived validation artifacts MUST support the `UniqueConstraint` constraint (§11.10.5).
 
-For both constraints, the identity of a trait is determined by the instance-graph trait mapping (see §9.7.8).
+The identity of a trait within a uniqueness constraint is determined by the instance-graph trait mapping (see §9.7.8).
 
 If a uniqueness constraint refers to `t = id`, it MUST refer to the declared identifier as represented by `codex:declaredId`.
 
@@ -3246,9 +3251,7 @@ For purposes of this constraint, the nearest scope node is the unique node `scop
 
 Derived validation artifact generation MUST fail with a `SchemaError` (§14) if no nearest scope node exists.
 
-For document-wide uniqueness, `UniqueInDocument(trait=t)` MUST mean:
-
-- no two nodes in the Document may share the same value for trait `t`.
+Derived validation artifacts MUST also enforce the document-wide uniqueness invariants for `id` (§6.2.2) and `key` (§6.3.2). Within a single document, no two nodes may share the same value for `codex:declaredId`, and no two nodes may share the same `key` trait value.
 
 #### 9.9.8 Context Constraints
 
@@ -4246,6 +4249,7 @@ One or more of:
 * `AllowsChildConcept`
 * `RequiresChildConcept`
 * `ForbidsChildConcept`
+* `ExactlyOneChildOf`
 
 If no child rules are needed, omit the `ChildRules` container entirely.
 
@@ -4268,6 +4272,24 @@ Traits:
 `RequiresChildConcept` is semantically equivalent to `AllowsChildConcept` with `min = 1`.
 
 ###### `ForbidsChildConcept`
+
+Traits:
+
+* `conceptSelector` (required; Concept name)
+
+###### `ExactlyOneChildOf`
+
+Declares that exactly one of the listed Concept types MUST appear as a child of the governed instance.
+
+Children:
+
+* `ConceptOption` (required; minimum 2)
+
+No traits.
+
+###### `ConceptOption`
+
+Declares one option within an `ExactlyOneChildOf` group.
 
 Traits:
 
@@ -4344,8 +4366,8 @@ Trait definitions establish the value type and constraints for a Trait that may 
 ###### Traits
 * `id` (optional; IRI reference)
 * `name` (required; Trait name per §4 Naming Rules)
-* `defaultValueType` (required unless `defaultValueTypes` is provided; value type token, optionally parameterized per §5.17)
-* `defaultValueTypes` (required unless `defaultValueType` is provided; list of one or more value type tokens, optionally parameterized per §5.17)
+* `defaultValueType` (required unless `defaultValueTypes` is provided; value type token, optionally parameterized per §5.18)
+* `defaultValueTypes` (required unless `defaultValueType` is provided; list of one or more value type tokens, optionally parameterized per §5.18)
 * `isReferenceTrait` (optional; boolean)
 * `priority` (optional; enumerated token; presentation hint)
 
@@ -5359,7 +5381,7 @@ Examples in this section are **informative** and do not introduce additional nor
 	</Targets>
 	<Rule>
 		<ChildConstraint
-			type="RequiresChildConcept"
+			type=$RequiresChildConcept
 			conceptSelector="Title"
 		/>
 	</Rule>
@@ -5385,7 +5407,7 @@ Examples in this section are **informative** and do not introduce additional nor
 			</When>
 			<Then>
 				<ChildConstraint
-					type="RequiresChildConcept"
+					type=$RequiresChildConcept
 					conceptSelector="Parameters"
 				/>
 			</Then>
@@ -5548,15 +5570,15 @@ Caching MUST NOT change observable parsing, validation, or error-reporting behav
 
 If no schema can be obtained through any supported mechanism:
 
-* Error class: `ParseError` (§14)
+* Error class: `SchemaError` (§14)
 * The report MUST indicate that the governing schema was unavailable
-* Parsing MUST NOT proceed
+* Validation MUST NOT proceed
 
 #### 12.5.2 Schema Load Failure
 
 If schema resolution succeeds but loading the schema fails (for example, network error or file not found):
 
-* Error class: `ParseError` (§14)
+* Error class: `SchemaError` (§14)
 * The report MUST indicate that the schema could not be loaded
 * The report MUST include the schema identifier
 
@@ -6033,14 +6055,7 @@ Examples (illustrative):
 
 See §11 for constraint definitions.
 
-### 14.5 Error Severity
-Codex errors are not warnings.
-
-- any failure halts compilation or processing
-- tools MUST NOT attempt best-effort recovery
-- tools MUST NOT silently reinterpret invalid data
-
-### 14.6 Reporting Requirements
+### 14.5 Reporting Requirements
 Tools MUST report validation failures with:
 
 * the primary error class
@@ -6447,7 +6462,7 @@ BacktickChar
 	;
 
 UnescapedBacktickChar
-	= AnyCharExceptBacktick
+	= AnyCharExceptBacktickNewline
 	;
 
 BacktickEscape
@@ -6550,7 +6565,7 @@ EnumeratedToken
 	;
 
 TypeParameters
-	= "<", TypeArgument, { ",", TypeArgument }, ">"
+	= "<", TypeArgument, { ",", " ", TypeArgument }, ">"
 	;
 
 TypeArgument
@@ -6559,7 +6574,7 @@ TypeArgument
 	;
 
 TypeUnion
-	= "[", EnumeratedToken, { ",", EnumeratedToken }, "]"
+	= "[", EnumeratedToken, { ",", " ", EnumeratedToken }, "]"
 	;
 ```
 
@@ -6704,7 +6719,7 @@ HexColor
 	| "#", HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, [ HexDigit, HexDigit ]
 	;
 
-(* §5.7.1, Appendix B: Name MUST be a named color keyword; unrecognized names are a SchemaError (§14). *)
+(* §5.7.1, Appendix B: Name MUST be a named color keyword; unrecognized names are a ParseError (§14). *)
 NamedColor
 	= "&", LowercaseLetter, { LowercaseLetter }
 	;
@@ -6724,40 +6739,40 @@ FunctionColor
 	;
 
 RgbFunc
-	= ( "rgb" | "rgba" ), "(", ColorWsOpt, RgbArgs, ColorWsOpt, ")"
+	= ( "rgb" | "rgba" ), "(", ColorWhitespaceOptional, RgbArgs, ColorWhitespaceOptional, ")"
 	;
 
 HslFunc
-	= ( "hsl" | "hsla" ), "(", ColorWsOpt, HslArgs, ColorWsOpt, ")"
+	= ( "hsl" | "hsla" ), "(", ColorWhitespaceOptional, HslArgs, ColorWhitespaceOptional, ")"
 	;
 
 HwbFunc
-	= "hwb", "(", ColorWsOpt, HwbArgs, ColorWsOpt, ")"
+	= "hwb", "(", ColorWhitespaceOptional, HwbArgs, ColorWhitespaceOptional, ")"
 	;
 
 LabFunc
-	= "lab", "(", ColorWsOpt, LabArgs, ColorWsOpt, ")"
+	= "lab", "(", ColorWhitespaceOptional, LabArgs, ColorWhitespaceOptional, ")"
 	;
 
 LchFunc
-	= "lch", "(", ColorWsOpt, LchArgs, ColorWsOpt, ")"
+	= "lch", "(", ColorWhitespaceOptional, LchArgs, ColorWhitespaceOptional, ")"
 	;
 
 OklabFunc
-	= "oklab", "(", ColorWsOpt, OklabArgs, ColorWsOpt, ")"
+	= "oklab", "(", ColorWhitespaceOptional, OklabArgs, ColorWhitespaceOptional, ")"
 	;
 
 OklchFunc
-	= "oklch", "(", ColorWsOpt, OklchArgs, ColorWsOpt, ")"
+	= "oklch", "(", ColorWhitespaceOptional, OklchArgs, ColorWhitespaceOptional, ")"
 	;
 
 ColorFunc
-	= "color", "(", ColorWsOpt, ( RgbColorSpace, ColorWs, ColorRgbArgs | XyzColorSpace, ColorWs, ColorXyzArgs ), ColorWsOpt, ")"
+	= "color", "(", ColorWhitespaceOptional, ( RgbColorSpace, ColorWhitespace, ColorRgbArgs | XyzColorSpace, ColorWhitespace, ColorXyzArgs ), ColorWhitespaceOptional, ")"
 	;
 
 ColorMixFunc
-	= "color-mix", "(", ColorWsOpt, "in", ColorWs, ColorSpace, ColorComma, ColorMixStop,
-	  { ColorComma, ColorMixStop }, ColorWsOpt, ")"
+	= "color-mix", "(", ColorWhitespaceOptional, "in", ColorWhitespace, ColorSpace, ColorComma, ColorMixStop,
+	  { ColorComma, ColorMixStop }, ColorWhitespaceOptional, ")"
 	;
 
 RelativeColorFunc
@@ -6772,7 +6787,7 @@ RelativeColorFunc
 	;
 
 DeviceCmykFunc
-	= "device-cmyk", "(", ColorWsOpt, DeviceCmykArgs, ColorWsOpt, ")"
+	= "device-cmyk", "(", ColorWhitespaceOptional, DeviceCmykArgs, ColorWhitespaceOptional, ")"
 	;
 
 ColorSpace
@@ -6801,11 +6816,11 @@ XyzColorSpace
 	ColorRealNumber excludes complex and imaginary numbers.
 *)
 
-ColorWs
+ColorWhitespace
 	= WhitespaceNoNewline
 	;
 
-ColorWsOpt
+ColorWhitespaceOptional
 	= { WhitespaceNoNewlineChar }
 	;
 
@@ -6828,7 +6843,7 @@ ColorAlpha
 	;
 
 ColorComma
-	= ColorWsOpt, ",", ColorWsOpt
+	= ColorWhitespaceOptional, ",", ColorWhitespaceOptional
 	;
 
 RgbComponent
@@ -6856,8 +6871,8 @@ RgbLegacyArgs
 	;
 
 RgbModernArgs
-	= RgbComponent, ColorWs, RgbComponent, ColorWs, RgbComponent,
-	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	= RgbComponent, ColorWhitespace, RgbComponent, ColorWhitespace, RgbComponent,
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
 HslArgs
@@ -6871,84 +6886,84 @@ HslLegacyArgs
 	;
 
 HslModernArgs
-	= HueComponent, ColorWs, ColorPercentage, ColorWs, ColorPercentage,
-	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	= HueComponent, ColorWhitespace, ColorPercentage, ColorWhitespace, ColorPercentage,
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
 HwbArgs
-	= HueComponent, ColorWs, ColorPercentage, ColorWs, ColorPercentage,
-	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	= HueComponent, ColorWhitespace, ColorPercentage, ColorWhitespace, ColorPercentage,
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
 ColorRgbArgs
-	= RgbComponent, ColorWs, RgbComponent, ColorWs, RgbComponent,
-	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	= RgbComponent, ColorWhitespace, RgbComponent, ColorWhitespace, RgbComponent,
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
 ColorXyzArgs
-	= ColorRealNumber, ColorWs, ColorRealNumber, ColorWs, ColorRealNumber,
-	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	= ColorRealNumber, ColorWhitespace, ColorRealNumber, ColorWhitespace, ColorRealNumber,
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
 DeviceCmykArgs
-	= CmykComponent, ColorWs, CmykComponent, ColorWs, CmykComponent, ColorWs, CmykComponent,
-	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	= CmykComponent, ColorWhitespace, CmykComponent, ColorWhitespace, CmykComponent, ColorWhitespace, CmykComponent,
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
 LabArgs
-	= ColorPercentage, ColorWs, ColorRealNumber, ColorWs, ColorRealNumber,
-	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	= ColorPercentage, ColorWhitespace, ColorRealNumber, ColorWhitespace, ColorRealNumber,
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
 LchArgs
-	= ColorPercentage, ColorWs, ColorRealNumber, ColorWs, ColorRealNumber,
-	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	= ColorPercentage, ColorWhitespace, ColorRealNumber, ColorWhitespace, ColorRealNumber,
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
 OklabArgs
-	= ColorRealNumber, ColorWs, ColorRealNumber, ColorWs, ColorRealNumber,
-	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	= ColorRealNumber, ColorWhitespace, ColorRealNumber, ColorWhitespace, ColorRealNumber,
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
 OklchArgs
-	= ColorRealNumber, ColorWs, ColorRealNumber, ColorWs, ColorRealNumber,
-	  [ ColorWsOpt, "/", ColorWsOpt, ColorAlpha ]
+	= ColorRealNumber, ColorWhitespace, ColorRealNumber, ColorWhitespace, ColorRealNumber,
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
 ColorMixStop
-	= ColorValue, [ ColorWs, ColorPercentage ]
+	= ColorValue, [ ColorWhitespace, ColorPercentage ]
 	;
 
 RelativeRgbFunc
-	= ( "rgb" | "rgba" ), "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeRgbArgs, ColorWsOpt, ")"
+	= ( "rgb" | "rgba" ), "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeRgbArgs, ColorWhitespaceOptional, ")"
 	;
 
 RelativeHslFunc
-	= ( "hsl" | "hsla" ), "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeHslArgs, ColorWsOpt, ")"
+	= ( "hsl" | "hsla" ), "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeHslArgs, ColorWhitespaceOptional, ")"
 	;
 
 RelativeHwbFunc
-	= "hwb", "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeHwbArgs, ColorWsOpt, ")"
+	= "hwb", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeHwbArgs, ColorWhitespaceOptional, ")"
 	;
 
 RelativeLabFunc
-	= "lab", "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeLabArgs, ColorWsOpt, ")"
+	= "lab", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeLabArgs, ColorWhitespaceOptional, ")"
 	;
 
 RelativeLchFunc
-	= "lch", "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeLchArgs, ColorWsOpt, ")"
+	= "lch", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeLchArgs, ColorWhitespaceOptional, ")"
 	;
 
 RelativeOklabFunc
-	= "oklab", "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeOklabArgs, ColorWsOpt, ")"
+	= "oklab", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeOklabArgs, ColorWhitespaceOptional, ")"
 	;
 
 RelativeOklchFunc
-	= "oklch", "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, RelativeOklchArgs, ColorWsOpt, ")"
+	= "oklch", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeOklchArgs, ColorWhitespaceOptional, ")"
 	;
 
 RelativeColorFuncColor
-	= "color", "(", ColorWsOpt, "from", ColorWs, ColorValue, ColorWs, ColorSpace, ColorWs, RelativeColorArgs, ColorWsOpt, ")"
+	= "color", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, ColorSpace, ColorWhitespace, RelativeColorArgs, ColorWhitespaceOptional, ")"
 	;
 
 RelativeRgbChannel
@@ -6990,38 +7005,38 @@ RelativeRgbComponent
 	;
 
 RelativeRgbArgs
-	= RelativeRgbComponent, ColorWs, RelativeRgbComponent, ColorWs, RelativeRgbComponent,
-	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	= RelativeRgbComponent, ColorWhitespace, RelativeRgbComponent, ColorWhitespace, RelativeRgbComponent,
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
 RelativeHslArgs
-	= ( HueComponent | RelativeHslChannel ), ColorWs, ( ColorPercentage | "s" ), ColorWs, ( ColorPercentage | "l" ),
-	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	= ( HueComponent | RelativeHslChannel ), ColorWhitespace, ( ColorPercentage | "s" ), ColorWhitespace, ( ColorPercentage | "l" ),
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
 RelativeHwbArgs
-	= ( HueComponent | "h" ), ColorWs, ( ColorPercentage | "w" ), ColorWs, ( ColorPercentage | "b" ),
-	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	= ( HueComponent | "h" ), ColorWhitespace, ( ColorPercentage | "w" ), ColorWhitespace, ( ColorPercentage | "b" ),
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
 RelativeLabArgs
-	= ( ColorPercentage | "l" ), ColorWs, ( ColorRealNumber | "a" ), ColorWs, ( ColorRealNumber | "b" ),
-	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	= ( ColorPercentage | "l" ), ColorWhitespace, ( ColorRealNumber | "a" ), ColorWhitespace, ( ColorRealNumber | "b" ),
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
 RelativeLchArgs
-	= ( ColorPercentage | "l" ), ColorWs, ( ColorRealNumber | "c" ), ColorWs, ( ColorRealNumber | "h" ),
-	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	= ( ColorPercentage | "l" ), ColorWhitespace, ( ColorRealNumber | "c" ), ColorWhitespace, ( ColorRealNumber | "h" ),
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
 RelativeOklabArgs
-	= ( ColorRealNumber | "l" ), ColorWs, ( ColorRealNumber | "a" ), ColorWs, ( ColorRealNumber | "b" ),
-	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	= ( ColorRealNumber | "l" ), ColorWhitespace, ( ColorRealNumber | "a" ), ColorWhitespace, ( ColorRealNumber | "b" ),
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
 RelativeOklchArgs
-	= ( ColorRealNumber | "l" ), ColorWs, ( ColorRealNumber | "c" ), ColorWs, ( ColorRealNumber | "h" ),
-	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	= ( ColorRealNumber | "l" ), ColorWhitespace, ( ColorRealNumber | "c" ), ColorWhitespace, ( ColorRealNumber | "h" ),
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
 RelativeColorChannel
@@ -7035,8 +7050,8 @@ RelativeColorComponent
 	;
 
 RelativeColorArgs
-	= RelativeColorComponent, ColorWs, RelativeColorComponent, ColorWs, RelativeColorComponent,
-	  [ ColorWsOpt, "/", ColorWsOpt, RelativeAlphaComponent ]
+	= RelativeColorComponent, ColorWhitespace, RelativeColorComponent, ColorWhitespace, RelativeColorComponent,
+	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 ```
 
@@ -7328,7 +7343,7 @@ The following character classes are used but not fully enumerated:
 * `AnyCharExceptNewline` — any Unicode scalar except U+000A
 * `AnyCharExceptQuoteBackslashNewline` — any Unicode scalar except `"`, `\\`, U+000A
 * `AnyCharExceptApostropheBackslashNewline` — any Unicode scalar except `'`, `\\`, U+000A
-* `AnyCharExceptBacktick` — any Unicode scalar except `` ` ``
+* `AnyCharExceptBacktickNewline` — any Unicode scalar except `` ` ``, U+000A
 * `AnyCharExceptRightParenNewline` — any Unicode scalar except `)`, U+000A
 * `AnyCharExceptParensNewline` — any Unicode scalar except `(`, `)`, U+000A
 * `AnyCharExceptRightBracketNewline` — any Unicode scalar except `]`, U+000A
@@ -7364,13 +7379,14 @@ The following character classes are used but not fully enumerated:
 	5. TemporalValue ({...})
 	6. SetValue (set[...])
 	7. MapValue (map[...])
-	8. ListValue ([...])
-	9. TupleValue ((...))
-	10. ColorValue (all permitted color literal spellings, including functions and named colors)
-	11. UuidValue (8-4-4-4-12 with hex digits)
-	12. RangeValue (contains ".." with valid endpoints)
-	13. NumericValue (Complex/Imaginary/Fraction/Infinity/Precision/Scientific/Decimal/Integer per §A.1.12)
-	14. IriReference (fallback: token contains ":" and matches IriReference)
+	8. RecordValue (record[...])
+	9. ListValue ([...])
+	10. TupleValue ((...))
+	11. ColorValue (all permitted color literal spellings, including functions and named colors)
+	12. UuidValue (8-4-4-4-12 with hex digits)
+	13. RangeValue (contains ".." with valid endpoints)
+	14. NumericValue (Complex/Imaginary/Fraction/Infinity/Precision/Scientific/Decimal/Integer per §A.1.12)
+	15. IriReference (fallback: token contains ":" and matches IriReference)
 
 	If a token matches multiple forms at the same precedence level, parsing MUST fail
 	with a ParseError (§14) rather than guess. *)
@@ -7532,9 +7548,9 @@ Value <- TextValue
       / NumericValue
       / IriReference
 
-HostNameValue <- 'host' '(' WS* TextValue WS* ')'
-EmailAddressValue <- 'email' '(' WS* TextValue WS* ')'
-UrlValue <- 'url' '(' WS* TextValue WS* (',' WS* TextValue WS*)? ')'
+HostNameValue <- 'host' '(' WhitespaceChar* TextValue WhitespaceChar* ')'
+EmailAddressValue <- 'email' '(' WhitespaceChar* TextValue WhitespaceChar* ')'
+UrlValue <- 'url' '(' WhitespaceChar* TextValue WhitespaceChar* (',' WhitespaceChar* TextValue WhitespaceChar*)? ')'
 ```
 
 ---
@@ -7566,7 +7582,7 @@ CharEscapeSequence <- '\\' ( ["'\\nrt] / UnicodeEscape )
 
 ```peg
 BacktickText <- '`' BacktickChar* '`'
-BacktickChar <- BacktickEscape / (!'`' .)
+BacktickChar <- BacktickEscape / (!'`' !'\n' .)
 BacktickEscape <- '\\' '`'
 ```
 
@@ -7594,10 +7610,10 @@ NumericValue <- ComplexNumber
 
 ComplexNumber <- (Integer / DecimalNumber) ([+-]) (Integer / DecimalNumber) 'i'
 ImaginaryNumber <- (Integer / DecimalNumber) 'i'
-Fraction <- Integer '/' IntDigits
-PrecisionNumber <- DecimalNumber 'p' IntDigits?
-ExponentialNumber <- (Integer / DecimalNumber) [eE] Sign? IntDigits
-DecimalNumber <- '-'? IntDigits '.' Digits
+Fraction <- Integer '/' IntegerDigits
+PrecisionNumber <- DecimalNumber 'p' IntegerDigits?
+ExponentialNumber <- (Integer / DecimalNumber) [eE] Sign? IntegerDigits
+DecimalNumber <- '-'? IntegerDigits '.' DigitSequence
 Infinity <- PositiveInfinity / NegativeInfinity
 PositiveInfinity <- 'Infinity'
 NegativeInfinity <- '-' 'Infinity'
@@ -7605,8 +7621,8 @@ NegativeInfinity <- '-' 'Infinity'
 Integer <- '0' / '-'? [1-9] Digit*
 
 Sign <- [+-]
-Digits <- Digit+
-IntDigits <- '0' / [1-9] Digit*
+DigitSequence <- Digit+
+IntegerDigits <- '0' / [1-9] Digit*
 ```
 
 ---
@@ -7616,11 +7632,11 @@ IntDigits <- '0' / [1-9] Digit*
 ```peg
 EnumeratedToken <- '$' UppercaseLetter (Letter / Digit)* TypeParameters?
 
-TypeParameters <- '<' TypeArgument (',' TypeArgument)* '>'
+TypeParameters <- '<' TypeArgument (',' ' ' TypeArgument)* '>'
 
 TypeArgument <- EnumeratedToken / TypeUnion
 
-TypeUnion <- '[' EnumeratedToken (',' EnumeratedToken)* ']'
+TypeUnion <- '[' EnumeratedToken (',' ' ' EnumeratedToken)* ']'
 ```
 
 ---
@@ -7658,8 +7674,8 @@ PlainTime <- Hour ':' Minute (':' Second ('.' FractionalSeconds)?)?
 
 Duration <- 'P' DurationComponent+ ('T' TimeDurationComponent*)?
           / 'P' 'T' TimeDurationComponent+
-DurationComponent <- Digits [YMWD]
-TimeDurationComponent <- Digits ('.' Digits)? [HMS]
+DurationComponent <- DigitSequence [YMWD]
+TimeDurationComponent <- DigitSequence ('.' DigitSequence)? [HMS]
 
 TemporalKeyword <- 'now' / 'today'
 
@@ -7679,8 +7695,8 @@ FractionalSeconds <- Digit+
 ```peg
 # Lists permit arbitrary whitespace (including newlines) between tokens.
 
-ListValue <- '[' WS* ListItems? WS* ']'
-ListItems <- Value (WS* ',' WS* Value)*
+ListValue <- '[' WhitespaceChar* ListItems? WhitespaceChar* ']'
+ListItems <- Value (WhitespaceChar* ',' WhitespaceChar* Value)*
 ```
 
 ---
@@ -7688,8 +7704,8 @@ ListItems <- Value (WS* ',' WS* Value)*
 #### A.2.17 Set Values
 
 ```peg
-SetValue <- 'set' '[' WS* SetItems? WS* ']'
-SetItems <- Value (WS* ',' WS* Value)*
+SetValue <- 'set' '[' WhitespaceChar* SetItems? WhitespaceChar* ']'
+SetItems <- Value (WhitespaceChar* ',' WhitespaceChar* Value)*
 ```
 
 ---
@@ -7697,9 +7713,9 @@ SetItems <- Value (WS* ',' WS* Value)*
 #### A.2.18 Map Values
 
 ```peg
-MapValue <- 'map' '[' WS* MapItems? WS* ']'
-MapItems <- MapEntry (WS* ',' WS* MapEntry)*
-MapEntry <- MapKey WS* ':' WS* Value
+MapValue <- 'map' '[' WhitespaceChar* MapItems? WhitespaceChar* ']'
+MapItems <- MapEntry (WhitespaceChar* ',' WhitespaceChar* MapEntry)*
+MapEntry <- MapKey WhitespaceChar* ':' WhitespaceChar* Value
 MapKey <- MapIdentifier / TextValue / CharValue / Integer / EnumeratedToken
 MapIdentifier <- LowercaseLetter (Letter / Digit)*
 ```
@@ -7709,9 +7725,9 @@ MapIdentifier <- LowercaseLetter (Letter / Digit)*
 #### A.2.19 Record Values
 
 ```peg
-RecordValue <- 'record' '[' WS* RecordItems? WS* ']'
-RecordItems <- RecordEntry (WS* ',' WS* RecordEntry)*
-RecordEntry <- RecordFieldName WS* ':' WS* Value
+RecordValue <- 'record' '[' WhitespaceChar* RecordItems? WhitespaceChar* ']'
+RecordItems <- RecordEntry (WhitespaceChar* ',' WhitespaceChar* RecordEntry)*
+RecordEntry <- RecordFieldName WhitespaceChar* ':' WhitespaceChar* Value
 RecordFieldName <- LowercaseLetter (Letter / Digit)*
 ```
 
@@ -7720,8 +7736,8 @@ RecordFieldName <- LowercaseLetter (Letter / Digit)*
 #### A.2.20 Tuple Values
 
 ```peg
-TupleValue <- '(' WS* TupleItems WS* ')'
-TupleItems <- Value (WS* ',' WS* Value)*
+TupleValue <- '(' WhitespaceChar* TupleItems WhitespaceChar* ')'
+TupleItems <- Value (WhitespaceChar* ',' WhitespaceChar* Value)*
 ```
 
 ---
@@ -7762,59 +7778,59 @@ HexColor <- '#' (HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit 
 
 NamedColor <- '&' [a-z]+
 
-ColorWS <- [ \t]*
-ColorWSP <- [ \t]+
+ColorWhitespaceOptional <- [ \t]*
+ColorWhitespace <- [ \t]+
 
 # Real-number subset of NumericValue used in color function arguments.
 ColorRealNumber <- Fraction / Infinity / PrecisionNumber / ExponentialNumber / DecimalNumber / Integer
 ColorPercentage <- ColorRealNumber '%'
 ColorAlpha <- ColorPercentage / ColorRealNumber
 
-ColorComma <- ColorWS ',' ColorWS
+ColorComma <- ColorWhitespaceOptional ',' ColorWhitespaceOptional
 
 RgbComponent <- ColorPercentage / ColorRealNumber
 HueComponent <- ColorRealNumber
 
-RgbColorSpaceToken <- 'srgb' / 'srgb-linear' / 'display-p3' / 'a98-rgb' / 'prophoto-rgb' / 'rec2020'
-XyzColorSpaceToken <- 'xyz' / 'xyz-d50' / 'xyz-d65'
+RgbColorSpace <- 'srgb' / 'srgb-linear' / 'display-p3' / 'a98-rgb' / 'prophoto-rgb' / 'rec2020'
+XyzColorSpace <- 'xyz' / 'xyz-d50' / 'xyz-d65'
 
-ColorRgbArgs <- RgbComponent ColorWSP RgbComponent ColorWSP RgbComponent (ColorWS '/' ColorWS ColorAlpha)?
-ColorXyzArgs <- ColorRealNumber ColorWSP ColorRealNumber ColorWSP ColorRealNumber (ColorWS '/' ColorWS ColorAlpha)?
+ColorRgbArgs <- RgbComponent ColorWhitespace RgbComponent ColorWhitespace RgbComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
+ColorXyzArgs <- ColorRealNumber ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-ColorFunc <- 'color' '(' ColorWS (RgbColorSpaceToken ColorWSP ColorRgbArgs / XyzColorSpaceToken ColorWSP ColorXyzArgs) ColorWS ')'
+ColorFunc <- 'color' '(' ColorWhitespaceOptional (RgbColorSpace ColorWhitespace ColorRgbArgs / XyzColorSpace ColorWhitespace ColorXyzArgs) ColorWhitespaceOptional ')'
 
-RgbFunc <- ('rgb' / 'rgba') '(' ColorWS RgbArgs ColorWS ')'
+RgbFunc <- ('rgb' / 'rgba') '(' ColorWhitespaceOptional RgbArgs ColorWhitespaceOptional ')'
 RgbArgs <- RgbLegacyArgs / RgbModernArgs
 RgbLegacyArgs <- RgbComponent ColorComma RgbComponent ColorComma RgbComponent (ColorComma ColorAlpha)?
-RgbModernArgs <- RgbComponent ColorWSP RgbComponent ColorWSP RgbComponent (ColorWS '/' ColorWS ColorAlpha)?
+RgbModernArgs <- RgbComponent ColorWhitespace RgbComponent ColorWhitespace RgbComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-HslFunc <- ('hsl' / 'hsla') '(' ColorWS HslArgs ColorWS ')'
+HslFunc <- ('hsl' / 'hsla') '(' ColorWhitespaceOptional HslArgs ColorWhitespaceOptional ')'
 HslArgs <- HslLegacyArgs / HslModernArgs
 HslLegacyArgs <- HueComponent ColorComma ColorPercentage ColorComma ColorPercentage (ColorComma ColorAlpha)?
-HslModernArgs <- HueComponent ColorWSP ColorPercentage ColorWSP ColorPercentage (ColorWS '/' ColorWS ColorAlpha)?
+HslModernArgs <- HueComponent ColorWhitespace ColorPercentage ColorWhitespace ColorPercentage (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-HwbFunc <- 'hwb' '(' ColorWS HwbArgs ColorWS ')'
-HwbArgs <- HueComponent ColorWSP ColorPercentage ColorWSP ColorPercentage (ColorWS '/' ColorWS ColorAlpha)?
+HwbFunc <- 'hwb' '(' ColorWhitespaceOptional HwbArgs ColorWhitespaceOptional ')'
+HwbArgs <- HueComponent ColorWhitespace ColorPercentage ColorWhitespace ColorPercentage (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-LabFunc <- 'lab' '(' ColorWS LabArgs ColorWS ')'
-LabArgs <- ColorPercentage ColorWSP ColorRealNumber ColorWSP ColorRealNumber (ColorWS '/' ColorWS ColorAlpha)?
+LabFunc <- 'lab' '(' ColorWhitespaceOptional LabArgs ColorWhitespaceOptional ')'
+LabArgs <- ColorPercentage ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-LchFunc <- 'lch' '(' ColorWS LchArgs ColorWS ')'
-LchArgs <- ColorPercentage ColorWSP ColorRealNumber ColorWSP ColorRealNumber (ColorWS '/' ColorWS ColorAlpha)?
+LchFunc <- 'lch' '(' ColorWhitespaceOptional LchArgs ColorWhitespaceOptional ')'
+LchArgs <- ColorPercentage ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-OklabFunc <- 'oklab' '(' ColorWS OklabArgs ColorWS ')'
-OklabArgs <- ColorRealNumber ColorWSP ColorRealNumber ColorWSP ColorRealNumber (ColorWS '/' ColorWS ColorAlpha)?
+OklabFunc <- 'oklab' '(' ColorWhitespaceOptional OklabArgs ColorWhitespaceOptional ')'
+OklabArgs <- ColorRealNumber ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-OklchFunc <- 'oklch' '(' ColorWS OklchArgs ColorWS ')'
-OklchArgs <- ColorRealNumber ColorWSP ColorRealNumber ColorWSP ColorRealNumber (ColorWS '/' ColorWS ColorAlpha)?
+OklchFunc <- 'oklch' '(' ColorWhitespaceOptional OklchArgs ColorWhitespaceOptional ')'
+OklchArgs <- ColorRealNumber ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
 CmykComponent <- ColorPercentage / ColorRealNumber
 
-DeviceCmykFunc <- 'device-cmyk' '(' ColorWS DeviceCmykArgs ColorWS ')'
-DeviceCmykArgs <- CmykComponent ColorWSP CmykComponent ColorWSP CmykComponent ColorWSP CmykComponent (ColorWS '/' ColorWS ColorAlpha)?
+DeviceCmykFunc <- 'device-cmyk' '(' ColorWhitespaceOptional DeviceCmykArgs ColorWhitespaceOptional ')'
+DeviceCmykArgs <- CmykComponent ColorWhitespace CmykComponent ColorWhitespace CmykComponent ColorWhitespace CmykComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-ColorMixFunc <- 'color-mix' '(' ColorWS 'in' ColorWSP (RgbColorSpaceToken / XyzColorSpaceToken) ColorComma ColorMixStop (ColorComma ColorMixStop)+ ColorWS ')'
-ColorMixStop <- ColorValue (ColorWSP ColorPercentage)?
+ColorMixFunc <- 'color-mix' '(' ColorWhitespaceOptional 'in' ColorWhitespace (RgbColorSpace / XyzColorSpace) ColorComma ColorMixStop (ColorComma ColorMixStop)+ ColorWhitespaceOptional ')'
+ColorMixStop <- ColorValue (ColorWhitespace ColorPercentage)?
 
 RelativeColorFunc <- RelativeRgbFunc / RelativeHslFunc / RelativeHwbFunc / RelativeLabFunc / RelativeLchFunc / RelativeOklabFunc / RelativeOklchFunc / RelativeColorFuncColor
 
@@ -7822,31 +7838,31 @@ RelativeAlphaComponent <- ColorAlpha / 'a'
 
 RelativeRgbChannel <- 'r' / 'g' / 'b'
 RelativeRgbComponent <- RgbComponent / RelativeRgbChannel
-RelativeRgbArgs <- RelativeRgbComponent ColorWSP RelativeRgbComponent ColorWSP RelativeRgbComponent (ColorWS '/' ColorWS RelativeAlphaComponent)?
-RelativeRgbFunc <- ('rgb' / 'rgba') '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeRgbArgs ColorWS ')'
+RelativeRgbArgs <- RelativeRgbComponent ColorWhitespace RelativeRgbComponent ColorWhitespace RelativeRgbComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeRgbFunc <- ('rgb' / 'rgba') '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeRgbArgs ColorWhitespaceOptional ')'
 
-RelativeHslArgs <- (HueComponent / 'h') ColorWSP (ColorPercentage / 's') ColorWSP (ColorPercentage / 'l') (ColorWS '/' ColorWS RelativeAlphaComponent)?
-RelativeHslFunc <- ('hsl' / 'hsla') '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeHslArgs ColorWS ')'
+RelativeHslArgs <- (HueComponent / 'h') ColorWhitespace (ColorPercentage / 's') ColorWhitespace (ColorPercentage / 'l') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeHslFunc <- ('hsl' / 'hsla') '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeHslArgs ColorWhitespaceOptional ')'
 
-RelativeHwbArgs <- (HueComponent / 'h') ColorWSP (ColorPercentage / 'w') ColorWSP (ColorPercentage / 'b') (ColorWS '/' ColorWS RelativeAlphaComponent)?
-RelativeHwbFunc <- 'hwb' '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeHwbArgs ColorWS ')'
+RelativeHwbArgs <- (HueComponent / 'h') ColorWhitespace (ColorPercentage / 'w') ColorWhitespace (ColorPercentage / 'b') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeHwbFunc <- 'hwb' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeHwbArgs ColorWhitespaceOptional ')'
 
-RelativeLabArgs <- (ColorPercentage / 'l') ColorWSP (ColorRealNumber / 'a') ColorWSP (ColorRealNumber / 'b') (ColorWS '/' ColorWS RelativeAlphaComponent)?
-RelativeLabFunc <- 'lab' '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeLabArgs ColorWS ')'
+RelativeLabArgs <- (ColorPercentage / 'l') ColorWhitespace (ColorRealNumber / 'a') ColorWhitespace (ColorRealNumber / 'b') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeLabFunc <- 'lab' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeLabArgs ColorWhitespaceOptional ')'
 
-RelativeLchArgs <- (ColorPercentage / 'l') ColorWSP (ColorRealNumber / 'c') ColorWSP (ColorRealNumber / 'h') (ColorWS '/' ColorWS RelativeAlphaComponent)?
-RelativeLchFunc <- 'lch' '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeLchArgs ColorWS ')'
+RelativeLchArgs <- (ColorPercentage / 'l') ColorWhitespace (ColorRealNumber / 'c') ColorWhitespace (ColorRealNumber / 'h') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeLchFunc <- 'lch' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeLchArgs ColorWhitespaceOptional ')'
 
-RelativeOklabArgs <- (ColorRealNumber / 'l') ColorWSP (ColorRealNumber / 'a') ColorWSP (ColorRealNumber / 'b') (ColorWS '/' ColorWS RelativeAlphaComponent)?
-RelativeOklabFunc <- 'oklab' '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeOklabArgs ColorWS ')'
+RelativeOklabArgs <- (ColorRealNumber / 'l') ColorWhitespace (ColorRealNumber / 'a') ColorWhitespace (ColorRealNumber / 'b') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeOklabFunc <- 'oklab' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeOklabArgs ColorWhitespaceOptional ')'
 
-RelativeOklchArgs <- (ColorRealNumber / 'l') ColorWSP (ColorRealNumber / 'c') ColorWSP (ColorRealNumber / 'h') (ColorWS '/' ColorWS RelativeAlphaComponent)?
-RelativeOklchFunc <- 'oklch' '(' ColorWS 'from' ColorWSP ColorValue ColorWSP RelativeOklchArgs ColorWS ')'
+RelativeOklchArgs <- (ColorRealNumber / 'l') ColorWhitespace (ColorRealNumber / 'c') ColorWhitespace (ColorRealNumber / 'h') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeOklchFunc <- 'oklch' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeOklchArgs ColorWhitespaceOptional ')'
 
 RelativeColorChannel <- 'r' / 'g' / 'b' / 'x' / 'y' / 'z'
 RelativeColorComponent <- ColorRealNumber / ColorPercentage / RelativeColorChannel
-RelativeColorArgs <- RelativeColorComponent ColorWSP RelativeColorComponent ColorWSP RelativeColorComponent (ColorWS '/' ColorWS RelativeAlphaComponent)?
-RelativeColorFuncColor <- 'color' '(' ColorWS 'from' ColorWSP ColorValue ColorWSP (RgbColorSpaceToken / XyzColorSpaceToken) ColorWSP RelativeColorArgs ColorWS ')'
+RelativeColorArgs <- RelativeColorComponent ColorWhitespace RelativeColorComponent ColorWhitespace RelativeColorComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeColorFuncColor <- 'color' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace (RgbColorSpace / XyzColorSpace) ColorWhitespace RelativeColorArgs ColorWhitespaceOptional ')'
 ```
 
 ---
@@ -7893,8 +7909,6 @@ WhitespaceChar <- [ \t\n]
 Whitespace <- WhitespaceChar+
 
 WhitespaceNoNewline <- [ \t]+
-
-WS <- [ \t\n]
 
 BlankLine <- Newline
 
