@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="color-mix() requires at least two stops; a single stop is invalid during semantic evaluation." />

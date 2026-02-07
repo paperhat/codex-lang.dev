@@ -1146,6 +1146,7 @@ When a schema expects `$Color` and the Trait value is `color-mix(in S, stop1, st
 
 1. Let `S` be the interpolation `ColorSpace` token.
 2. Each stop MUST be `(color, weight?)` where `color` is a Color Value.
+	- At least two stops are required.
 	- If no stop provides a weight, each stop has equal weight.
 	- If any stop provides a weight, then every stop MUST provide a weight; otherwise it is a `SchemaError`.
 	- Each provided weight MUST be in `[0%,100%]`.
@@ -6772,7 +6773,7 @@ ColorFunc
 
 ColorMixFunc
 	= "color-mix", "(", ColorWhitespaceOptional, "in", ColorWhitespace, ColorSpace, ColorComma, ColorMixStop,
-	  { ColorComma, ColorMixStop }, ColorWhitespaceOptional, ")"
+	  ColorComma, ColorMixStop, { ColorComma, ColorMixStop }, ColorWhitespaceOptional, ")"
 	;
 
 RelativeColorFunc
@@ -7222,7 +7223,8 @@ TupleItems
    Range endpoints and steps use OrderedNumericValue, which excludes
    ComplexNumber, ImaginaryNumber, and Infinity. *)
 RangeValue
-	= RangeStart, "..", RangeEnd, [ "s", StepValue ]
+	= RangeStart, { WhitespaceChar }, "..", { WhitespaceChar }, RangeEnd,
+	  [ { WhitespaceChar }, "s", { WhitespaceChar }, StepValue ]
 	;
 
 RangeStart
@@ -7362,7 +7364,7 @@ The following character classes are used but not fully enumerated:
 
 	While scanning for termination, parsers MUST respect balanced delimiters for
 	delimited value spellings and composite literals, including:
-	[], {}, (), '', "", and backticks.
+	[], {}, (), '', "", backticks, and range forms (`..` with optional `s` step).
 
 	This appendix provides type grammars for each Value form, but conformance requires
 	the termination behavior above.
@@ -7745,7 +7747,7 @@ TupleItems <- Value (WhitespaceChar* ',' WhitespaceChar* Value)*
 #### A.2.21 Range Values
 
 ```peg
-RangeValue <- RangeStart '..' RangeEnd ('s' StepValue)?
+RangeValue <- RangeStart WhitespaceChar* '..' WhitespaceChar* RangeEnd (WhitespaceChar* 's' WhitespaceChar* StepValue)?
 RangeStart <- TemporalValue / CharValue / OrderedNumericValue
 RangeEnd <- TemporalValue / CharValue / OrderedNumericValue
 StepValue <- TemporalValue / OrderedNumericValue
@@ -7886,9 +7888,9 @@ IriTokenChar <- !ValueTerminator .
 ```peg
 Annotation <- AnnotationLine / AnnotationBlock
 
-AnnotationLine <- Indentation '[' AnnotationChar* ']' Newline
+AnnotationLine <- Indentation '[' AnnotationChar* ']' [ \t]* Newline
 
-AnnotationBlock <- Indentation '[' Newline AnnotationBlockLine* Indentation ']' Newline
+AnnotationBlock <- Indentation '[' [ \t]* Newline AnnotationBlockLine* Indentation ']' [ \t]* Newline
 
 AnnotationBlockLine <- Indentation AnnotationBlockChar* Newline
 
@@ -7915,7 +7917,7 @@ BlankLine <- Newline
 Indentation <- '\t'*
 
 # Conservative terminators for unquoted tokens in markers:
-ValueTerminator <- [ \t\n] / '>' / '/'
+ValueTerminator <- [ \t\n] / '>'
 ```
 
 ---

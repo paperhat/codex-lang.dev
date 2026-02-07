@@ -4,6 +4,16 @@ This file records all changes made to the Codex specification during implementat
 
 ---
 
+## 2026-02-07: Canonical bootstrap schema — Add missing reference trait declarations (`for`, `reference`, `target`)
+
+**File:** `bootstrap-schema/schema.cdx`
+
+**Change:** Added 9 `rdf:Property` declaration triples (3 per trait) for the reference traits `for`, `reference`, and `target`. Each receives `rdf:type=rdf:Property`, `rdfs:label`, and `rdfs:range=xsd:anyURI`. Inserted alphabetically: `for` between `flags` and `id`; `reference` between `priority` and `role`; `target` between `tag` and `title`.
+
+**Rationale:** The simplified schema declares all 52 traits; the canonical schema declared only 49 — missing the 3 reference traits defined in §7.1. These are core language primitives ("Codex defines exactly three reference Traits"). Every other trait had a complete 3-triple `rdf:Property` declaration; the reference traits were the only gap. Range is `xsd:anyURI` because both `$IriReference` and `$LookupToken` resolve to IRIs in the RDF graph, matching how `id` (also IRI-valued) uses `xsd:anyURI`.
+
+---
+
 ## 2026-02-07: Canonical bootstrap schema — Fix IRI issues (SPARQL predicates, missing trait declarations, list renumbering)
 
 **File:** `bootstrap-schema/schema.cdx`

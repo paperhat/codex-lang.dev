@@ -7379,6 +7379,24 @@
 		<RdfTriple
 			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:trait:for
+		/>
+
+		<RdfTriple
+			lexical="for"
+			predicate=http://www.w3.org/2000/01/rdf-schema#label
+			subject=urn:codex:bootstrap:trait:for
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#anyURI
+			predicate=http://www.w3.org/2000/01/rdf-schema#range
+			subject=urn:codex:bootstrap:trait:for
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:trait:id
 		/>
 
@@ -7703,6 +7721,24 @@
 		<RdfTriple
 			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:trait:reference
+		/>
+
+		<RdfTriple
+			lexical="reference"
+			predicate=http://www.w3.org/2000/01/rdf-schema#label
+			subject=urn:codex:bootstrap:trait:reference
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#anyURI
+			predicate=http://www.w3.org/2000/01/rdf-schema#range
+			subject=urn:codex:bootstrap:trait:reference
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:trait:role
 		/>
 
@@ -7788,6 +7824,24 @@
 			object=urn:codex:bootstrap:datatype:text
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:tag
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:trait:target
+		/>
+
+		<RdfTriple
+			lexical="target"
+			predicate=http://www.w3.org/2000/01/rdf-schema#label
+			subject=urn:codex:bootstrap:trait:target
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#anyURI
+			predicate=http://www.w3.org/2000/01/rdf-schema#range
+			subject=urn:codex:bootstrap:trait:target
 		/>
 
 		<RdfTriple
