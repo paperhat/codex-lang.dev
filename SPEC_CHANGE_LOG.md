@@ -4,6 +4,20 @@ This file records all changes made to the Codex specification during implementat
 
 ---
 
+## 2026-02-07: Canonical bootstrap schema — Fix IRI issues (SPARQL predicates, missing trait declarations, list renumbering)
+
+**File:** `bootstrap-schema/schema.cdx`
+
+**Changes:**
+1. **SPARQL queries: replaced `rel:hasChild` with `codex:parentNode`** — All 13 SHACL-SPARQL constraint queries used the fabricated predicate `urn:codex:bootstrap:rel:hasChild` (parent-to-child). Replaced with `urn:codex:bootstrap:1.0.0#codex/parentNode` (child-to-parent), reversing subject/object per §9.7.4. The old predicate had no §9.7 emission rule and would never match any instance graph triple.
+2. **Added `rdfs:range` for `role` and `tag` traits** — Both trait declarations had `rdf:type` and `rdfs:label` but were missing `rdfs:range`. All other 45 trait declarations have all three. Range is `urn:codex:bootstrap:datatype:text`, consistent with similar traits (`name`, `description`, `value`, etc.) and the simplified schema's `defaultValueTypes=[$Text, $List<$Text>]`.
+3. **Added trait declarations for `versionScheme` and `whitespaceMode`** — Both are used as `sh:path` values in SHACL property shapes but had no `rdf:Property` declaration (no `rdf:type`, `rdfs:label`, or `rdfs:range` triples). Added 3 triples each with `rdfs:range=xsd:token`, matching other `$EnumeratedToken` traits (`authoringMode`, `compatibilityClass`, `ordering`, etc.).
+4. **Renumbered ValueType enum list IRIs** — 8 letter-suffixed list node IRIs (`#list/12a`–`#list/12e`, `#list/29a`–`#list/29c`) arose from inserting new enum members without renumbering. Renumbered all 56 list nodes to consecutive integers `#list/1`–`#list/56` by following the `rdf:first`/`rdf:rest` chain.
+
+**Rationale:** (1) `rel:hasChild` was a non-existent predicate — §9.7 emits `codex:parentNode` (child-to-parent), not a `hasChild` (parent-to-child). (2–3) Incomplete trait declarations created asymmetry with the other 45 fully-declared traits. (4) Letter-suffixed list IRIs violated the consecutive-integer convention used by all other RDF list encodings in the schema.
+
+---
+
 ## 2026-02-07: A.1 + A.2 — Normalize grammar rule names and add missing RecordValue to precedence list
 
 **Sections:** A.1 EBNF (Normative), A.2 PEG (Informative), A.1.28 Value Termination and Disambiguation
