@@ -85,7 +85,7 @@ An implementation MUST NOT infer meaning from omission, shape, or other non-spec
 
 An implementation MUST NOT assume defaults unless explicitly defined by this specification or by the governing schema.
 
-Structural ordering (of Traits, children, and collection elements) carries no semantic meaning to Codex itself. Schemas define whether ordering is semantically significant for specific constructs. Implementations MUST preserve structural ordering both for round-trippability (see §2.6) and to support schema-defined ordering constraints.
+Structural ordering carries no semantic meaning to Codex itself. Trait order in canonical form is alphabetical by Trait name (§10.5); implementations MUST NOT treat Trait order as semantically significant. For children and collection elements, schemas define whether ordering is semantically significant (§11.4). Implementations MUST preserve the ordering of children and collection elements both for round-trippability (see §2.6) and to support schema-defined ordering constraints.
 
 ### 2.2 Determinism and Explainability
 
@@ -159,7 +159,7 @@ Round-trippability applies to the canonical form, not raw input. Raw input may u
 
 A conforming implementation MUST support round-tripping: a canonicalized Codex document, after transformation to RDF triples, storage, retrieval via SPARQL, and reconstruction, MUST produce a byte-identical canonicalized document.
 
-This invariant ensures that Codex serves as a lossless serialization format for RDF data. Structural ordering, annotations, and all surface-form details MUST survive the round-trip.
+This invariant ensures that Codex serves as a lossless serialization format for RDF data. Structural ordering, annotations, and all surface-form details MUST survive the round-trip. The round-trip guarantee is achieved through the triple store projection alone, with no sidecar artifacts required.
 
 To guarantee round-trippability, a conforming implementation MUST provide the following capabilities:
 
@@ -195,6 +195,8 @@ A Trait binds a Trait name to a Value.
 A Trait instance MUST be declared on exactly one containing Concept instance.
 
 A Trait instance MUST NOT have independent identity.
+
+A Concept instance MUST NOT declare two or more Traits with the same Trait name. A violation MUST be rejected with a `SurfaceFormError` (§14).
 
 Trait meaning and permissibility MUST be defined by the governing schema.
 
@@ -533,7 +535,7 @@ Define:
 
 - `ε = 216/24389`
 - `κ = 24389/27`
-- `π = 3.141592653589793`
+- `π`: the correctly-rounded value of the mathematical constant π in precision `p = 256`, round-to-nearest ties-to-even
 
 Define reference whites (XYZ, scaled so `Y=1`) from chromaticity coordinates as:
 
@@ -1265,11 +1267,11 @@ IRI Reference Values MUST be compared as opaque sequences of Unicode scalar valu
 
 Codex-conforming tools MUST NOT dereference IRI Reference Values.
 
-Where this specification defines deterministic resolution (for example, lookup-token binding and reference-constraint resolution), tools MUST apply only the mechanisms defined by this specification and MUST NOT perform any external lookup, registry query, or network dereferencing.
+Where this specification defines deterministic resolution (for example, lookup-token resolution and reference-constraint resolution), tools MUST apply only the mechanisms defined by this specification and MUST NOT perform any external lookup, registry query, or network dereferencing.
 
 ### 5.10 Lookup Token Values
 
-A Lookup Token Value is an unquoted token that binds to a schema-defined value.
+A Lookup Token Value is a document-scoped symbolic reference that identifies a Concept by its `key` trait (§6.3).
 
 In the Surface Form, Lookup Token Values MUST be spelled as `~` followed immediately by a token name.
 
@@ -1723,7 +1725,7 @@ Concept keys have document scope; cross-document key references are not defined 
 
 #### 6.3.3 Resolution
 
-When a Lookup Token Value appears as a reference trait value, resolution to an Entity `id` is performed via the binding mechanism defined in §9.8.
+When a Lookup Token Value appears as a reference trait value, the token resolves to the `id` of the Concept in the same document that declares that token as its `key` value. Full resolution semantics are defined in §9.8.
 
 ---
 
@@ -1802,11 +1804,7 @@ Example: using `target` for an about/applied-to relationship.
 In this example, `Tag` is applied to (is about) the `Book` Concept instance.
 
 ```cdx
-<Bindings>
-	<Bind key=~hobbit id=book:TheHobbit />
-</Bindings>
-
-<Book id=book:TheHobbit title="The Hobbit" />
+<Book id=book:TheHobbit key=~hobbit title="The Hobbit" />
 
 <Tag id=tag:classicFantasy target=~hobbit name=$classicFantasy />
 ```
@@ -1816,11 +1814,7 @@ Example: using `for` to scope a rule/policy to a Concept type.
 In this example, `LabelPolicy` is not about a particular `Book` instance; it is intended to apply to the `Book` Concept type.
 
 ```cdx
-<Bindings>
-	<Bind key=~book id=concept:Book />
-</Bindings>
-
-<ConceptDefinition id=concept:Book name="Book" />
+<ConceptDefinition id=concept:Book key=~book name="Book" />
 
 <LabelPolicy id=policy:BookLabels for=concept:Book />
 <LabelPolicy id=policy:BookLabelsAlt for=~book />
@@ -1836,11 +1830,13 @@ Example (invalid unless explicitly authorized by schema): a single Concept insta
 
 ## 8. Surface Form
 
+A Codex document MUST contain exactly one root Concept instance.
+
 ### 8.1 File Encoding
 
 Codex documents MUST be encoded in UTF-8 or UTF-16.
 
-UTF-8 is the default encoding.
+The canonical encoding is UTF-8 with no Byte Order Mark (BOM). Canonicalization MUST normalize UTF-16 encoded input to UTF-8, removing the BOM.
 
 UTF-8 encoded files MUST NOT include a Byte Order Mark (BOM).
 
@@ -1917,7 +1913,7 @@ In canonical surface form, Codex-conforming tools MUST reject documents containi
 
 A blank line is a line containing no characters after normalization.
 
-Codex-conforming tools MUST treat a line containing only whitespace as empty after normalization.
+Codex-conforming tools MUST treat a line containing only whitespace as empty after normalization. This is a canonicalization rule: trailing whitespace on a line is stripped during Phase 1 canonicalization (§10.5). In canonical form, a blank line contains no characters before its newline — consistent with the `BlankLine` grammar production (Appendix A).
 
 Annotation blank-line rules MUST be defined by the rules for annotations (see §8.9).
 
@@ -1946,7 +1942,7 @@ An opening marker MUST be spelled as:
 
 An opening marker includes zero or more Traits.
 
-If multiple Traits are present, their order MUST be preserved.
+If multiple Traits are present, canonical form MUST order them alphabetically by Trait name.
 
 #### 8.5.2 Closing Marker
 
@@ -1997,7 +1993,7 @@ No whitespace is permitted around `=`.
 
 Traits MUST be separated by whitespace (space or newline).
 
-If multiple Traits are present, their order MUST be preserved.
+If multiple Traits are present, canonical form MUST order them alphabetically by Trait name.
 
 #### 8.6.1 Canonical Trait Formatting
 
@@ -2474,7 +2470,7 @@ Schema-driven semantic validation MUST include evaluation of all schema-defined 
 - schema-defined constraints over children, descendants, and collections
 - schema-defined reference semantics and any schema-defined resolution requirements
 
-If the governing schema requires any external inputs (for example, inputs needed to interpret lookup token bindings or to construct derived validation artifacts), those inputs MUST be explicit and machine-checkable.
+If the governing schema requires any external inputs (for example, inputs needed to resolve lookup tokens or to construct derived validation artifacts), those inputs MUST be explicit and machine-checkable.
 
 The required semantics for schema-driven validation and any required derived artifacts are defined by this specification (notably §9.5–§9.11) and by the schema definition language (§11).
 
@@ -2837,9 +2833,14 @@ The following reserved predicates are used by the instance graph mapping:
 - `codex:parentNode`
 - `codex:isEntity`
 - `codex:declaredId`
-- `codex:lookupToken`
-- `codex:lookupIri`
 - `codex:content`
+- `codex:annotationParent`
+- `codex:annotationIndex`
+- `codex:annotationText`
+- `codex:annotationForm`
+- `codex:annotationKind`
+- `codex:annotationDirective`
+- `codex:annotationTarget`
 
 Their IRIs MUST be deterministically derived from `schemaIri` as follows:
 
@@ -2849,19 +2850,24 @@ Their IRIs MUST be deterministically derived from `schemaIri` as follows:
 - `codex:parentNode` MUST be `schemaIri + "#codex/parentNode"`
 - `codex:isEntity` MUST be `schemaIri + "#codex/isEntity"`
 - `codex:declaredId` MUST be `schemaIri + "#codex/declaredId"`
-- `codex:lookupToken` MUST be `schemaIri + "#codex/lookupToken"`
-- `codex:lookupIri` MUST be `schemaIri + "#codex/lookupIri"`
 - `codex:content` MUST be `schemaIri + "#codex/content"`
+- `codex:annotationParent` MUST be `schemaIri + "#codex/annotationParent"`
+- `codex:annotationIndex` MUST be `schemaIri + "#codex/annotationIndex"`
+- `codex:annotationText` MUST be `schemaIri + "#codex/annotationText"`
+- `codex:annotationForm` MUST be `schemaIri + "#codex/annotationForm"`
+- `codex:annotationKind` MUST be `schemaIri + "#codex/annotationKind"`
+- `codex:annotationDirective` MUST be `schemaIri + "#codex/annotationDirective"`
+- `codex:annotationTarget` MUST be `schemaIri + "#codex/annotationTarget"`
 
 #### 9.7.6 Ordered Children Encoding
 
 This section defines the canonical ordered-children encoding.
 
-For each parent Concept instance `C` and each direct child Concept instance `D` in children order, let:
+For each Concept instance `D`, let:
 
-- `p = nodeIri(C)`
+- `p = nodeIri(C)` if `D` is a direct child of parent Concept instance `C`; `p = documentBaseIri` if `D` is a root Concept instance
 - `d = nodeIri(D)`
-- `i = 0..n-1` be the ordinal position of `D` among the direct children of `C`, in source order
+- `i` be the ordinal position of `D` among all sibling items (Concept instances and annotations) at the same nesting level, in source order, starting from 0
 
 The mapping MUST emit an edge node `e` and three triples:
 
@@ -2873,12 +2879,47 @@ The edge node IRI MUST be:
 
 - `e = p + "/__childEdge/" + i`
 
+The index `i` is a unified sibling index: it counts all items (Concept instances and annotations) at the same nesting level in source order. This is distinct from `ordinalIndex(C)` (§9.7.2.1), which counts only Concept siblings for the purpose of stable node identity derivation.
+
 `codex:parentNode` is distinct from `codex:parent`:
 
 - `codex:parentNode` links a concept instance node to its parent concept instance node.
-- `codex:parent` links an ordered-child edge node to the parent concept instance node.
+- `codex:parent` links an ordered-child edge node to the parent node (`nodeIri(C)` for non-root concepts, `documentBaseIri` for root concepts).
 
-#### 9.7.7 Traits and Value Terms
+#### 9.7.7 Annotation Nodes
+
+This section defines the canonical annotation encoding.
+
+Annotations appear only in children-mode contexts (§8.9). Annotations in a children context are interleaved with child Concept instances in source order. The unified sibling index defined in §9.7.6 assigns each annotation a position in the same index space as child Concept instances.
+
+For each annotation `A` at a given nesting level, let:
+
+- `p = nodeIri(C)` if the nesting level is the children context of parent Concept instance `C`; `p = documentBaseIri` if the annotation is at document top level
+- `i` be the ordinal position of `A` in the unified sibling index (§9.7.6), starting from 0
+
+The mapping MUST emit an annotation edge node `e` with the following triples:
+
+- `(e, codex:annotationParent, p)`
+- `(e, codex:annotationIndex, "i"^^xsd:integer)`
+- `(e, codex:annotationText, "text"^^xsd:string)` where `text` is the canonical annotation text after canonicalization (§8.9.4)
+- `(e, codex:annotationForm, "form"^^xsd:string)` where `form` is `inline` or `block` (§8.9.1)
+- `(e, codex:annotationKind, "kind"^^xsd:string)` where `kind` is `attached`, `grouping`, or `general` (§8.9.6)
+
+The annotation edge node IRI MUST be:
+
+- `e = p + "/__annotationEdge/" + i`
+
+If the annotation has a block directive (§8.9.5), the mapping MUST additionally emit:
+
+- `(e, codex:annotationDirective, "directive"^^xsd:string)` where `directive` is `CODE`, `MARKDOWN`, or `FLOW`
+
+If no block directive is present, no `codex:annotationDirective` triple is emitted.
+
+If the annotation is an attached annotation (§8.9.6.1), the mapping MUST additionally emit:
+
+- `(e, codex:annotationTarget, nodeIri(D))` where `D` is the Concept instance to which the annotation is attached
+
+#### 9.7.8 Traits and Value Terms
 
 For each trait `t=v` on a concept instance `C`, the instance graph MUST emit exactly one triple:
 
@@ -2929,7 +2970,7 @@ Lookup Token Values MUST be represented as typed literals with:
 
 If a schema constraint requires an interpreted value (for example, numeric comparisons or text length), schema processing MUST either provide the interpreted value in a deterministic RDF representation or fail with a `SchemaError` (§14).
 
-#### 9.7.8 Content
+#### 9.7.9 Content
 
 If a concept instance is in content mode, the mapping MUST emit:
 
@@ -2937,7 +2978,7 @@ If a concept instance is in content mode, the mapping MUST emit:
 
 `contentText` MUST be an `xsd:string` literal containing the concept's content after applying the Codex content escaping rules.
 
-#### 9.7.9 Deterministic Predicate IRIs
+#### 9.7.10 Deterministic Predicate IRIs
 
 For the purposes of this section, let `schemaIri` be the governing schema's `Schema.id` value.
 
@@ -2956,7 +2997,7 @@ Let the governing schema's `ConceptDefinition.id` for the parent concept name be
 
 - `childPredicateIri(P,Q)` MUST be `P + "#child/" + iriHash(Q)`.
 
-#### 9.7.10 RDF Types
+#### 9.7.11 RDF Types
 
 Each Concept instance MUST emit an RDF type triple:
 
@@ -2968,57 +3009,36 @@ If `conceptClassIri(X)` cannot be resolved to exactly one `ConceptDefinition`, s
 
 All aspects of the instance graph mapping required by this specification are defined in this section.
 
-#### 9.7.11 Conformance Graph (`G₁`)
+#### 9.7.12 Conformance Graph (`G₁`)
 
 For a Codex instance document processed under a governing schema and an explicit `documentBaseIri`, let `G₁` be the RDF instance graph produced by the Codex→RDF instance graph mapping defined in §9.7.
 
 For purposes of conformance testing and byte-identical comparison, a conforming implementation MUST emit `G₁` in the Codex `RdfGraph` form defined in §9.6.1 and MUST apply the canonical ordering and duplicate-removal rules defined in §9.6.2.
 
-### 9.8 Lookup Token Bindings
-Lookup Token Values (`~name`) are symbolic references that require an explicit binding to a target identifier in order to be resolved.
+### 9.8 Lookup Token Resolution
 
-Lookup token bindings, when present, are declared using a document-level binding section.
+Lookup Token Values (`~name`) are symbolic references that require resolution to a target identifier.
 
-#### 9.8.1 Binding Section Surface Form
+Resolution is performed using the resolution table, which is constructed from Concepts in the document.
 
-A binding section is declared using a top-level `Bindings` Concept.
+#### 9.8.1 Resolution Table
 
-The `Bindings` Concept:
+Each Concept in the document that declares both a `key` trait (§6.3) and an `id` trait (§6.2) contributes one entry to the resolution table, mapping the `key` lookup token to the `id` IRI.
 
-* MUST appear at most once per document
-* MUST appear at the top level of the document
-* MUST NOT be nested inside any other Concept
-* MUST NOT contain Content
-* MUST contain one or more `Bind` child Concepts
+A Concept that declares a `key` trait but no `id` trait does not contribute a resolution entry.
 
-#### 9.8.2 `Bind`
+The resolution table MUST be constructed solely from explicit `key` and `id` trait declarations. Resolution entries MUST NOT be inferred, synthesized, or imported implicitly.
 
-A `Bind` Concept declares a single lookup binding.
-
-##### Traits
-* `key` (required; Lookup Token Value; §5.10)
-* `id` (required; IRI Reference Value; §5.9)
-
-Each `Bind` Concept binds the specified lookup token (`key`) to the specified Entity identity (`id`).
-
-##### Constraints
-
-* Each lookup token key MUST be bound at most once within a document.
-* If a lookup token is used in the document and is required to be resolved by the governing schema, a corresponding binding MUST be present.
-* Lookup token bindings MUST NOT be inferred, synthesized, or imported implicitly.
-
-#### 9.8.3 Resolution Semantics
+#### 9.8.2 Resolution Semantics
 
 When lookup token resolution is required by schema validation:
 
-* The binding table MUST be constructed from the `Bindings` section.
-* A lookup token MUST resolve to exactly one identifier.
-* If no binding is found for a required lookup token, validation MUST fail with a `ReferenceError` (§14).
-* If duplicate bindings for the same lookup token are present, validation MUST fail with a `SchemaError` (§14).
+* A lookup token MUST resolve to exactly one identifier in the resolution table.
+* If no matching entry is found for a required lookup token, validation MUST fail with a `ReferenceError` (§14).
 
-Lookup token bindings are declarative only and MUST NOT imply loading, dereferencing, or execution.
+Lookup token resolution is declarative only and MUST NOT imply loading, dereferencing, or execution.
 
-#### 9.8.4 Schema Interaction
+#### 9.8.3 Schema Interaction
 
 A governing schema MUST specify, for each context where lookup token values are permitted, one of the following resolution requirements:
 
@@ -3183,7 +3203,7 @@ The `scope` trait MUST be present. For derived artifact purposes, `IdentityConst
 
 Derived validation artifacts MUST support `IdentityConstraint(type=IdentifierForm, pattern=p, flags=f)`.
 
-Because `codex:declaredId` is represented as an RDF IRI term (see §9.7.7), this constraint MUST be expressible using SHACL-SPARQL.
+Because `codex:declaredId` is represented as an RDF IRI term (see §9.7.8), this constraint MUST be expressible using SHACL-SPARQL.
 It MUST report a violation if the focus node is an Entity and either:
 
 * it has no `codex:declaredId`, or
@@ -3206,7 +3226,7 @@ where `p` is the required pattern and `f` is the flags text if present. If `flag
 
 Derived validation artifacts MUST support the following uniqueness constraints.
 
-For both constraints, the identity of a trait is determined by the instance-graph trait mapping (see §9.7.7).
+For both constraints, the identity of a trait is determined by the instance-graph trait mapping (see §9.7.8).
 
 If a uniqueness constraint refers to `t = id`, it MUST refer to the declared identifier as represented by `codex:declaredId`.
 
@@ -3266,7 +3286,7 @@ EXISTS {
 
 #### 9.9.9 Reference Constraints (Reference Trait Predicates)
 
-Reference constraints are expressible without external resolution if identifiers are represented by `codex:declaredId` and lookup tokens are resolvable via the lookup binding table (see §9.8).
+Reference constraints are expressible without external resolution if identifiers are represented by `codex:declaredId` and lookup tokens are resolvable via the resolution table (see §9.8).
 
 For the purposes of reference constraints, the set of reference-trait predicates MUST be exactly:
 
@@ -3297,7 +3317,7 @@ Given a reference value `v`, its resolved IRI `r` MUST be computed as follows:
 
 - If `v` is an IRI, then `r = v`.
 - If `v` is a Lookup Token typed literal, then:
-	- If there exists exactly one binding entry in the lookup binding table such that the binding entry's `tokenLiteral` is `v`, and the binding entry's `targetIri` is `r`, then `r` is that bound `targetIri`.
+	- If there exists exactly one entry in the resolution table (§9.8) such that the entry's `tokenLiteral` is `v`, and the entry's `targetIri` is `r`, then `r` is that `targetIri`.
 	- Otherwise, `v` MUST be treated as unresolved.
 - Otherwise, `v` MUST be treated as unresolved.
 
@@ -3354,7 +3374,7 @@ At minimum, processing MUST fail in any of the following cases:
 - a schema rule requires semantics not explicitly defined by this specification, the governing schema, or the schema-definition specification — `SchemaError`
 - a required external input is missing — `SchemaError`
 - an algorithm would require nondeterministic choice (including heuristic inference or "best effort") — `SchemaError`
-- a lookup token is required to resolve but no binding is found — `ReferenceError`
+- a lookup token is required to resolve but no Concept with a matching `key` is found — `ReferenceError`
 - a derived validation artifact cannot be constructed without inventing missing definitions — `SchemaError`
 
 ### 9.11 Simplified Authoring Mode → Canonical Representation Expansion Algorithm (Total)
@@ -3838,7 +3858,8 @@ Canonicalization is divided into two phases:
 - canonical placement of self-closing markers
 - canonical inline-annotation whitespace collapse
 - canonical text escaping
-- preservation of Concept, Trait, and Content order
+- alphabetical ordering of Traits by Trait name
+- preservation of Concept and Content order
 - content indentation normalization (§8.8.3)
 
 **Phase 2 (schema-directed)** applies during schema-directed processing:
@@ -3851,7 +3872,6 @@ Schema-less processing MUST complete Phase 1 only. Schema-directed processing MU
 Canonicalization MUST NOT:
 
 - reorder Concepts (except children of `$Unordered` collections during Phase 2)
-- reorder Traits
 - invent or remove Concepts, Traits, or Content
 - infer missing structure
 
@@ -3884,14 +3904,14 @@ Allowed changes (examples):
 
 - Normalize newlines to LF and ensure a trailing newline
 - Normalize structural indentation (tabs) for Concept markers and children bodies
-- Canonicalize trait layout/spacing without reordering traits
+- Canonicalize trait layout/spacing and alphabetical ordering
 - Canonicalize inline annotation whitespace (trim + internal collapse)
 - Canonicalize grouping-annotation labels by whitespace normalization
 - Normalize UUID spelling to the canonical form required by §5.8
 
 Forbidden changes (examples):
 
-- Reorder Concepts or Traits
+- Reorder Concepts
 - Change Content bytes
 - Change any bytes inside `CODE:` or `MARKDOWN:` block annotations
 - Guess annotation attachment or reinterpret annotation kinds

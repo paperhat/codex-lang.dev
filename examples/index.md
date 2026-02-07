@@ -70,6 +70,7 @@
 
 <Person
 	id=person:bob
+	key=~bob
 	name="Bob"
 	initial='B'
 	age=-0
@@ -108,11 +109,6 @@
 
 
 [GROUP: References]
-
-<Bindings>
-	<Bind key=~alice id=person:alice />
-	<Bind key=~bob   id=person:bob />
-</Bindings>
 
 <Tag
 	id=tag:example

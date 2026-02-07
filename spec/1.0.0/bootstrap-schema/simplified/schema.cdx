@@ -1,11 +1,11 @@
 <Schema
+	authoringMode=$SimplifiedMode
+	compatibilityClass=$Initial
+	description="The authoritative schema for schema-validating Codex schema documents."
 	id=urn:codex:bootstrap:1.0.0
+	title="Codex Bootstrap Schema-of-Schemas"
 	version="1.0.0"
 	versionScheme=$Semver
-	compatibilityClass=$Initial
-	authoringMode=$SimplifiedMode
-	title="Codex Bootstrap Schema-of-Schemas"
-	description="The authoritative schema for schema-validating Codex schema documents."
 >
 	<EnumeratedValueSets>
 		<EnumeratedValueSet
@@ -14,19 +14,19 @@
 			name="ConceptKind"
 		>
 			<Member
-				value="Semantic"
-				label="Semantic"
 				description="A concept with domain meaning."
+				label="Semantic"
+				value="Semantic"
 			/>
 			<Member
-				value="Structural"
-				label="Structural"
 				description="A concept that organizes structure."
+				label="Structural"
+				value="Structural"
 			/>
 			<Member
-				value="ValueLike"
-				label="Value-like"
 				description="A concept that behaves like a value."
+				label="Value-like"
+				value="ValueLike"
 			/>
 		</EnumeratedValueSet>
 
@@ -36,14 +36,14 @@
 			name="EntityEligibility"
 		>
 			<Member
-				value="MustBeEntity"
-				label="Must be Entity"
 				description="Instances must declare an id."
+				label="Must be Entity"
+				value="MustBeEntity"
 			/>
 			<Member
-				value="MustNotBeEntity"
-				label="Must not be Entity"
 				description="Instances must not declare an id."
+				label="Must not be Entity"
+				value="MustNotBeEntity"
 			/>
 		</EnumeratedValueSet>
 
@@ -52,10 +52,10 @@
 			key=~compatibilityClass
 			name="CompatibilityClass"
 		>
-			<Member value="Initial" label="Initial" description="First version in schema lineage." />
-			<Member value="BackwardCompatible" label="Backward Compatible" />
-			<Member value="ForwardCompatible" label="Forward Compatible" />
-			<Member value="Breaking" label="Breaking" />
+			<Member description="First version in schema lineage." label="Initial" value="Initial" />
+			<Member label="Backward Compatible" value="BackwardCompatible" />
+			<Member label="Forward Compatible" value="ForwardCompatible" />
+			<Member label="Breaking" value="Breaking" />
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet
@@ -63,10 +63,10 @@
 			key=~versionScheme
 			name="VersionScheme"
 		>
-			<Member value="Semver" label="Semantic Versioning" description="MAJOR.MINOR.PATCH format." />
-			<Member value="DateYYYYMM" label="Date (YYYY-MM)" description="Year-month format." />
-			<Member value="DateYYYYMMDD" label="Date (YYYY-MM-DD)" description="Year-month-day format." />
-			<Member value="Lexical" label="Lexical" description="Unicode codepoint ordering." />
+			<Member description="MAJOR.MINOR.PATCH format." label="Semantic Versioning" value="Semver" />
+			<Member description="Year-month format." label="Date (YYYY-MM)" value="DateYYYYMM" />
+			<Member description="Year-month-day format." label="Date (YYYY-MM-DD)" value="DateYYYYMMDD" />
+			<Member description="Unicode codepoint ordering." label="Lexical" value="Lexical" />
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet
@@ -75,14 +75,14 @@
 			name="AuthoringMode"
 		>
 			<Member
-				value="SimplifiedMode"
-				label="Simplified Authoring Mode"
 				description="Codex-native schema-definition authoring surface only."
+				label="Simplified Authoring Mode"
+				value="SimplifiedMode"
 			/>
 			<Member
-				value="CanonicalMode"
-				label="Canonical Authoring Mode"
 				description="Canonical Representation authoring only."
+				label="Canonical Authoring Mode"
+				value="CanonicalMode"
 			/>
 		</EnumeratedValueSet>
 
@@ -91,8 +91,8 @@
 			key=~whitespaceMode
 			name="WhitespaceMode"
 		>
-			<Member value="Preformatted" label="Preformatted" description="Content whitespace is significant and preserved exactly." />
-			<Member value="Flow" label="Flow" description="Content whitespace is collapsed and trimmed." />
+			<Member description="Content whitespace is significant and preserved exactly." label="Preformatted" value="Preformatted" />
+			<Member description="Content whitespace is collapsed and trimmed." label="Flow" value="Flow" />
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet
@@ -100,8 +100,8 @@
 			key=~ordering
 			name="Ordering"
 		>
-			<Member value="Ordered" label="Ordered" />
-			<Member value="Unordered" label="Unordered" />
+			<Member label="Ordered" value="Ordered" />
+			<Member label="Unordered" value="Unordered" />
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet
@@ -109,8 +109,8 @@
 			key=~cardinality
 			name="Cardinality"
 		>
-			<Member value="Single" label="Single" description="Trait accepts a single value." />
-			<Member value="List" label="List" description="Trait accepts a list of values." />
+			<Member description="Trait accepts a single value." label="Single" value="Single" />
+			<Member description="Trait accepts a list of values." label="List" value="List" />
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet
@@ -124,59 +124,59 @@
 			<Member value="Boolean" />
 
 			[Numeric types (per spec A.1.12)]
-			<Member value="Number" description="Any numeric value." />
+			<Member description="Any numeric value." value="Number" />
 			<Member value="Integer" />
-			<Member value="DecimalNumber" description="Number with decimal point." />
-			<Member value="ExponentialNumber" description="Number with exponent." />
-			<Member value="PrecisionNumber" description="Decimal with explicit precision." />
-			<Member value="Fraction" description="Rational number." />
-			<Member value="ImaginaryNumber" description="Pure imaginary." />
-			<Member value="ComplexNumber" description="Real + imaginary." />
-			<Member value="PositiveInfinity" description="Infinity." />
-			<Member value="NegativeInfinity" description="-Infinity." />
-			<Member value="Infinity" description="PositiveInfinity or NegativeInfinity." />
-			<Member value="Zero" description="The integer zero." />
-			<Member value="NegativeInteger" description="An integer < 0." />
-			<Member value="NonPositiveInteger" description="An integer <= 0." />
-			<Member value="NonNegativeInteger" description="An integer >= 0." />
-			<Member value="PositiveInteger" description="An integer >= 1." />
+			<Member description="Number with decimal point." value="DecimalNumber" />
+			<Member description="Number with exponent." value="ExponentialNumber" />
+			<Member description="Decimal with explicit precision." value="PrecisionNumber" />
+			<Member description="Rational number." value="Fraction" />
+			<Member description="Pure imaginary." value="ImaginaryNumber" />
+			<Member description="Real + imaginary." value="ComplexNumber" />
+			<Member description="Infinity." value="PositiveInfinity" />
+			<Member description="-Infinity." value="NegativeInfinity" />
+			<Member description="PositiveInfinity or NegativeInfinity." value="Infinity" />
+			<Member description="The integer zero." value="Zero" />
+			<Member description="An integer < 0." value="NegativeInteger" />
+			<Member description="An integer <= 0." value="NonPositiveInteger" />
+			<Member description="An integer >= 0." value="NonNegativeInteger" />
+			<Member description="An integer >= 1." value="PositiveInteger" />
 
 			[Temporal types (per spec A.1.14)]
-			<Member value="Temporal" description="Any temporal value." />
-			<Member value="ZonedDateTime" description="Date, time, and timezone." />
-			<Member value="Instant" description="Absolute point in time with offset." />
-			<Member value="PlainDateTime" description="Date and time." />
-			<Member value="PlainDate" description="Calendar date." />
-			<Member value="YearWeek" description="ISO year and week." />
-			<Member value="PlainYearMonth" description="Year and month." />
-			<Member value="PlainMonthDay" description="Month and day." />
-			<Member value="PlainTime" description="Wall-clock time." />
-			<Member value="Duration" description="Length of time." />
-			<Member value="TemporalKeyword" description="now or today." />
+			<Member description="Any temporal value." value="Temporal" />
+			<Member description="Date, time, and timezone." value="ZonedDateTime" />
+			<Member description="Absolute point in time with offset." value="Instant" />
+			<Member description="Date and time." value="PlainDateTime" />
+			<Member description="Calendar date." value="PlainDate" />
+			<Member description="ISO year and week." value="YearWeek" />
+			<Member description="Year and month." value="PlainYearMonth" />
+			<Member description="Month and day." value="PlainMonthDay" />
+			<Member description="Wall-clock time." value="PlainTime" />
+			<Member description="Length of time." value="Duration" />
+			<Member description="now or today." value="TemporalKeyword" />
 
 			[Identity types]
 			<Member value="EnumeratedToken" />
 			<Member value="IriReference" />
 			<Member value="LookupToken" />
 			<Member value="Uuid" />
-			<Member value="HostName" description="Host name wrapper value (canonicalized)." />
-			<Member value="EmailAddress" description="Email address wrapper value (canonicalized)." />
-			<Member value="Url" description="URL wrapper value (canonicalized)." />
+			<Member description="Host name wrapper value (canonicalized)." value="HostName" />
+			<Member description="Email address wrapper value (canonicalized)." value="EmailAddress" />
+			<Member description="URL wrapper value (canonicalized)." value="Url" />
 
 			[Color types (per spec §5.7)]
-			<Member value="Color" description="Any color value." />
-			<Member value="HexColor" description="Hexadecimal color (#RGB, #RRGGBB, etc.)." />
-			<Member value="NamedColor" description="Named color (&red, &blue, etc.)." />
-			<Member value="RgbColor" description="RGB color function." />
-			<Member value="HslColor" description="HSL color function." />
-			<Member value="HwbColor" description="HWB color function." />
-			<Member value="LabColor" description="CIE Lab color function." />
-			<Member value="LchColor" description="CIE LCH color function." />
-			<Member value="OklabColor" description="Oklab color function." />
-			<Member value="OklchColor" description="Oklch color function." />
-			<Member value="ColorFunction" description="Generic color() function." />
-			<Member value="ColorMix" description="color-mix() function." />
-			<Member value="DeviceCmyk" description="device-cmyk() function." />
+			<Member description="Any color value." value="Color" />
+			<Member description="Hexadecimal color (#RGB, #RRGGBB, etc.)." value="HexColor" />
+			<Member description="Named color (&red, &blue, etc.)." value="NamedColor" />
+			<Member description="RGB color function." value="RgbColor" />
+			<Member description="HSL color function." value="HslColor" />
+			<Member description="HWB color function." value="HwbColor" />
+			<Member description="CIE Lab color function." value="LabColor" />
+			<Member description="CIE LCH color function." value="LchColor" />
+			<Member description="Oklab color function." value="OklabColor" />
+			<Member description="Oklch color function." value="OklchColor" />
+			<Member description="Generic color() function." value="ColorFunction" />
+			<Member description="color-mix() function." value="ColorMix" />
+			<Member description="device-cmyk() function." value="DeviceCmyk" />
 
 			[Collection types]
 			<Member value="List" />
@@ -254,14 +254,14 @@
 			name="OrderConstraintType"
 		>
 			<Member
-				value="Ascending"
-				label="Ascending"
 				description="Elements must be in ascending order by the specified trait."
+				label="Ascending"
+				value="Ascending"
 			/>
 			<Member
-				value="Descending"
-				label="Descending"
 				description="Elements must be in descending order by the specified trait."
+				label="Descending"
+				value="Descending"
 			/>
 		</EnumeratedValueSet>
 	</EnumeratedValueSets>
@@ -271,11 +271,11 @@
 		[GROUP: Root Schema Concept]
 
 		<ConceptDefinition
+			conceptKind=$Semantic
+			entityEligibility=$MustBeEntity
 			id=urn:codex:bootstrap:concept:Schema
 			key=~schema
 			name="Schema"
-			conceptKind=$Semantic
-			entityEligibility=$MustBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="id" />
@@ -303,11 +303,11 @@
 		[GROUP: Definition Containers]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ConceptDefinitions
 			key=~conceptDefinitions
 			name="ConceptDefinitions"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<AllowsChildConcept conceptSelector="ConceptDefinition" min=1 />
@@ -315,11 +315,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:TraitDefinitions
 			key=~traitDefinitions
 			name="TraitDefinitions"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<AllowsChildConcept conceptSelector="TraitDefinition" min=1 />
@@ -327,11 +327,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:EnumeratedValueSets
 			key=~enumeratedValueSets
 			name="EnumeratedValueSets"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<AllowsChildConcept conceptSelector="EnumeratedValueSet" min=1 />
@@ -339,11 +339,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ConstraintDefinitions
 			key=~constraintDefinitions
 			name="ConstraintDefinitions"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<AllowsChildConcept conceptSelector="ConstraintDefinition" min=1 />
@@ -351,11 +351,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ValidatorDefinitions
 			key=~validatorDefinitions
 			name="ValidatorDefinitions"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<AllowsChildConcept conceptSelector="ValidatorDefinition" min=1 />
@@ -363,11 +363,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ValueTypeDefinitions
 			key=~valueTypeDefinitions
 			name="ValueTypeDefinitions"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<AllowsChildConcept conceptSelector="ValueTypeDefinition" min=1 />
@@ -379,11 +379,11 @@
 		[GROUP: Concept Definition]
 
 		<ConceptDefinition
+			conceptKind=$Semantic
+			entityEligibility=$MustBeEntity
 			id=urn:codex:bootstrap:concept:ConceptDefinition
 			key=~conceptDefinition
 			name="ConceptDefinition"
-			conceptKind=$Semantic
-			entityEligibility=$MustBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="id" />
@@ -403,11 +403,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ContentRules
 			key=~contentRules
 			name="ContentRules"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<ExactlyOneChildOf>
@@ -418,11 +418,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:AllowsContent
 			key=~allowsContent
 			name="AllowsContent"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="whitespaceMode" />
@@ -430,19 +430,19 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ForbidsContent
 			key=~forbidsContent
 			name="ForbidsContent"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		/>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:TraitRules
 			key=~traitRules
 			name="TraitRules"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<AllowsChildConcept conceptSelector="RequiresTrait" />
@@ -452,11 +452,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:RequiresTrait
 			key=~requiresTrait
 			name="RequiresTrait"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="name" />
@@ -467,11 +467,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:AllowsTrait
 			key=~allowsTrait
 			name="AllowsTrait"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="name" />
@@ -482,11 +482,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ForbidsTrait
 			key=~forbidsTrait
 			name="ForbidsTrait"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="name" />
@@ -494,11 +494,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ChildRules
 			key=~childRules
 			name="ChildRules"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<AllowsChildConcept conceptSelector="AllowsChildConcept" />
@@ -509,11 +509,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:AllowsChildConcept
 			key=~allowsChildConcept
 			name="AllowsChildConcept"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="conceptSelector" />
@@ -523,11 +523,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:RequiresChildConcept
 			key=~requiresChildConcept
 			name="RequiresChildConcept"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="conceptSelector" />
@@ -537,11 +537,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ForbidsChildConcept
 			key=~forbidsChildConcept
 			name="ForbidsChildConcept"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="conceptSelector" />
@@ -549,11 +549,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ExactlyOneChildOf
 			key=~exactlyOneChildOf
 			name="ExactlyOneChildOf"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<RequiresChildConcept conceptSelector="ConceptOption" min=2 />
@@ -561,11 +561,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ConceptOption
 			key=~conceptOption
 			name="ConceptOption"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="conceptSelector" />
@@ -573,11 +573,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:CollectionRules
 			key=~collectionRules
 			name="CollectionRules"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="ordering" />
@@ -590,11 +590,11 @@
 		[GROUP: Trait Definition]
 
 		<ConceptDefinition
+			conceptKind=$Semantic
+			entityEligibility=$MustBeEntity
 			id=urn:codex:bootstrap:concept:TraitDefinition
 			key=~traitDefinition
 			name="TraitDefinition"
-			conceptKind=$Semantic
-			entityEligibility=$MustBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="id" />
@@ -611,11 +611,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:AllowedValues
 			key=~allowedValues
 			name="AllowedValues"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<ExactlyOneChildOf>
@@ -630,11 +630,11 @@
 		[GROUP: Enumerated Value Sets]
 
 		<ConceptDefinition
+			conceptKind=$Semantic
+			entityEligibility=$MustBeEntity
 			id=urn:codex:bootstrap:concept:EnumeratedValueSet
 			key=~enumeratedValueSet
 			name="EnumeratedValueSet"
-			conceptKind=$Semantic
-			entityEligibility=$MustBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="id" />
@@ -648,11 +648,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$ValueLike
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:Member
 			key=~member
 			name="Member"
-			conceptKind=$ValueLike
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="value" />
@@ -666,11 +666,11 @@
 		[GROUP: Value Type Definition]
 
 		<ConceptDefinition
+			conceptKind=$Semantic
+			entityEligibility=$MustBeEntity
 			id=urn:codex:bootstrap:concept:ValueTypeDefinition
 			key=~valueTypeDefinition
 			name="ValueTypeDefinition"
-			conceptKind=$Semantic
-			entityEligibility=$MustBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="id" />
@@ -685,11 +685,11 @@
 		[GROUP: Validator Definitions]
 
 		<ConceptDefinition
+			conceptKind=$Semantic
+			entityEligibility=$MustBeEntity
 			id=urn:codex:bootstrap:concept:ValidatorDefinition
 			key=~validatorDefinition
 			name="ValidatorDefinition"
-			conceptKind=$Semantic
-			entityEligibility=$MustBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="id" />
@@ -706,11 +706,11 @@
 		[GROUP: Constraint Definitions]
 
 		<ConceptDefinition
+			conceptKind=$Semantic
+			entityEligibility=$MustBeEntity
 			id=urn:codex:bootstrap:concept:ConstraintDefinition
 			key=~constraintDefinition
 			name="ConstraintDefinition"
-			conceptKind=$Semantic
-			entityEligibility=$MustBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="id" />
@@ -720,23 +720,23 @@
 			<ChildRules>
 				<RequiresChildConcept
 					conceptSelector="Targets"
-					min=1
 					max=1
+					min=1
 				/>
 				<RequiresChildConcept
 					conceptSelector="Rule"
-					min=1
 					max=1
+					min=1
 				/>
 			</ChildRules>
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:Targets
 			key=~targets
 			name="Targets"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<AllowsChildConcept conceptSelector="TargetConcept" />
@@ -745,11 +745,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:TargetConcept
 			key=~targetConcept
 			name="TargetConcept"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="conceptSelector" />
@@ -757,11 +757,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:TargetContext
 			key=~targetContext
 			name="TargetContext"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="contextSelector" />
@@ -769,11 +769,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:Rule
 			key=~rule
 			name="Rule"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<ExactlyOneChildOf>
@@ -818,11 +818,11 @@
 		[GROUP: Rule Algebra]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:AllOf
 			key=~allOf
 			name="AllOf"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<RequiresChildConcept conceptSelector="Rule" min=2 />
@@ -830,11 +830,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:AnyOf
 			key=~anyOf
 			name="AnyOf"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<RequiresChildConcept conceptSelector="Rule" min=2 />
@@ -842,70 +842,70 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:Not
 			key=~not
 			name="Not"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<RequiresChildConcept
 					conceptSelector="Rule"
-					min=1
 					max=1
+					min=1
 				/>
 			</ChildRules>
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ConditionalConstraint
 			key=~conditionalConstraint
 			name="ConditionalConstraint"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<RequiresChildConcept
 					conceptSelector="When"
-					min=1
 					max=1
+					min=1
 				/>
 				<RequiresChildConcept
 					conceptSelector="Then"
-					min=1
 					max=1
+					min=1
 				/>
 			</ChildRules>
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:When
 			key=~when
 			name="When"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<RequiresChildConcept
 					conceptSelector="Rule"
-					min=1
 					max=1
+					min=1
 				/>
 			</ChildRules>
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:Then
 			key=~then
 			name="Then"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<RequiresChildConcept
 					conceptSelector="Rule"
-					min=1
 					max=1
+					min=1
 				/>
 			</ChildRules>
 		</ConceptDefinition>
@@ -915,11 +915,11 @@
 		[GROUP: Paths]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:TraitPath
 			key=~traitPath
 			name="TraitPath"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="traitName" />
@@ -927,11 +927,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ChildPath
 			key=~childPath
 			name="ChildPath"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="conceptSelector" />
@@ -939,11 +939,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:DescendantPath
 			key=~descendantPath
 			name="DescendantPath"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="conceptSelector" />
@@ -951,11 +951,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ContentPath
 			key=~contentPath
 			name="ContentPath"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		/>
 
 		[END: Paths]
@@ -963,11 +963,11 @@
 		[GROUP: Path-Scoped Rules]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:OnPathExists
 			key=~onPathExists
 			name="OnPathExists"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<ExactlyOneChildOf>
@@ -978,18 +978,18 @@
 				</ExactlyOneChildOf>
 				<RequiresChildConcept
 					conceptSelector="Rule"
-					min=1
 					max=1
+					min=1
 				/>
 			</ChildRules>
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:OnPathForAll
 			key=~onPathForAll
 			name="OnPathForAll"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<ExactlyOneChildOf>
@@ -1000,18 +1000,18 @@
 				</ExactlyOneChildOf>
 				<RequiresChildConcept
 					conceptSelector="Rule"
-					min=1
 					max=1
+					min=1
 				/>
 			</ChildRules>
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:OnPathCount
 			key=~onPathCount
 			name="OnPathCount"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<AllowsTrait name="minCount" />
@@ -1026,8 +1026,8 @@
 				</ExactlyOneChildOf>
 				<RequiresChildConcept
 					conceptSelector="Rule"
-					min=1
 					max=1
+					min=1
 				/>
 			</ChildRules>
 		</ConceptDefinition>
@@ -1037,11 +1037,11 @@
 		[GROUP: Atomic Constraints - Trait]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:TraitExists
 			key=~traitExists
 			name="TraitExists"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="trait" />
@@ -1049,11 +1049,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:TraitMissing
 			key=~traitMissing
 			name="TraitMissing"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="trait" />
@@ -1061,11 +1061,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:TraitEquals
 			key=~traitEquals
 			name="TraitEquals"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="trait" />
@@ -1074,11 +1074,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:TraitCardinality
 			key=~traitCardinality
 			name="TraitCardinality"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="trait" />
@@ -1088,11 +1088,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:TraitValueType
 			key=~traitValueType
 			name="TraitValueType"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="trait" />
@@ -1105,11 +1105,11 @@
 		[GROUP: Atomic Constraints - Value]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ValueIsOneOf
 			key=~valueIsOneOf
 			name="ValueIsOneOf"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="values" />
@@ -1117,11 +1117,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:EnumeratedConstraint
 			key=~enumeratedConstraint
 			name="EnumeratedConstraint"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="set" />
@@ -1129,11 +1129,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ValueMatchesPattern
 			key=~valueMatchesPattern
 			name="ValueMatchesPattern"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="pattern" />
@@ -1142,11 +1142,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:PatternConstraint
 			key=~patternConstraint
 			name="PatternConstraint"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="trait" />
@@ -1156,11 +1156,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ValueLength
 			key=~valueLength
 			name="ValueLength"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<AllowsTrait name="min" />
@@ -1169,11 +1169,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ValueInNumericRange
 			key=~valueInNumericRange
 			name="ValueInNumericRange"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<AllowsTrait name="rangeMin" />
@@ -1182,19 +1182,19 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ValueIsNonEmpty
 			key=~valueIsNonEmpty
 			name="ValueIsNonEmpty"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		/>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ValueIsValid
 			key=~valueIsValid
 			name="ValueIsValid"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="validatorName" />
@@ -1206,11 +1206,11 @@
 		[GROUP: Atomic Constraints - Child]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ChildConstraint
 			key=~childConstraint
 			name="ChildConstraint"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="type">
@@ -1223,11 +1223,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ChildSatisfies
 			key=~childSatisfies
 			name="ChildSatisfies"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="conceptSelector" />
@@ -1235,8 +1235,8 @@
 			<ChildRules>
 				<RequiresChildConcept
 					conceptSelector="Rule"
-					min=1
 					max=1
+					min=1
 				/>
 			</ChildRules>
 		</ConceptDefinition>
@@ -1246,11 +1246,11 @@
 		[GROUP: Atomic Constraints - Collection]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:CollectionOrdering
 			key=~collectionOrdering
 			name="CollectionOrdering"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="ordering" />
@@ -1264,11 +1264,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:CollectionAllowsEmpty
 			key=~collectionAllowsEmpty
 			name="CollectionAllowsEmpty"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="allowed" />
@@ -1282,11 +1282,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:CollectionAllowsDuplicates
 			key=~collectionAllowsDuplicates
 			name="CollectionAllowsDuplicates"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="allowed" />
@@ -1301,11 +1301,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:MemberCount
 			key=~memberCount
 			name="MemberCount"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<AllowsTrait name="min" />
@@ -1320,11 +1320,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:EachMemberSatisfies
 			key=~eachMemberSatisfies
 			name="EachMemberSatisfies"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<ExactlyOneChildOf>
@@ -1333,8 +1333,8 @@
 				</ExactlyOneChildOf>
 				<RequiresChildConcept
 					conceptSelector="Rule"
-					min=1
 					max=1
+					min=1
 				/>
 			</ChildRules>
 		</ConceptDefinition>
@@ -1344,11 +1344,11 @@
 		[GROUP: Atomic Constraints - Uniqueness and Order]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:UniqueConstraint
 			key=~uniqueConstraint
 			name="UniqueConstraint"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="trait" />
@@ -1357,11 +1357,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:OrderConstraint
 			key=~orderConstraint
 			name="OrderConstraint"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="type">
@@ -1384,11 +1384,11 @@
 		[GROUP: Atomic Constraints - Reference]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ReferenceConstraint
 			key=~referenceConstraint
 			name="ReferenceConstraint"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="type">
@@ -1406,11 +1406,11 @@
 		[GROUP: Atomic Constraints - Identity]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:IdentityConstraint
 			key=~identityConstraint
 			name="IdentityConstraint"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="type">
@@ -1429,11 +1429,11 @@
 		[GROUP: Atomic Constraints - Context]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ContextConstraint
 			key=~contextConstraint
 			name="ContextConstraint"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="type">
@@ -1450,11 +1450,11 @@
 		[GROUP: Atomic Constraints - Content]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:ContentConstraint
 			key=~contentConstraint
 			name="ContentConstraint"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="type">
@@ -1472,11 +1472,11 @@
 		[GROUP: Canonical Representation - RDF Graph]
 
 		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:RdfGraph
 			key=~rdfGraph
 			name="RdfGraph"
-			conceptKind=$Structural
-			entityEligibility=$MustNotBeEntity
 		>
 			<ChildRules>
 				<RequiresChildConcept conceptSelector="RdfTriple" min=1 />
@@ -1484,11 +1484,11 @@
 		</ConceptDefinition>
 
 		<ConceptDefinition
+			conceptKind=$ValueLike
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:concept:RdfTriple
 			key=~rdfTriple
 			name="RdfTriple"
-			conceptKind=$ValueLike
-			entityEligibility=$MustNotBeEntity
 		>
 			<TraitRules>
 				<RequiresTrait name="subject" />
@@ -1509,88 +1509,88 @@
 		[GROUP: Common Traits]
 
 		<TraitDefinition
-			id=urn:codex:bootstrap:trait:id
-			name="id"
 			defaultValueType=$IriReference
+			id=urn:codex:bootstrap:trait:id
 			isReferenceTrait=false
+			name="id"
 			priority=$Primary
 		/>
 
 		<TraitDefinition
-			id=urn:codex:bootstrap:trait:key
-			name="key"
 			defaultValueType=$LookupToken
+			id=urn:codex:bootstrap:trait:key
 			isReferenceTrait=false
+			name="key"
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:name
 			name="name"
-			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:title
 			name="title"
-			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:description
 			name="description"
-			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:version
 			name="version"
-			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:label
 			name="label"
-			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:value
 			name="value"
-			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$List
 			id=urn:codex:bootstrap:trait:values
 			name="values"
-			defaultValueType=$List
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:message
 			name="message"
-			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueTypes=[$Text, $List<$Text>]
 			id=urn:codex:bootstrap:trait:role
 			name="role"
-			defaultValueTypes=[$Text, $List<$Text>]
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueTypes=[$Text, $List<$Text>]
 			id=urn:codex:bootstrap:trait:tag
 			name="tag"
-			defaultValueTypes=[$Text, $List<$Text>]
 			priority=$Secondary
 		/>
 
@@ -1599,9 +1599,9 @@
 		[GROUP: Schema Traits]
 
 		<TraitDefinition
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:versionScheme
 			name="versionScheme"
-			defaultValueType=$EnumeratedToken
 			priority=$Primary
 		>
 			<AllowedValues>
@@ -1610,9 +1610,9 @@
 		</TraitDefinition>
 
 		<TraitDefinition
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:compatibilityClass
 			name="compatibilityClass"
-			defaultValueType=$EnumeratedToken
 			priority=$Primary
 		>
 			<AllowedValues>
@@ -1621,9 +1621,9 @@
 		</TraitDefinition>
 
 		<TraitDefinition
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:authoringMode
 			name="authoringMode"
-			defaultValueType=$EnumeratedToken
 			priority=$Primary
 		>
 			<AllowedValues>
@@ -1636,9 +1636,9 @@
 		[GROUP: Content Traits]
 
 		<TraitDefinition
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:whitespaceMode
 			name="whitespaceMode"
-			defaultValueType=$EnumeratedToken
 			priority=$Primary
 		>
 			<AllowedValues>
@@ -1651,26 +1651,26 @@
 		[GROUP: Reference Traits]
 
 		<TraitDefinition
+			defaultValueTypes=[$IriReference, $LookupToken]
 			id=urn:codex:bootstrap:trait:reference
+			isReferenceTrait=true
 			name="reference"
-			defaultValueTypes=[$IriReference, $LookupToken]
-			isReferenceTrait=true
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueTypes=[$IriReference, $LookupToken]
 			id=urn:codex:bootstrap:trait:target
-			name="target"
-			defaultValueTypes=[$IriReference, $LookupToken]
 			isReferenceTrait=true
+			name="target"
 			priority=$Primary
 		/>
 
 		<TraitDefinition
-			id=urn:codex:bootstrap:trait:for
-			name="for"
 			defaultValueTypes=[$IriReference, $LookupToken]
+			id=urn:codex:bootstrap:trait:for
 			isReferenceTrait=true
+			name="for"
 			priority=$Primary
 		/>
 
@@ -1679,9 +1679,9 @@
 		[GROUP: Concept Definition Traits]
 
 		<TraitDefinition
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:conceptKind
 			name="conceptKind"
-			defaultValueType=$EnumeratedToken
 			priority=$Primary
 		>
 			<AllowedValues>
@@ -1690,9 +1690,9 @@
 		</TraitDefinition>
 
 		<TraitDefinition
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:entityEligibility
 			name="entityEligibility"
-			defaultValueType=$EnumeratedToken
 			priority=$Primary
 		>
 			<AllowedValues>
@@ -1701,16 +1701,16 @@
 		</TraitDefinition>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:conceptSelector
 			name="conceptSelector"
-			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:contextSelector
 			name="contextSelector"
-			defaultValueType=$Text
 			priority=$Primary
 		/>
 
@@ -1719,9 +1719,9 @@
 		[GROUP: Trait Definition Traits]
 
 		<TraitDefinition
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:defaultValueType
 			name="defaultValueType"
-			defaultValueType=$EnumeratedToken
 			priority=$Primary
 		>
 			<AllowedValues>
@@ -1730,23 +1730,23 @@
 		</TraitDefinition>
 
 		<TraitDefinition
+			defaultValueType=$List<$EnumeratedToken>
 			id=urn:codex:bootstrap:trait:defaultValueTypes
 			name="defaultValueTypes"
-			defaultValueType=$List<$EnumeratedToken>
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Boolean
 			id=urn:codex:bootstrap:trait:isReferenceTrait
 			name="isReferenceTrait"
-			defaultValueType=$Boolean
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:priority
 			name="priority"
-			defaultValueType=$EnumeratedToken
 			priority=$Secondary
 		>
 			<AllowedValues>
@@ -1755,9 +1755,9 @@
 		</TraitDefinition>
 
 		<TraitDefinition
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:baseValueType
 			name="baseValueType"
-			defaultValueType=$EnumeratedToken
 			priority=$Primary
 		>
 			<AllowedValues>
@@ -1766,9 +1766,9 @@
 		</TraitDefinition>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:validatorName
 			name="validatorName"
-			defaultValueType=$Text
 			priority=$Primary
 		/>
 
@@ -1777,44 +1777,44 @@
 		[GROUP: Child Rule Traits]
 
 		<TraitDefinition
+			defaultValueType=$NonNegativeInteger
 			id=urn:codex:bootstrap:trait:min
 			name="min"
-			defaultValueType=$NonNegativeInteger
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$PositiveInteger
 			id=urn:codex:bootstrap:trait:max
 			name="max"
-			defaultValueType=$PositiveInteger
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$NonNegativeInteger
 			id=urn:codex:bootstrap:trait:minCount
 			name="minCount"
-			defaultValueType=$NonNegativeInteger
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$PositiveInteger
 			id=urn:codex:bootstrap:trait:maxCount
 			name="maxCount"
-			defaultValueType=$PositiveInteger
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Number
 			id=urn:codex:bootstrap:trait:rangeMin
 			name="rangeMin"
-			defaultValueType=$Number
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Number
 			id=urn:codex:bootstrap:trait:rangeMax
 			name="rangeMax"
-			defaultValueType=$Number
 			priority=$Secondary
 		/>
 
@@ -1823,9 +1823,9 @@
 		[GROUP: Collection Rule Traits]
 
 		<TraitDefinition
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:ordering
 			name="ordering"
-			defaultValueType=$EnumeratedToken
 			priority=$Primary
 		>
 			<AllowedValues>
@@ -1834,23 +1834,23 @@
 		</TraitDefinition>
 
 		<TraitDefinition
+			defaultValueType=$Boolean
 			id=urn:codex:bootstrap:trait:allowsDuplicates
 			name="allowsDuplicates"
-			defaultValueType=$Boolean
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Boolean
 			id=urn:codex:bootstrap:trait:allowed
 			name="allowed"
-			defaultValueType=$Boolean
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:keyTrait
 			name="keyTrait"
-			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
@@ -1859,30 +1859,30 @@
 		[GROUP: Constraint Traits]
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:trait
 			name="trait"
-			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:traitName
 			name="traitName"
-			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:byTrait
 			name="byTrait"
-			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:valueType
 			name="valueType"
-			defaultValueType=$EnumeratedToken
 			priority=$Primary
 		>
 			<AllowedValues>
@@ -1891,37 +1891,37 @@
 		</TraitDefinition>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:pattern
 			name="pattern"
-			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:flags
 			name="flags"
-			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:scope
 			name="scope"
-			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$LookupToken
 			id=urn:codex:bootstrap:trait:set
 			name="set"
-			defaultValueType=$LookupToken
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:type
 			name="type"
-			defaultValueType=$EnumeratedToken
 			priority=$Primary
 		/>
 
@@ -1930,44 +1930,44 @@
 		[GROUP: RDF Triple Traits]
 
 		<TraitDefinition
+			defaultValueType=$IriReference
 			id=urn:codex:bootstrap:trait:subject
 			name="subject"
-			defaultValueType=$IriReference
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$IriReference
 			id=urn:codex:bootstrap:trait:predicate
 			name="predicate"
-			defaultValueType=$IriReference
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$IriReference
 			id=urn:codex:bootstrap:trait:object
 			name="object"
-			defaultValueType=$IriReference
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:lexical
 			name="lexical"
-			defaultValueType=$Text
 			priority=$Primary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$IriReference
 			id=urn:codex:bootstrap:trait:datatype
 			name="datatype"
-			defaultValueType=$IriReference
 			priority=$Secondary
 		/>
 
 		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:language
 			name="language"
-			defaultValueType=$Text
 			priority=$Secondary
 		/>
 
@@ -1980,9 +1980,9 @@
 		[GROUP: Schema Structural Constraints]
 
 		<ConstraintDefinition
+			description="A simplified-mode schema must define at least one concept."
 			id=urn:codex:bootstrap:constraint:profile-a-requires-concept-definitions
 			title="Simplified mode schemas must have ConceptDefinitions"
-			description="A simplified-mode schema must define at least one concept."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="Schema" />
@@ -1993,7 +1993,7 @@
 						<TraitEquals trait="authoringMode" value=$SimplifiedMode />
 					</When>
 					<Then>
-						<ChildConstraint type=$RequiresChildConcept conceptSelector="ConceptDefinitions" />
+						<ChildConstraint conceptSelector="ConceptDefinitions" type=$RequiresChildConcept />
 					</Then>
 				</ConditionalConstraint>
 			</Rule>
@@ -2004,9 +2004,9 @@
 		[GROUP: TraitDefinition Value Type Constraints]
 
 		<ConstraintDefinition
+			description="A TraitDefinition must have either defaultValueType or defaultValueTypes, but not both."
 			id=urn:codex:bootstrap:constraint:trait-definition-value-type
 			title="TraitDefinition requires value type"
-			description="A TraitDefinition must have either defaultValueType or defaultValueTypes, but not both."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="TraitDefinition" />
@@ -2042,9 +2042,9 @@
 		[GROUP: RdfTriple Object Constraints]
 
 		<ConstraintDefinition
+			description="An RdfTriple must have either object (IRI) or lexical (literal lexical form), but not both."
 			id=urn:codex:bootstrap:constraint:rdf-triple-object
 			title="RdfTriple requires object"
-			description="An RdfTriple must have either object (IRI) or lexical (literal lexical form), but not both."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="RdfTriple" />
@@ -2076,9 +2076,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="If language is present, datatype must be absent."
 			id=urn:codex:bootstrap:constraint:rdf-triple-language-excludes-datatype
 			title="RdfTriple language excludes datatype"
-			description="If language is present, datatype must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="RdfTriple" />
@@ -2100,9 +2100,9 @@
 		[GROUP: Cardinality Constraint Bounds]
 
 		<ConstraintDefinition
+			description="ValueLength must have min or max (or both)."
 			id=urn:codex:bootstrap:constraint:value-length-requires-bound
 			title="ValueLength requires at least one bound"
-			description="ValueLength must have min or max (or both)."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ValueLength" />
@@ -2120,9 +2120,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="ValueInNumericRange must have rangeMin or rangeMax (or both)."
 			id=urn:codex:bootstrap:constraint:value-in-numeric-range-requires-bound
 			title="ValueInNumericRange requires at least one bound"
-			description="ValueInNumericRange must have rangeMin or rangeMax (or both)."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ValueInNumericRange" />
@@ -2140,9 +2140,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="TraitCardinality must have min or max (or both)."
 			id=urn:codex:bootstrap:constraint:trait-cardinality-requires-bound
 			title="TraitCardinality requires at least one bound"
-			description="TraitCardinality must have min or max (or both)."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="TraitCardinality" />
@@ -2160,9 +2160,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="MemberCount must have min or max (or both)."
 			id=urn:codex:bootstrap:constraint:member-count-requires-bound
 			title="MemberCount requires at least one bound"
-			description="MemberCount must have min or max (or both)."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="MemberCount" />
@@ -2180,9 +2180,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="OnPathCount must have minCount or maxCount (or both)."
 			id=urn:codex:bootstrap:constraint:on-path-count-requires-bound
 			title="OnPathCount requires at least one bound"
-			description="OnPathCount must have minCount or maxCount (or both)."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="OnPathCount" />
@@ -2204,9 +2204,9 @@
 		[GROUP: Collection Duplicate Constraints]
 
 		<ConstraintDefinition
+			description="When allowed=false, keyTrait must be specified to determine uniqueness."
 			id=urn:codex:bootstrap:constraint:duplicates-false-requires-key-trait
 			title="Disallowing duplicates requires keyTrait"
-			description="When allowed=false, keyTrait must be specified to determine uniqueness."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="CollectionAllowsDuplicates" />
@@ -2228,9 +2228,9 @@
 		[GROUP: RequiresChildConcept Constraints]
 
 		<ConstraintDefinition
+			description="When min is specified on RequiresChildConcept, it must be at least 1."
 			id=urn:codex:bootstrap:constraint:requires-child-concept-min-positive
 			title="RequiresChildConcept min must be positive"
-			description="When min is specified on RequiresChildConcept, it must be at least 1."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="RequiresChildConcept" />
@@ -2257,9 +2257,9 @@
 		[GROUP: IdentityConstraint Constraints]
 
 		<ConstraintDefinition
+			description="When IdentityConstraint.type is IdentifierForm, the pattern trait must be present."
 			id=urn:codex:bootstrap:constraint:identity-constraint-identifier-form-requires-pattern
 			title="IdentifierForm requires pattern"
-			description="When IdentityConstraint.type is IdentifierForm, the pattern trait must be present."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="IdentityConstraint" />
@@ -2277,9 +2277,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When IdentityConstraint.type is IdentifierForm, scope must be absent."
 			id=urn:codex:bootstrap:constraint:identity-constraint-identifier-form-forbids-scope
 			title="IdentifierForm forbids scope"
-			description="When IdentityConstraint.type is IdentifierForm, scope must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="IdentityConstraint" />
@@ -2297,9 +2297,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When IdentityConstraint.type is IdentifierUniqueness, scope must be present to define the uniqueness boundary."
 			id=urn:codex:bootstrap:constraint:identity-constraint-identifier-uniqueness-requires-scope
 			title="IdentifierUniqueness requires scope"
-			description="When IdentityConstraint.type is IdentifierUniqueness, scope must be present to define the uniqueness boundary."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="IdentityConstraint" />
@@ -2317,9 +2317,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When IdentityConstraint.type is IdentifierUniqueness, pattern and flags must be absent."
 			id=urn:codex:bootstrap:constraint:identity-constraint-identifier-uniqueness-forbids-pattern
 			title="IdentifierUniqueness forbids pattern/flags"
-			description="When IdentityConstraint.type is IdentifierUniqueness, pattern and flags must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="IdentityConstraint" />
@@ -2344,9 +2344,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When IdentityConstraint.type is MustBeEntity, scope/pattern/flags must be absent."
 			id=urn:codex:bootstrap:constraint:identity-constraint-must-be-entity-forbids-params
 			title="MustBeEntity forbids extra params"
-			description="When IdentityConstraint.type is MustBeEntity, scope/pattern/flags must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="IdentityConstraint" />
@@ -2368,9 +2368,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When IdentityConstraint.type is MustNotBeEntity, scope/pattern/flags must be absent."
 			id=urn:codex:bootstrap:constraint:identity-constraint-must-not-be-entity-forbids-params
 			title="MustNotBeEntity forbids extra params"
-			description="When IdentityConstraint.type is MustNotBeEntity, scope/pattern/flags must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="IdentityConstraint" />
@@ -2396,9 +2396,9 @@
 		[GROUP: ReferenceConstraint Parameter Requirements]
 
 		<ConstraintDefinition
+			description="When ReferenceConstraint.type is ReferenceTargetsConcept, conceptSelector must be present."
 			id=urn:codex:bootstrap:constraint:reference-targets-concept-requires-selector
 			title="ReferenceTargetsConcept requires conceptSelector"
-			description="When ReferenceConstraint.type is ReferenceTargetsConcept, conceptSelector must be present."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ReferenceConstraint" />
@@ -2416,9 +2416,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When ReferenceConstraint.type is ReferenceTraitAllowed, traitName must be present."
 			id=urn:codex:bootstrap:constraint:reference-trait-allowed-requires-traitname
 			title="ReferenceTraitAllowed requires traitName"
-			description="When ReferenceConstraint.type is ReferenceTraitAllowed, traitName must be present."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ReferenceConstraint" />
@@ -2436,9 +2436,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When ReferenceConstraint.type is ReferenceTargetsEntity, conceptSelector and traitName must be absent."
 			id=urn:codex:bootstrap:constraint:reference-targets-entity-forbids-params
 			title="ReferenceTargetsEntity forbids extra params"
-			description="When ReferenceConstraint.type is ReferenceTargetsEntity, conceptSelector and traitName must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ReferenceConstraint" />
@@ -2459,9 +2459,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When ReferenceConstraint.type is ReferenceMustResolve, conceptSelector and traitName must be absent."
 			id=urn:codex:bootstrap:constraint:reference-must-resolve-forbids-params
 			title="ReferenceMustResolve forbids extra params"
-			description="When ReferenceConstraint.type is ReferenceMustResolve, conceptSelector and traitName must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ReferenceConstraint" />
@@ -2482,9 +2482,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When ReferenceConstraint.type is ReferenceSingleton, conceptSelector and traitName must be absent."
 			id=urn:codex:bootstrap:constraint:reference-singleton-forbids-params
 			title="ReferenceSingleton forbids extra params"
-			description="When ReferenceConstraint.type is ReferenceSingleton, conceptSelector and traitName must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ReferenceConstraint" />
@@ -2509,80 +2509,80 @@
 		[GROUP: Uniqueness Constraints]
 
 		<ConstraintDefinition
+			description="Within a schema, each ConceptDefinition must have a unique name."
 			id=urn:codex:bootstrap:constraint:concept-definition-name-unique
 			title="ConceptDefinition names must be unique"
-			description="Within a schema, each ConceptDefinition must have a unique name."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ConceptDefinition" />
 			</Targets>
 			<Rule>
-				<UniqueConstraint trait="name" scope="Schema" />
+				<UniqueConstraint scope="Schema" trait="name" />
 			</Rule>
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="Within a schema, each TraitDefinition must have a unique name."
 			id=urn:codex:bootstrap:constraint:trait-definition-name-unique
 			title="TraitDefinition names must be unique"
-			description="Within a schema, each TraitDefinition must have a unique name."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="TraitDefinition" />
 			</Targets>
 			<Rule>
-				<UniqueConstraint trait="name" scope="Schema" />
+				<UniqueConstraint scope="Schema" trait="name" />
 			</Rule>
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="Within a schema, each EnumeratedValueSet must have a unique name."
 			id=urn:codex:bootstrap:constraint:enumerated-value-set-name-unique
 			title="EnumeratedValueSet names must be unique"
-			description="Within a schema, each EnumeratedValueSet must have a unique name."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="EnumeratedValueSet" />
 			</Targets>
 			<Rule>
-				<UniqueConstraint trait="name" scope="Schema" />
+				<UniqueConstraint scope="Schema" trait="name" />
 			</Rule>
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="Within an EnumeratedValueSet, each Member must have a unique value."
 			id=urn:codex:bootstrap:constraint:member-value-unique
 			title="Member values must be unique within set"
-			description="Within an EnumeratedValueSet, each Member must have a unique value."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="Member" />
 			</Targets>
 			<Rule>
-				<UniqueConstraint trait="value" scope="EnumeratedValueSet" />
+				<UniqueConstraint scope="EnumeratedValueSet" trait="value" />
 			</Rule>
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="Within a schema, each ValidatorDefinition must have a unique name."
 			id=urn:codex:bootstrap:constraint:validator-definition-name-unique
 			title="ValidatorDefinition names must be unique"
-			description="Within a schema, each ValidatorDefinition must have a unique name."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ValidatorDefinition" />
 			</Targets>
 			<Rule>
-				<UniqueConstraint trait="name" scope="Schema" />
+				<UniqueConstraint scope="Schema" trait="name" />
 			</Rule>
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="Within a schema, each ValueTypeDefinition must have a unique name."
 			id=urn:codex:bootstrap:constraint:value-type-definition-name-unique
 			title="ValueTypeDefinition names must be unique"
-			description="Within a schema, each ValueTypeDefinition must have a unique name."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ValueTypeDefinition" />
 			</Targets>
 			<Rule>
-				<UniqueConstraint trait="name" scope="Schema" />
+				<UniqueConstraint scope="Schema" trait="name" />
 			</Rule>
 		</ConstraintDefinition>
 
@@ -2591,9 +2591,9 @@
 		[GROUP: Mode Constraints]
 
 		<ConstraintDefinition
+			description="When authoringMode is SimplifiedMode, the schema must not contain an RdfGraph."
 			id=urn:codex:bootstrap:constraint:profile-a-no-rdf-graph
 			title="Simplified mode schemas must not contain RdfGraph"
-			description="When authoringMode is SimplifiedMode, the schema must not contain an RdfGraph."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="Schema" />
@@ -2604,16 +2604,16 @@
 						<TraitEquals trait="authoringMode" value=$SimplifiedMode />
 					</When>
 					<Then>
-						<ChildConstraint type=$ForbidsChildConcept conceptSelector="RdfGraph" />
+						<ChildConstraint conceptSelector="RdfGraph" type=$ForbidsChildConcept />
 					</Then>
 				</ConditionalConstraint>
 			</Rule>
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When authoringMode is CanonicalMode, the schema must contain exactly one RdfGraph."
 			id=urn:codex:bootstrap:constraint:profile-b-requires-rdf-graph
 			title="Canonical mode schemas must contain RdfGraph"
-			description="When authoringMode is CanonicalMode, the schema must contain exactly one RdfGraph."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="Schema" />
@@ -2624,16 +2624,16 @@
 						<TraitEquals trait="authoringMode" value=$CanonicalMode />
 					</When>
 					<Then>
-						<ChildConstraint type=$RequiresChildConcept conceptSelector="RdfGraph" />
+						<ChildConstraint conceptSelector="RdfGraph" type=$RequiresChildConcept />
 					</Then>
 				</ConditionalConstraint>
 			</Rule>
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When authoringMode is CanonicalMode, the schema must not contain ConceptDefinitions, TraitDefinitions, EnumeratedValueSets, ConstraintDefinitions, ValueTypeDefinitions, or ValidatorDefinitions."
 			id=urn:codex:bootstrap:constraint:profile-b-forbids-schema-definition-containers
 			title="Canonical mode schemas must not contain Codex-native schema-definition containers"
-			description="When authoringMode is CanonicalMode, the schema must not contain ConceptDefinitions, TraitDefinitions, EnumeratedValueSets, ConstraintDefinitions, ValueTypeDefinitions, or ValidatorDefinitions."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="Schema" />
@@ -2646,22 +2646,22 @@
 					<Then>
 						<AllOf>
 							<Rule>
-								<ChildConstraint type=$ForbidsChildConcept conceptSelector="ConceptDefinitions" />
+								<ChildConstraint conceptSelector="ConceptDefinitions" type=$ForbidsChildConcept />
 							</Rule>
 							<Rule>
-								<ChildConstraint type=$ForbidsChildConcept conceptSelector="TraitDefinitions" />
+								<ChildConstraint conceptSelector="TraitDefinitions" type=$ForbidsChildConcept />
 							</Rule>
 							<Rule>
-								<ChildConstraint type=$ForbidsChildConcept conceptSelector="EnumeratedValueSets" />
+								<ChildConstraint conceptSelector="EnumeratedValueSets" type=$ForbidsChildConcept />
 							</Rule>
 							<Rule>
-								<ChildConstraint type=$ForbidsChildConcept conceptSelector="ConstraintDefinitions" />
+								<ChildConstraint conceptSelector="ConstraintDefinitions" type=$ForbidsChildConcept />
 							</Rule>
 							<Rule>
-								<ChildConstraint type=$ForbidsChildConcept conceptSelector="ValueTypeDefinitions" />
+								<ChildConstraint conceptSelector="ValueTypeDefinitions" type=$ForbidsChildConcept />
 							</Rule>
 							<Rule>
-								<ChildConstraint type=$ForbidsChildConcept conceptSelector="ValidatorDefinitions" />
+								<ChildConstraint conceptSelector="ValidatorDefinitions" type=$ForbidsChildConcept />
 							</Rule>
 						</AllOf>
 					</Then>
@@ -2674,9 +2674,9 @@
 		[GROUP: ContextConstraint Parameter Requirements]
 
 		<ConstraintDefinition
+			description="When ContextConstraint.type is OnlyValidUnderContext, contextSelector must be present."
 			id=urn:codex:bootstrap:constraint:context-constraint-only-valid-under-context-requires-selector
 			title="OnlyValidUnderContext requires contextSelector"
-			description="When ContextConstraint.type is OnlyValidUnderContext, contextSelector must be present."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ContextConstraint" />
@@ -2694,9 +2694,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When ContextConstraint.type is OnlyValidUnderParent, contextSelector must be absent."
 			id=urn:codex:bootstrap:constraint:context-constraint-only-valid-under-parent-forbids-selector
 			title="OnlyValidUnderParent forbids contextSelector"
-			description="When ContextConstraint.type is OnlyValidUnderParent, contextSelector must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ContextConstraint" />
@@ -2718,9 +2718,9 @@
 		[GROUP: ContentConstraint Parameter Requirements]
 
 		<ConstraintDefinition
+			description="When ContentConstraint.type is ContentMatchesPattern, pattern must be present."
 			id=urn:codex:bootstrap:constraint:content-constraint-matches-pattern-requires-pattern
 			title="ContentMatchesPattern requires pattern"
-			description="When ContentConstraint.type is ContentMatchesPattern, pattern must be present."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ContentConstraint" />
@@ -2738,9 +2738,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When ContentConstraint.type is ContentRequired, pattern and flags must be absent."
 			id=urn:codex:bootstrap:constraint:content-constraint-required-forbids-pattern
 			title="ContentRequired forbids pattern"
-			description="When ContentConstraint.type is ContentRequired, pattern and flags must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ContentConstraint" />
@@ -2761,9 +2761,9 @@
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="When ContentConstraint.type is ForbidsContent, pattern and flags must be absent."
 			id=urn:codex:bootstrap:constraint:content-constraint-forbidden-forbids-pattern
 			title="ForbidsContent forbids pattern"
-			description="When ContentConstraint.type is ForbidsContent, pattern and flags must be absent."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ContentConstraint" />
@@ -2788,9 +2788,9 @@
 		[GROUP: Non-Empty Container Constraints]
 
 		<ConstraintDefinition
+			description="A TraitRules container must contain at least one RequiresTrait, AllowsTrait, or ForbidsTrait."
 			id=urn:codex:bootstrap:constraint:trait-rules-non-empty
 			title="TraitRules must have at least one rule"
-			description="A TraitRules container must contain at least one RequiresTrait, AllowsTrait, or ForbidsTrait."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="TraitRules" />
@@ -2798,22 +2798,22 @@
 			<Rule>
 				<AnyOf>
 					<Rule>
-						<ChildConstraint type=$RequiresChildConcept conceptSelector="RequiresTrait" />
+						<ChildConstraint conceptSelector="RequiresTrait" type=$RequiresChildConcept />
 					</Rule>
 					<Rule>
-						<ChildConstraint type=$RequiresChildConcept conceptSelector="AllowsTrait" />
+						<ChildConstraint conceptSelector="AllowsTrait" type=$RequiresChildConcept />
 					</Rule>
 					<Rule>
-						<ChildConstraint type=$RequiresChildConcept conceptSelector="ForbidsTrait" />
+						<ChildConstraint conceptSelector="ForbidsTrait" type=$RequiresChildConcept />
 					</Rule>
 				</AnyOf>
 			</Rule>
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="A ChildRules container must contain at least one child rule."
 			id=urn:codex:bootstrap:constraint:child-rules-non-empty
 			title="ChildRules must have at least one rule"
-			description="A ChildRules container must contain at least one child rule."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="ChildRules" />
@@ -2821,25 +2821,25 @@
 			<Rule>
 				<AnyOf>
 					<Rule>
-						<ChildConstraint type=$RequiresChildConcept conceptSelector="AllowsChildConcept" />
+						<ChildConstraint conceptSelector="AllowsChildConcept" type=$RequiresChildConcept />
 					</Rule>
 					<Rule>
-						<ChildConstraint type=$RequiresChildConcept conceptSelector="RequiresChildConcept" />
+						<ChildConstraint conceptSelector="RequiresChildConcept" type=$RequiresChildConcept />
 					</Rule>
 					<Rule>
-						<ChildConstraint type=$RequiresChildConcept conceptSelector="ForbidsChildConcept" />
+						<ChildConstraint conceptSelector="ForbidsChildConcept" type=$RequiresChildConcept />
 					</Rule>
 					<Rule>
-						<ChildConstraint type=$RequiresChildConcept conceptSelector="ExactlyOneChildOf" />
+						<ChildConstraint conceptSelector="ExactlyOneChildOf" type=$RequiresChildConcept />
 					</Rule>
 				</AnyOf>
 			</Rule>
 		</ConstraintDefinition>
 
 		<ConstraintDefinition
+			description="A Targets container must contain at least one TargetConcept or TargetContext."
 			id=urn:codex:bootstrap:constraint:targets-non-empty
 			title="Targets must have at least one target"
-			description="A Targets container must contain at least one TargetConcept or TargetContext."
 		>
 			<Targets>
 				<TargetConcept conceptSelector="Targets" />
@@ -2847,10 +2847,10 @@
 			<Rule>
 				<AnyOf>
 					<Rule>
-						<ChildConstraint type=$RequiresChildConcept conceptSelector="TargetConcept" />
+						<ChildConstraint conceptSelector="TargetConcept" type=$RequiresChildConcept />
 					</Rule>
 					<Rule>
-						<ChildConstraint type=$RequiresChildConcept conceptSelector="TargetContext" />
+						<ChildConstraint conceptSelector="TargetContext" type=$RequiresChildConcept />
 					</Rule>
 				</AnyOf>
 			</Rule>
