@@ -4,6 +4,126 @@ This file records all changes made to the Codex specification during implementat
 
 ---
 
+## 2026-02-08: Canonical bootstrap — Add codex/content and codex/isEntity to ignoredProperties
+
+**File:** `spec/1.0.0/bootstrap-schema/schema.cdx`
+
+**Changes:**
+1. Added `codex/content` (§9.7.9) and `codex/isEntity` (§9.7.3) to the shared `sh:ignoredProperties` RDF list. Both predicates appear directly on concept instance nodes but were missing from the list, causing `sh:closed=true` shapes to reject any node with content or an entity marker. List expanded from 11 to 13 entries (`list/1..13`), maintaining alphabetical order.
+
+---
+
+## 2026-02-08: Canonical bootstrap — SHACL shape completeness
+
+**File:** `spec/1.0.0/bootstrap-schema/schema.cdx`
+
+**Changes:**
+1. Added `sh:closed true` and `sh:ignoredProperties` to all 74 concept NodeShapes. The shared ignored properties list (13 entries: `rdf:type`, `codex/parentNode`, `codex/ordinalIndex`, `codex/declaredId`, `codex/content`, `codex/isEntity`, and 7 annotation predicates) is defined once at `urn:codex:bootstrap:shacl:ignoredProperties#list/1..13` and referenced by all shapes.
+2. Added `sh:maxCount 1` to all 64 existing trait PropertyShapes that lacked it (required traits had `sh:minCount` but no `sh:maxCount`).
+3. Added new PropertyShapes for all optional traits across 23 concepts (traits declared as `AllowsTrait` in simplified bootstrap but missing from canonical): `AllowsChildConcept` (min, max), `CollectionAllowsDuplicates` (keyTrait), `ConceptDefinition` (key, description, role), `Schema` (title, description, key), `TraitDefinition` (defaultValueType, defaultValueTypes, description, isReferenceTrait, priority), `EnumeratedValueSet` (key, description), `ValidatorDefinition` (message), `ValueTypeDefinition` (validatorName), and others. Each gets `rdf:type PropertyShape`, `sh:maxCount 1`, `sh:path`.
+4. Added SHACL-SPARQL constraints for 12 `ExactlyOneChildOf` groups (AllowedValues, CollectionAllowsDuplicates, CollectionAllowsEmpty, CollectionOrdering, ContentRules, EachMemberSatisfies, MemberCount, OnPathCount, OnPathExists, OnPathForAll, OrderConstraint, Rule). Each generates a SPARQL query that counts matching child types and requires exactly one.
+5. Added 3 positivity constraints: `AllowsChildConcept.min >= 0`, `AllowsChildConcept.max >= 1`, `RequiresChildConcept.max >= 1`.
+6. Removed vestigial `tag` trait declaration (3 triples: `rdf:type`, `rdfs:label`, `rdfs:range`). No concept references this trait.
+7. Removed orphaned `Cardinality` enum list chain (4 triples). No trait property constrains against this enum.
+
+**Rationale:** Makes the canonical SHACL bootstrap a complete standalone validator, loadable by standard SHACL engines (pySHACL, TopBraid) to produce identical pass/fail verdicts as a Codex implementation's built-in bootstrap.
+
+---
+
+## 2026-02-08: Canonical bootstrap — Enum representation fix (IRIs, rdfs:range)
+
+**File:** `spec/1.0.0/bootstrap-schema/schema.cdx`
+
+**Changes:**
+1. Changed all 98 `rdf:first` values in enum list chains from string literals (`lexical="MemberName"`) to IRIs (`object=urn:codex:bootstrap:enum:EnumName#MemberName`). Affects all 16 enum sets: `AuthoringMode` (2), `Cardinality` (2), `ChildConstraintType` (3), `CompatibilityClass` (4), `ConceptKind` (3), `ContentConstraintType` (3), `ContextConstraintType` (2), `EntityEligibility` (2), `IdentityConstraintType` (4), `OrderConstraintType` (2), `Ordering` (2), `ReferenceConstraintType` (5), `TraitPriority` (2), `ValueType` (56), `VersionScheme` (4), `WhitespaceMode` (2).
+2. Changed `rdfs:range` from `xsd:token` to `rdfs:Resource` on 12 enum-valued trait properties: `authoringMode`, `baseValueType`, `compatibilityClass`, `conceptKind`, `defaultValueType`, `entityEligibility`, `ordering`, `priority`, `type`, `valueType`, `versionScheme`, `whitespaceMode`.
+3. Left `rdfs:range` as `xsd:token` on 2 non-enum traits: `key` (Lookup Token), `set` (Lookup Token).
+4. SPARQL queries: no changes needed (already use enum member IRIs).
+
+**Rationale:** Enum members are now globally unique IRI resources, giving RDF-level type safety, exact SPARQL identity comparison, and standard SHACL `sh:in` semantics. Aligns `sh:in` lists with the SPARQL queries and spec §9.7.8 `valueTerm(v)` mapping.
+
+---
+
+## 2026-02-08: Appendix A.2 PEG grammar — Prefix ordering, alignment fixes, rule renames/extractions
+
+**File:** `spec/1.0.0/index.md`
+
+**Changes:**
+1. `RgbColorSpace`: reordered `'srgb-linear'` before `'srgb'` (PEG is ordered-choice; `'srgb'` prefix-matches `'srgb-linear'`).
+2. `XyzColorSpace`: reordered `'xyz-d50'`, `'xyz-d65'` before `'xyz'` (same prefix issue).
+3. `RelativeColorComponent`: reordered `ColorPercentage` before `ColorRealNumber` (percentage is more specific).
+4. `Traits`: removed second alternative that allowed newline before first trait (EBNF has no such alternative).
+5. `CharEscapeSequence`: changed `["'\\nrt]` to `['\\nrt]` (double-quote is not a valid escape in single-quoted character literals; EBNF lists `"'"` not `'"'`).
+6. `AnnotationLine`: removed `[ \t]*` between `]` and `Newline` (EBNF has no trailing whitespace).
+7. `AnnotationBlock`: removed `[ \t]*` after opening `[` and after closing `]` (EBNF has no trailing whitespace).
+8. Rule renames: `LeadingAnnotationBlocks` → `OptionalLeadingAnnotations`, `TrailingBlankLines` → `OptionalTrailingBlankLines`, `BOL` → `ConceptLineStart0` (folding `StartOfFile` inline), `IriBody` → `IriTokenBody`.
+9. Extracted 10 named rules matching EBNF: `FunctionColor`, `ColorSpace`, `NonZeroDigit`, `WhitespaceNoNewlineChar`, `UnescapedTextCharacter`, `UnescapedChar`, `UnescapedAnnotationChar`, `UnescapedAnnotationBlockChar`, `ConceptMarkerOrConcept`, `GeneralOrGroupingAnnotationBlock`.
+10. Updated `ColorMixFunc` and `RelativeColorFuncColor` to use the new `ColorSpace` rule instead of inline `(RgbColorSpace / XyzColorSpace)`.
+
+**Rationale:** PEG is ordered-choice: `'srgb'` before `'srgb-linear'` causes the parser to match `'srgb'` and fail on the `-linear` suffix. Same issue with `'xyz'` vs `'xyz-d50'`/`'xyz-d65'`, and `ColorRealNumber` vs `ColorPercentage` (percentage has a trailing `%` that makes it more specific). The second `Traits` alternative admitted a leading newline before the first trait, which EBNF forbids. `CharEscapeSequence` incorrectly allowed `\"` inside single-quoted character literals. Trailing whitespace in annotation rules contradicted EBNF. Rule names diverged from EBNF without reason. Named rules were inlined in PEG but named in EBNF, making cross-referencing harder.
+
+---
+
+## 2026-02-08: §9.5.2, §9.7.10, §11.3–§11.6 — Align spec with bootstrap schema
+
+**File:** `spec/1.0.0/index.md`
+
+**Changes:**
+1. §11.3 (Schema): Added `authoringMode` to the required traits bullet list (was required by prose but missing from the list). Added `key` (optional; Lookup Token Value).
+2. §11.4.1 (ConceptDefinition): Added `description` (optional; Text Value) and `role` (optional; Text Value).
+3. §11.4.3 (TraitRules): Added `AllowedValues` as optional child of `RequiresTrait` and `AllowsTrait`, with narrowing semantics paragraph.
+4. §11.5.1 (TraitDefinition): Changed `id` from optional to required. Added `description` (optional; Text Value). Added "A `TraitDefinition` is an Entity."
+5. §11.5.2 (AllowedValues): Changed "One or more value constraints" to "Exactly one of:" (bootstrap uses `ExactlyOneChildOf`).
+6. §11.6.2 (ValueTypeDefinition): Changed `id` from optional to required. Added "A `ValueTypeDefinition` is an Entity."
+7. §11.6.3 (EnumeratedValueSet): Added `id` (required), `key` (optional), `description` (optional). Added "An `EnumeratedValueSet` is an Entity."
+8. §9.5.2 (ValidatorDefinition): Added `id` (required). Added "A `ValidatorDefinition` is an Entity."
+9. §9.7.10: Removed dead "has no `id`" case from `traitPredicateIri(t)` — now that `TraitDefinition.id` is required, this case is unreachable.
+10. §11.5.1 examples: Normalized list literal whitespace (`[$Grams, $Kilograms, ...]` → `[$Grams,$Kilograms,...]`, `[$Text, $List<$Text>]` → `[$Text,$List<$Text>]`) per Phase 3's canonical value whitespace rule.
+
+**Rationale:** The bootstrap schema (both canonical and simplified) already declares these traits, entity statuses, and child constraints. The spec text lagged behind. `TraitDefinition.id` being required eliminates the fallback `schemaIri + "#trait/" + t` path in §9.7.10, simplifying predicate IRI derivation. `AllowedValues` under `RequiresTrait`/`AllowsTrait` enables concept-level narrowing of trait-definition-level value constraints. Spec CDX examples contained optional whitespace in list literals that contradicts the canonical value whitespace rule.
+
+---
+
+## 2026-02-08: §8.7.1, §10.5 — Canonical Value literal whitespace rule
+
+**File:** `spec/1.0.0/index.md`
+
+**Changes:**
+1. §8.7.1 (Multiline Value Literals): Added canonical form statement — optional whitespace within balanced Value literals MUST be removed; mandatory whitespace required by specific productions MUST be preserved.
+2. §10.5 (Canonicalization Rules): Added "canonical Value literal whitespace" to the Phase 1 rule list, with the same remove-optional/preserve-mandatory semantics.
+
+**Rationale:** The specification defined optional whitespace tolerance for parsing (§8.7.1) and alphabetical trait ordering for canonical form (§10.5), but never stated the canonical form of whitespace within Value literals themselves. Collections (`[1, 2, 3]` vs `[1,2,3]`), ranges (`1 .. 10` vs `1..10`), and other balanced forms had no canonical whitespace rule. Canonical form strips all optional whitespace while preserving mandatory whitespace (e.g., color function argument spaces `rgb(0 0 0)`, TypeParameters comma-space `$Map<$Text, $Integer>`).
+
+---
+
+## 2026-02-08: §9.7.8 — Enumerated Token Value-Term Mapping via EnumeratedValueSet IRIs
+
+**File:** `spec/1.0.0/index.md`
+
+**Changes:**
+1. Added new `valueTerm(v)` case: Enumerated Token Values constrained by an `EnumeratedValueSet` produce IRIs (`E.id + "#" + tokenName(v)`) instead of typed literals. Inserted between the IRI Reference case and the typed literal fallback.
+2. Added five normative paragraphs after the Lookup Token section specifying: the IRI construction rule, collection element independence, `ValueIsOneOf` fallthrough, and unconstrained fallthrough.
+
+**Rationale:** Three mutually inconsistent enum representations existed: spec §9.7.8 used typed literals (`"$ForbidsContent"^^urn:cdx:value-type:EnumeratedToken`), SPARQL queries used IRIs (`<urn:codex:bootstrap:enum:ContentConstraintType#ForbidsContent>`), and `sh:in` lists used plain strings (`"ForbidsContent"^^xsd:string`). IRIs give RDF-level type safety, exact SPARQL identity comparison, cross-enum-set structural disambiguation, and standard SHACL `sh:in` semantics. SPARQL queries were already correct. This spec change aligns §9.7.8 with the SPARQL queries; Phases 6–7 will align the `sh:in` lists.
+
+---
+
+## 2026-02-08: Spec text fixes — Cross-references, heading levels, CLAUDE.md
+
+**Files:** `spec/1.0.0/index.md`, `CLAUDE.md`
+
+**Changes:**
+1. §2.5 (line 152): Fixed cross-reference `§12.4` → `§12.3`. The bootstrap schema-of-schemas is defined in §12.3; §12.4 is Schema Caching.
+2. §11.1 (line 4029): Fixed same cross-reference `§12.4` → `§12.3`.
+3. §14.5.1 (line 6072): Fixed section number `14.6.1` → `14.5.1`. Former §14.6 was renumbered to §14.5 when §14.5 "Error Severity" was removed (2026-02-07), but subsection 14.6.1 was not renumbered.
+4. §8.7.1 (line 2058): Fixed heading level `###` → `####`. Parent §8.7 is `###`, so §8.7.1 must be `####`.
+5. §10.2.1.1 (line 3796): Fixed heading level `###` → `#####`. Parent chain: §10.2 is `###`, §10.2.1 is `####`, so §10.2.1.1 must be `#####`.
+6. `CLAUDE.md` (line 132): Updated §14.5 summary from "Errors are not warnings. No best-effort recovery." to "Reporting Requirements — primary error class, concept name, trait name, rule reference, precise location." reflecting the section's current content after the 2026-02-07 renumbering.
+
+**Rationale:** Cross-references pointed to §12.4 (Schema Caching) instead of §12.3 (Bootstrap Schema-of-Schemas). Section 14.6.1 was orphaned after its parent §14.6 was renumbered to §14.5. Two heading levels were inconsistent with their parent section depth. CLAUDE.md described §14.5 using the removed "Error Severity" content instead of the current "Reporting Requirements" content.
+
+---
+
 ## 2026-02-07: Canonical bootstrap schema — Add missing reference trait declarations (`for`, `reference`, `target`)
 
 **File:** `bootstrap-schema/schema.cdx`

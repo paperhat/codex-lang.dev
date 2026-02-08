@@ -129,4 +129,4 @@ Do not regress:
 - **§13.5**: Four compatibility classes: `$Initial`, `$BackwardCompatible`, `$ForwardCompatible`, `$Breaking`. First version must use `$Initial`.
 - **§13.8**: Validation strictly per declared version. Must not infer, substitute, or relax.
 - **§14.3**: Closed set of 9 error classes. No additional classes. Halt at first failure.
-- **§14.5**: Errors are not warnings. No best-effort recovery.
+- **§14.5**: Reporting Requirements — primary error class, concept name, trait name, rule reference, precise location.

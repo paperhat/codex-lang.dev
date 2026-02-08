@@ -24,3 +24,7 @@ The readiness check enforces:
 
 ## Notes
 - If you intentionally need JSON for compatibility, add an explicit, documented exception and update the readiness gate.
+
+## Tooling notes
+- Obsolete Codex tooling scripts are archived under `/Users/guy/Workspace/@paperhat/specifications/obsolete/codex-lang.dev/tools/`.
+- Active maintenance tools include `tools/schemas_vs_spec_audit.py` and `tools/token_consistency_scan.py`.

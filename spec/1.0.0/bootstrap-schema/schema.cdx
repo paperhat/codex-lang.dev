@@ -46,6 +46,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:AllOf#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:AllOf#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:AllOf#shape/property/child/Rule
@@ -83,6 +96,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:AllowedValues#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:AllowedValues#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape
@@ -98,6 +124,69 @@
 			object=urn:codex:bootstrap:concept:AllowsChildConcept
 			predicate=http://www.w3.org/ns/shacl#targetClass
 			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:AllowsChildConcept#shape/property/trait/max
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:max
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:AllowsChildConcept#shape/property/trait/min
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape/property/trait/min
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape/property/trait/min
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:min
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape/property/trait/min
 		/>
 
 		<RdfTriple
@@ -120,6 +209,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:AllowsChildConcept#shape/property/trait/conceptSelector
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:AllowsContent#shape
@@ -134,6 +230,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:AllowsContent
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:AllowsContent#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:AllowsContent#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:AllowsContent#shape
 		/>
 
@@ -163,6 +272,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:AllowsContent#shape/property/trait/whitespaceMode
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:AllowsTrait#shape
@@ -183,6 +299,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:AllowsTrait
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:AllowsTrait#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:AllowsTrait#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:AllowsTrait#shape
 		/>
 
@@ -231,6 +360,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:AllowsTrait#shape/property/trait/name
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:AnyOf#shape
@@ -245,6 +381,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:AnyOf
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:AnyOf#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:AnyOf#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:AnyOf#shape
 		/>
 
@@ -298,6 +447,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ChildConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ChildConstraint#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ChildConstraint#shape/property/trait/conceptSelector
@@ -313,6 +475,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:conceptSelector
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ChildConstraint#shape/property/trait/conceptSelector
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:ChildConstraint#shape/property/trait/conceptSelector
 		/>
 
@@ -342,6 +511,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ChildConstraint#shape/property/trait/type
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ChildPath#shape
@@ -356,6 +532,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ChildPath
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ChildPath#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ChildPath#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ChildPath#shape
 		/>
 
@@ -375,6 +564,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:conceptSelector
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ChildPath#shape/property/trait/conceptSelector
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:ChildPath#shape/property/trait/conceptSelector
 		/>
 
@@ -411,6 +607,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ChildRules
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ChildRules#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ChildRules#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ChildRules#shape
 		/>
 
@@ -511,6 +720,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ChildSatisfies#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ChildSatisfies#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ChildSatisfies#shape/property/child/Rule
@@ -562,6 +784,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ChildSatisfies#shape/property/trait/conceptSelector
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:CollectionAllowsDuplicates#shape
@@ -580,6 +809,44 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:CollectionAllowsDuplicates#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:CollectionAllowsDuplicates#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:CollectionAllowsDuplicates#shape/property/trait/keyTrait
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:CollectionAllowsDuplicates#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:CollectionAllowsDuplicates#shape/property/trait/keyTrait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:CollectionAllowsDuplicates#shape/property/trait/keyTrait
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:keyTrait
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:CollectionAllowsDuplicates#shape/property/trait/keyTrait
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:CollectionAllowsDuplicates#shape/property/trait/allowed
@@ -595,6 +862,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:allowed
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:CollectionAllowsDuplicates#shape/property/trait/allowed
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:CollectionAllowsDuplicates#shape/property/trait/allowed
 		/>
 
@@ -617,6 +891,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:CollectionAllowsEmpty#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:CollectionAllowsEmpty#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:CollectionAllowsEmpty#shape/property/trait/allowed
@@ -636,6 +923,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:CollectionAllowsEmpty#shape/property/trait/allowed
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:CollectionOrdering#shape
@@ -650,6 +944,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:CollectionOrdering
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:CollectionOrdering#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:CollectionOrdering#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:CollectionOrdering#shape
 		/>
 
@@ -679,6 +986,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:CollectionOrdering#shape/property/trait/ordering
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:CollectionRules#shape
@@ -703,6 +1017,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:CollectionRules#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:CollectionRules#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:CollectionRules#shape/property/trait/allowsDuplicates
@@ -722,6 +1049,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:CollectionRules#shape/property/trait/allowsDuplicates
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:CollectionRules#shape/property/trait/ordering
@@ -737,6 +1071,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:ordering
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:CollectionRules#shape/property/trait/ordering
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:CollectionRules#shape/property/trait/ordering
 		/>
 
@@ -798,6 +1139,94 @@
 			object=urn:codex:bootstrap:concept:ConceptDefinition
 			predicate=http://www.w3.org/ns/shacl#targetClass
 			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/description
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:description
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/key
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/key
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/key
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:key
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/key
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/role
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/role
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/role
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:role
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/role
 		/>
 
 		<RdfTriple
@@ -926,6 +1355,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/conceptKind
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/entityEligibility
@@ -951,6 +1387,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/entityEligibility
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/id
@@ -966,6 +1409,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:id
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/id
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/id
 		/>
 
@@ -989,6 +1439,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ConceptDefinition#shape/property/trait/name
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ConceptDefinitions#shape
@@ -1003,6 +1460,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ConceptDefinitions
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ConceptDefinitions#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ConceptDefinitions#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ConceptDefinitions#shape
 		/>
 
@@ -1050,6 +1520,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ConceptOption#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ConceptOption#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ConceptOption#shape/property/trait/conceptSelector
@@ -1065,6 +1548,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:conceptSelector
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ConceptOption#shape/property/trait/conceptSelector
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:ConceptOption#shape/property/trait/conceptSelector
 		/>
 
@@ -1089,6 +1579,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ConditionalConstraint
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ConditionalConstraint#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ConditionalConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ConditionalConstraint#shape
 		/>
 
@@ -1187,6 +1690,69 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ConstraintDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ConstraintDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ConstraintDefinition#shape/property/trait/description
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ConstraintDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ConstraintDefinition#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ConstraintDefinition#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:description
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ConstraintDefinition#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ConstraintDefinition#shape/property/trait/title
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ConstraintDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ConstraintDefinition#shape/property/trait/title
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ConstraintDefinition#shape/property/trait/title
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:title
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ConstraintDefinition#shape/property/trait/title
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ConstraintDefinition#shape/property/child/Rule
@@ -1270,6 +1836,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ConstraintDefinition#shape/property/trait/id
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ConstraintDefinitions#shape
@@ -1284,6 +1857,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ConstraintDefinitions
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ConstraintDefinitions#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ConstraintDefinitions#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ConstraintDefinitions#shape
 		/>
 
@@ -1331,6 +1917,69 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ContentConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ContentConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ContentConstraint#shape/property/trait/flags
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ContentConstraint#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ContentConstraint#shape/property/trait/flags
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ContentConstraint#shape/property/trait/flags
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:flags
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ContentConstraint#shape/property/trait/flags
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ContentConstraint#shape/property/trait/pattern
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ContentConstraint#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ContentConstraint#shape/property/trait/pattern
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ContentConstraint#shape/property/trait/pattern
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:pattern
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ContentConstraint#shape/property/trait/pattern
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ContentConstraint#shape/property/trait/type
@@ -1356,6 +2005,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ContentConstraint#shape/property/trait/type
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ContentPath#shape
@@ -1368,6 +2024,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ContentPath#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ContentPath#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ContentRules#shape
@@ -1376,6 +2045,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ContentRules
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ContentRules#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ContentRules#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ContentRules#shape
 		/>
 
@@ -1395,6 +2077,44 @@
 			object=urn:codex:bootstrap:concept:ContextConstraint
 			predicate=http://www.w3.org/ns/shacl#targetClass
 			subject=urn:codex:bootstrap:concept:ContextConstraint#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ContextConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ContextConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ContextConstraint#shape/property/trait/contextSelector
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ContextConstraint#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ContextConstraint#shape/property/trait/contextSelector
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ContextConstraint#shape/property/trait/contextSelector
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:contextSelector
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ContextConstraint#shape/property/trait/contextSelector
 		/>
 
 		<RdfTriple
@@ -1423,6 +2143,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ContextConstraint#shape/property/trait/type
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:DescendantPath#shape
@@ -1437,6 +2164,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:DescendantPath
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:DescendantPath#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:DescendantPath#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:DescendantPath#shape
 		/>
 
@@ -1460,6 +2200,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:DescendantPath#shape/property/trait/conceptSelector
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:EachMemberSatisfies#shape
@@ -1474,6 +2221,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:EachMemberSatisfies
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:EachMemberSatisfies#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:EachMemberSatisfies#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:EachMemberSatisfies#shape
 		/>
 
@@ -1528,6 +2288,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:EnumeratedConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:EnumeratedConstraint#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:EnumeratedConstraint#shape/property/trait/set
@@ -1543,6 +2316,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:set
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:EnumeratedConstraint#shape/property/trait/set
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:EnumeratedConstraint#shape/property/trait/set
 		/>
 
@@ -1574,6 +2354,69 @@
 			object=urn:codex:bootstrap:concept:EnumeratedValueSet
 			predicate=http://www.w3.org/ns/shacl#targetClass
 			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:EnumeratedValueSet#shape/property/trait/description
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:description
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:EnumeratedValueSet#shape/property/trait/key
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape/property/trait/key
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape/property/trait/key
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:key
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape/property/trait/key
 		/>
 
 		<RdfTriple
@@ -1621,6 +2464,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape/property/trait/id
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape/property/trait/name
@@ -1640,6 +2490,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSet#shape/property/trait/name
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:EnumeratedValueSets#shape
@@ -1654,6 +2511,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:EnumeratedValueSets
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSets#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:EnumeratedValueSets#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:EnumeratedValueSets#shape
 		/>
 
@@ -1701,6 +2571,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ExactlyOneChildOf#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ExactlyOneChildOf#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ExactlyOneChildOf#shape/property/child/ConceptOption
@@ -1744,6 +2627,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ForbidsChildConcept#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ForbidsChildConcept#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ForbidsChildConcept#shape/property/trait/conceptSelector
@@ -1763,6 +2659,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ForbidsChildConcept#shape/property/trait/conceptSelector
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ForbidsContent#shape
@@ -1771,6 +2674,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ForbidsContent
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ForbidsContent#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ForbidsContent#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ForbidsContent#shape
 		/>
 
@@ -1789,6 +2705,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ForbidsTrait
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ForbidsTrait#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ForbidsTrait#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ForbidsTrait#shape
 		/>
 
@@ -1812,6 +2741,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ForbidsTrait#shape/property/trait/name
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape
@@ -1827,6 +2763,94 @@
 			object=urn:codex:bootstrap:concept:IdentityConstraint
 			predicate=http://www.w3.org/ns/shacl#targetClass
 			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/flags
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/flags
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/flags
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:flags
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/flags
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/pattern
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/pattern
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/pattern
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:pattern
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/pattern
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/scope
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/scope
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/scope
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:scope
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/scope
 		/>
 
 		<RdfTriple
@@ -1855,6 +2879,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:IdentityConstraint#shape/property/trait/type
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:Member#shape
@@ -1870,6 +2901,69 @@
 			object=urn:codex:bootstrap:concept:Member
 			predicate=http://www.w3.org/ns/shacl#targetClass
 			subject=urn:codex:bootstrap:concept:Member#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:Member#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:Member#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:Member#shape/property/trait/description
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:Member#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:Member#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:Member#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:description
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:Member#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:Member#shape/property/trait/label
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:Member#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:Member#shape/property/trait/label
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:Member#shape/property/trait/label
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:label
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:Member#shape/property/trait/label
 		/>
 
 		<RdfTriple
@@ -1892,6 +2986,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:Member#shape/property/trait/value
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:MemberCount#shape
@@ -1901,6 +3002,69 @@
 			object=urn:codex:bootstrap:concept:MemberCount
 			predicate=http://www.w3.org/ns/shacl#targetClass
 			subject=urn:codex:bootstrap:concept:MemberCount#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:MemberCount#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:MemberCount#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:MemberCount#shape/property/trait/max
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:MemberCount#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:MemberCount#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:MemberCount#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:max
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:MemberCount#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:MemberCount#shape/property/trait/min
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:MemberCount#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:MemberCount#shape/property/trait/min
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:MemberCount#shape/property/trait/min
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:min
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:MemberCount#shape/property/trait/min
 		/>
 
 		<RdfTriple
@@ -1918,6 +3082,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:Not
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:Not#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:Not#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:Not#shape
 		/>
 
@@ -1972,6 +3149,69 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:OnPathCount#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:OnPathCount#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:OnPathCount#shape/property/trait/maxCount
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:OnPathCount#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:OnPathCount#shape/property/trait/maxCount
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:OnPathCount#shape/property/trait/maxCount
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:maxCount
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:OnPathCount#shape/property/trait/maxCount
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:OnPathCount#shape/property/trait/minCount
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:OnPathCount#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:OnPathCount#shape/property/trait/minCount
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:OnPathCount#shape/property/trait/minCount
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:minCount
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:OnPathCount#shape/property/trait/minCount
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:OnPathCount#shape/property/child/Rule
@@ -2022,6 +3262,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:OnPathExists#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:OnPathExists#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:OnPathExists#shape/property/child/Rule
@@ -2068,6 +3321,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:OnPathForAll
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:OnPathForAll#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:OnPathForAll#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:OnPathForAll#shape
 		/>
 
@@ -2128,6 +3394,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:OrderConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:OrderConstraint#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:OrderConstraint#shape/property/trait/byTrait
@@ -2143,6 +3422,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:byTrait
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:OrderConstraint#shape/property/trait/byTrait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:OrderConstraint#shape/property/trait/byTrait
 		/>
 
@@ -2172,6 +3458,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:OrderConstraint#shape/property/trait/type
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:PatternConstraint#shape
@@ -2196,6 +3489,44 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:PatternConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:PatternConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:PatternConstraint#shape/property/trait/flags
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:PatternConstraint#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:PatternConstraint#shape/property/trait/flags
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:PatternConstraint#shape/property/trait/flags
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:flags
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:PatternConstraint#shape/property/trait/flags
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:PatternConstraint#shape/property/trait/pattern
@@ -2211,6 +3542,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:pattern
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:PatternConstraint#shape/property/trait/pattern
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:PatternConstraint#shape/property/trait/pattern
 		/>
 
@@ -2234,6 +3572,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:PatternConstraint#shape/property/trait/trait
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:RdfGraph#shape
@@ -2248,6 +3593,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:RdfGraph
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:RdfGraph#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:RdfGraph#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:RdfGraph#shape
 		/>
 
@@ -2301,6 +3659,119 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/datatype
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/datatype
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/datatype
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:datatype
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/datatype
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/language
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/language
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/language
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:language
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/language
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/lexical
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/lexical
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/lexical
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:lexical
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/lexical
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/object
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/object
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/object
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:object
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/object
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/predicate
@@ -2316,6 +3787,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:predicate
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/predicate
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/predicate
 		/>
 
@@ -2339,6 +3817,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:RdfTriple#shape/property/trait/subject
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape
@@ -2354,6 +3839,69 @@
 			object=urn:codex:bootstrap:concept:ReferenceConstraint
 			predicate=http://www.w3.org/ns/shacl#targetClass
 			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ReferenceConstraint#shape/property/trait/conceptSelector
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape/property/trait/conceptSelector
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape/property/trait/conceptSelector
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:conceptSelector
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape/property/trait/conceptSelector
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ReferenceConstraint#shape/property/trait/traitName
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape/property/trait/traitName
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape/property/trait/traitName
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:traitName
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape/property/trait/traitName
 		/>
 
 		<RdfTriple
@@ -2382,6 +3930,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ReferenceConstraint#shape/property/trait/type
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape
@@ -2400,6 +3955,69 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:RequiresChildConcept#shape/property/trait/max
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:max
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:RequiresChildConcept#shape/property/trait/min
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape/property/trait/min
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape/property/trait/min
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:min
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape/property/trait/min
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape/property/trait/conceptSelector
@@ -2415,6 +4033,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:conceptSelector
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape/property/trait/conceptSelector
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:RequiresChildConcept#shape/property/trait/conceptSelector
 		/>
 
@@ -2439,6 +4064,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:RequiresTrait
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:RequiresTrait#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:RequiresTrait#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:RequiresTrait#shape
 		/>
 
@@ -2487,6 +4125,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:RequiresTrait#shape/property/trait/name
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:Rule#shape
@@ -2495,6 +4140,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:Rule
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:Rule#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:Rule#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:Rule#shape
 		/>
 
@@ -2580,6 +4238,94 @@
 			object=urn:codex:bootstrap:concept:Schema
 			predicate=http://www.w3.org/ns/shacl#targetClass
 			subject=urn:codex:bootstrap:concept:Schema#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:Schema#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:Schema#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:Schema#shape/property/trait/description
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:Schema#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:description
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:Schema#shape/property/trait/key
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:Schema#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/key
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/key
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:key
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/key
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:Schema#shape/property/trait/title
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:Schema#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/title
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/title
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:title
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/title
 		/>
 
 		<RdfTriple
@@ -2783,6 +4529,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/authoringMode
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/compatibilityClass
@@ -2808,6 +4561,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/compatibilityClass
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/id
@@ -2823,6 +4583,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:id
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/id
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/id
 		/>
 
@@ -2871,6 +4638,20 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/version
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:Schema#shape/property/trait/versionScheme
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:TargetConcept#shape
@@ -2885,6 +4666,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:TargetConcept
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:TargetConcept#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:TargetConcept#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:TargetConcept#shape
 		/>
 
@@ -2908,6 +4702,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TargetConcept#shape/property/trait/conceptSelector
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:TargetContext#shape
@@ -2922,6 +4723,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:TargetContext
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:TargetContext#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:TargetContext#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:TargetContext#shape
 		/>
 
@@ -2941,6 +4755,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:contextSelector
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TargetContext#shape/property/trait/contextSelector
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:TargetContext#shape/property/trait/contextSelector
 		/>
 
@@ -2965,6 +4786,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:Targets
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:Targets#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:Targets#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:Targets#shape
 		/>
 
@@ -3023,6 +4857,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:Then#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:Then#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:Then#shape/property/child/Rule
@@ -3073,6 +4920,69 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:TraitCardinality#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:TraitCardinality#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:TraitCardinality#shape/property/trait/max
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:TraitCardinality#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:TraitCardinality#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TraitCardinality#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:max
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitCardinality#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:TraitCardinality#shape/property/trait/min
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:TraitCardinality#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:TraitCardinality#shape/property/trait/min
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TraitCardinality#shape/property/trait/min
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:min
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitCardinality#shape/property/trait/min
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:TraitCardinality#shape/property/trait/trait
@@ -3088,6 +4998,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:trait
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitCardinality#shape/property/trait/trait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:TraitCardinality#shape/property/trait/trait
 		/>
 
@@ -3119,6 +5036,144 @@
 			object=urn:codex:bootstrap:concept:TraitDefinition
 			predicate=http://www.w3.org/ns/shacl#targetClass
 			subject=urn:codex:bootstrap:concept:TraitDefinition#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/defaultValueType
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/defaultValueType
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/defaultValueType
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:defaultValueType
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/defaultValueType
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/defaultValueTypes
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/defaultValueTypes
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/defaultValueTypes
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:defaultValueTypes
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/defaultValueTypes
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/description
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:description
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/description
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/isReferenceTrait
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/isReferenceTrait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/isReferenceTrait
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:isReferenceTrait
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/isReferenceTrait
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/priority
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/priority
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/priority
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:priority
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/priority
 		/>
 
 		<RdfTriple
@@ -3172,6 +5227,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/id
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/name
@@ -3187,6 +5249,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:name
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/name
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:TraitDefinition#shape/property/trait/name
 		/>
 
@@ -3211,6 +5280,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:TraitDefinitions
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:TraitDefinitions#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:TraitDefinitions#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:TraitDefinitions#shape
 		/>
 
@@ -3264,6 +5346,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:TraitEquals#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:TraitEquals#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:TraitEquals#shape/property/trait/trait
@@ -3279,6 +5374,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:trait
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitEquals#shape/property/trait/trait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:TraitEquals#shape/property/trait/trait
 		/>
 
@@ -3302,6 +5404,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TraitEquals#shape/property/trait/value
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:TraitExists#shape
@@ -3316,6 +5425,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:TraitExists
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:TraitExists#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:TraitExists#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:TraitExists#shape
 		/>
 
@@ -3335,6 +5457,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:trait
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitExists#shape/property/trait/trait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:TraitExists#shape/property/trait/trait
 		/>
 
@@ -3357,6 +5486,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:TraitMissing#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:TraitMissing#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:TraitMissing#shape/property/trait/trait
@@ -3372,6 +5514,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:trait
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitMissing#shape/property/trait/trait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:TraitMissing#shape/property/trait/trait
 		/>
 
@@ -3394,6 +5543,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:TraitPath#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:TraitPath#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:TraitPath#shape/property/trait/traitName
@@ -3409,6 +5571,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:traitName
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitPath#shape/property/trait/traitName
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:TraitPath#shape/property/trait/traitName
 		/>
 
@@ -3439,6 +5608,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:TraitRules
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:TraitRules#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:TraitRules#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:TraitRules#shape
 		/>
 
@@ -3521,6 +5703,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:TraitValueType#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:TraitValueType#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:TraitValueType#shape/property/trait/trait
@@ -3536,6 +5731,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:trait
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitValueType#shape/property/trait/trait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:TraitValueType#shape/property/trait/trait
 		/>
 
@@ -3565,6 +5767,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TraitValueType#shape/property/trait/valueType
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:UniqueConstraint#shape
@@ -3589,6 +5798,19 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:UniqueConstraint#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:UniqueConstraint#shape
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:UniqueConstraint#shape/property/trait/scope
@@ -3608,6 +5830,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:UniqueConstraint#shape/property/trait/scope
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:UniqueConstraint#shape/property/trait/trait
@@ -3623,6 +5852,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:trait
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:UniqueConstraint#shape/property/trait/trait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:UniqueConstraint#shape/property/trait/trait
 		/>
 
@@ -3651,6 +5887,44 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ValidatorDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ValidatorDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ValidatorDefinition#shape/property/trait/message
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ValidatorDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ValidatorDefinition#shape/property/trait/message
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ValidatorDefinition#shape/property/trait/message
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:message
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ValidatorDefinition#shape/property/trait/message
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ValidatorDefinition#shape/property/trait/id
@@ -3666,6 +5940,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:id
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ValidatorDefinition#shape/property/trait/id
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:ValidatorDefinition#shape/property/trait/id
 		/>
 
@@ -3689,6 +5970,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ValidatorDefinition#shape/property/trait/name
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ValidatorDefinitions#shape
@@ -3703,6 +5991,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ValidatorDefinitions
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ValidatorDefinitions#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ValidatorDefinitions#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ValidatorDefinitions#shape
 		/>
 
@@ -3744,6 +6045,69 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ValueInNumericRange#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ValueInNumericRange#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ValueInNumericRange#shape/property/trait/max
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ValueInNumericRange#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ValueInNumericRange#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ValueInNumericRange#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:max
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ValueInNumericRange#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ValueInNumericRange#shape/property/trait/min
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ValueInNumericRange#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ValueInNumericRange#shape/property/trait/min
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ValueInNumericRange#shape/property/trait/min
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:min
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ValueInNumericRange#shape/property/trait/min
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ValueIsNonEmpty#shape
@@ -3752,6 +6116,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ValueIsNonEmpty
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ValueIsNonEmpty#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ValueIsNonEmpty#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ValueIsNonEmpty#shape
 		/>
 
@@ -3770,6 +6147,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ValueIsOneOf
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ValueIsOneOf#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ValueIsOneOf#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ValueIsOneOf#shape
 		/>
 
@@ -3793,6 +6183,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ValueIsOneOf#shape/property/trait/values
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ValueIsValid#shape
@@ -3807,6 +6204,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ValueIsValid
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ValueIsValid#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ValueIsValid#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ValueIsValid#shape
 		/>
 
@@ -3830,6 +6240,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ValueIsValid#shape/property/trait/validatorName
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ValueLength#shape
@@ -3839,6 +6256,69 @@
 			object=urn:codex:bootstrap:concept:ValueLength
 			predicate=http://www.w3.org/ns/shacl#targetClass
 			subject=urn:codex:bootstrap:concept:ValueLength#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ValueLength#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ValueLength#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ValueLength#shape/property/trait/max
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ValueLength#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ValueLength#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ValueLength#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:max
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ValueLength#shape/property/trait/max
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ValueLength#shape/property/trait/min
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ValueLength#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ValueLength#shape/property/trait/min
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ValueLength#shape/property/trait/min
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:min
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ValueLength#shape/property/trait/min
 		/>
 
 		<RdfTriple
@@ -3860,6 +6340,44 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ValueMatchesPattern#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ValueMatchesPattern#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ValueMatchesPattern#shape/property/trait/flags
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ValueMatchesPattern#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ValueMatchesPattern#shape/property/trait/flags
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ValueMatchesPattern#shape/property/trait/flags
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:flags
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ValueMatchesPattern#shape/property/trait/flags
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ValueMatchesPattern#shape/property/trait/pattern
@@ -3875,6 +6393,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:pattern
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ValueMatchesPattern#shape/property/trait/pattern
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:ValueMatchesPattern#shape/property/trait/pattern
 		/>
 
@@ -3909,6 +6434,44 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ValueTypeDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:ValueTypeDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ValueTypeDefinition#shape/property/trait/validatorName
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:ValueTypeDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:ValueTypeDefinition#shape/property/trait/validatorName
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ValueTypeDefinition#shape/property/trait/validatorName
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:validatorName
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ValueTypeDefinition#shape/property/trait/validatorName
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ValueTypeDefinition#shape/property/trait/baseValueType
@@ -3934,6 +6497,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ValueTypeDefinition#shape/property/trait/baseValueType
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#PropertyShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ValueTypeDefinition#shape/property/trait/id
@@ -3949,6 +6519,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:trait:id
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:ValueTypeDefinition#shape/property/trait/id
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:concept:ValueTypeDefinition#shape/property/trait/id
 		/>
 
@@ -3972,6 +6549,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:ValueTypeDefinition#shape/property/trait/name
+		/>
+
+		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:ValueTypeDefinitions#shape
@@ -3986,6 +6570,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:ValueTypeDefinitions
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:ValueTypeDefinitions#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:ValueTypeDefinitions#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:ValueTypeDefinitions#shape
 		/>
 
@@ -4029,6 +6626,19 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:concept:When
 			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:When#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:When#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
 			subject=urn:codex:bootstrap:concept:When#shape
 		/>
 
@@ -5912,6 +8522,457 @@
 			subject=urn:codex:bootstrap:constraint:value-type-definition-name-unique#sparql
 		/>
 
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:allowedvalues-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:allowedvalues-exactly-one-child-of#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:allowedvalues-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:AllowedValues
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:allowedvalues-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			lexical="AllowedValues must have exactly one child of: ValueIsOneOf, EnumeratedConstraint"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:allowedvalues-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:ValueIsOneOf> } UNION { ?child a <urn:codex:bootstrap:concept:EnumeratedConstraint> } } GROUP BY $this } FILTER(?count != 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:allowedvalues-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:collectionallowsduplicates-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:collectionallowsduplicates-exactly-one-child-of#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:collectionallowsduplicates-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:CollectionAllowsDuplicates
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:collectionallowsduplicates-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			lexical="CollectionAllowsDuplicates must have exactly one child of: ChildPath, DescendantPath"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:collectionallowsduplicates-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:ChildPath> } UNION { ?child a <urn:codex:bootstrap:concept:DescendantPath> } } GROUP BY $this } FILTER(?count != 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:collectionallowsduplicates-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:collectionallowsempty-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:collectionallowsempty-exactly-one-child-of#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:collectionallowsempty-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:CollectionAllowsEmpty
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:collectionallowsempty-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			lexical="CollectionAllowsEmpty must have exactly one child of: ChildPath, DescendantPath"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:collectionallowsempty-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:ChildPath> } UNION { ?child a <urn:codex:bootstrap:concept:DescendantPath> } } GROUP BY $this } FILTER(?count != 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:collectionallowsempty-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:collectionordering-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:collectionordering-exactly-one-child-of#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:collectionordering-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:CollectionOrdering
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:collectionordering-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			lexical="CollectionOrdering must have exactly one child of: ChildPath, DescendantPath"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:collectionordering-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:ChildPath> } UNION { ?child a <urn:codex:bootstrap:concept:DescendantPath> } } GROUP BY $this } FILTER(?count != 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:collectionordering-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:contentrules-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:contentrules-exactly-one-child-of#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:contentrules-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:ContentRules
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:contentrules-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			lexical="ContentRules must have exactly one child of: AllowsContent, ForbidsContent"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:contentrules-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:AllowsContent> } UNION { ?child a <urn:codex:bootstrap:concept:ForbidsContent> } } GROUP BY $this } FILTER(?count != 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:contentrules-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:eachmembersatisfies-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:eachmembersatisfies-exactly-one-child-of#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:eachmembersatisfies-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:EachMemberSatisfies
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:eachmembersatisfies-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			lexical="EachMemberSatisfies must have exactly one child of: ChildPath, DescendantPath"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:eachmembersatisfies-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:ChildPath> } UNION { ?child a <urn:codex:bootstrap:concept:DescendantPath> } } GROUP BY $this } FILTER(?count != 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:eachmembersatisfies-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:membercount-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:membercount-exactly-one-child-of#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:membercount-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:MemberCount
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:membercount-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			lexical="MemberCount must have exactly one child of: ChildPath, DescendantPath"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:membercount-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:ChildPath> } UNION { ?child a <urn:codex:bootstrap:concept:DescendantPath> } } GROUP BY $this } FILTER(?count != 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:membercount-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:onpathcount-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:onpathcount-exactly-one-child-of#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:onpathcount-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:OnPathCount
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:onpathcount-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			lexical="OnPathCount must have exactly one child of: TraitPath, ChildPath, DescendantPath, ContentPath"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:onpathcount-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:TraitPath> } UNION { ?child a <urn:codex:bootstrap:concept:ChildPath> } UNION { ?child a <urn:codex:bootstrap:concept:DescendantPath> } UNION { ?child a <urn:codex:bootstrap:concept:ContentPath> } } GROUP BY $this } FILTER(?count != 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:onpathcount-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:onpathexists-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:onpathexists-exactly-one-child-of#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:onpathexists-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:OnPathExists
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:onpathexists-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			lexical="OnPathExists must have exactly one child of: TraitPath, ChildPath, DescendantPath, ContentPath"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:onpathexists-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:TraitPath> } UNION { ?child a <urn:codex:bootstrap:concept:ChildPath> } UNION { ?child a <urn:codex:bootstrap:concept:DescendantPath> } UNION { ?child a <urn:codex:bootstrap:concept:ContentPath> } } GROUP BY $this } FILTER(?count != 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:onpathexists-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:onpathforall-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:onpathforall-exactly-one-child-of#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:onpathforall-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:OnPathForAll
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:onpathforall-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			lexical="OnPathForAll must have exactly one child of: TraitPath, ChildPath, DescendantPath, ContentPath"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:onpathforall-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:TraitPath> } UNION { ?child a <urn:codex:bootstrap:concept:ChildPath> } UNION { ?child a <urn:codex:bootstrap:concept:DescendantPath> } UNION { ?child a <urn:codex:bootstrap:concept:ContentPath> } } GROUP BY $this } FILTER(?count != 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:onpathforall-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:orderconstraint-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:orderconstraint-exactly-one-child-of#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:orderconstraint-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:OrderConstraint
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:orderconstraint-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			lexical="OrderConstraint must have exactly one child of: ChildPath, DescendantPath"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:orderconstraint-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:ChildPath> } UNION { ?child a <urn:codex:bootstrap:concept:DescendantPath> } } GROUP BY $this } FILTER(?count != 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:orderconstraint-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:rule-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:rule-exactly-one-child-of#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:rule-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:Rule
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:rule-exactly-one-child-of
+		/>
+
+		<RdfTriple
+			lexical="Rule must have exactly one child of: AllOf, AnyOf, Not, ConditionalConstraint, OnPathExists, OnPathForAll, OnPathCount, TraitExists, TraitMissing, TraitEquals, TraitCardinality, TraitValueType, ValueIsOneOf, ValueMatchesPattern, PatternConstraint, ValueLength, ValueInNumericRange, ValueIsNonEmpty, ValueIsValid, ChildConstraint, ChildSatisfies, CollectionOrdering, CollectionAllowsEmpty, CollectionAllowsDuplicates, MemberCount, EachMemberSatisfies, UniqueConstraint, OrderConstraint, ReferenceConstraint, IdentityConstraint, ContextConstraint, ContentConstraint"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:rule-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:AllOf> } UNION { ?child a <urn:codex:bootstrap:concept:AnyOf> } UNION { ?child a <urn:codex:bootstrap:concept:Not> } UNION { ?child a <urn:codex:bootstrap:concept:ConditionalConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:OnPathExists> } UNION { ?child a <urn:codex:bootstrap:concept:OnPathForAll> } UNION { ?child a <urn:codex:bootstrap:concept:OnPathCount> } UNION { ?child a <urn:codex:bootstrap:concept:TraitExists> } UNION { ?child a <urn:codex:bootstrap:concept:TraitMissing> } UNION { ?child a <urn:codex:bootstrap:concept:TraitEquals> } UNION { ?child a <urn:codex:bootstrap:concept:TraitCardinality> } UNION { ?child a <urn:codex:bootstrap:concept:TraitValueType> } UNION { ?child a <urn:codex:bootstrap:concept:ValueIsOneOf> } UNION { ?child a <urn:codex:bootstrap:concept:ValueMatchesPattern> } UNION { ?child a <urn:codex:bootstrap:concept:PatternConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ValueLength> } UNION { ?child a <urn:codex:bootstrap:concept:ValueInNumericRange> } UNION { ?child a <urn:codex:bootstrap:concept:ValueIsNonEmpty> } UNION { ?child a <urn:codex:bootstrap:concept:ValueIsValid> } UNION { ?child a <urn:codex:bootstrap:concept:ChildConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ChildSatisfies> } UNION { ?child a <urn:codex:bootstrap:concept:CollectionOrdering> } UNION { ?child a <urn:codex:bootstrap:concept:CollectionAllowsEmpty> } UNION { ?child a <urn:codex:bootstrap:concept:CollectionAllowsDuplicates> } UNION { ?child a <urn:codex:bootstrap:concept:MemberCount> } UNION { ?child a <urn:codex:bootstrap:concept:EachMemberSatisfies> } UNION { ?child a <urn:codex:bootstrap:concept:UniqueConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:OrderConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ReferenceConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:IdentityConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ContextConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ContentConstraint> } } GROUP BY $this } FILTER(?count != 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:rule-exactly-one-child-of#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:allows-child-concept-min-non-negative
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:allows-child-concept-min-non-negative#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:allows-child-concept-min-non-negative
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:AllowsChildConcept
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:allows-child-concept-min-non-negative
+		/>
+
+		<RdfTriple
+			lexical="AllowsChildConcept min must be >= 0"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:allows-child-concept-min-non-negative#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:min> ?v . FILTER(?v < 0) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:allows-child-concept-min-non-negative#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:allows-child-concept-max-positive
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:allows-child-concept-max-positive#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:allows-child-concept-max-positive
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:AllowsChildConcept
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:allows-child-concept-max-positive
+		/>
+
+		<RdfTriple
+			lexical="AllowsChildConcept max must be >= 1"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:allows-child-concept-max-positive#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:max> ?v . FILTER(?v < 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:allows-child-concept-max-positive#sparql
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:constraint:requires-child-concept-max-positive
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:constraint:requires-child-concept-max-positive#sparql
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:constraint:requires-child-concept-max-positive
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:RequiresChildConcept
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:constraint:requires-child-concept-max-positive
+		/>
+
+		<RdfTriple
+			lexical="RequiresChildConcept max must be >= 1"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:constraint:requires-child-concept-max-positive#sparql
+		/>
+
+		<RdfTriple
+			lexical="SELECT $this WHERE { $this <urn:codex:bootstrap:trait:max> ?v . FILTER(?v < 1) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:constraint:requires-child-concept-max-positive#sparql
+		/>
+
 		<RdfTriple
 			object=http://www.w3.org/2000/01/rdf-schema#Datatype
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
@@ -5925,7 +8986,7 @@
 		/>
 
 		<RdfTriple
-			lexical="SimplifiedMode"
+			object=urn:codex:bootstrap:enum:AuthoringMode#SimplifiedMode
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:AuthoringMode#list/1
 		/>
@@ -5937,7 +8998,7 @@
 		/>
 
 		<RdfTriple
-			lexical="CanonicalMode"
+			object=urn:codex:bootstrap:enum:AuthoringMode#CanonicalMode
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:AuthoringMode#list/2
 		/>
@@ -5949,31 +9010,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Single"
-			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
-			subject=urn:codex:bootstrap:enum:Cardinality#list/1
-		/>
-
-		<RdfTriple
-			object=urn:codex:bootstrap:enum:Cardinality#list/2
-			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
-			subject=urn:codex:bootstrap:enum:Cardinality#list/1
-		/>
-
-		<RdfTriple
-			lexical="List"
-			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
-			subject=urn:codex:bootstrap:enum:Cardinality#list/2
-		/>
-
-		<RdfTriple
-			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#nil
-			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
-			subject=urn:codex:bootstrap:enum:Cardinality#list/2
-		/>
-
-		<RdfTriple
-			lexical="RequiresChildConcept"
+			object=urn:codex:bootstrap:enum:ChildConstraintType#RequiresChildConcept
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ChildConstraintType#list/1
 		/>
@@ -5985,7 +9022,7 @@
 		/>
 
 		<RdfTriple
-			lexical="AllowsChildConcept"
+			object=urn:codex:bootstrap:enum:ChildConstraintType#AllowsChildConcept
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ChildConstraintType#list/2
 		/>
@@ -5997,7 +9034,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ForbidsChildConcept"
+			object=urn:codex:bootstrap:enum:ChildConstraintType#ForbidsChildConcept
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ChildConstraintType#list/3
 		/>
@@ -6009,7 +9046,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Initial"
+			object=urn:codex:bootstrap:enum:CompatibilityClass#Initial
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:CompatibilityClass#list/1
 		/>
@@ -6021,7 +9058,7 @@
 		/>
 
 		<RdfTriple
-			lexical="BackwardCompatible"
+			object=urn:codex:bootstrap:enum:CompatibilityClass#BackwardCompatible
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:CompatibilityClass#list/2
 		/>
@@ -6033,7 +9070,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ForwardCompatible"
+			object=urn:codex:bootstrap:enum:CompatibilityClass#ForwardCompatible
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:CompatibilityClass#list/3
 		/>
@@ -6045,7 +9082,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Breaking"
+			object=urn:codex:bootstrap:enum:CompatibilityClass#Breaking
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:CompatibilityClass#list/4
 		/>
@@ -6057,7 +9094,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Semantic"
+			object=urn:codex:bootstrap:enum:ConceptKind#Semantic
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ConceptKind#list/1
 		/>
@@ -6069,7 +9106,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Structural"
+			object=urn:codex:bootstrap:enum:ConceptKind#Structural
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ConceptKind#list/2
 		/>
@@ -6081,7 +9118,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ValueLike"
+			object=urn:codex:bootstrap:enum:ConceptKind#ValueLike
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ConceptKind#list/3
 		/>
@@ -6093,7 +9130,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ForbidsContent"
+			object=urn:codex:bootstrap:enum:ContentConstraintType#ForbidsContent
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ContentConstraintType#list/1
 		/>
@@ -6105,7 +9142,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ContentRequired"
+			object=urn:codex:bootstrap:enum:ContentConstraintType#ContentRequired
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ContentConstraintType#list/2
 		/>
@@ -6117,7 +9154,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ContentMatchesPattern"
+			object=urn:codex:bootstrap:enum:ContentConstraintType#ContentMatchesPattern
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ContentConstraintType#list/3
 		/>
@@ -6129,7 +9166,7 @@
 		/>
 
 		<RdfTriple
-			lexical="OnlyValidUnderParent"
+			object=urn:codex:bootstrap:enum:ContextConstraintType#OnlyValidUnderParent
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ContextConstraintType#list/1
 		/>
@@ -6141,7 +9178,7 @@
 		/>
 
 		<RdfTriple
-			lexical="OnlyValidUnderContext"
+			object=urn:codex:bootstrap:enum:ContextConstraintType#OnlyValidUnderContext
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ContextConstraintType#list/2
 		/>
@@ -6153,7 +9190,7 @@
 		/>
 
 		<RdfTriple
-			lexical="MustBeEntity"
+			object=urn:codex:bootstrap:enum:EntityEligibility#MustBeEntity
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:EntityEligibility#list/1
 		/>
@@ -6165,7 +9202,7 @@
 		/>
 
 		<RdfTriple
-			lexical="MustNotBeEntity"
+			object=urn:codex:bootstrap:enum:EntityEligibility#MustNotBeEntity
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:EntityEligibility#list/2
 		/>
@@ -6177,7 +9214,7 @@
 		/>
 
 		<RdfTriple
-			lexical="MustBeEntity"
+			object=urn:codex:bootstrap:enum:IdentityConstraintType#MustBeEntity
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:IdentityConstraintType#list/1
 		/>
@@ -6189,7 +9226,7 @@
 		/>
 
 		<RdfTriple
-			lexical="MustNotBeEntity"
+			object=urn:codex:bootstrap:enum:IdentityConstraintType#MustNotBeEntity
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:IdentityConstraintType#list/2
 		/>
@@ -6201,7 +9238,7 @@
 		/>
 
 		<RdfTriple
-			lexical="IdentifierUniqueness"
+			object=urn:codex:bootstrap:enum:IdentityConstraintType#IdentifierUniqueness
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:IdentityConstraintType#list/3
 		/>
@@ -6213,7 +9250,7 @@
 		/>
 
 		<RdfTriple
-			lexical="IdentifierForm"
+			object=urn:codex:bootstrap:enum:IdentityConstraintType#IdentifierForm
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:IdentityConstraintType#list/4
 		/>
@@ -6225,7 +9262,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Ascending"
+			object=urn:codex:bootstrap:enum:OrderConstraintType#Ascending
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:OrderConstraintType#list/1
 		/>
@@ -6237,7 +9274,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Descending"
+			object=urn:codex:bootstrap:enum:OrderConstraintType#Descending
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:OrderConstraintType#list/2
 		/>
@@ -6249,7 +9286,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Ordered"
+			object=urn:codex:bootstrap:enum:Ordering#Ordered
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:Ordering#list/1
 		/>
@@ -6261,7 +9298,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Unordered"
+			object=urn:codex:bootstrap:enum:Ordering#Unordered
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:Ordering#list/2
 		/>
@@ -6273,7 +9310,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ReferenceTargetsEntity"
+			object=urn:codex:bootstrap:enum:ReferenceConstraintType#ReferenceTargetsEntity
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ReferenceConstraintType#list/1
 		/>
@@ -6285,7 +9322,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ReferenceMustResolve"
+			object=urn:codex:bootstrap:enum:ReferenceConstraintType#ReferenceMustResolve
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ReferenceConstraintType#list/2
 		/>
@@ -6297,7 +9334,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ReferenceTargetsConcept"
+			object=urn:codex:bootstrap:enum:ReferenceConstraintType#ReferenceTargetsConcept
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ReferenceConstraintType#list/3
 		/>
@@ -6309,7 +9346,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ReferenceSingleton"
+			object=urn:codex:bootstrap:enum:ReferenceConstraintType#ReferenceSingleton
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ReferenceConstraintType#list/4
 		/>
@@ -6321,7 +9358,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ReferenceTraitAllowed"
+			object=urn:codex:bootstrap:enum:ReferenceConstraintType#ReferenceTraitAllowed
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ReferenceConstraintType#list/5
 		/>
@@ -6333,7 +9370,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Primary"
+			object=urn:codex:bootstrap:enum:TraitPriority#Primary
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:TraitPriority#list/1
 		/>
@@ -6345,7 +9382,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Secondary"
+			object=urn:codex:bootstrap:enum:TraitPriority#Secondary
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:TraitPriority#list/2
 		/>
@@ -6358,7 +9395,7 @@
 
 		[Scalar types]
 		<RdfTriple
-			lexical="Text"
+			object=urn:codex:bootstrap:enum:ValueType#Text
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/1
 		/>
@@ -6370,7 +9407,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ImaginaryNumber"
+			object=urn:codex:bootstrap:enum:ValueType#ImaginaryNumber
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/10
 		/>
@@ -6382,7 +9419,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ComplexNumber"
+			object=urn:codex:bootstrap:enum:ValueType#ComplexNumber
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/11
 		/>
@@ -6394,7 +9431,7 @@
 		/>
 
 		<RdfTriple
-			lexical="PositiveInfinity"
+			object=urn:codex:bootstrap:enum:ValueType#PositiveInfinity
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/12
 		/>
@@ -6406,7 +9443,7 @@
 		/>
 
 		<RdfTriple
-			lexical="NegativeInfinity"
+			object=urn:codex:bootstrap:enum:ValueType#NegativeInfinity
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/13
 		/>
@@ -6418,7 +9455,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Infinity"
+			object=urn:codex:bootstrap:enum:ValueType#Infinity
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/14
 		/>
@@ -6430,7 +9467,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Zero"
+			object=urn:codex:bootstrap:enum:ValueType#Zero
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/15
 		/>
@@ -6442,7 +9479,7 @@
 		/>
 
 		<RdfTriple
-			lexical="NegativeInteger"
+			object=urn:codex:bootstrap:enum:ValueType#NegativeInteger
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/16
 		/>
@@ -6454,7 +9491,7 @@
 		/>
 
 		<RdfTriple
-			lexical="NonPositiveInteger"
+			object=urn:codex:bootstrap:enum:ValueType#NonPositiveInteger
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/17
 		/>
@@ -6466,7 +9503,7 @@
 		/>
 
 		<RdfTriple
-			lexical="NonNegativeInteger"
+			object=urn:codex:bootstrap:enum:ValueType#NonNegativeInteger
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/18
 		/>
@@ -6478,7 +9515,7 @@
 		/>
 
 		<RdfTriple
-			lexical="PositiveInteger"
+			object=urn:codex:bootstrap:enum:ValueType#PositiveInteger
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/19
 		/>
@@ -6490,7 +9527,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Character"
+			object=urn:codex:bootstrap:enum:ValueType#Character
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/2
 		/>
@@ -6503,7 +9540,7 @@
 
 		[Temporal types]
 		<RdfTriple
-			lexical="Temporal"
+			object=urn:codex:bootstrap:enum:ValueType#Temporal
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/20
 		/>
@@ -6515,7 +9552,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ZonedDateTime"
+			object=urn:codex:bootstrap:enum:ValueType#ZonedDateTime
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/21
 		/>
@@ -6527,7 +9564,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Instant"
+			object=urn:codex:bootstrap:enum:ValueType#Instant
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/22
 		/>
@@ -6539,7 +9576,7 @@
 		/>
 
 		<RdfTriple
-			lexical="PlainDateTime"
+			object=urn:codex:bootstrap:enum:ValueType#PlainDateTime
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/23
 		/>
@@ -6551,7 +9588,7 @@
 		/>
 
 		<RdfTriple
-			lexical="PlainDate"
+			object=urn:codex:bootstrap:enum:ValueType#PlainDate
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/24
 		/>
@@ -6563,7 +9600,7 @@
 		/>
 
 		<RdfTriple
-			lexical="YearWeek"
+			object=urn:codex:bootstrap:enum:ValueType#YearWeek
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/25
 		/>
@@ -6575,7 +9612,7 @@
 		/>
 
 		<RdfTriple
-			lexical="PlainYearMonth"
+			object=urn:codex:bootstrap:enum:ValueType#PlainYearMonth
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/26
 		/>
@@ -6587,7 +9624,7 @@
 		/>
 
 		<RdfTriple
-			lexical="PlainMonthDay"
+			object=urn:codex:bootstrap:enum:ValueType#PlainMonthDay
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/27
 		/>
@@ -6599,7 +9636,7 @@
 		/>
 
 		<RdfTriple
-			lexical="PlainTime"
+			object=urn:codex:bootstrap:enum:ValueType#PlainTime
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/28
 		/>
@@ -6611,7 +9648,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Duration"
+			object=urn:codex:bootstrap:enum:ValueType#Duration
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/29
 		/>
@@ -6623,7 +9660,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Boolean"
+			object=urn:codex:bootstrap:enum:ValueType#Boolean
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/3
 		/>
@@ -6635,7 +9672,7 @@
 		/>
 
 		<RdfTriple
-			lexical="TemporalKeyword"
+			object=urn:codex:bootstrap:enum:ValueType#TemporalKeyword
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/30
 		/>
@@ -6648,7 +9685,7 @@
 
 		[Identity types]
 		<RdfTriple
-			lexical="EnumeratedToken"
+			object=urn:codex:bootstrap:enum:ValueType#EnumeratedToken
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/31
 		/>
@@ -6660,7 +9697,7 @@
 		/>
 
 		<RdfTriple
-			lexical="IriReference"
+			object=urn:codex:bootstrap:enum:ValueType#IriReference
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/32
 		/>
@@ -6672,7 +9709,7 @@
 		/>
 
 		<RdfTriple
-			lexical="LookupToken"
+			object=urn:codex:bootstrap:enum:ValueType#LookupToken
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/33
 		/>
@@ -6684,7 +9721,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Uuid"
+			object=urn:codex:bootstrap:enum:ValueType#Uuid
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/34
 		/>
@@ -6696,7 +9733,7 @@
 		/>
 
 		<RdfTriple
-			lexical="HostName"
+			object=urn:codex:bootstrap:enum:ValueType#HostName
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/35
 		/>
@@ -6708,7 +9745,7 @@
 		/>
 
 		<RdfTriple
-			lexical="EmailAddress"
+			object=urn:codex:bootstrap:enum:ValueType#EmailAddress
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/36
 		/>
@@ -6720,7 +9757,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Url"
+			object=urn:codex:bootstrap:enum:ValueType#Url
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/37
 		/>
@@ -6733,7 +9770,7 @@
 
 		[Color types (per spec §5.7)]
 		<RdfTriple
-			lexical="Color"
+			object=urn:codex:bootstrap:enum:ValueType#Color
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/38
 		/>
@@ -6745,7 +9782,7 @@
 		/>
 
 		<RdfTriple
-			lexical="HexColor"
+			object=urn:codex:bootstrap:enum:ValueType#HexColor
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/39
 		/>
@@ -6758,7 +9795,7 @@
 
 		[Numeric types]
 		<RdfTriple
-			lexical="Number"
+			object=urn:codex:bootstrap:enum:ValueType#Number
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/4
 		/>
@@ -6770,7 +9807,7 @@
 		/>
 
 		<RdfTriple
-			lexical="NamedColor"
+			object=urn:codex:bootstrap:enum:ValueType#NamedColor
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/40
 		/>
@@ -6782,7 +9819,7 @@
 		/>
 
 		<RdfTriple
-			lexical="RgbColor"
+			object=urn:codex:bootstrap:enum:ValueType#RgbColor
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/41
 		/>
@@ -6794,7 +9831,7 @@
 		/>
 
 		<RdfTriple
-			lexical="HslColor"
+			object=urn:codex:bootstrap:enum:ValueType#HslColor
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/42
 		/>
@@ -6806,7 +9843,7 @@
 		/>
 
 		<RdfTriple
-			lexical="HwbColor"
+			object=urn:codex:bootstrap:enum:ValueType#HwbColor
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/43
 		/>
@@ -6818,7 +9855,7 @@
 		/>
 
 		<RdfTriple
-			lexical="LabColor"
+			object=urn:codex:bootstrap:enum:ValueType#LabColor
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/44
 		/>
@@ -6830,7 +9867,7 @@
 		/>
 
 		<RdfTriple
-			lexical="LchColor"
+			object=urn:codex:bootstrap:enum:ValueType#LchColor
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/45
 		/>
@@ -6842,7 +9879,7 @@
 		/>
 
 		<RdfTriple
-			lexical="OklabColor"
+			object=urn:codex:bootstrap:enum:ValueType#OklabColor
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/46
 		/>
@@ -6854,7 +9891,7 @@
 		/>
 
 		<RdfTriple
-			lexical="OklchColor"
+			object=urn:codex:bootstrap:enum:ValueType#OklchColor
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/47
 		/>
@@ -6866,7 +9903,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ColorFunction"
+			object=urn:codex:bootstrap:enum:ValueType#ColorFunction
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/48
 		/>
@@ -6878,7 +9915,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ColorMix"
+			object=urn:codex:bootstrap:enum:ValueType#ColorMix
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/49
 		/>
@@ -6890,7 +9927,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Integer"
+			object=urn:codex:bootstrap:enum:ValueType#Integer
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/5
 		/>
@@ -6902,7 +9939,7 @@
 		/>
 
 		<RdfTriple
-			lexical="DeviceCmyk"
+			object=urn:codex:bootstrap:enum:ValueType#DeviceCmyk
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/50
 		/>
@@ -6915,7 +9952,7 @@
 
 		[Collection types]
 		<RdfTriple
-			lexical="List"
+			object=urn:codex:bootstrap:enum:ValueType#List
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/51
 		/>
@@ -6927,7 +9964,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Set"
+			object=urn:codex:bootstrap:enum:ValueType#Set
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/52
 		/>
@@ -6939,7 +9976,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Map"
+			object=urn:codex:bootstrap:enum:ValueType#Map
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/53
 		/>
@@ -6951,7 +9988,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Record"
+			object=urn:codex:bootstrap:enum:ValueType#Record
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/54
 		/>
@@ -6963,7 +10000,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Tuple"
+			object=urn:codex:bootstrap:enum:ValueType#Tuple
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/55
 		/>
@@ -6975,7 +10012,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Range"
+			object=urn:codex:bootstrap:enum:ValueType#Range
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/56
 		/>
@@ -6987,7 +10024,7 @@
 		/>
 
 		<RdfTriple
-			lexical="DecimalNumber"
+			object=urn:codex:bootstrap:enum:ValueType#DecimalNumber
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/6
 		/>
@@ -6999,7 +10036,7 @@
 		/>
 
 		<RdfTriple
-			lexical="ExponentialNumber"
+			object=urn:codex:bootstrap:enum:ValueType#ExponentialNumber
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/7
 		/>
@@ -7011,7 +10048,7 @@
 		/>
 
 		<RdfTriple
-			lexical="PrecisionNumber"
+			object=urn:codex:bootstrap:enum:ValueType#PrecisionNumber
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/8
 		/>
@@ -7023,7 +10060,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Fraction"
+			object=urn:codex:bootstrap:enum:ValueType#Fraction
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:ValueType#list/9
 		/>
@@ -7035,7 +10072,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Semver"
+			object=urn:codex:bootstrap:enum:VersionScheme#Semver
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:VersionScheme#list/1
 		/>
@@ -7047,7 +10084,7 @@
 		/>
 
 		<RdfTriple
-			lexical="DateYYYYMM"
+			object=urn:codex:bootstrap:enum:VersionScheme#DateYYYYMM
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:VersionScheme#list/2
 		/>
@@ -7059,7 +10096,7 @@
 		/>
 
 		<RdfTriple
-			lexical="DateYYYYMMDD"
+			object=urn:codex:bootstrap:enum:VersionScheme#DateYYYYMMDD
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:VersionScheme#list/3
 		/>
@@ -7071,7 +10108,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Lexical"
+			object=urn:codex:bootstrap:enum:VersionScheme#Lexical
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:VersionScheme#list/4
 		/>
@@ -7083,7 +10120,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Preformatted"
+			object=urn:codex:bootstrap:enum:WhitespaceMode#Preformatted
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:WhitespaceMode#list/1
 		/>
@@ -7095,7 +10132,7 @@
 		/>
 
 		<RdfTriple
-			lexical="Flow"
+			object=urn:codex:bootstrap:enum:WhitespaceMode#Flow
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
 			subject=urn:codex:bootstrap:enum:WhitespaceMode#list/2
 		/>
@@ -7104,6 +10141,163 @@
 			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#nil
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
 			subject=urn:codex:bootstrap:enum:WhitespaceMode#list/2
+		/>
+
+
+		<RdfTriple
+			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/2
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#codex/annotationDirective
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/2
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/3
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/2
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#codex/annotationForm
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/3
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/4
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/3
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#codex/annotationIndex
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/4
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/5
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/4
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#codex/annotationKind
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/5
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/6
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/5
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#codex/annotationParent
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/6
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/7
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/6
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#codex/annotationTarget
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/7
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/8
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/7
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#codex/annotationText
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/8
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/9
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/8
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#codex/content
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/9
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/10
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/9
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#codex/declaredId
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/10
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/11
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/10
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#codex/isEntity
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/11
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/12
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/11
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#codex/ordinalIndex
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/12
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/13
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/12
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#codex/parentNode
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/13
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#nil
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+			subject=urn:codex:bootstrap:shacl:ignoredProperties#list/13
 		/>
 
 		<RdfTriple
@@ -7155,7 +10349,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#token
+			object=http://www.w3.org/2000/01/rdf-schema#Resource
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:authoringMode
 		/>
@@ -7173,7 +10367,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#token
+			object=http://www.w3.org/2000/01/rdf-schema#Resource
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:baseValueType
 		/>
@@ -7209,7 +10403,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#token
+			object=http://www.w3.org/2000/01/rdf-schema#Resource
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:compatibilityClass
 		/>
@@ -7227,7 +10421,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#token
+			object=http://www.w3.org/2000/01/rdf-schema#Resource
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:conceptKind
 		/>
@@ -7299,7 +10493,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#token
+			object=http://www.w3.org/2000/01/rdf-schema#Resource
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:defaultValueType
 		/>
@@ -7353,7 +10547,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#token
+			object=http://www.w3.org/2000/01/rdf-schema#Resource
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:entityEligibility
 		/>
@@ -7659,7 +10853,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#token
+			object=http://www.w3.org/2000/01/rdf-schema#Resource
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:ordering
 		/>
@@ -7713,7 +10907,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#token
+			object=http://www.w3.org/2000/01/rdf-schema#Resource
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:priority
 		/>
@@ -7811,24 +11005,6 @@
 		<RdfTriple
 			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
-			subject=urn:codex:bootstrap:trait:tag
-		/>
-
-		<RdfTriple
-			lexical="tag"
-			predicate=http://www.w3.org/2000/01/rdf-schema#label
-			subject=urn:codex:bootstrap:trait:tag
-		/>
-
-		<RdfTriple
-			object=urn:codex:bootstrap:datatype:text
-			predicate=http://www.w3.org/2000/01/rdf-schema#range
-			subject=urn:codex:bootstrap:trait:tag
-		/>
-
-		<RdfTriple
-			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
-			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:trait:target
 		/>
 
@@ -7911,7 +11087,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#token
+			object=http://www.w3.org/2000/01/rdf-schema#Resource
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:type
 		/>
@@ -7965,7 +11141,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#token
+			object=http://www.w3.org/2000/01/rdf-schema#Resource
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:valueType
 		/>
@@ -8019,7 +11195,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#token
+			object=http://www.w3.org/2000/01/rdf-schema#Resource
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:versionScheme
 		/>
@@ -8037,7 +11213,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#token
+			object=http://www.w3.org/2000/01/rdf-schema#Resource
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:whitespaceMode
 		/>

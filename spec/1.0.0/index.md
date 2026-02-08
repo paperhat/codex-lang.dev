@@ -149,7 +149,7 @@ Well-formedness checking includes mechanically recognizing and classifying Value
 
 Expected types and type constraints for Trait values are schema-defined; checking a Trait value against its expected `ValueType` is part of schema validation and therefore requires an explicit governing schema.
 
-The bootstrap schema-of-schemas provides a built-in governing schema only for schema documents (§12.4) and MUST NOT be used as a fallback governing schema for instance documents.
+The bootstrap schema-of-schemas provides a built-in governing schema only for schema documents (§12.3) and MUST NOT be used as a fallback governing schema for instance documents.
 
 In this document, the term **schema validation** refers only to the schema-based semantic phase. When referring to the schema-free phase, this document uses **parse** and **check well-formedness**.
 
@@ -1262,6 +1262,8 @@ IRI Reference Values MUST NOT contain Unicode bidirectional control characters.
 
 IRI Reference Values MUST NOT contain Unicode private-use characters.
 
+An IRI Reference Value MUST NOT end with a `:` character.
+
 An IRI Reference Value MUST NOT be a Text Value.
 
 IRI Reference Values MUST be compared as opaque sequences of Unicode scalar values (Unicode 16.0.0).
@@ -1383,6 +1385,7 @@ In the Surface Form, a map key MUST be one of:
 - a Character Value
 - an integer Numeric Value
 - an Enumerated Token Value
+- an IRI Reference Value
 
 An unquoted identifier key MUST use camelCase.
 
@@ -2055,7 +2058,7 @@ While scanning for Value termination, Codex-conforming tools MUST respect balanc
 
 Except where permitted by a Value spelling (for example, within text and character literals), leading and trailing whitespace MUST NOT be treated as part of a Value.
 
-### 8.7.1 Multiline Value Literals
+#### 8.7.1 Multiline Value Literals
 
 Codex-conforming tools MUST accept multiline spellings for Value literals that use balanced delimiters, including list (`[...]`), set (`set[...]`), map (`map[...]`), tuple (`(...)`), and range forms.
 
@@ -2064,6 +2067,8 @@ Within a balanced Value literal:
 * Line breaks are treated as whitespace.
 * Whitespace between elements, entries, or delimiters is not significant.
 * Whitespace MUST NOT terminate the Value.
+
+In canonical surface form, optional whitespace within balanced Value literals MUST be removed. Canonical form uses no whitespace between elements, entries, delimiters, operators, or separators within a Value literal. Mandatory whitespace required by a specific production (for example, the space after comma in TypeParameters) is not optional and MUST be preserved.
 
 Outside of balanced delimiters, a Value literal MUST be fully contained on a single line.
 
@@ -2538,8 +2543,11 @@ Simplified Authoring Mode MUST support explicit validator definitions that make 
 
 `ValidatorDefinition` defines one validator.
 
+A `ValidatorDefinition` is an Entity.
+
 Each `ValidatorDefinition` MUST have these traits:
 
+- `id` (required; IRI Reference Value)
 - `name` (required; Concept name per §4 Naming Rules)
 - `message` (optional; Text Value)
 
@@ -2938,6 +2946,7 @@ Because `id` has no `traitPredicateIri` representation in the instance graph, sc
 `valueTerm(v)` MUST be:
 
 - an IRI when `v` is an IRI Reference Value
+- an IRI when `v` is an Enumerated Token Value and the governing trait is constrained by an `EnumeratedValueSet` (see below)
 - otherwise a typed literal
 
 In this section, `xsd:*` refers to the XML Schema datatypes namespace.
@@ -2973,6 +2982,18 @@ Lookup Token Values MUST be represented as typed literals with:
 - datatype: `urn:cdx:value-type:LookupToken`
 - lexical form: the canonical surface spelling (for example, `~myToken`)
 
+When an Enumerated Token Value `v` appears on a trait that is constrained by an `EnumeratedValueSet` `E` (via `AllowedValues` containing an `EnumeratedConstraint` referencing `E`), `valueTerm(v)` MUST be the IRI:
+
+- `E.id + "#" + tokenName(v)`
+
+where `tokenName(v)` is the token name without the `$` sigil.
+
+This rule applies regardless of where the Enumerated Token Value appears in the trait's value structure. If the trait value is a collection (List, Set, Map, Record, Tuple, or Range) whose elements are Enumerated Token Values, each element `v` MUST independently produce an IRI via the same rule.
+
+If the trait is constrained only by `ValueIsOneOf` (not by an `EnumeratedConstraint` referencing an `EnumeratedValueSet`), Enumerated Token Values fall through to the typed literal case above. `ValueIsOneOf` does not provide an `EnumeratedValueSet` from which to derive an IRI base.
+
+If the trait is not constrained by any `EnumeratedValueSet`, the Enumerated Token Value falls through to the typed literal case above.
+
 If a schema constraint requires an interpreted value (for example, numeric comparisons or text length), schema processing MUST either provide the interpreted value in a deterministic RDF representation or fail with a `SchemaError` (§14).
 
 #### 9.7.9 Content
@@ -2991,8 +3012,7 @@ Trait predicate IRIs MUST be derived as follows.
 
 For a trait name `t`:
 
-- If the governing schema contains exactly one `TraitDefinition` for `t` and that `TraitDefinition` has an `id`, `traitPredicateIri(t)` MUST be that `id`.
-- If the governing schema contains exactly one `TraitDefinition` for `t` and that `TraitDefinition` has no `id`, `traitPredicateIri(t)` MUST be `schemaIri + "#trait/" + t`.
+- If the governing schema contains exactly one `TraitDefinition` for `t`, `traitPredicateIri(t)` MUST be that `TraitDefinition`'s `id`.
 - If the governing schema contains zero `TraitDefinition` entries for `t`, validation MUST fail with a `SchemaError` (§14).
 - If the governing schema contains more than one `TraitDefinition` for `t`, validation MUST fail with a `SchemaError` (§14).
 
@@ -3793,7 +3813,7 @@ A schema-less formatter:
 
 Schema-less formatting is not validation. It exists to produce a consistent surface form without consulting schema meaning.
 
-### 10.2.1.1 Schema-less Content Mode Determination
+##### 10.2.1.1 Schema-less Content Mode Determination
 In schema-less formatting and canonicalization mode, the parser MUST determine a Concept instance’s body mode mechanically as follows:
 
 * Let the body lines be the lines between the Concept instance's opening marker and its matching closing marker (or empty for a self-closing marker).
@@ -3862,6 +3882,7 @@ Canonicalization is divided into two phases:
 - canonical placement of self-closing markers
 - canonical inline-annotation whitespace collapse
 - canonical text escaping
+- canonical Value literal whitespace (optional whitespace within Value literals MUST be removed; mandatory whitespace required by a specific production MUST be preserved)
 - alphabetical ordering of Traits by Trait name
 - preservation of Concept and Content order
 - content indentation normalization (§8.8.3)
@@ -4026,7 +4047,7 @@ Derived representations (for example, SHACL or RDF graphs) MUST NOT introduce se
 
 The Codex language invariants governing schema-first processing, determinism, and failure rules are defined in §9.
 
-The schema definition language is bootstrapped by a built-in **schema-of-schemas**, which itself is expressed using this language. See §12.4.
+The schema definition language is bootstrapped by a built-in **schema-of-schemas**, which itself is expressed using this language. See §12.3.
 
 ---
 
@@ -4070,6 +4091,10 @@ A `Schema` Concept MUST declare the following Traits:
 
   Declares the version comparison scheme used to order schema versions within the schema lineage. Allowed values and comparison rules are defined in §13.4.
 
+* `authoringMode` (required; Enumerated Token Value)
+
+  Declares the authoring mode for the schema. See §9.4.
+
 * `compatibilityClass` (required; Enumerated Token Value)
   One of:
 
@@ -4080,10 +4105,9 @@ A `Schema` Concept MUST declare the following Traits:
 
 The following Traits are optional:
 
+* `key` (optional; Lookup Token Value)
 * `title` (optional; Text Value)
 * `description` (optional; Text Value)
-
-The `Schema` Concept MUST declare exactly one authoring mode via the `authoringMode` Trait, as defined in §9.4.
 
 If `authoringMode` is missing, invalid, or mixed, schema processing MUST fail with a `SchemaError` (§14).
 
@@ -4148,7 +4172,9 @@ A `ConceptDefinition` is an Entity.
 * `key` (optional; Lookup Token Value)
 * `name` (required; Concept name, per §4 Naming Rules)
 * `conceptKind` (required; `$Semantic | $Structural | $ValueLike`)
+* `description` (optional; Text Value)
 * `entityEligibility` (required; `$MustBeEntity | $MustNotBeEntity`)
+* `role` (optional; Text Value)
 
 ##### Children
 A `ConceptDefinition` is permitted to contain, in any order:
@@ -4218,17 +4244,31 @@ Traits:
 
 * `name` (required; Trait name, per §4)
 
+Children (optional):
+
+* `AllowedValues` — narrows the set of valid values for this trait on this concept (see below)
+
 ###### `AllowsTrait`
 
 Traits:
 
 * `name` (required; Trait name, per §4)
 
+Children (optional):
+
+* `AllowedValues` — narrows the set of valid values for this trait on this concept (see below)
+
 ###### `ForbidsTrait`
 
 Traits:
 
 * `name` (required; Trait name, per §4)
+
+###### Concept-Level `AllowedValues` Narrowing
+
+When `AllowedValues` appears as a child of `RequiresTrait` or `AllowsTrait`, it further narrows the `AllowedValues` declared on the referenced `TraitDefinition`. The concept-level allowed values MUST be a subset of the `TraitDefinition`-level allowed values. If both exist, the concept-level constraint governs.
+
+In the Canonical Representation, concept-level `AllowedValues` translates to an additional `sh:property` shape on the concept's NodeShape with `sh:path` equal to the trait's predicate IRI and `sh:in` equal to the concept-level allowed values list.
 
 ##### Defaults
 
@@ -4362,11 +4402,14 @@ In canonical surface form, children of an `$Unordered` collection MUST be sorted
 
 Defines a Trait independently of any Concept.
 
+A `TraitDefinition` is an Entity.
+
 Trait definitions establish the value type and constraints for a Trait that may be used across multiple Concepts.
 
 ###### Traits
-* `id` (optional; IRI reference)
+* `id` (required; IRI Reference Value)
 * `name` (required; Trait name per §4 Naming Rules)
+* `description` (optional; Text Value)
 * `defaultValueType` (required unless `defaultValueTypes` is provided; value type token, optionally parameterized per §5.18)
 * `defaultValueTypes` (required unless `defaultValueType` is provided; list of one or more value type tokens, optionally parameterized per §5.18)
 * `isReferenceTrait` (optional; boolean)
@@ -4413,7 +4456,7 @@ Whether a trait must, may, or must not appear on a Concept instance is governed 
 	defaultValueType=$EnumeratedToken
 >
 	<AllowedValues>
-		<ValueIsOneOf values=[$Grams, $Kilograms, $Milliliters, $Liters, $Units] />
+		<ValueIsOneOf values=[$Grams,$Kilograms,$Milliliters,$Liters,$Units] />
 	</AllowedValues>
 </TraitDefinition>
 
@@ -4424,7 +4467,7 @@ Whether a trait must, may, or must not appear on a Concept instance is governed 
 
 <TraitDefinition
 	name="role"
-	defaultValueTypes=[$Text, $List<$Text>]
+	defaultValueTypes=[$Text,$List<$Text>]
 />
 ```
 
@@ -4435,7 +4478,7 @@ Whether a trait must, may, or must not appear on a Concept instance is governed 
 Constrains the values a Trait may accept.
 
 ##### Children
-One or more value constraints:
+Exactly one of:
 
 * `ValueIsOneOf` — value must be in explicit list
 * `EnumeratedConstraint` — value must be member of named enumeration
@@ -4538,6 +4581,8 @@ If a schema constrains a value using a built-in value type token, and a Trait va
 
 A `ValueTypeDefinition` defines a **schema-specific named value type** with additional validation semantics.
 
+A `ValueTypeDefinition` is an Entity.
+
 Schema-defined value types are referenced using Enumerated Token Values whose name matches the `ValueTypeDefinition.name`.
 
 ##### Container
@@ -4545,7 +4590,7 @@ Schema-defined value types are referenced using Enumerated Token Values whose na
 `ValueTypeDefinitions` is a container Concept holding one or more `ValueTypeDefinition` children.
 
 ##### Traits
-* `id` (optional; IRI Reference Value)
+* `id` (required; IRI Reference Value)
 * `name` (required; Concept name per §4 Naming Rules)
 * `baseValueType` (required; built-in value type token)
 * `validatorName` (optional; Enumerated Token Value identifying a `ValidatorDefinition`)
@@ -4576,8 +4621,13 @@ Enumerated value sets are used exclusively by constraints and Trait definitions;
 
 Defines a closed set of enumerated tokens.
 
+An `EnumeratedValueSet` is an Entity.
+
 ###### Traits
+* `id` (required; IRI Reference Value)
+* `key` (optional; Lookup Token Value)
 * `name` (required; Concept name per §4 Naming Rules)
+* `description` (optional; Text Value)
 
 ###### Children
 One or more `Member` children.
@@ -6069,7 +6119,7 @@ If any of the above information is not applicable, the tool MUST omit it explici
 
 Error wording, formatting, and presentation are tool-defined, but classification and attribution MUST be precise and deterministic.
 
-#### 14.6.1 Error Payload Shape (Recommended)
+#### 14.5.1 Error Payload Shape (Recommended)
 
 This specification does not mandate a serialization format (JSON, CBOR, exceptions, etc.).
 However, to ensure cross-tool interoperability and stable automated testing, tools SHOULD expose errors in a structured form with stable fields.
@@ -7169,6 +7219,7 @@ MapKey
 	| CharValue
 	| Integer
 	| EnumeratedToken
+	| IriReference
 	;
 
 MapIdentifier
@@ -7425,19 +7476,19 @@ This grammar uses standard PEG notation:
 # A Codex document contains exactly one root Concept.
 # Surface-form rules constrain root count, blank-line placement, and annotation kinds.
 
-Document <- LeadingAnnotationBlocks? RootConcept TrailingBlankLines EOF
+Document <- OptionalLeadingAnnotations? RootConcept OptionalTrailingBlankLines EOF
 
-LeadingAnnotationBlocks <- (BlankLine* Annotation BlankLine*)*
+OptionalLeadingAnnotations <- GeneralOrGroupingAnnotationBlock*
+GeneralOrGroupingAnnotationBlock <- BlankLine* Annotation BlankLine*
 
-TrailingBlankLines <- BlankLine*
+OptionalTrailingBlankLines <- BlankLine*
 
 RootConcept <- ConceptAtColumn0
 
-ConceptAtColumn0 <- BOL BlockConcept
-                 / BOL SelfClosingConcept Newline
+ConceptAtColumn0 <- ConceptLineStart0 BlockConcept
+                 / ConceptLineStart0 SelfClosingConcept Newline
 
-BOL <- &(StartOfFile / Newline)
-StartOfFile <- !.
+ConceptLineStart0 <- &(!. / Newline)
 
 Concept <- BlockConcept / SelfClosingConcept
 ```
@@ -7470,7 +7521,8 @@ ChildrenBody <- ChildItem*
 
 ChildItem <- BlankLine / AnnotationLine / AnnotationBlock / ConceptLine
 
-ConceptLine <- Indentation (SelfClosingMarker / Concept) Newline
+ConceptLine <- Indentation ConceptMarkerOrConcept Newline
+ConceptMarkerOrConcept <- SelfClosingMarker / Concept
 
 ContentBody <- ContentLine*
 
@@ -7513,7 +7565,7 @@ Digit <- [0-9]
 # Newline is permitted in Whitespace, enabling multi-line trait layout;
 # formatting rules define canonical layout.
 
-Traits <- (WhitespaceNoNewline Trait (Whitespace Trait)*) / (Whitespace Trait (Whitespace Trait)*)
+Traits <- WhitespaceNoNewline Trait (Whitespace Trait)*
 
 Trait <- TraitName '=' Value
 
@@ -7561,7 +7613,8 @@ UrlValue <- 'url' '(' WhitespaceChar* TextValue WhitespaceChar* (',' WhitespaceC
 
 ```peg
 TextValue <- '"' TextCharacter* '"'
-TextCharacter <- EscapeSequence / (!["\\\n] .)
+TextCharacter <- EscapeSequence / UnescapedTextCharacter
+UnescapedTextCharacter <- !["\\\n] .
 EscapeSequence <- '\\' ( ["\\nrt] / UnicodeEscape )
 UnicodeEscape <- 'u' HexDigit HexDigit HexDigit HexDigit
              / 'u{' HexDigit+ '}'
@@ -7574,8 +7627,9 @@ HexDigit <- [0-9A-Fa-f]
 
 ```peg
 CharValue <- "'" CharContent "'"
-CharContent <- CharEscapeSequence / (!['\\\n] .)
-CharEscapeSequence <- '\\' ( ["'\\nrt] / UnicodeEscape )
+CharContent <- CharEscapeSequence / UnescapedChar
+UnescapedChar <- !['\\\n] .
+CharEscapeSequence <- '\\' ( ['\\nrt] / UnicodeEscape )
 ```
 
 ---
@@ -7620,11 +7674,12 @@ Infinity <- PositiveInfinity / NegativeInfinity
 PositiveInfinity <- 'Infinity'
 NegativeInfinity <- '-' 'Infinity'
 
-Integer <- '0' / '-'? [1-9] Digit*
+Integer <- '0' / '-'? NonZeroDigit Digit*
 
 Sign <- [+-]
+NonZeroDigit <- [1-9]
 DigitSequence <- Digit+
-IntegerDigits <- '0' / [1-9] Digit*
+IntegerDigits <- '0' / NonZeroDigit Digit*
 ```
 
 ---
@@ -7718,7 +7773,7 @@ SetItems <- Value (WhitespaceChar* ',' WhitespaceChar* Value)*
 MapValue <- 'map' '[' WhitespaceChar* MapItems? WhitespaceChar* ']'
 MapItems <- MapEntry (WhitespaceChar* ',' WhitespaceChar* MapEntry)*
 MapEntry <- MapKey WhitespaceChar* ':' WhitespaceChar* Value
-MapKey <- MapIdentifier / TextValue / CharValue / Integer / EnumeratedToken
+MapKey <- MapIdentifier / TextValue / CharValue / Integer / EnumeratedToken / IriReference
 MapIdentifier <- LowercaseLetter (Letter / Digit)*
 ```
 
@@ -7771,7 +7826,9 @@ HexOctet <- HexDigit HexDigit
 # Color spellings are accepted as declarative literals; semantic validity is checked
 # during schema-driven semantic validation (§5.7).
 
-ColorValue <- HexColor / NamedColor / RgbFunc / HslFunc / HwbFunc / LabFunc / LchFunc / OklabFunc / OklchFunc / ColorFunc / ColorMixFunc / DeviceCmykFunc / RelativeColorFunc
+ColorValue <- HexColor / FunctionColor / NamedColor
+
+FunctionColor <- RgbFunc / HslFunc / HwbFunc / LabFunc / LchFunc / OklabFunc / OklchFunc / ColorFunc / ColorMixFunc / DeviceCmykFunc / RelativeColorFunc
 
 HexColor <- '#' (HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
               / HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
@@ -7793,8 +7850,9 @@ ColorComma <- ColorWhitespaceOptional ',' ColorWhitespaceOptional
 RgbComponent <- ColorPercentage / ColorRealNumber
 HueComponent <- ColorRealNumber
 
-RgbColorSpace <- 'srgb' / 'srgb-linear' / 'display-p3' / 'a98-rgb' / 'prophoto-rgb' / 'rec2020'
-XyzColorSpace <- 'xyz' / 'xyz-d50' / 'xyz-d65'
+RgbColorSpace <- 'srgb-linear' / 'srgb' / 'display-p3' / 'a98-rgb' / 'prophoto-rgb' / 'rec2020'
+XyzColorSpace <- 'xyz-d50' / 'xyz-d65' / 'xyz'
+ColorSpace <- RgbColorSpace / XyzColorSpace
 
 ColorRgbArgs <- RgbComponent ColorWhitespace RgbComponent ColorWhitespace RgbComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 ColorXyzArgs <- ColorRealNumber ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
@@ -7831,7 +7889,7 @@ CmykComponent <- ColorPercentage / ColorRealNumber
 DeviceCmykFunc <- 'device-cmyk' '(' ColorWhitespaceOptional DeviceCmykArgs ColorWhitespaceOptional ')'
 DeviceCmykArgs <- CmykComponent ColorWhitespace CmykComponent ColorWhitespace CmykComponent ColorWhitespace CmykComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-ColorMixFunc <- 'color-mix' '(' ColorWhitespaceOptional 'in' ColorWhitespace (RgbColorSpace / XyzColorSpace) ColorComma ColorMixStop (ColorComma ColorMixStop)+ ColorWhitespaceOptional ')'
+ColorMixFunc <- 'color-mix' '(' ColorWhitespaceOptional 'in' ColorWhitespace ColorSpace ColorComma ColorMixStop (ColorComma ColorMixStop)+ ColorWhitespaceOptional ')'
 ColorMixStop <- ColorValue (ColorWhitespace ColorPercentage)?
 
 RelativeColorFunc <- RelativeRgbFunc / RelativeHslFunc / RelativeHwbFunc / RelativeLabFunc / RelativeLchFunc / RelativeOklabFunc / RelativeOklchFunc / RelativeColorFuncColor
@@ -7862,9 +7920,9 @@ RelativeOklchArgs <- (ColorRealNumber / 'l') ColorWhitespace (ColorRealNumber / 
 RelativeOklchFunc <- 'oklch' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeOklchArgs ColorWhitespaceOptional ')'
 
 RelativeColorChannel <- 'r' / 'g' / 'b' / 'x' / 'y' / 'z'
-RelativeColorComponent <- ColorRealNumber / ColorPercentage / RelativeColorChannel
+RelativeColorComponent <- ColorPercentage / ColorRealNumber / RelativeColorChannel
 RelativeColorArgs <- RelativeColorComponent ColorWhitespace RelativeColorComponent ColorWhitespace RelativeColorComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
-RelativeColorFuncColor <- 'color' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace (RgbColorSpace / XyzColorSpace) ColorWhitespace RelativeColorArgs ColorWhitespaceOptional ')'
+RelativeColorFuncColor <- 'color' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace ColorSpace ColorWhitespace RelativeColorArgs ColorWhitespaceOptional ')'
 ```
 
 ---
@@ -7875,9 +7933,9 @@ RelativeColorFuncColor <- 'color' '(' ColorWhitespaceOptional 'from' ColorWhites
 # IRI references are fallback unquoted values that contain ':'.
 # Exact RFC 3987 profiling is enforced by surface-form validation, not this PEG.
 
-IriReference <- IriScheme ':' IriBody
+IriReference <- IriScheme ':' IriTokenBody
 IriScheme <- Letter (Letter / Digit / [+\-\.])*
-IriBody <- IriTokenChar*
+IriTokenBody <- IriTokenChar*
 IriTokenChar <- !ValueTerminator .
 ```
 
@@ -7888,16 +7946,18 @@ IriTokenChar <- !ValueTerminator .
 ```peg
 Annotation <- AnnotationLine / AnnotationBlock
 
-AnnotationLine <- Indentation '[' AnnotationChar* ']' [ \t]* Newline
+AnnotationLine <- Indentation '[' AnnotationChar* ']' Newline
 
-AnnotationBlock <- Indentation '[' [ \t]* Newline AnnotationBlockLine* Indentation ']' [ \t]* Newline
+AnnotationBlock <- Indentation '[' Newline AnnotationBlockLine* Indentation ']' Newline
 
 AnnotationBlockLine <- Indentation AnnotationBlockChar* Newline
 
-AnnotationChar <- AnnotationEscape / (!(']' / '\n') .)
+AnnotationChar <- AnnotationEscape / UnescapedAnnotationChar
+UnescapedAnnotationChar <- !(']' / '\n') .
 AnnotationEscape <- '\\' ']'
 
-AnnotationBlockChar <- AnnotationEscape / (!'\n' .)
+AnnotationBlockChar <- AnnotationEscape / UnescapedAnnotationBlockChar
+UnescapedAnnotationBlockChar <- !'\n' .
 ```
 
 ---
@@ -7910,7 +7970,8 @@ Newline <- '\n'
 WhitespaceChar <- [ \t\n]
 Whitespace <- WhitespaceChar+
 
-WhitespaceNoNewline <- [ \t]+
+WhitespaceNoNewlineChar <- [ \t]
+WhitespaceNoNewline <- WhitespaceNoNewlineChar+
 
 BlankLine <- Newline
 
