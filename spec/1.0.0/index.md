@@ -5090,6 +5090,30 @@ Constrains the value type of a Trait.
 
 ---
 
+##### `TraitLessOrEqual`
+
+Asserts that the numeric value of one Trait is less than or equal to the numeric value of another Trait on the same focus node.
+
+The constraint is vacuously satisfied if either Trait is absent from the focus node.
+
+###### Traits
+* `leftTrait` (required; Trait name per §4)
+* `rightTrait` (required; Trait name per §4)
+
+###### SHACL Expansion
+
+Produces a SHACL-SPARQL constraint that selects the focus node when the left value exceeds the right value:
+
+```sparql
+SELECT $this WHERE {
+  $this <traitPredicateIri(leftTrait)> ?left .
+  $this <traitPredicateIri(rightTrait)> ?right .
+  FILTER(?left > ?right)
+}
+```
+
+---
+
 #### 11.10.2 Value Constraints
 
 Value constraints apply to values selected by paths or Traits.

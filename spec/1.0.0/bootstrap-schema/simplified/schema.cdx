@@ -105,15 +105,6 @@
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet
-			id=urn:codex:bootstrap:enum:Cardinality
-			key=~cardinality
-			name="Cardinality"
-		>
-			<Member description="Trait accepts a single value." label="Single" value="Single" />
-			<Member description="Trait accepts a list of values." label="List" value="List" />
-		</EnumeratedValueSet>
-
-		<EnumeratedValueSet
 			id=urn:codex:bootstrap:enum:ValueType
 			key=~valueType
 			name="ValueType"
@@ -789,6 +780,7 @@
 					<ConceptOption conceptSelector="TraitEquals" />
 					<ConceptOption conceptSelector="TraitCardinality" />
 					<ConceptOption conceptSelector="TraitValueType" />
+					<ConceptOption conceptSelector="TraitLessOrEqual" />
 					<ConceptOption conceptSelector="ValueIsOneOf" />
 					<ConceptOption conceptSelector="ValueMatchesPattern" />
 					<ConceptOption conceptSelector="PatternConstraint" />
@@ -1097,6 +1089,19 @@
 			<TraitRules>
 				<RequiresTrait name="trait" />
 				<RequiresTrait name="valueType" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:concept:TraitLessOrEqual
+			key=~traitLessOrEqual
+			name="TraitLessOrEqual"
+		>
+			<TraitRules>
+				<RequiresTrait name="leftTrait" />
+				<RequiresTrait name="rightTrait" />
 			</TraitRules>
 		</ConceptDefinition>
 
@@ -1581,16 +1586,9 @@
 		/>
 
 		<TraitDefinition
-			defaultValueTypes=[$Text, $List<$Text>]
+			defaultValueTypes=[$Text,$List<$Text>]
 			id=urn:codex:bootstrap:trait:role
 			name="role"
-			priority=$Secondary
-		/>
-
-		<TraitDefinition
-			defaultValueTypes=[$Text, $List<$Text>]
-			id=urn:codex:bootstrap:trait:tag
-			name="tag"
 			priority=$Secondary
 		/>
 
@@ -1651,7 +1649,7 @@
 		[GROUP: Reference Traits]
 
 		<TraitDefinition
-			defaultValueTypes=[$IriReference, $LookupToken]
+			defaultValueTypes=[$IriReference,$LookupToken]
 			id=urn:codex:bootstrap:trait:reference
 			isReferenceTrait=true
 			name="reference"
@@ -1659,7 +1657,7 @@
 		/>
 
 		<TraitDefinition
-			defaultValueTypes=[$IriReference, $LookupToken]
+			defaultValueTypes=[$IriReference,$LookupToken]
 			id=urn:codex:bootstrap:trait:target
 			isReferenceTrait=true
 			name="target"
@@ -1667,7 +1665,7 @@
 		/>
 
 		<TraitDefinition
-			defaultValueTypes=[$IriReference, $LookupToken]
+			defaultValueTypes=[$IriReference,$LookupToken]
 			id=urn:codex:bootstrap:trait:for
 			isReferenceTrait=true
 			name="for"
@@ -1908,6 +1906,20 @@
 			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:type
 			name="type"
+			priority=$Primary
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:trait:leftTrait
+			name="leftTrait"
+			priority=$Primary
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:trait:rightTrait
+			name="rightTrait"
 			priority=$Primary
 		/>
 
@@ -2211,6 +2223,60 @@
 
 		[END: Collection Duplicate Constraints]
 
+		[GROUP: AllowsChildConcept Constraints]
+
+		<ConstraintDefinition
+			description="AllowsChildConcept min must be >= 0."
+			id=urn:codex:bootstrap:constraint:allows-child-concept-min-non-negative
+			title="AllowsChildConcept min must be non-negative"
+		>
+			<Targets>
+				<TargetConcept conceptSelector="AllowsChildConcept" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitExists trait="min" />
+					</When>
+					<Then>
+						<OnPathExists>
+							<TraitPath traitName="min" />
+							<Rule>
+								<ValueInNumericRange min=0 />
+							</Rule>
+						</OnPathExists>
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			description="AllowsChildConcept max must be >= 1."
+			id=urn:codex:bootstrap:constraint:allows-child-concept-max-positive
+			title="AllowsChildConcept max must be positive"
+		>
+			<Targets>
+				<TargetConcept conceptSelector="AllowsChildConcept" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitExists trait="max" />
+					</When>
+					<Then>
+						<OnPathExists>
+							<TraitPath traitName="max" />
+							<Rule>
+								<ValueInNumericRange min=1 />
+							</Rule>
+						</OnPathExists>
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		[END: AllowsChildConcept Constraints]
+
 		[GROUP: RequiresChildConcept Constraints]
 
 		<ConstraintDefinition
@@ -2229,6 +2295,31 @@
 					<Then>
 						<OnPathExists>
 							<TraitPath traitName="min" />
+							<Rule>
+								<ValueInNumericRange min=1 />
+							</Rule>
+						</OnPathExists>
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			description="RequiresChildConcept max must be >= 1."
+			id=urn:codex:bootstrap:constraint:requires-child-concept-max-positive
+			title="RequiresChildConcept max must be positive"
+		>
+			<Targets>
+				<TargetConcept conceptSelector="RequiresChildConcept" />
+			</Targets>
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<TraitExists trait="max" />
+					</When>
+					<Then>
+						<OnPathExists>
+							<TraitPath traitName="max" />
 							<Rule>
 								<ValueInNumericRange min=1 />
 							</Rule>
@@ -2843,6 +2934,101 @@
 		</ConstraintDefinition>
 
 		[END: Non-Empty Container Constraints]
+
+		[GROUP: Min/Max Ordering Constraints]
+
+		<ConstraintDefinition
+			description="AllowsChildConcept min must be <= max."
+			id=urn:codex:bootstrap:constraint:allows-child-concept-min-max-ordering
+			title="AllowsChildConcept min <= max"
+		>
+			<Targets>
+				<TargetConcept conceptSelector="AllowsChildConcept" />
+			</Targets>
+			<Rule>
+				<TraitLessOrEqual leftTrait="min" rightTrait="max" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			description="RequiresChildConcept min must be <= max."
+			id=urn:codex:bootstrap:constraint:requires-child-concept-min-max-ordering
+			title="RequiresChildConcept min <= max"
+		>
+			<Targets>
+				<TargetConcept conceptSelector="RequiresChildConcept" />
+			</Targets>
+			<Rule>
+				<TraitLessOrEqual leftTrait="min" rightTrait="max" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			description="TraitCardinality min must be <= max."
+			id=urn:codex:bootstrap:constraint:trait-cardinality-min-max-ordering
+			title="TraitCardinality min <= max"
+		>
+			<Targets>
+				<TargetConcept conceptSelector="TraitCardinality" />
+			</Targets>
+			<Rule>
+				<TraitLessOrEqual leftTrait="min" rightTrait="max" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			description="ValueLength min must be <= max."
+			id=urn:codex:bootstrap:constraint:value-length-min-max-ordering
+			title="ValueLength min <= max"
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ValueLength" />
+			</Targets>
+			<Rule>
+				<TraitLessOrEqual leftTrait="min" rightTrait="max" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			description="ValueInNumericRange min must be <= max."
+			id=urn:codex:bootstrap:constraint:value-in-numeric-range-min-max-ordering
+			title="ValueInNumericRange min <= max"
+		>
+			<Targets>
+				<TargetConcept conceptSelector="ValueInNumericRange" />
+			</Targets>
+			<Rule>
+				<TraitLessOrEqual leftTrait="min" rightTrait="max" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			description="MemberCount min must be <= max."
+			id=urn:codex:bootstrap:constraint:member-count-min-max-ordering
+			title="MemberCount min <= max"
+		>
+			<Targets>
+				<TargetConcept conceptSelector="MemberCount" />
+			</Targets>
+			<Rule>
+				<TraitLessOrEqual leftTrait="min" rightTrait="max" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition
+			description="OnPathCount minCount must be <= maxCount."
+			id=urn:codex:bootstrap:constraint:on-path-count-min-max-ordering
+			title="OnPathCount minCount <= maxCount"
+		>
+			<Targets>
+				<TargetConcept conceptSelector="OnPathCount" />
+			</Targets>
+			<Rule>
+				<TraitLessOrEqual leftTrait="minCount" rightTrait="maxCount" />
+			</Rule>
+		</ConstraintDefinition>
+
+		[END: Min/Max Ordering Constraints]
 
 	</ConstraintDefinitions>
 </Schema>

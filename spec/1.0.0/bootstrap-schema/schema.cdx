@@ -5776,6 +5776,95 @@
 		<RdfTriple
 			object=http://www.w3.org/ns/shacl#NodeShape
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:TraitLessOrEqual#shape/property/trait/leftTrait
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:TraitLessOrEqual#shape/property/trait/rightTrait
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:concept:TraitLessOrEqual
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#boolean
+			lexical="true"
+			predicate=http://www.w3.org/ns/shacl#closed
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:shacl:ignoredProperties#list/1
+			predicate=http://www.w3.org/ns/shacl#ignoredProperties
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape/property/trait/leftTrait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape/property/trait/leftTrait
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:leftTrait
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape/property/trait/leftTrait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape/property/trait/leftTrait
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape/property/trait/rightTrait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape/property/trait/rightTrait
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:trait:rightTrait
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape/property/trait/rightTrait
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:concept:TraitLessOrEqual#shape/property/trait/rightTrait
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:concept:UniqueConstraint#shape
 		/>
 
@@ -8872,13 +8961,13 @@
 		/>
 
 		<RdfTriple
-			lexical="Rule must have exactly one child of: AllOf, AnyOf, Not, ConditionalConstraint, OnPathExists, OnPathForAll, OnPathCount, TraitExists, TraitMissing, TraitEquals, TraitCardinality, TraitValueType, ValueIsOneOf, ValueMatchesPattern, PatternConstraint, ValueLength, ValueInNumericRange, ValueIsNonEmpty, ValueIsValid, ChildConstraint, ChildSatisfies, CollectionOrdering, CollectionAllowsEmpty, CollectionAllowsDuplicates, MemberCount, EachMemberSatisfies, UniqueConstraint, OrderConstraint, ReferenceConstraint, IdentityConstraint, ContextConstraint, ContentConstraint"
+			lexical="Rule must have exactly one child of: AllOf, AnyOf, Not, ConditionalConstraint, OnPathExists, OnPathForAll, OnPathCount, TraitExists, TraitMissing, TraitEquals, TraitCardinality, TraitValueType, TraitLessOrEqual, ValueIsOneOf, ValueMatchesPattern, PatternConstraint, ValueLength, ValueInNumericRange, ValueIsNonEmpty, ValueIsValid, ChildConstraint, ChildSatisfies, CollectionOrdering, CollectionAllowsEmpty, CollectionAllowsDuplicates, MemberCount, EachMemberSatisfies, UniqueConstraint, OrderConstraint, ReferenceConstraint, IdentityConstraint, ContextConstraint, ContentConstraint"
 			predicate=http://www.w3.org/ns/shacl#message
 			subject=urn:codex:bootstrap:constraint:rule-exactly-one-child-of#sparql
 		/>
 
 		<RdfTriple
-			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:AllOf> } UNION { ?child a <urn:codex:bootstrap:concept:AnyOf> } UNION { ?child a <urn:codex:bootstrap:concept:Not> } UNION { ?child a <urn:codex:bootstrap:concept:ConditionalConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:OnPathExists> } UNION { ?child a <urn:codex:bootstrap:concept:OnPathForAll> } UNION { ?child a <urn:codex:bootstrap:concept:OnPathCount> } UNION { ?child a <urn:codex:bootstrap:concept:TraitExists> } UNION { ?child a <urn:codex:bootstrap:concept:TraitMissing> } UNION { ?child a <urn:codex:bootstrap:concept:TraitEquals> } UNION { ?child a <urn:codex:bootstrap:concept:TraitCardinality> } UNION { ?child a <urn:codex:bootstrap:concept:TraitValueType> } UNION { ?child a <urn:codex:bootstrap:concept:ValueIsOneOf> } UNION { ?child a <urn:codex:bootstrap:concept:ValueMatchesPattern> } UNION { ?child a <urn:codex:bootstrap:concept:PatternConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ValueLength> } UNION { ?child a <urn:codex:bootstrap:concept:ValueInNumericRange> } UNION { ?child a <urn:codex:bootstrap:concept:ValueIsNonEmpty> } UNION { ?child a <urn:codex:bootstrap:concept:ValueIsValid> } UNION { ?child a <urn:codex:bootstrap:concept:ChildConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ChildSatisfies> } UNION { ?child a <urn:codex:bootstrap:concept:CollectionOrdering> } UNION { ?child a <urn:codex:bootstrap:concept:CollectionAllowsEmpty> } UNION { ?child a <urn:codex:bootstrap:concept:CollectionAllowsDuplicates> } UNION { ?child a <urn:codex:bootstrap:concept:MemberCount> } UNION { ?child a <urn:codex:bootstrap:concept:EachMemberSatisfies> } UNION { ?child a <urn:codex:bootstrap:concept:UniqueConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:OrderConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ReferenceConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:IdentityConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ContextConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ContentConstraint> } } GROUP BY $this } FILTER(?count != 1) }"
+			lexical="SELECT $this WHERE { { SELECT $this (COUNT(?child) AS ?count) WHERE { ?child <urn:codex:bootstrap:1.0.0#codex/parentNode> $this . { ?child a <urn:codex:bootstrap:concept:AllOf> } UNION { ?child a <urn:codex:bootstrap:concept:AnyOf> } UNION { ?child a <urn:codex:bootstrap:concept:Not> } UNION { ?child a <urn:codex:bootstrap:concept:ConditionalConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:OnPathExists> } UNION { ?child a <urn:codex:bootstrap:concept:OnPathForAll> } UNION { ?child a <urn:codex:bootstrap:concept:OnPathCount> } UNION { ?child a <urn:codex:bootstrap:concept:TraitExists> } UNION { ?child a <urn:codex:bootstrap:concept:TraitMissing> } UNION { ?child a <urn:codex:bootstrap:concept:TraitEquals> } UNION { ?child a <urn:codex:bootstrap:concept:TraitCardinality> } UNION { ?child a <urn:codex:bootstrap:concept:TraitValueType> } UNION { ?child a <urn:codex:bootstrap:concept:TraitLessOrEqual> } UNION { ?child a <urn:codex:bootstrap:concept:ValueIsOneOf> } UNION { ?child a <urn:codex:bootstrap:concept:ValueMatchesPattern> } UNION { ?child a <urn:codex:bootstrap:concept:PatternConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ValueLength> } UNION { ?child a <urn:codex:bootstrap:concept:ValueInNumericRange> } UNION { ?child a <urn:codex:bootstrap:concept:ValueIsNonEmpty> } UNION { ?child a <urn:codex:bootstrap:concept:ValueIsValid> } UNION { ?child a <urn:codex:bootstrap:concept:ChildConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ChildSatisfies> } UNION { ?child a <urn:codex:bootstrap:concept:CollectionOrdering> } UNION { ?child a <urn:codex:bootstrap:concept:CollectionAllowsEmpty> } UNION { ?child a <urn:codex:bootstrap:concept:CollectionAllowsDuplicates> } UNION { ?child a <urn:codex:bootstrap:concept:MemberCount> } UNION { ?child a <urn:codex:bootstrap:concept:EachMemberSatisfies> } UNION { ?child a <urn:codex:bootstrap:concept:UniqueConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:OrderConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ReferenceConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:IdentityConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ContextConstraint> } UNION { ?child a <urn:codex:bootstrap:concept:ContentConstraint> } } GROUP BY $this } FILTER(?count != 1) }"
 			predicate=http://www.w3.org/ns/shacl#select
 			subject=urn:codex:bootstrap:constraint:rule-exactly-one-child-of#sparql
 		/>
@@ -10699,6 +10788,24 @@
 		<RdfTriple
 			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
 			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:trait:leftTrait
+		/>
+
+		<RdfTriple
+			lexical="leftTrait"
+			predicate=http://www.w3.org/2000/01/rdf-schema#label
+			subject=urn:codex:bootstrap:trait:leftTrait
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:datatype:text
+			predicate=http://www.w3.org/2000/01/rdf-schema#range
+			subject=urn:codex:bootstrap:trait:leftTrait
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 			subject=urn:codex:bootstrap:trait:lexical
 		/>
 
@@ -10928,6 +11035,24 @@
 			object=http://www.w3.org/2001/XMLSchema#anyURI
 			predicate=http://www.w3.org/2000/01/rdf-schema#range
 			subject=urn:codex:bootstrap:trait:reference
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:trait:rightTrait
+		/>
+
+		<RdfTriple
+			lexical="rightTrait"
+			predicate=http://www.w3.org/2000/01/rdf-schema#label
+			subject=urn:codex:bootstrap:trait:rightTrait
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:datatype:text
+			predicate=http://www.w3.org/2000/01/rdf-schema#range
+			subject=urn:codex:bootstrap:trait:rightTrait
 		/>
 
 		<RdfTriple

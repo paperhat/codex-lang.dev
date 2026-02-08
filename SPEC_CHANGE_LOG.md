@@ -4,6 +4,33 @@ This file records all changes made to the Codex specification during implementat
 
 ---
 
+## 2026-02-08: Phase 8 — Simplified bootstrap parity and `TraitLessOrEqual` vocabulary extension
+
+**Sections:** §11.10.1 (new `TraitLessOrEqual` subsection)
+**Files:** `spec/1.0.0/index.md`, `spec/1.0.0/bootstrap-schema/simplified/schema.cdx`, `spec/1.0.0/bootstrap-schema/schema.cdx`
+
+**Changes:**
+
+1. **New `TraitLessOrEqual` atomic constraint** (§11.10.1): Cross-trait numeric comparison (`leftTrait <= rightTrait`). Two required Text traits (`leftTrait`, `rightTrait`). Vacuously satisfied when either trait is absent. SHACL expansion produces a SPARQL constraint selecting nodes where `?left > ?right`.
+
+2. **Simplified bootstrap — `TraitLessOrEqual` concept**: Added `ConceptDefinition` (in "Atomic Constraints - Trait" group), `ConceptOption` in Rule's `ExactlyOneChildOf`, and `TraitDefinition` entries for `leftTrait` and `rightTrait` (in "Constraint Traits" group).
+
+3. **Simplified bootstrap — 7 min/max ordering constraints**: New "Min/Max Ordering Constraints" group with `ConstraintDefinition` entries for: `allows-child-concept-min-max-ordering`, `requires-child-concept-min-max-ordering`, `trait-cardinality-min-max-ordering`, `value-length-min-max-ordering`, `value-in-numeric-range-min-max-ordering`, `member-count-min-max-ordering`, `on-path-count-min-max-ordering`.
+
+4. **Simplified bootstrap — 3 positivity constraints**: Added `allows-child-concept-min-non-negative` (min >= 0), `allows-child-concept-max-positive` (max >= 1), and `requires-child-concept-max-positive` (max >= 1). These match the existing canonical SHACL-SPARQL constraints.
+
+5. **Simplified bootstrap — removed vestigial `tag` TraitDefinition**: No concept references this trait. Already removed from canonical in Phase 7.
+
+6. **Simplified bootstrap — removed orphaned `Cardinality` enum**: `EnumeratedValueSet` with `Single`/`List` members. No trait references it. Already removed from canonical in Phase 7.
+
+7. **Simplified bootstrap — fixed list-typed trait value whitespace**: Removed space after comma in 4 `defaultValueTypes` list literals (`[$Text,$List<$Text>]`, `[$IriReference,$LookupToken]`).
+
+8. **Canonical bootstrap — `TraitLessOrEqual` NodeShape**: Added `sh:NodeShape` with `sh:closed true`, `sh:ignoredProperties`, and two required `PropertyShape` entries (`leftTrait`, `rightTrait`). Added `rdf:Property` declarations for both traits (3 triples each: `rdf:type`, `rdfs:label`, `rdfs:range`). Updated Rule's `ExactlyOneChildOf` SPARQL constraint message and query to include `TraitLessOrEqual`.
+
+**Rationale:** Brings the simplified bootstrap into parity with the canonical bootstrap. The 7 min<=max constraints and 3 positivity constraints already existed as SHACL-SPARQL in the canonical bootstrap but had no simplified-mode equivalents. `TraitLessOrEqual` provides the vocabulary needed to express cross-trait numeric comparisons in simplified mode.
+
+---
+
 ## 2026-02-08: Canonical bootstrap — Add codex/content and codex/isEntity to ignoredProperties
 
 **File:** `spec/1.0.0/bootstrap-schema/schema.cdx`
