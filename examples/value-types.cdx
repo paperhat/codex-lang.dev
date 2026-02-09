@@ -10,6 +10,11 @@
 		empty=""
 		escaped="contains \"quotes\" and \u{1F600}"
 		simple="Hello, world"
+		multiline=`
+			This is a multiline string.
+			It can span multiple lines.
+			And it's still a single value.
+		`
 	/>
 
 	<CharacterValues
@@ -20,7 +25,7 @@
 		unicode='\u{1F600}'
 	/>
 
-	<BooleanValues disabled=false enabled=true/>
+	<BooleanValues disabled=false enabled=true />
 
 	<NumericValues
 		complex=3+2i

@@ -3963,13 +3963,13 @@ Text Values have a single semantic value after whitespace normalization (§5.1).
 
 Let `t` be the normalized Text Value (after escape interpretation and whitespace normalization).
 
-1. Form the canonical quoted spelling `q` for `t` by escaping `"` as `\"`. No other escapes are permitted in quoted Text Values.
-2. If `t` contains a Unicode escape sequence (`\uXXXX` or `\u{...}`), the Text Value MUST be rendered as a backtick block.
-3. Otherwise, if rendering the trait as `<trait>=q` on a single line would result in a line length of at most 100 columns, the Text Value MUST be rendered using the quoted spelling `q`.
+1. Form the canonical quoted spelling `q` for `t` by escaping `\` as `\\` and `"` as `\"`. No other escapes are permitted in quoted Text Values.
+2. If rendering the trait as `<trait>=q` on a single line would result in a line length of at most 100 columns, the Text Value MUST be rendered using the quoted spelling `q`.
+3. Otherwise, the Text Value MUST be rendered as a backtick block:
 
 Line length for this decision is measured after applying canonical indentation; a tab counts as 2 columns.
 
-Otherwise, the Text Value MUST be rendered as a backtick block:
+Canonical backtick blocks are always multi-line: the opening and closing backticks MUST appear on their own lines.
 
 - The trait MUST appear on its own line.
 - The opening backtick appears immediately after `=` on the trait line, and the line ends there.
@@ -6680,7 +6680,7 @@ UnescapedTextCharacter
 	;
 
 EscapeSequence
-	= "\\", ( '"' | UnicodeEscape )
+	= "\\", ( '"' | "\\" | UnicodeEscape )
 	;
 
 UnicodeEscape
@@ -7843,7 +7843,7 @@ UrlValue <- 'url' '(' WhitespaceChar* TextValue WhitespaceChar* (',' WhitespaceC
 TextValue <- '"' TextCharacter* '"'
 TextCharacter <- EscapeSequence / UnescapedTextCharacter
 UnescapedTextCharacter <- !["\n] .
-EscapeSequence <- '\\' ( '"' / UnicodeEscape )
+EscapeSequence <- '\\' ( '"' / '\\' / UnicodeEscape )
 UnicodeEscape <- 'u' HexDigit HexDigit HexDigit HexDigit
              / 'u{' HexDigit+ '}'
 HexDigit <- [0-9A-Fa-f]

@@ -23,6 +23,7 @@ Text values are normalized after escapes are interpreted:
 
 Text escape sequences are defined by the grammar. The allowed escapes are:
 
+- `\\` for a literal backslash
 - `\"` for a literal quote
 - `\uXXXX` for a Unicode code point (4 hex digits)
 - `\u{XXXXXX}` for a Unicode code point (1–6 hex digits)
@@ -48,7 +49,7 @@ Backtick text rules:
 - After escapes, the same whitespace normalization as quoted text is applied.
 - The resulting text is single-line.
 
-Canonical formatting uses quoted text when the normalized value fits on one line and does not contain a Unicode escape sequence. If it would exceed the 100-character line-length limit (tabs count as 2), or if it contains `\uXXXX` or `\u{...}`, the canonical form uses a backtick block with deterministic word-wrapping.
+Canonical formatting uses quoted text when the trait line fits within 100 columns (tabs count as 2). In canonical quoted form, `\` is escaped as `\\` and `"` as `\"`; no other escapes are permitted (Unicode characters appear directly as UTF-8). If the trait line would exceed 100 columns, the canonical form uses a backtick block with deterministic word-wrapping.
 
 ## Boolean Values
 

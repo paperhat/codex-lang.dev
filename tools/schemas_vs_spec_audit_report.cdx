@@ -8,12 +8,8 @@
 	</MissingSigils>
 
 	<MissingTraits>
-		<Trait value="lex" />
-		<Trait value="rangeMin" />
 	</MissingTraits>
 
 	<MissingConcepts>
-		<Concept value="ConceptOption" />
-		<Concept value="ExactlyOneChildOf" />
 	</MissingConcepts>
 </SchemasVsSpecAuditReport>

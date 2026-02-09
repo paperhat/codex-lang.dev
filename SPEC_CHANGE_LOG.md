@@ -4,6 +4,19 @@ This file records all changes made to the Codex specification during implementat
 
 ---
 
+## 2026-02-10: Text escape simplification — re-add `\\`, remove Unicode escape canonicalization rule
+
+**Sections:** §10.5.2, A.1.8, A.2.8
+
+**Changes:**
+
+1. **A.1.8 + A.2.8**: Re-added `\\` (backslash escape) to the `EscapeSequence` production for quoted Text Values. Grammar now: `EscapeSequence = "\\", ( '"' | "\\" | UnicodeEscape )`. Backslash is literal unless followed by `\`, `"`, or `u`.
+2. **§10.5.2**: Removed step 2 ("If `t` contains a Unicode escape sequence, render as backtick block"). The quoted-vs-backtick decision is now purely line-length based. Updated step 1: canonical quoted form escapes `\` as `\\` and `"` as `\"`. No other escapes are permitted in canonical quoted text — Unicode characters appear directly as UTF-8.
+
+**Rationale:** With `\\` as a recognized escape, canonical quoted text can represent all characters: literal backslashes are escaped as `\\`, quotes as `\"`, and all other characters (including those formerly requiring `\uXXXX`) appear directly as UTF-8. Unicode escape sequences are still accepted during parsing but are resolved to their code points; the canonical output never emits them. This eliminates the need for the Unicode-escape-detection step and simplifies the canonicalization decision to a single line-length check.
+
+---
+
 ## 2026-02-09: Schema Imports and Namespaced References
 
 **Sections:** §2.2, §4.1.1 (new), §8.5.1–3, §9.1, §9.7.10–11, §10.5, §11.3, §11.3.1 (new), §11.4.3, §11.4.4, §12.2, §12.5.4–6 (new), §13.6, §14.4.1, §14.4.4, A.1.3–5, A.2.3–5
@@ -90,8 +103,8 @@ This file records all changes made to the Codex specification during implementat
 
 1. **§5.1**: Applied whitespace normalization to all Text Value spellings (quoted and backtick). Runs of whitespace collapse to single spaces; leading/trailing spaces are trimmed; resulting Text Values are single-line.
 2. **§5.2**: Backtick Text may span multiple source lines; escape rules remain ``\` `` only. Backtick text now explicitly relies on §5.1 normalization.
-3. **§10.5.2 (new)**: Added deterministic Text Value formatting. Use quoted text when the trait line fits within 100 columns (tab width 2) and the value contains no Unicode escape sequence. Otherwise render a backtick block with deterministic word wrapping, canonical indentation, and escaped backticks only.
-4. **A.1.8 + A.2.8**: Removed `\n`, `\r`, `\t` and `\\` from Text escape sequences; only `\"` and Unicode escapes remain. Backslash is literal unless it begins one of those escapes.
+3. **§10.5.2 (new)**: Added deterministic Text Value formatting. Use quoted text when the trait line fits within 100 columns (tab width 2) and the value contains no Unicode escape sequence. Otherwise render a backtick block with deterministic word wrapping, canonical indentation, and escaped backticks only. *(Subsequently amended — see 2026-02-10 entry: Unicode escape detection removed; `\\` re-added to escapes; canonical quoted form now escapes `\` as `\\`.)*
+4. **A.1.8 + A.2.8**: Removed `\n`, `\r`, `\t` and `\\` from Text escape sequences; only `\"` and Unicode escapes remain. Backslash is literal unless it begins one of those escapes. *(Subsequently amended — see 2026-02-10 entry: `\\` re-added as a recognized escape.)*
 5. **A.1.27**: Removed the unused `AnyCharExceptBacktickNewline` character class.
 
 **Rationale:** Backtick Text exists to allow multi-line authoring, so line breaks must be allowed and normalized rather than rejected. Applying a single normalization rule to all Text spellings makes semantics consistent. Deterministic wrapping prevents overlong trait lines while keeping canonical form stable. This change supersedes the 2026-02-07 Backtick Text newline exclusion.
