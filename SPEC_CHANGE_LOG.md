@@ -4,6 +4,49 @@ This file records all changes made to the Codex specification during implementat
 
 ---
 
+## 2026-02-09: Schema Imports and Namespaced References
+
+**Sections:** §2.2, §4.1.1 (new), §8.5.1–3, §9.1, §9.7.10–11, §10.5, §11.3, §11.3.1 (new), §11.4.3, §11.4.4, §12.2, §12.5.4–6 (new), §13.6, §14.4.1, §14.4.4, A.1.3–5, A.2.3–5
+**Files:** `spec/1.0.0/index.md`, `spec/1.0.0/bootstrap-schema/schema.cdx`, `spec/1.0.0/bootstrap-schema/simplified/schema.cdx`
+
+**Changes:**
+
+1. **§4.1.1 Qualified Names** (new): Defined `namespace:ConceptName` and `namespace:traitName` forms. Namespace prefix follows camelCase (same form as Trait names). Language-level traits (`id`, `key`, `reference`, `target`, `for`) are never qualified.
+
+2. **§8.5.1–3 Markers**: Opening, closing, and self-closing markers now accept `ConceptNameOrQualified`. Qualified closing markers must match qualified opening markers exactly.
+
+3. **§9.1, §2.2**: Added `importedSchemas` to required inputs for schema-directed processing.
+
+4. **§9.7.10–11**: Added imported schema trait predicate IRI derivation and conceptClassIri resolution for qualified concept names.
+
+5. **§10.5 Canonicalization**: Added to Phase 2: namespace label normalization (author's label replaced with schema's declared `namespace`), SchemaImport entries ordered alphabetically by canonical namespace.
+
+6. **§11.3 Schema**: Added required `namespace` trait (camelCase Text Value). Added `SchemaImports` to allowed children for both `$SimplifiedMode` and `$CanonicalMode`.
+
+7. **§11.3.1 Schema Imports** (new): Full section defining `SchemaImports` (language-level child of any root concept, contains `SchemaImport` children) and `SchemaImport` (required `reference` IRI trait, required `namespace` Text trait). Governing schema is default namespace. Qualified names required only for imported definitions. Duplicate canonical namespace labels produce `SchemaError`.
+
+8. **§11.4.3 TraitRules**: `RequiresTrait`, `AllowsTrait`, `ForbidsTrait` now accept qualified trait names (`namespace:traitName`) for imported traits.
+
+9. **§11.4.4 ChildRules**: `AllowsChildConcept`, `RequiresChildConcept`, `ForbidsChildConcept`, `ConceptOption` now accept qualified concept names (`namespace:ConceptName`) for imported concepts.
+
+10. **§12.2 Validate**: Expanded signature to `validate(documentBytes, governingSchema, importedSchemas) → validatedDocument`. `importedSchemas` maps schema IRIs to schema bytes.
+
+11. **§12.5.4–6 Error Handling** (new): Three error subsections — Imported Schema Unavailable, Duplicate Namespace Label, Unresolved Qualified Name (all `SchemaError`).
+
+12. **§13.6**: Changing the `namespace` trait value constitutes a breaking change.
+
+13. **§14.4.1, §14.4.4**: Added import-related error examples to `ParseError` (SchemaImports on non-root) and `SchemaError` (missing import, duplicate namespace, unresolved qualified name).
+
+14. **A.1.3–5 EBNF, A.2.3–5 PEG**: Added `QualifiedConceptName`, `NamespacePrefix`, `ConceptNameOrQualified` productions. Updated `OpeningMarker`, `ClosingMarker`, `SelfClosingMarker` to use `ConceptNameOrQualified`.
+
+15. **Simplified bootstrap**: Added `namespace=bootstrap` to root Schema. Added `namespace` TraitDefinition, `SchemaImports` and `SchemaImport` ConceptDefinitions with required traits and child rules.
+
+16. **Canonical bootstrap**: Added `namespace=bootstrap` to root Schema. Added `namespace` PropertyShape to Schema NodeShape. Added `SchemaImports` and `SchemaImport` NodeShapes with property shapes for `namespace`, `reference`, and child constraints.
+
+**Rationale:** Schema composition without inheritance. Schemas import other schemas to reuse Concept and Trait definitions. Data documents reference imported Concepts via qualified names. Resolution is deterministic, closed-world, and registry-independent — the caller supplies imported schemas as byte maps via the `validate()` signature.
+
+---
+
 ## 2026-02-08: Phase 10 — Canonical bootstrap triple reordering
 
 **File:** `spec/1.0.0/bootstrap-schema/schema.cdx`

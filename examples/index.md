@@ -15,17 +15,21 @@
 [GROUP: Metadata]
 
 <Schema
-	id=urn:codex:example:1.0.0
-	version="1.0.0"
-	title="Codex Highlighting Example"
-	published={2026-01-29}
-	revision=1p0
 	active=true
-	theme=&rebeccapurple
+	authoringMode=$SimplifiedMode
 	background=color(display-p3 0.2 0.4 0.6)
-	uuid=123e4567-e89b-12d3-a456-426614174000
+	compatibilityClass=$Initial
+	id=urn:codex:example:1.0.0
+	namespace=example
+	published={2026-01-29}
 	rangeExample=1..10
 	rangeWithStep=0..1s0.1
+	revision=1p0
+	theme=&rebeccapurple
+	title="Codex Highlighting Example"
+	uuid=123e4567-e89b-12d3-a456-426614174000
+	version="1.0.0"
+	versionScheme=$Semver
 >
 	[
 	  FLOW:

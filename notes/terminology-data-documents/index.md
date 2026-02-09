@@ -27,6 +27,6 @@ A tooling-level mapping from schema IRI to local source path. The registry is no
 
 ## Notes
 
-- A data document may import multiple schemas and use namespace prefixes for Concepts (and Traits if the language is extended to allow namespaced Traits).
-- A schema document may import other schemas for composition rather than inheritance.
+- A data document may import multiple schemas and use namespace prefixes for Concepts from imported schemas. Trait names on Concept instances remain unqualified; the Concept definition resolves which TraitDefinition each trait name refers to.
+- A schema document may import other schemas for composition rather than inheritance. Schema meta-language references (`RequiresTrait`, `AllowsTrait`, `AllowsChildConcept`, etc.) use `namespace:name` to reference imported Concept and Trait definitions.
 - A document remains self-contained when it declares its schema import set directly in the document.
