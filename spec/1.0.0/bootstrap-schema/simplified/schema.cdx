@@ -3,6 +3,7 @@
 	compatibilityClass=$Initial
 	description="The authoritative schema for schema-validating Codex schema documents."
 	id=urn:codex:bootstrap:1.0.0
+	namespace=bootstrap
 	title="Codex Bootstrap Schema-of-Schemas"
 	version="1.0.0"
 	versionScheme=$Semver
@@ -102,6 +103,15 @@
 		>
 			<Member label="Ordered" value="Ordered" />
 			<Member label="Unordered" value="Unordered" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet
+			id=urn:codex:bootstrap:enum:Cardinality
+			key=~cardinality
+			name="Cardinality"
+		>
+			<Member label="Single" value="Single" />
+			<Member label="List" value="List" />
 		</EnumeratedValueSet>
 
 		<EnumeratedValueSet
@@ -270,6 +280,7 @@
 		>
 			<TraitRules>
 				<RequiresTrait name="id" />
+				<RequiresTrait name="namespace" />
 				<RequiresTrait name="version" />
 				<RequiresTrait name="versionScheme" />
 				<RequiresTrait name="compatibilityClass" />
@@ -286,6 +297,7 @@
 				<AllowsChildConcept conceptSelector="ValidatorDefinitions" max=1 />
 				<AllowsChildConcept conceptSelector="ValueTypeDefinitions" max=1 />
 				<AllowsChildConcept conceptSelector="RdfGraph" max=1 />
+				<AllowsChildConcept conceptSelector="SchemaImports" max=1 />
 			</ChildRules>
 		</ConceptDefinition>
 
@@ -366,6 +378,35 @@
 		</ConceptDefinition>
 
 		[END: Definition Containers]
+
+		[GROUP: Schema Imports]
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:concept:SchemaImports
+			key=~schemaImports
+			name="SchemaImports"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="SchemaImport" />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:concept:SchemaImport
+			key=~schemaImport
+			name="SchemaImport"
+		>
+			<TraitRules>
+				<RequiresTrait name="namespace" />
+				<RequiresTrait name="reference" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		[END: Schema Imports]
 
 		[GROUP: Concept Definition]
 
@@ -1538,6 +1579,13 @@
 
 		<TraitDefinition
 			defaultValueType=$Text
+			id=urn:codex:bootstrap:trait:namespace
+			name="namespace"
+			priority=$Primary
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
 			id=urn:codex:bootstrap:trait:title
 			name="title"
 			priority=$Secondary
@@ -1586,7 +1634,7 @@
 		/>
 
 		<TraitDefinition
-			defaultValueTypes=[$Text,$List<$Text>]
+			defaultValueTypes=[$Text, $List<$Text>]
 			id=urn:codex:bootstrap:trait:role
 			name="role"
 			priority=$Secondary
@@ -1649,7 +1697,7 @@
 		[GROUP: Reference Traits]
 
 		<TraitDefinition
-			defaultValueTypes=[$IriReference,$LookupToken]
+			defaultValueTypes=[$IriReference, $LookupToken]
 			id=urn:codex:bootstrap:trait:reference
 			isReferenceTrait=true
 			name="reference"
@@ -1657,7 +1705,7 @@
 		/>
 
 		<TraitDefinition
-			defaultValueTypes=[$IriReference,$LookupToken]
+			defaultValueTypes=[$IriReference, $LookupToken]
 			id=urn:codex:bootstrap:trait:target
 			isReferenceTrait=true
 			name="target"
@@ -1665,7 +1713,7 @@
 		/>
 
 		<TraitDefinition
-			defaultValueTypes=[$IriReference,$LookupToken]
+			defaultValueTypes=[$IriReference, $LookupToken]
 			id=urn:codex:bootstrap:trait:for
 			isReferenceTrait=true
 			name="for"
@@ -1764,7 +1812,7 @@
 		</TraitDefinition>
 
 		<TraitDefinition
-			defaultValueType=$Text
+			defaultValueType=$EnumeratedToken
 			id=urn:codex:bootstrap:trait:validatorName
 			name="validatorName"
 			priority=$Primary

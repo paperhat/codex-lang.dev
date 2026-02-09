@@ -1,10 +1,16 @@
-<Schema id=example:schema:email-missing-at version="0.1" compatibilityClass=$BackwardCompatible>
+<Schema
+	authoringMode=$SimplifiedMode
+	compatibilityClass=$Initial
+	id=example:schema:email-missing-at
+	version="0.1"
+	versionScheme=$Semver
+>
 	<ConceptDefinitions>
 		<ConceptDefinition
-			id=example:concept:Root
-			name="Root"
 			conceptKind=$Semantic
 			entityEligibility=$MustNotBeEntity
+			id=example:concept:Root
+			name="Root"
 		>
 			<TraitRules>
 				<AllowsTrait name="e" />
@@ -12,6 +18,10 @@
 		</ConceptDefinition>
 	</ConceptDefinitions>
 	<TraitDefinitions>
-		<TraitDefinition id=example:trait:e name="e" defaultValueType=$EmailAddress />
+		<TraitDefinition
+			defaultValueType=$EmailAddress
+			id=example:trait:e
+			name="e"
+		/>
 	</TraitDefinitions>
 </Schema>

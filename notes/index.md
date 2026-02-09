@@ -1,570 +1,460 @@
 # Trait Values in Codex
 
-This guide explains all the different kinds of values you can use with Traits in Codex.
+This guide summarizes the value literal forms defined by the Codex specification. It is informative and intended to mirror the specification in plain English.
 
-A Trait is a name-value pair attached to a Concept. The name tells you what the Trait represents. The value is the actual data. This guide focuses on values — what they look like and how to write them.
+During schema validation, every trait value is parsed into its specific value kind from the value literal catalog. The schema then checks that parsed value against the allowed value types.
 
----
+## Text Values
 
-## Text
-
-Text values are written in double quotes.
+Text values are written with double quotes.
 
 ```cdx
-title="Spaghetti Bolognese"
-author="Jane Doe"
-description="A classic Italian pasta dish."
+name="Jane Doe"
+summary="Single-line text"
 ```
 
-Text values must stay on one line. If you need special characters, use escapes:
+Text values may be empty.
 
-```cdx
-message="She said \"hello\" to me."
-path="C:\\Users\\Jane"
-multiline="Line one\nLine two"
-```
+Text values are normalized after escapes are interpreted:
 
-Available escapes:
+- Runs of whitespace (spaces, tabs, and line breaks) become single spaces.
+- Leading and trailing spaces are removed.
+- The resulting text is single-line.
+
+Text escape sequences are defined by the grammar. The allowed escapes are:
+
 - `\"` for a literal quote
-- `\\` for a literal backslash
-- `\n` for a newline
-- `\r` for a carriage return
-- `\t` for a tab
-- `\uXXXX` for a Unicode character (4 hex digits)
-- `\u{XXXXXX}` for a Unicode character (1-6 hex digits)
+- `\uXXXX` for a Unicode code point (4 hex digits)
+- `\u{XXXXXX}` for a Unicode code point (1–6 hex digits)
 
----
+Any backslash that does not introduce one of the escapes above is a literal backslash.
 
 ## Backtick Text
 
-Backtick text lets you write text across multiple lines in your source file. The whitespace gets collapsed into single spaces, producing a one-line result.
+Backtick text is an alternate spelling for text values. It lets you write a long text value across multiple source lines while still producing a single-line text value after normalization.
+
+Example (intended use):
 
 ```cdx
-summary=`This is a long description
-	that spans multiple lines in the source
-	but becomes a single line when parsed.`
+summary=`This is a long summary
+that spans multiple lines
+in the source file.`
 ```
 
-This becomes equivalent to:
+Backtick text rules:
 
-```cdx
-summary="This is a long description that spans multiple lines in the source but becomes a single line when parsed."
-```
+- The only escape is ``\` `` for a literal backtick.
+- A backslash not followed by a backtick is a literal backslash.
+- After escapes, the same whitespace normalization as quoted text is applied.
+- The resulting text is single-line.
 
-Use backticks sparingly. If you need a lot of text, consider using Content instead of a Trait.
+Canonical formatting uses quoted text when the normalized value fits on one line and does not contain a Unicode escape sequence. If it would exceed the 100-character line-length limit (tabs count as 2), or if it contains `\uXXXX` or `\u{...}`, the canonical form uses a backtick block with deterministic word-wrapping.
 
----
+## Boolean Values
 
-## Characters
-
-A character is a single Unicode character. Wrap it in single quotes.
-
-```cdx
-grade='A'
-separator='-'
-newline='\n'
-emoji='\u{1F600}'
-```
-Characters are not text values. `'A'` is a character. `"A"` is a text value containing one character.
-
-
----
-
-## Booleans
-
-Two possible values: `true` or `false`. No quotes.
+Boolean values are `true` and `false`.
 
 ```cdx
 isPublished=true
 isDraft=false
 ```
 
----
+## Numeric Values
 
-## Numbers
+Numeric values are distinct value kinds determined by their surface spelling. Codex does not compute or normalize them; literal spelling is preserved exactly. During schema validation, tools classify numeric values by their spelling and validate them against the expected numeric value type.
 
-### Integers
+Common rules:
 
-Whole numbers, positive or negative.
+- A leading `+` is not permitted.
+- Leading zeros are not permitted in integer components, except for `0` itself.
+- `-0` is not a valid integer literal.
+- `NaN` is not permitted.
+- `Infinity` and `-Infinity` are permitted. `+Infinity` is not permitted.
+
+### Integer
+
+Base-10 integer values.
 
 ```cdx
 count=42
-temperature=-5
+offset=-5
 zero=0
 ```
 
-### Decimals
+Integer classifiers used in schema validation:
 
-Numbers with a decimal point.
+- `Zero`
+- `PositiveInteger`
+- `NegativeInteger`
+- `NonNegativeInteger`
+- `NonPositiveInteger`
+
+### DecimalNumber
+
+Decimals with a dot.
 
 ```cdx
 price=19.99
-ratio=0.5
-pi=3.14159
+delta=-0.25
 ```
 
-### Scientific Notation
+### ExponentialNumber
 
-For very large or very small numbers.
+Scientific notation using `e` or `E`.
 
 ```cdx
 distance=1.5e11
 tiny=2.5e-10
 ```
 
-### Infinity
+### Fraction
+
+Integer numerator and integer denominator.
 
 ```cdx
-maximum=Infinity
-minimum=-Infinity
-```
-
-### Fractions
-
-Written with a slash.
-
-```cdx
-proportion=3/4
+ratio=3/4
 half=1/2
 ```
 
-### Imaginary Numbers
+### PrecisionNumber
 
-For complex math. Use the `i` suffix.
+A decimal number followed by `p`, with optional explicit precision.
+
+```cdx
+measurement=3.1415p
+explicit=3.1415p6
+```
+
+Precision rules:
+
+- If no explicit precision is provided, it is inferred from the number of digits after the decimal point, including trailing zeros.
+- If an explicit precision is provided after `p`, it overrides the inferred precision.
+
+### ImaginaryNumber
+
+An integer or decimal followed by `i`.
 
 ```cdx
 imaginary=2i
 alsoImaginary=3.5i
 ```
 
-### Complex Numbers
+### ComplexNumber
 
-Combine real and imaginary parts.
+Real plus or minus imaginary, ending with `i`.
 
 ```cdx
 complex=2+3i
 another=1.5-2.5i
 ```
 
-### Precision-Significant Numbers
+### Infinity
 
-When the precision of a number matters (like in scientific measurements), use the `p` suffix. The number of decimal places you write determines the precision, or you can specify it explicitly.
+Literal spellings `Infinity` and `-Infinity`.
 
 ```cdx
-measurement=3.1415p
-moreZeros=3.141500p
-explicit=3.1415p6
-simple=2.0p
-twoDecimals=2.00p
+maximum=Infinity
+minimum=-Infinity
 ```
 
-- `3.1415p` has precision 4 (four decimal places)
-- `3.141500p` has precision 6 (trailing zeros count)
-- `3.1415p6` has precision 6 (explicitly stated)
-- `2.0p` has precision 1
-- `2.00p` has precision 2
+When compiled to XSD numeric forms, `Infinity` maps to `INF` and `-Infinity` maps to `-INF`.
 
----
+The meaning of a numeric value beyond its literal spelling is defined by the governing schema or consuming system.
 
-## Enumerated Tokens
+## Enumerated Token Values
 
-These are fixed values from a predefined set. They start with `$` and use PascalCase.
+Enumerated token values are schema-defined tokens written with `$` and PascalCase.
 
 ```cdx
 status=$Draft
-difficulty=$Medium
-color=$Red
 priority=$High
-dayOfWeek=$Monday
 ```
 
-The available tokens are defined by the schema. You cannot make up your own — they must be declared.
-
----
-
-## Lookup Tokens
-
-These reference other Concepts by their `key` Trait. They start with `~` and use camelCase.
-
-```cdx
-author=~janeDoe
-recipe=~spaghettiCarbonara
-category=~mainDishes
-parent=~recipe42
-```
-
-Somewhere else in the document, there must be a Concept with a matching `key`:
-
-```cdx
-<Author key=~janeDoe name="Jane Doe" />
-```
-
----
-
-## IRI References
-
-IRIs (Internationalized Resource Identifiers) are used for identity and references. They contain a colon separating a scheme from the rest. No quotes.
-
-```cdx
-id=recipe:spaghetti
-reference=book:the-hobbit
-target=https://example.org/resource/123
-```
-
----
-
-## UUIDs
-
-UUIDs are written in the standard 8-4-4-4-12 format. No quotes, no braces.
-
-```cdx
-id=550e8400-e29b-41d4-a716-446655440000
-session=a1b2c3d4-e5f6-7890-abcd-ef1234567890
-```
-
-Case does not matter, but lowercase is the canonical form.
-
----
-
-## Lists
-
-Ordered collections. Use square brackets with comma-separated values.
-
-```cdx
-tags=["italian", "pasta", "dinner"]
-numbers=[1, 2, 3, 4, 5]
-mixed=["hello", 42, true]
-empty=[]
-```
-
-Lists can be nested:
-
-```cdx
-matrix=[[1, 2], [3, 4], [5, 6]]
-```
-
-Lists can contain any value type, and can mix types:
-
-```cdx
-dates=[{2024-01-01}, {2024-06-15}, {2024-12-31}]
-tokens=[$Red, $Green, $Blue]
-mixed=["hello", 42, true, {2024-01-01}, $Draft, ~someReference]
-```
-
----
-
-## Sets
-
-Unordered collections with unique values. Use `set[]` syntax.
-
-```cdx
-categories=set[$Featured, $Sale, $New]
-colors=set["red", "green", "blue"]
-numbers=set[1, 2, 3]
-emptySet=set[]
-```
-
-Duplicates are ignored — `set[1, 1, 2]` is the same as `set[1, 2]`.
-
-Sets can contain any value type:
-
-```cdx
-references=set[~apple, ~banana, ~cherry]
-nested=set[map[a: 1], map[b: 2]]
-```
-
----
-
-## Maps
-
-Key-value collections. Use `map[]` syntax with colons.
-
-```cdx
-dimensions=map[width: 100, height: 200]
-person=map[name: "John", age: 30]
-emptyMap=map[]
-```
-
-Keys can be:
-- Unquoted identifiers (start lowercase, letters and digits only)
-- Text (for keys with spaces or special characters)
-- Characters
-- Integers
-- Enumerated tokens
-
-```cdx
-simple=map[name: "John", age: 30]
-textKeys=map["first name": "John", "last name": "Doe"]
-tokenKeys=map[$Red: "#ff0000", $Green: "#00ff00"]
-intKeys=map[1: "one", 2: "two", 3: "three"]
-charKeys=map['A': "alpha", 'B': "bravo"]
-```
-
-Maps can be nested:
-
-```cdx
-config=map[
-	database: map[host: "localhost", port: 5432],
-	cache: map[enabled: true, ttl: 3600]
-]
-```
-
----
-
-## Tuples
-
-Fixed-length, ordered collections where position determines meaning. Use parentheses.
-
-```cdx
-point=(10, 20)
-point3d=(10, 20, 30)
-person=("John", "Doe", 30)
-boundingBox=((0, 0), (100, 100))
-```
-
-Tuples differ from lists:
-- Lists are for collections of similar things
-- Tuples are for fixed structures where each position has specific meaning
-- A 2D point is `(x, y)`, not `[x, y]`
-
-Tuples must have at least one value.
-
----
-
-## Ranges
-
-Ranges define intervals between two values of the same type. Use `..` between the endpoints.
-
-### Numeric Ranges
-
-```cdx
-oneToTen=1..10
-negativeToPositive=-10..10
-decimal=0.0..1.0
-```
-
-With a step value (use `s` for step):
-
-```cdx
-odds=1..100s2
-byFives=0..100s5
-decimalStep=0.0..1.0s0.1
-```
-
-### Character Ranges
-
-```cdx
-uppercase='A'..'Z'
-lowercase='a'..'z'
-digits='0'..'9'
-everyOther='A'..'Z's2
-```
-
-### Temporal Ranges
-
-```cdx
-year2024={2024-01-01}..{2024-12-31}
-dailyStep={2024-01-01}..{2024-12-31}s{P1D}
-monthlyStep={2024-01}..{2024-12}s{P1M}
-workHours={09:00}..{17:00}s{PT1H}
-```
-
----
+Enumerated tokens are not text values and are not evaluated.
 
 ## Temporal Values
 
-Dates, times, and durations are wrapped in curly braces.
-
-### Year-Month
+Temporal values are written in braces and are parsed purely by syntax.
 
 ```cdx
-month={2024-06}
-fiscalStart={2024-01}
+publishedAt={2024-12-31}
+updatedAt={2024-12-31T12:34:56Z}
+duration={P3D}
 ```
 
-### Month-Day
+Temporal rules:
+
+- Temporal values must match the temporal grammar.
+- Temporal keywords such as `{now}` and `{today}` remain symbolic unless a schema explicitly defines evaluation.
+- Temporal values are not enumerated token values.
+- Temporal kind is determined syntactically by the first matching grammar alternative.
+
+## Color Values
+
+Color values are not text values. They use dedicated color literal forms.
+
+Supported color forms include:
+
+- Hexadecimal colors: `#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`
+- `rgb(...)` and legacy `rgba(...)`
+- `hsl(...)` and legacy `hsla(...)`
+- `hwb(...)`
+- `lab(...)`
+- `lch(...)`
+- `oklab(...)`
+- `oklch(...)`
+- `color(...)`
+- `color-mix(...)`
+- Relative colors using `from <color>` within a color function
+- `device-cmyk(...)`
+- Named colors using `&name`
+
+Canonicalization rules:
+
+- Hex digits are lowercase in canonical form.
+- Function names and color space tokens are lowercase in canonical form.
+
+Named colors:
+
+- Use a leading `&` and lowercase ASCII letters only.
+- The name must match the named color list in Appendix B.
+
+Color space tokens used by `color(...)` are restricted to:
+
+- `srgb`
+- `srgb-linear`
+- `display-p3`
+- `a98-rgb`
+- `prophoto-rgb`
+- `rec2020`
+- `xyz`
+- `xyz-d50`
+- `xyz-d65`
+
+Schema validation of colors is deterministic and uses the specific color value type requested by the schema. Values that cannot be converted to the expected color domain are schema errors.
+
+## UUID Values
+
+UUID values are unquoted 36-character tokens of the form:
+
+```
+xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+```
+
+Rules:
+
+- Hex digits are case-insensitive for parsing.
+- Canonical form uses lowercase hex.
+- Hyphens appear in the fixed UUID positions (8-4-4-4-12).
+- No braces or prefixes are permitted.
+- UUID values are not text values.
+
+## IRI Reference Values
+
+IRI reference values are unquoted tokens that include a `:` separating the scheme from the remainder.
+
+Rules:
+
+- Must contain `:` and must not end with `:`.
+- Must not contain Unicode whitespace, control, bidirectional control, or private-use characters.
+- Permit non-ASCII Unicode and percent-encoding.
+- Are compared as opaque Unicode scalar sequences.
+- Must not be dereferenced by Codex tools.
+- Are not text values.
+
+## Lookup Token Values
+
+Lookup token values are document-scoped symbolic references written with `~` and camelCase.
 
 ```cdx
-birthday={03-15}
-holiday={12-25}
+author=~janeDoe
 ```
 
-### Date
+Rules:
+
+- They resolve by matching a `key` trait in the same document.
+- They must not be dereferenced externally.
+- They are not text values.
+
+## Character Values
+
+Character values represent exactly one Unicode scalar value and are written with single quotes.
 
 ```cdx
-published={2024-06-15}
-deadline={2025-01-01}
+grade='A'
+newline='\n'
+emoji='\u{1F600}'
 ```
 
-### Time
+Character escape sequences follow the same escape set as text values (with `'` instead of `"`).
+
+## List Values
+
+List values are ordered sequences written with square brackets.
 
 ```cdx
-startTime={09:30}
-precise={14:30:45}
-withMillis={14:30:45.500}
+numbers=[1, 2, 3]
+mixed=["a", 2, true]
 ```
 
-### Local Date-Time
+Rules:
 
-No timezone information.
+- Lists may be empty.
+- List order is significant.
+- Lists may contain mixed value kinds.
+- Lists allow nesting.
+
+## Set Values
+
+Set values are unordered collections written with `set[...]`.
 
 ```cdx
-meeting={2024-06-15T09:30}
-withSeconds={2024-06-15T14:30:45}
-withMillis={2024-06-15T14:30:45.500}
+colors=set[$Red, $Green, $Blue]
 ```
 
-### Zoned Date-Time
+Rules:
 
-With timezone information.
+- Sets may be empty.
+- Sets may contain mixed value kinds.
+- Sets allow nesting.
+- Sets must not contain duplicates.
+- Duplicate detection uses the value equality rules in the specification.
+- In canonical surface form, elements are serialized in the order they appear in the source spelling.
+
+## Map Values
+
+Map values are unordered key-value collections written with `map[...]`.
 
 ```cdx
-utc={2024-06-15T09:30:00Z}
-offset={2024-06-15T09:30:00+05:30}
-withTimezone={2024-06-15T09:30:00-05:00[America/New_York]}
-tokyo={2024-06-15T09:30:00+09:00[Asia/Tokyo]}
+scores=map[alice: 10, bob: 12]
 ```
 
-### Duration
+Rules:
 
-ISO 8601 duration format.
+- Maps may be empty.
+- Maps allow nesting.
+- Keys must be unique (value equality rules apply).
+- Map keys may be unquoted identifier keys, text values, character values, integer values, enumerated tokens, or IRI reference values.
+- In canonical surface form, entries are serialized in the order they appear in the source spelling.
+
+## Tuple Values
+
+Tuple values are ordered sequences written with parentheses.
 
 ```cdx
-oneDay={P1D}
-oneWeek={P7D}
-oneMonth={P1M}
-oneYear={P1Y}
-twoHours={PT2H}
-thirtyMinutes={PT30M}
-complex={P1Y2M3DT4H5M6S}
+point=(10, 20)
 ```
 
-### Reserved Literals
+Rules:
+
+- Tuples must contain at least one element.
+- Tuples may contain mixed value kinds.
+- Tuples allow nesting.
+- Arity and position meaning must be defined by the schema.
+
+## Range Values
+
+Range values are declarative intervals written with `..`, with an optional step.
 
 ```cdx
-timestamp={now}
-date={today}
+span=1..10
+stepSpan=1..10s2
 ```
 
----
+Rules:
 
-## Colors
+- Start and end endpoints are required.
+- Endpoints are inclusive.
+- Step is optional and at most one value.
+- Endpoints must be ordered numeric types, temporal values, or character values.
+- Start and end endpoints must be the same base value kind.
+- Step values must be ordered numeric types or temporal values.
+- Complex numbers, imaginary numbers, and infinity are not permitted as endpoints or step values.
+- Range values must not be enumerated by tools.
 
-Colors are first-class values, not text values.
+## Record Values
 
-### Hexadecimal
+Record values are fixed-structure field collections written with `record[...]`.
 
 ```cdx
-red=#f00
-redWithAlpha=#f00a
-fullRed=#ff0000
-fullRedWithAlpha=#ff0000aa
+person=record[name: "Ada", age: 36]
 ```
 
-### RGB
+Rules:
 
-Legacy (comma-separated):
+- Records may be empty.
+- Field names are unquoted identifiers using camelCase.
+- Fields must be unique (value equality rules apply).
+- Records allow nesting.
+- In canonical surface form, entries are serialized in the order they appear in the source spelling.
 
-```cdx
-orange=rgb(255, 128, 0)
-orangeAlpha=rgba(255, 128, 0, 0.5)
-```
+## Collection Value Equality
 
-Modern (space-separated):
+Set, map, and record uniqueness checks use the specification value equality rules. Equality is defined over parsed values and is not based on raw source bytes.
 
-```cdx
-orange=rgb(255 128 0)
-orangeAlpha=rgb(255 128 0 / 50%)
-```
+Highlights:
 
-### HSL
+- Text values compare by Unicode scalar sequence.
+- Numeric, temporal, enumerated token, and lookup token values compare by exact literal spelling.
+- Color values compare by spelling, with case-insensitive comparison of hex digits, function names, and color space tokens.
+- UUID values compare case-insensitively for hex digits.
+- Host name, email address, and URL values compare by their canonicalized forms.
+- Lists and tuples compare by length and ordered element equality.
+- Sets, maps, and records compare by contents regardless of entry order.
 
-Legacy:
+## Parameterized Value Types
 
-```cdx
-orange=hsl(30, 100%, 50%)
-orangeAlpha=hsla(30, 100%, 50%, 0.5)
-```
+Schemas may constrain collection contents using parameterized value types:
 
-Modern:
+- `$List<T>`
+- `$Set<T>`
+- `$Map<K, V>`
+- `$Tuple<T1, T2, ...>`
+- `$Range<T>`
+- `$Record<V>`
 
-```cdx
-orange=hsl(30 100% 50%)
-orangeAlpha=hsl(30 100% 50% / 50%)
-```
+Type arguments may be simple value type tokens, parameterized types, or type unions. Type arguments do not include whitespace.
 
-### Lab and LCH
+Unparameterized collection types such as `$List` or `$Map` allow any value types for their contents.
 
-```cdx
-labColor=lab(70% 20 -30)
-labAlpha=lab(70% 20 -30 / 50%)
-lchColor=lch(70% 45 30)
-lchAlpha=lch(70% 45 30 / 50%)
-```
+## Host Name Values
 
-### OKLab and OKLCH
+Host name values are written as `host("...")` and represent ASCII DNS hostnames.
 
-```cdx
-oklabColor=oklab(0.7 -0.1 0.1)
-oklabAlpha=oklab(0.7 -0.1 0.1 / 50%)
-oklchColor=oklch(0.7 0.15 180)
-oklchAlpha=oklch(0.7 0.15 180 / 50%)
-```
+Rules:
 
-### Wide Gamut (color function)
+- The text must be ASCII only.
+- The text must not contain Unicode whitespace, control, bidirectional control, or private-use characters.
+- The canonical form lowercases the hostname.
+- Hostnames must be valid DNS hostnames.
+- Host name values are not text values.
 
-```cdx
-p3Color=color(display-p3 1 0.5 0)
-p3Alpha=color(display-p3 1 0.5 0 / 50%)
-srgb=color(srgb 1 0.5 0)
-rec2020=color(rec2020 0.7 0.2 0.1)
-xyz=color(xyz-d65 0.5 0.4 0.3)
-```
+## Email Address Values
 
-Supported color spaces: `srgb`, `srgb-linear`, `display-p3`, `a98-rgb`, `prophoto-rgb`, `rec2020`, `xyz`, `xyz-d50`, `xyz-d65`.
+Email address values are written as `email("...")` with a Unicode local part and an ASCII domain.
 
-### Named Colors
+Rules:
 
-Named colors must be text values:
+- The value must contain exactly one `@`.
+- The value must not contain Unicode whitespace, control, bidirectional control, or private-use characters.
+- The local part is normalized with Unicode NFC.
+- The domain is canonicalized as a host name.
+- Email address values are not text values.
 
-```cdx
-color="red"
-special="rebeccapurple"
-clear="transparent"
-```
+## URL Values
 
----
+URL values are written as `url("...")` or `url("<base>", "<relative>")` and represent ASCII-only absolute URLs.
 
-## Quick Reference
+Rules:
 
-| Type | Example |
-|------|---------|
-| Text | `"hello world"` |
-| Backtick Text | `` `multi line text` `` |
-| Character | `'A'` |
-| Boolean | `true`, `false` |
-| Integer | `42`, `-5` |
-| Decimal | `3.14` |
-| Scientific | `1.5e10` |
-| Infinity | `Infinity`, `-Infinity` |
-| Fraction | `3/4` |
-| Imaginary | `2i` |
-| Complex | `2+3i` |
-| Precision | `3.14p`, `3.14p4` |
-| Enum Token | `$Draft` |
-| Lookup Token | `~recipe` |
-| IRI | `recipe:pasta` |
-| UUID | `550e8400-e29b-41d4-a716-446655440000` |
-| List | `[1, 2, 3]` |
-| Set | `set[1, 2, 3]` |
-| Map | `map[a: 1, b: 2]` |
-| Tuple | `(10, 20)` |
-| Range | `1..10`, `1..10s2` |
-| Date | `{2024-06-15}` |
-| Time | `{09:30}` |
-| DateTime | `{2024-06-15T09:30}` |
-| Zoned | `{2024-06-15T09:30Z}` |
-| Duration | `{P1D}`, `{PT2H}` |
-| Hex Color | `#ff0000` |
-| RGB | `rgb(255 0 0)` |
-| HSL | `hsl(0 100% 50%)` |
+- The parsed URL must include a scheme and be absolute.
+- The URL text must not contain Unicode whitespace, control, bidirectional control, or private-use characters.
+- The URL text must be ASCII only.
+- The two-argument form resolves the second argument against the base.
+- The base in the two-argument form must include an authority.
+- Canonical form lowercases the scheme and authority, normalizes the path, and serializes as `url("<canonical>")`.
+- URL values are not text values.
+
+## See Also
+
+- [Terminology: Data Documents and Schemas](/notes/terminology-data-documents/)

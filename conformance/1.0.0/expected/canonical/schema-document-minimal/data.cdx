@@ -1,5 +1,7 @@
 <Schema
+	authoringMode=$SimplifiedMode
+	compatibilityClass=$Initial
 	id=example:schema:minimal
 	version="0.1"
-	compatibilityClass=$BackwardCompatible
+	versionScheme=$Semver
 />

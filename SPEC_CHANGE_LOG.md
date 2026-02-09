@@ -4,6 +4,83 @@ This file records all changes made to the Codex specification during implementat
 
 ---
 
+## 2026-02-08: Phase 10 — Canonical bootstrap triple reordering
+
+**File:** `spec/1.0.0/bootstrap-schema/schema.cdx`
+
+**Changes:**
+
+1. **Reordered 1831 RdfTriple elements** per §9.6.2 sort order: ascending lexicographic on `(subject, predicate, objectKey)`. 1210 triples were in non-canonical positions. Zero duplicates found.
+
+2. **Removed GROUP/END annotations** from the canonical bootstrap (the reorder tool strips grouping annotations since sorted order supersedes manual grouping).
+
+**Tooling:** `tools/reorder_canonical_triples.py --apply`
+
+**Verification:** All 17 Phase 10 checks pass (triple ordering, sh:closed parity, property shape count, no vestigial traits/enums, conformance suite consistency).
+
+---
+
+## 2026-02-08: Canonical comma spacing — one space after comma in collection literals
+
+**Sections:** §8.7.1, §10.5
+**Files:** `spec/1.0.0/index.md`, `spec/1.0.0/bootstrap-schema/simplified/schema.cdx`, `conformance/1.0.0/expected/canonical/` (5 files)
+
+**Changes:**
+
+1. **§8.7.1**: Changed canonical Value literal whitespace rule. Previously, all optional whitespace within balanced Value literals was removed. Now, exactly one space MUST follow each comma separator; all other optional whitespace is still removed. Removed the TypeParameters callout (no longer a special case — all commas now get a space).
+
+2. **§10.5**: Updated Phase 1 canonicalization rule summary to match §8.7.1.
+
+3. **Simplified bootstrap**: Reverted Phase 8 item 7 — restored space after comma in 4 `defaultValueTypes` list literals (`[$Text, $List<$Text>]`, `[$IriReference, $LookupToken]` x3).
+
+4. **Conformance expected canonical outputs**: Added space after comma in collection literals across 5 files: `collection-literal-order-preserved`, `infinities-in-list`, `value-literal-kitchen-sink`, `value-type-matrix`, `map-keys-various-kinds`.
+
+**Rationale:** Readability. Commas without spaces impose unnecessary cognitive load. All collection literals use balanced delimiters (`[...]`, `set[...]`, `map[...]`, `(...)`) so a stack-based parser handles interior spaces trivially. One space after comma is consistent with TypeParameters and with universal typographic convention.
+
+---
+
+## 2026-02-08: Text normalization + backtick wrapping
+
+**Sections:** §5.1, §5.2, §10.5, §10.5.2, A.1.8, A.2.8, A.1.27
+
+**Changes:**
+
+1. **§5.1**: Applied whitespace normalization to all Text Value spellings (quoted and backtick). Runs of whitespace collapse to single spaces; leading/trailing spaces are trimmed; resulting Text Values are single-line.
+2. **§5.2**: Backtick Text may span multiple source lines; escape rules remain ``\` `` only. Backtick text now explicitly relies on §5.1 normalization.
+3. **§10.5.2 (new)**: Added deterministic Text Value formatting. Use quoted text when the trait line fits within 100 columns (tab width 2) and the value contains no Unicode escape sequence. Otherwise render a backtick block with deterministic word wrapping, canonical indentation, and escaped backticks only.
+4. **A.1.8 + A.2.8**: Removed `\n`, `\r`, `\t` and `\\` from Text escape sequences; only `\"` and Unicode escapes remain. Backslash is literal unless it begins one of those escapes.
+5. **A.1.27**: Removed the unused `AnyCharExceptBacktickNewline` character class.
+
+**Rationale:** Backtick Text exists to allow multi-line authoring, so line breaks must be allowed and normalized rather than rejected. Applying a single normalization rule to all Text spellings makes semantics consistent. Deterministic wrapping prevents overlong trait lines while keeping canonical form stable. This change supersedes the 2026-02-07 Backtick Text newline exclusion.
+
+---
+
+## 2026-02-08: Phase 9 — Conformance test corrections
+
+**Files:** `conformance/1.0.0/` (multiple)
+
+**Changes:**
+
+1. **Fixed `MARKDOWN:` directive** (9.1): Changed `MD:` to `MARKDOWN:` in both `cases/valid/block-annotation-md-directive/data.cdx` and `expected/canonical/block-annotation-md-directive/data.cdx`. `MD:` is not a recognized directive — only `FLOW:`, `CODE:`, and `MARKDOWN:` are valid (§8.9.5).
+
+2. **Alphabetized traits in expected canonical outputs** (9.2): Reordered traits to alphabetical order in `selfclosing-multiline-traits` (3 traits), `value-literal-kitchen-sink` (12 traits), `value-type-matrix` (56 traits — also reformatted from inline to multiline per §8.5-6), and `collection-literal-order-preserved` (2 traits).
+
+3. **Fixed range canonical form** (9.3): Changed `r=1 .. 10 s 2` to `r=1..10s2` in `expected/canonical/range-whitespace/data.cdx`. Canonical form strips optional whitespace from range literals.
+
+4. **Fixed `color-mix-single-stop` error class** (9.4): Changed `primaryClass=$SchemaError` to `primaryClass=$ParseError` in `expected/errors/color-mix-single-stop/data.cdx`. A `color-mix()` with a single stop is a grammar violation, not a schema rule violation.
+
+5. **Fixed all test schema files** (9.5): Applied uniform corrections to all 20 `schema.cdx` files under `cases/valid/` and `cases/invalid/`: added `authoringMode=$SimplifiedMode` (§11.3), added `versionScheme=$Semver` (§13.3), changed `$BackwardCompatible` to `$Initial` (§13.5), alphabetized all traits, reformatted to multiline where required (3+ traits).
+
+6. **Fixed `schema-document-minimal`** (9.6): Updated both `cases/valid/schema-document-minimal/data.cdx` and `expected/canonical/schema-document-minimal/data.cdx` with all 5 required Schema traits in alphabetical multiline form.
+
+7. **Resolved orphaned tests** (9.7): Moved `blankline-between-annotations-and-root` from `cases/invalid/` to `cases/valid/` — it is a valid general annotation per §8.9.8. Created expected canonical output.
+
+8. **Updated manifest** (9.8): Added entries for `range-whitespace`, `color-mix-single-stop`, and `blankline-between-annotations-and-root`.
+
+**Rationale:** Conformance test suite corrections to align expected outputs with canonical form rules (alphabetical traits, no optional whitespace), fix incorrect error classifications, add missing required Schema traits, and resolve orphaned/misclassified tests.
+
+---
+
 ## 2026-02-08: Phase 8 — Simplified bootstrap parity and `TraitLessOrEqual` vocabulary extension
 
 **Sections:** §11.10.1 (new `TraitLessOrEqual` subsection)
@@ -23,7 +100,7 @@ This file records all changes made to the Codex specification during implementat
 
 6. **Simplified bootstrap — removed orphaned `Cardinality` enum**: `EnumeratedValueSet` with `Single`/`List` members. No trait references it. Already removed from canonical in Phase 7.
 
-7. **Simplified bootstrap — fixed list-typed trait value whitespace**: Removed space after comma in 4 `defaultValueTypes` list literals (`[$Text,$List<$Text>]`, `[$IriReference,$LookupToken]`).
+7. **Simplified bootstrap — fixed list-typed trait value whitespace**: Removed space after comma in 4 `defaultValueTypes` list literals. *(Subsequently reverted — see "Canonical comma spacing" entry above; one space after comma is now canonical.)*
 
 8. **Canonical bootstrap — `TraitLessOrEqual` NodeShape**: Added `sh:NodeShape` with `sh:closed true`, `sh:ignoredProperties`, and two required `PropertyShape` entries (`leftTrait`, `rightTrait`). Added `rdf:Property` declarations for both traits (3 triples each: `rdf:type`, `rdfs:label`, `rdfs:range`). Updated Rule's `ExactlyOneChildOf` SPARQL constraint message and query to include `TraitLessOrEqual`.
 

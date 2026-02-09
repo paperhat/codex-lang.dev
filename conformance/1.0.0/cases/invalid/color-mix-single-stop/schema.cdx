@@ -1,10 +1,16 @@
-<Schema id=example:schema:color-mix-single-stop version="0.1" compatibilityClass=$BackwardCompatible>
+<Schema
+	authoringMode=$SimplifiedMode
+	compatibilityClass=$Initial
+	id=example:schema:color-mix-single-stop
+	version="0.1"
+	versionScheme=$Semver
+>
 	<ConceptDefinitions>
 		<ConceptDefinition
-			id=example:concept:Root
-			name="Root"
 			conceptKind=$Semantic
 			entityEligibility=$MustNotBeEntity
+			id=example:concept:Root
+			name="Root"
 		>
 			<TraitRules>
 				<AllowsTrait name="c" />
@@ -12,6 +18,10 @@
 		</ConceptDefinition>
 	</ConceptDefinitions>
 	<TraitDefinitions>
-		<TraitDefinition id=example:trait:c name="c" defaultValueType=$Color />
+		<TraitDefinition
+			defaultValueType=$Color
+			id=example:trait:c
+			name="c"
+		/>
 	</TraitDefinitions>
 </Schema>

@@ -953,4 +953,24 @@
 		input="cases/valid/leading-space-before-root/data.cdx"
 		expectedCanonical="expected/canonical/minimal-selfclosing/data.cdx"
 	/>
+
+	<Case
+		id="valid/range-whitespace"
+		input="cases/valid/range-whitespace/data.cdx"
+		expectedCanonical="expected/canonical/range-whitespace/data.cdx"
+	/>
+
+	<Case
+		id="invalid/color-mix-single-stop"
+		input="cases/invalid/color-mix-single-stop/data.cdx"
+		schema="cases/invalid/color-mix-single-stop/schema.cdx"
+		expectedError="expected/errors/color-mix-single-stop/data.cdx"
+		expectedPrimaryErrorClass=$ParseError
+	/>
+
+	<Case
+		id="valid/blankline-between-annotations-and-root"
+		input="cases/valid/blankline-between-annotations-and-root/data.cdx"
+		expectedCanonical="expected/canonical/blankline-between-annotations-and-root/data.cdx"
+	/>
 </ConformanceManifest>

@@ -1,1 +1,1 @@
-<Root s=set[$B,$A] m=map[b:2,a:1] />
+<Root m=map[b:2, a:1] s=set[$B, $A] />

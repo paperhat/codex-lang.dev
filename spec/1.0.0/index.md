@@ -95,6 +95,7 @@ Required inputs are:
 
 - document bytes
 - governing schema (for validation; not required for well-formedness checking)
+- imported schemas (for validation of documents with schema imports; see §11.3.1)
 - document base IRI (for instance graph mapping; see §9.7)
 
 In particular:
@@ -285,6 +286,23 @@ Trait names MUST use camelCase.
 
 No other casing is permitted.
 
+#### 4.1.1 Qualified Names
+
+A **qualified name** combines a namespace prefix with a Concept name or Trait name, separated by a colon (`:`) with no surrounding whitespace.
+
+A **namespace prefix** MUST be a camelCase name (same form as a Trait name per §4.1).
+
+The two qualified name forms are:
+
+* **Qualified Concept name**: `namespacePrefix:ConceptName` — a namespace prefix followed by `:` followed by a PascalCase Concept name.
+* **Qualified Trait name**: `namespacePrefix:traitName` — a namespace prefix followed by `:` followed by a camelCase Trait name.
+
+The namespace prefix, the colon, and the local name MUST each satisfy the naming rules of §4.1 and §4.2 independently.
+
+Qualified names MUST only appear in contexts where schema imports are in effect (§11.3.1). The namespace prefix MUST resolve to an imported schema via the document's `SchemaImports` declarations.
+
+Language-level Trait names (`id`, `key`, `reference`, `target`, `for`) MUST NOT be namespace-qualified. These Traits are defined by this specification (§6–§7), not by any schema.
+
 ### 4.2 Consecutive Uppercase Restriction
 
 Concept names and Trait names MUST NOT contain three or more consecutive ASCII uppercase letters.
@@ -314,20 +332,23 @@ A Text Value is a sequence of zero or more Unicode scalar values as defined by U
 
 In the Surface Form, Text Values MUST be spelled as quoted text literals (see Appendix A) or backtick text (see §5.2).
 
+After interpreting escape sequences, the resulting character sequence MUST be transformed into the resulting Text Value by applying the following whitespace normalization:
+
+- Each maximal run of whitespace characters (spaces, tabs, and U+000A LINE FEED) MUST be replaced with a single U+0020 SPACE.
+- Leading and trailing U+0020 SPACE MUST be removed.
+
+This normalization applies to all Text Value spellings (quoted text and backtick text). The resulting Text Value MUST be single-line.
+
 ### 5.2 Backtick Text
 
 A Backtick Text is a surface-form spelling of a Text Value.
 
+Backtick text MUST allow authors to write Text Values that span multiple source lines.
+
 Within a Backtick Text, `` \` `` represents a literal `` ` ``.
 
 A backslash not immediately followed by a backtick is a literal backslash and has no special meaning.
-
-After interpreting the Backtick Text's escape sequences, the resulting character sequence MUST be transformed into the resulting Text Value by applying the following whitespace normalization:
-
-- Each maximal run of whitespace characters (spaces and tabs) MUST be replaced with a single U+0020 SPACE.
-- Leading and trailing U+0020 SPACE MUST be removed.
-
-The resulting Text Value MUST be single-line.
+The Text Value normalization defined in §5.1 applies after escape interpretation.
 
 ### 5.3 Boolean Values
 
@@ -1313,7 +1334,7 @@ For schema-level type constraints on list contents, see §5.18.
 ### 5.13 Value Equality for Collection Uniqueness
 For purposes of detecting duplicates in Set Values, Map Values, and Record Values, Codex-conforming tools MUST use the following Value equality relation.
 
-Equality is defined over parsed Values (after interpreting escape sequences, backtick-text whitespace normalization, and other value-specific decoding rules) and MUST NOT be defined over raw source bytes.
+Equality is defined over parsed Values (after interpreting escape sequences, Text whitespace normalization, and other value-specific decoding rules) and MUST NOT be defined over raw source bytes.
 
 Two Values are equal if and only if they have the same Value kind and satisfy the following rules (recursively where applicable):
 
@@ -1942,7 +1963,14 @@ An opening marker MUST be spelled as:
 <ConceptName trait=value>
 ```
 
-`ConceptName` MUST follow the naming rules defined by this specification.
+or, when referencing a Concept from an imported schema (§11.3.1):
+
+```cdx
+<namespace:ConceptName>
+<namespace:ConceptName trait=value>
+```
+
+The Concept name (or qualified Concept name) MUST follow the naming rules defined by this specification (§4.1).
 
 An opening marker includes zero or more Traits.
 
@@ -1956,7 +1984,13 @@ A closing marker MUST be spelled as:
 </ConceptName>
 ```
 
-The closing marker MUST match the most recent unclosed opening marker (see §3.6).
+or, when referencing a Concept from an imported schema (§11.3.1):
+
+```cdx
+</namespace:ConceptName>
+```
+
+The closing marker MUST match the most recent unclosed opening marker (see §3.6). A qualified closing marker MUST match a qualified opening marker exactly, including the namespace prefix.
 
 The closing marker MUST appear on its own line after indentation.
 
@@ -1969,6 +2003,13 @@ A self-closing marker MUST be spelled as:
 ```cdx
 <ConceptName />
 <ConceptName trait=value />
+```
+
+or, when referencing a Concept from an imported schema (§11.3.1):
+
+```cdx
+<namespace:ConceptName />
+<namespace:ConceptName trait=value />
 ```
 
 A self-closing marker represents a Concept instance with no content and no child Concepts.
@@ -2068,7 +2109,7 @@ Within a balanced Value literal:
 * Whitespace between elements, entries, or delimiters is not significant.
 * Whitespace MUST NOT terminate the Value.
 
-In canonical surface form, optional whitespace within balanced Value literals MUST be removed. Canonical form uses no whitespace between elements, entries, delimiters, operators, or separators within a Value literal. Mandatory whitespace required by a specific production (for example, the space after comma in TypeParameters) is not optional and MUST be preserved.
+In canonical surface form, exactly one space MUST follow each comma separator within a balanced Value literal. All other optional whitespace within balanced Value literals MUST be removed. Mandatory whitespace required by a specific production MUST be preserved.
 
 Outside of balanced delimiters, a Value literal MUST be fully contained on a single line.
 
@@ -2429,6 +2470,7 @@ The required inputs for schema-directed processing are:
 
 - the Codex document bytes
 - the governing schema
+- imported schemas, if the document or governing schema declares schema imports (see §11.3.1)
 - any other external inputs explicitly required by this specification or by the governing schema
 
 Other external inputs—including environment state, configuration, registries, network access, clocks, or randomness—MUST NOT influence processing.
@@ -3013,7 +3055,8 @@ Trait predicate IRIs MUST be derived as follows.
 For a trait name `t`:
 
 - If the governing schema contains exactly one `TraitDefinition` for `t`, `traitPredicateIri(t)` MUST be that `TraitDefinition`'s `id`.
-- If the governing schema contains zero `TraitDefinition` entries for `t`, validation MUST fail with a `SchemaError` (§14).
+- If an imported schema contains the `TraitDefinition` for `t` (resolved via a qualified Trait name in the governing schema's `ConceptDefinition`), `traitPredicateIri(t)` MUST be the imported schema's `TraitDefinition.id` for `t`.
+- If the governing schema contains zero `TraitDefinition` entries for `t` (including imported schemas), validation MUST fail with a `SchemaError` (§14).
 - If the governing schema contains more than one `TraitDefinition` for `t`, validation MUST fail with a `SchemaError` (§14).
 
 Child predicate IRIs MUST be derived as follows.
@@ -3022,13 +3065,15 @@ Let the governing schema's `ConceptDefinition.id` for the parent concept name be
 
 - `childPredicateIri(P,Q)` MUST be `P + "#child/" + iriHash(Q)`.
 
+When the child Concept `Q` is from an imported schema (referenced via a qualified Concept name per §4.1.1), `Q` MUST be the `ConceptDefinition.id` from the imported schema. The child predicate IRI derivation MUST use the imported schema's `ConceptDefinition.id`.
+
 #### 9.7.11 RDF Types
 
 Each Concept instance MUST emit an RDF type triple:
 
 - `(nodeIri(C), rdf:type, conceptClassIri(C.name))`
 
-`conceptClassIri(X)` MUST be the `ConceptDefinition.id` for concept name `X` in the governing schema.
+`conceptClassIri(X)` MUST be the `ConceptDefinition.id` for concept name `X` in the governing schema, or in the imported schema if `X` is a qualified Concept name (§4.1.1).
 
 If `conceptClassIri(X)` cannot be resolved to exactly one `ConceptDefinition`, schema-driven validation MUST fail with a `SchemaError` (§14).
 
@@ -3881,8 +3926,8 @@ Canonicalization is divided into two phases:
 - canonical Trait layout (1–2 Traits on one line; 3+ Traits on separate lines)
 - canonical placement of self-closing markers
 - canonical inline-annotation whitespace collapse
-- canonical text escaping
-- canonical Value literal whitespace (optional whitespace within Value literals MUST be removed; mandatory whitespace required by a specific production MUST be preserved)
+- canonical Text Value escaping and formatting (§10.5.2)
+- canonical Value literal whitespace (exactly one space MUST follow each comma separator; all other optional whitespace MUST be removed; mandatory whitespace required by a specific production MUST be preserved)
 - alphabetical ordering of Traits by Trait name
 - preservation of Concept and Content order
 - content indentation normalization (§8.8.3)
@@ -3891,6 +3936,8 @@ Canonicalization is divided into two phases:
 
 - content whitespace mode normalization per `whitespaceMode` declaration (§8.8.4)
 - deterministic sorting of children in `$Unordered` collections (§10.5.1)
+- namespace label normalization: the `namespace` trait on each `SchemaImport` MUST be normalized to the imported schema's declared `namespace` value (§11.3.1)
+- `SchemaImport` ordering: within a `SchemaImports` block, `SchemaImport` children MUST be sorted alphabetically by their canonical `namespace` value (lexicographic ascending)
 
 Schema-less processing MUST complete Phase 1 only. Schema-directed processing MUST complete both phases.
 
@@ -3910,6 +3957,28 @@ In canonical surface form, children of an `$Unordered` collection MUST be sorted
 4. If still tied, preserve source order.
 
 This sorting is schema-directed and MUST only be applied during Phase 2 processing.
+
+#### 10.5.2 Canonical Text Value Formatting
+Text Values have a single semantic value after whitespace normalization (§5.1). Canonical surface form MUST be chosen deterministically as follows.
+
+Let `t` be the normalized Text Value (after escape interpretation and whitespace normalization).
+
+1. Form the canonical quoted spelling `q` for `t` by escaping `"` as `\"`. No other escapes are permitted in quoted Text Values.
+2. If `t` contains a Unicode escape sequence (`\uXXXX` or `\u{...}`), the Text Value MUST be rendered as a backtick block.
+3. Otherwise, if rendering the trait as `<trait>=q` on a single line would result in a line length of at most 100 columns, the Text Value MUST be rendered using the quoted spelling `q`.
+
+Line length for this decision is measured after applying canonical indentation; a tab counts as 2 columns.
+
+Otherwise, the Text Value MUST be rendered as a backtick block:
+
+- The trait MUST appear on its own line.
+- The opening backtick appears immediately after `=` on the trait line, and the line ends there.
+- The closing backtick appears on its own line at the trait indentation level.
+- The normalized text `t` MUST be wrapped into lines by breaking at spaces. Each line (including indentation) MUST be at most 100 columns, counting tabs as 2 columns. If a single word exceeds 100 columns, it MUST appear on its own line without splitting.
+- Each content line is indented one tab deeper than the trait line.
+- Within backtick blocks, a literal backtick in `t` MUST be escaped as `` \` ``. No other escapes are permitted.
+
+Line breaks introduced by backtick block wrapping are surface-form only; they are not part of the Text Value.
 
 ### 10.6 Annotation Canonicalization
 Annotation canonicalization MUST follow the surface form requirements (§8).
@@ -4103,6 +4172,10 @@ A `Schema` Concept MUST declare the following Traits:
   * `$ForwardCompatible`
   * `$Breaking`
 
+* `namespace` (required; Text Value)
+
+  The canonical namespace label for this schema. The value MUST be a camelCase name (§4.1). This label is used by importing documents to construct qualified names (§4.1.1) that reference Concept and Trait definitions from this schema. Each schema's `namespace` value MUST be unique among all schemas loaded together (governing schema plus imported schemas); if two schemas declare the same `namespace` value, processing MUST fail with a `SchemaError` (§14).
+
 The following Traits are optional:
 
 * `key` (optional; Lookup Token Value)
@@ -4126,6 +4199,7 @@ For `authoringMode=$SimplifiedMode`:
   * `ConstraintDefinitions`
   * `ValueTypeDefinitions`
   * `ValidatorDefinitions`
+  * `SchemaImports` (see §11.3.1)
 
 * A `Schema` MUST NOT contain `RdfGraph`.
 
@@ -4141,6 +4215,8 @@ For `authoringMode=$CanonicalMode`:
   * `ValueTypeDefinitions`
   * `ValidatorDefinitions`
 
+* A `Schema` in `$CanonicalMode` is permitted to contain a `SchemaImports` child Concept. In `$CanonicalMode`, the `SchemaImports` block declares which imported schemas to load; namespace labels are not used inside the RDF graph (which uses full IRIs directly). The parser MUST merge imported SHACL shapes at the RDF level.
+
 No other child Concepts are permitted.
 
 Each container Concept listed above MUST obey the structural, identity, and content rules defined by this specification and the schema-of-schemas.
@@ -4154,6 +4230,68 @@ Each container Concept listed above MUST obey the structural, identity, and cont
 * Any schema whose structure or semantics cannot be interpreted deterministically under this specification MUST be rejected with a `SchemaError` (§14).
 
 The `Schema` Concept defines the boundary within which schema-first parsing, validation, instance-graph mapping, and derived-artifact generation occur, as specified in §9.
+
+---
+
+### 11.3.1 Schema Imports
+
+Codex supports composing schemas via imports. A schema or data document declares its imports using a `SchemaImports` block, which binds namespace labels to imported schema IRIs.
+
+#### `SchemaImports`
+
+`SchemaImports` is a language-level child Concept permitted on any root Concept in children mode, regardless of the governing schema's child rules. This is analogous to language-level Traits (`id`, `key`, `reference`, `target`, `for`) which are defined by this specification rather than by any schema.
+
+`SchemaImports` MUST only appear as a direct child of a root Concept.
+
+A root Concept MUST NOT contain more than one `SchemaImports` child.
+
+If `SchemaImports` appears on a non-root Concept, the document MUST be rejected with a `ParseError` (§14).
+
+`SchemaImports` contains one or more `SchemaImport` children.
+
+`SchemaImports` has no Traits.
+
+##### Canonical Ordering
+
+Within a `SchemaImports` block, `SchemaImport` children MUST be sorted alphabetically by their canonical `namespace` value (lexicographic ascending) in canonical form.
+
+#### `SchemaImport`
+
+A `SchemaImport` declares a single imported schema.
+
+##### Traits
+
+* `reference` (required; IRI Reference Value)
+
+  The IRI of the imported schema. This MUST be the `Schema.id` of an imported schema provided via the `importedSchemas` input (§12.2). The `reference` Trait is the language-level reference Trait defined in §7.1; its value MUST be an IRI Reference (never a Lookup Token).
+
+* `namespace` (required; Text Value)
+
+  The namespace label used in qualified names (§4.1.1) to reference Concepts and Traits from this imported schema. The value MUST be a camelCase name (§4.1). In canonical form, this value MUST be normalized to the imported schema's declared `namespace` Trait value (§10.5). In non-canonical input, authors are permitted to use any camelCase label; canonicalization normalizes it.
+
+##### Semantic Requirements
+
+* The `reference` IRI MUST appear as a key in the `importedSchemas` map provided to `validate()` (§12.2). If the IRI is not present in `importedSchemas`, processing MUST fail with a `SchemaError` (§14).
+* After namespace label normalization, all `SchemaImport` entries within a `SchemaImports` block MUST have distinct canonical `namespace` values. If two entries produce the same canonical namespace label, processing MUST fail with a `SchemaError` (§14).
+* A qualified name using a namespace label MUST resolve to a Concept or Trait definition within the corresponding imported schema. If the qualified name references a Concept or Trait not defined in the imported schema, processing MUST fail with a `SchemaError` (§14).
+
+#### Governing Schema as Default Namespace
+
+In data documents, the governing schema's Concept and Trait definitions are referenced without namespace qualification. Only Concepts from imported schemas require qualification via `namespace:ConceptName` (§4.1.1).
+
+Trait names on Concept instances in data documents are always unqualified. The Concept definition (from the governing schema or the imported schema that defines the Concept) determines which `TraitDefinition` each Trait name refers to.
+
+Enumerated Tokens (`$Value`) and Lookup Tokens (`~key`) are not namespace-qualified. The Trait's constraint determines the `EnumeratedValueSet`; the document's resolution table (§9.8) resolves Lookup Tokens.
+
+#### Namespace Qualification in Schema Documents
+
+In schema documents, references to Concepts and Traits from imported schemas in meta-language constructs (`RequiresTrait`, `AllowsTrait`, `AllowsChildConcept`, `RequiresChildConcept`, `ForbidsChildConcept`, `ForbidsTrait`, `conceptSelector`, etc.) MUST use qualified names (`namespace:name`). Local definitions MUST be unqualified.
+
+#### Data Documents with Imports
+
+Data documents are permitted to declare `SchemaImports` as a child of their root Concept. This allows data documents to use qualified Concept names for Concepts from imported schemas.
+
+The `SchemaImports` in a data document MUST be consistent with the governing schema: any schema imported by the data document MUST also be imported by the governing schema (or be the governing schema itself).
 
 ---
 
@@ -4242,27 +4380,31 @@ Each rule applies to exactly one trait name.
 
 Traits:
 
-* `name` (required; Trait name, per §4)
+* `name` (required; Trait name or qualified Trait name, per §4 and §4.1.1)
 
 Children (optional):
 
 * `AllowedValues` — narrows the set of valid values for this trait on this concept (see below)
+
+When `name` is a qualified Trait name (`namespace:traitName`), it references a `TraitDefinition` from the imported schema identified by the namespace prefix (§11.3.1).
 
 ###### `AllowsTrait`
 
 Traits:
 
-* `name` (required; Trait name, per §4)
+* `name` (required; Trait name or qualified Trait name, per §4 and §4.1.1)
 
 Children (optional):
 
 * `AllowedValues` — narrows the set of valid values for this trait on this concept (see below)
 
+When `name` is a qualified Trait name (`namespace:traitName`), it references a `TraitDefinition` from the imported schema identified by the namespace prefix (§11.3.1).
+
 ###### `ForbidsTrait`
 
 Traits:
 
-* `name` (required; Trait name, per §4)
+* `name` (required; Trait name or qualified Trait name, per §4 and §4.1.1)
 
 ###### Concept-Level `AllowedValues` Narrowing
 
@@ -4298,25 +4440,29 @@ If no child rules are needed, omit the `ChildRules` container entirely.
 
 Traits:
 
-* `conceptSelector` (required; Concept name)
+* `conceptSelector` (required; Concept name or qualified Concept name per §4.1.1)
 * `min` (optional; non-negative integer; default `0`)
 * `max` (optional; positive integer; omitted means unbounded)
+
+When `conceptSelector` is a qualified Concept name (`namespace:ConceptName`), it references a `ConceptDefinition` from the imported schema identified by the namespace prefix (§11.3.1).
 
 ###### `RequiresChildConcept`
 
 Traits:
 
-* `conceptSelector` (required; Concept name)
+* `conceptSelector` (required; Concept name or qualified Concept name per §4.1.1)
 * `min` (optional; positive integer; default `1`)
 * `max` (optional; positive integer; omitted means unbounded)
 
 `RequiresChildConcept` is semantically equivalent to `AllowsChildConcept` with `min = 1`.
 
+When `conceptSelector` is a qualified Concept name, it references a `ConceptDefinition` from the imported schema (§11.3.1).
+
 ###### `ForbidsChildConcept`
 
 Traits:
 
-* `conceptSelector` (required; Concept name)
+* `conceptSelector` (required; Concept name or qualified Concept name per §4.1.1)
 
 ###### `ExactlyOneChildOf`
 
@@ -4334,7 +4480,7 @@ Declares one option within an `ExactlyOneChildOf` group.
 
 Traits:
 
-* `conceptSelector` (required; Concept name)
+* `conceptSelector` (required; Concept name or qualified Concept name per §4.1.1)
 
 ##### Defaults
 
@@ -5571,12 +5717,16 @@ Schema-less formatting and well-formedness checks (§9.2, §10.2.1) do not requi
 For semantic validation, the governing schema is provided directly by the caller as an explicit input:
 
 ```
-validate(documentBytes, governingSchema) → validatedDocument
+validate(documentBytes, governingSchema, importedSchemas) → validatedDocument
 ```
+
+`importedSchemas` is a map from schema IRIs to schema bytes. The document's `SchemaImports` declarations (§11.3.1) bind namespace labels to IRIs in this map. If a document or its governing schema declares no imports, `importedSchemas` is permitted to be empty.
 
 The implementation MUST use the provided schema and MUST NOT attempt to substitute, infer, or override it.
 
 If no governing schema is provided and semantic validation is requested, the implementation MUST fail with a `SchemaError` (§14).
+
+If the document or governing schema declares a `SchemaImport` whose `reference` IRI is not present in `importedSchemas`, the implementation MUST fail with a `SchemaError` (§14).
 
 External systems for schema storage, discovery, or distribution do not affect the parsing, validation, or canonicalization of Codex documents and are outside the scope of this specification.
 
@@ -5664,6 +5814,29 @@ If a loaded schema is not valid Codex or is not a valid schema under the bootstr
 * Error class: `SchemaError` (§14)
 * The report MUST indicate that schema validation failed
 * Underlying schema validation errors MUST be reported
+
+#### 12.5.4 Imported Schema Unavailable
+
+If a `SchemaImport` (§11.3.1) declares a `reference` IRI that is not present in the `importedSchemas` map:
+
+* Error class: `SchemaError` (§14)
+* The report MUST indicate which imported schema IRI was unavailable
+* Validation MUST NOT proceed
+
+#### 12.5.5 Duplicate Namespace Label
+
+If two or more imported schemas (after namespace label normalization per §10.5) produce the same canonical `namespace` value:
+
+* Error class: `SchemaError` (§14)
+* The report MUST indicate the duplicate namespace label and the conflicting schema IRIs
+* Validation MUST NOT proceed
+
+#### 12.5.6 Unresolved Qualified Name
+
+If a qualified name (§4.1.1) references a Concept or Trait not defined in the imported schema identified by its namespace prefix:
+
+* Error class: `SchemaError` (§14)
+* The report MUST indicate the unresolved qualified name and the imported schema IRI
 
 ### 12.6 Relationship to Other Specifications
 
@@ -5836,6 +6009,7 @@ The following changes are breaking and MUST require `compatibilityClass=$Breakin
 * changing `entityEligibility` for any Concept
 * changing collection semantics, including ordering or duplicate allowance
 * changing identity, reference, or uniqueness semantics
+* changing the `namespace` trait value on the root `Schema` Concept (downstream importers use this label to construct qualified names)
 * tightening constraints in a way that causes any previously valid data to become invalid
 * changing the meaning or interpretation of any existing Concept or Trait
 
@@ -5990,6 +6164,7 @@ Examples (illustrative):
 - malformed Traits
 - unterminated Annotation (missing closing `]`)
 - structurally invalid nesting of markers
+- `SchemaImports` on a non-root Concept (§11.3.1)
 
 #### 14.4.2 SurfaceFormError
 
@@ -6040,6 +6215,9 @@ Examples (illustrative):
 - unauthorized Trait on a Concept
 - missing required Trait
 - invalid Trait value type
+- imported schema IRI not found in `importedSchemas` (§12.5.4)
+- duplicate canonical namespace labels across imported schemas (§12.5.5)
+- qualified name references undefined Concept or Trait in imported schema (§12.5.6)
 
 See §9 and §11 for schema rules.
 
@@ -6293,11 +6471,11 @@ ClosingMarkerLine
 	;
 
 OpeningMarker
-	= "<", ConceptName, [ Traits ], ">"
+	= "<", ConceptNameOrQualified, [ Traits ], ">"
 	;
 
 ClosingMarker
-	= "</", ConceptName, ">"
+	= "</", ConceptNameOrQualified, ">"
 	;
 
 (* Body is selected by schema lookup on ConceptName (§11):
@@ -6371,7 +6549,7 @@ SelfClosingConcept
 	;
 
 SelfClosingMarker
-	= "<", ConceptName, [ Traits ], "/>"
+	= "<", ConceptNameOrQualified, [ Traits ], "/>"
 	;
 ```
 
@@ -6385,6 +6563,22 @@ SelfClosingMarker
 
 ConceptName
 	= UppercaseLetter, { Letter | Digit }
+	;
+
+(* A qualified concept name combines a namespace prefix with a concept name,
+	separated by a colon. See §4.1.1. *)
+QualifiedConceptName
+	= NamespacePrefix, ":", ConceptName
+	;
+
+(* A concept name reference is either a bare concept name or a qualified one. *)
+ConceptNameOrQualified
+	= QualifiedConceptName | ConceptName
+	;
+
+(* A namespace prefix follows the same lexical form as a trait name (camelCase). *)
+NamespacePrefix
+	= LowercaseLetter, { Letter | Digit }
 	;
 
 UppercaseLetter
@@ -6482,11 +6676,11 @@ TextCharacter
 	;
 
 UnescapedTextCharacter
-	= AnyCharExceptQuoteBackslashNewline
+	= AnyCharExceptQuoteNewline
 	;
 
 EscapeSequence
-	= "\\", ( '"' | "\\" | "n" | "r" | "t" | UnicodeEscape )
+	= "\\", ( '"' | UnicodeEscape )
 	;
 
 UnicodeEscape
@@ -6537,7 +6731,7 @@ BacktickChar
 	;
 
 UnescapedBacktickChar
-	= AnyCharExceptBacktickNewline
+	= AnyCharExceptBacktick
 	;
 
 BacktickEscape
@@ -7418,9 +7612,9 @@ Indentation
 The following character classes are used but not fully enumerated:
 
 * `AnyCharExceptNewline` — any Unicode scalar except U+000A
-* `AnyCharExceptQuoteBackslashNewline` — any Unicode scalar except `"`, `\\`, U+000A
+* `AnyCharExceptQuoteNewline` — any Unicode scalar except `"`, U+000A
 * `AnyCharExceptApostropheBackslashNewline` — any Unicode scalar except `'`, `\\`, U+000A
-* `AnyCharExceptBacktickNewline` — any Unicode scalar except `` ` ``, U+000A
+* `AnyCharExceptBacktick` — any Unicode scalar except `` ` ``
 * `AnyCharExceptRightParenNewline` — any Unicode scalar except `)`, U+000A
 * `AnyCharExceptParensNewline` — any Unicode scalar except `(`, `)`, U+000A
 * `AnyCharExceptRightBracketNewline` — any Unicode scalar except `]`, U+000A
@@ -7531,8 +7725,8 @@ BlockConcept <- OpeningMarkerLine Body ClosingMarkerLine
 OpeningMarkerLine <- Indentation OpeningMarker Newline
 ClosingMarkerLine <- Indentation ClosingMarker Newline
 
-OpeningMarker <- '<' ConceptName Traits? '>'
-ClosingMarker <- '</' ConceptName '>'
+OpeningMarker <- '<' ConceptNameOrQualified Traits? '>'
+ClosingMarker <- '</' ConceptNameOrQualified '>'
 
 # Body is selected by schema lookup on ConceptName (§11):
 # - children mode: ChildrenBody
@@ -7565,7 +7759,7 @@ ContentSafeChar <- !Newline !'<' .
 ```peg
 SelfClosingConcept <- SelfClosingMarker
 
-SelfClosingMarker <- '<' ConceptName Traits? '/>'
+SelfClosingMarker <- '<' ConceptNameOrQualified Traits? '/>'
 ```
 
 ---
@@ -7574,6 +7768,16 @@ SelfClosingMarker <- '<' ConceptName Traits? '/>'
 
 ```peg
 ConceptName <- UppercaseLetter (Letter / Digit)*
+
+# A qualified concept name: namespace prefix, colon, concept name (§4.1.1)
+QualifiedConceptName <- NamespacePrefix ':' ConceptName
+
+# A concept name reference: qualified or bare
+ConceptNameOrQualified <- QualifiedConceptName / ConceptName
+
+# A namespace prefix has the same lexical form as a trait name (camelCase)
+NamespacePrefix <- LowercaseLetter (Letter / Digit)*
+
 UppercaseLetter <- [A-Z]
 LowercaseLetter <- [a-z]
 Letter <- [A-Za-z]
@@ -7638,8 +7842,8 @@ UrlValue <- 'url' '(' WhitespaceChar* TextValue WhitespaceChar* (',' WhitespaceC
 ```peg
 TextValue <- '"' TextCharacter* '"'
 TextCharacter <- EscapeSequence / UnescapedTextCharacter
-UnescapedTextCharacter <- !["\\\n] .
-EscapeSequence <- '\\' ( ["\\nrt] / UnicodeEscape )
+UnescapedTextCharacter <- !["\n] .
+EscapeSequence <- '\\' ( '"' / UnicodeEscape )
 UnicodeEscape <- 'u' HexDigit HexDigit HexDigit HexDigit
              / 'u{' HexDigit+ '}'
 HexDigit <- [0-9A-Fa-f]
@@ -7662,7 +7866,7 @@ CharEscapeSequence <- '\\' ( ['\\nrt] / UnicodeEscape )
 
 ```peg
 BacktickText <- '`' BacktickChar* '`'
-BacktickChar <- BacktickEscape / (!'`' !'\n' .)
+BacktickChar <- BacktickEscape / (!'`' .)
 BacktickEscape <- '\\' '`'
 ```
 

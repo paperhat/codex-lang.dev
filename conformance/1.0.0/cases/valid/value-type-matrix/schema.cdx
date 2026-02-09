@@ -1,10 +1,16 @@
-<Schema id=example:schema:value-type-matrix version="0.1" compatibilityClass=$BackwardCompatible>
+<Schema
+	authoringMode=$SimplifiedMode
+	compatibilityClass=$Initial
+	id=example:schema:value-type-matrix
+	version="0.1"
+	versionScheme=$Semver
+>
 	<ConceptDefinitions>
 		<ConceptDefinition
-			id=example:concept:Root
-			name="Root"
 			conceptKind=$Semantic
 			entityEligibility=$MustNotBeEntity
+			id=example:concept:Root
+			name="Root"
 		>
 			<TraitRules>
 				<AllowsTrait name="text" />
@@ -67,61 +73,285 @@
 		</ConceptDefinition>
 	</ConceptDefinitions>
 	<TraitDefinitions>
-		<TraitDefinition id=example:trait:text name="text" defaultValueType=$Text />
-		<TraitDefinition id=example:trait:character name="character" defaultValueType=$Character />
-		<TraitDefinition id=example:trait:boolean name="boolean" defaultValueType=$Boolean />
-		<TraitDefinition id=example:trait:number name="number" defaultValueType=$Number />
-		<TraitDefinition id=example:trait:integer name="integer" defaultValueType=$Integer />
-		<TraitDefinition id=example:trait:zero name="zero" defaultValueType=$Zero />
-		<TraitDefinition id=example:trait:negativeInteger name="negativeInteger" defaultValueType=$NegativeInteger />
-		<TraitDefinition id=example:trait:nonPositiveInteger name="nonPositiveInteger" defaultValueType=$NonPositiveInteger />
-		<TraitDefinition id=example:trait:decimalNumber name="decimalNumber" defaultValueType=$DecimalNumber />
-		<TraitDefinition id=example:trait:exponentialNumber name="exponentialNumber" defaultValueType=$ExponentialNumber />
-		<TraitDefinition id=example:trait:precisionNumber name="precisionNumber" defaultValueType=$PrecisionNumber />
-		<TraitDefinition id=example:trait:fraction name="fraction" defaultValueType=$Fraction />
-		<TraitDefinition id=example:trait:imaginaryNumber name="imaginaryNumber" defaultValueType=$ImaginaryNumber />
-		<TraitDefinition id=example:trait:complexNumber name="complexNumber" defaultValueType=$ComplexNumber />
-		<TraitDefinition id=example:trait:nonNegativeInteger name="nonNegativeInteger" defaultValueType=$NonNegativeInteger />
-		<TraitDefinition id=example:trait:positiveInteger name="positiveInteger" defaultValueType=$PositiveInteger />
-		<TraitDefinition id=example:trait:positiveInfinity name="positiveInfinity" defaultValueType=$PositiveInfinity />
-		<TraitDefinition id=example:trait:negativeInfinity name="negativeInfinity" defaultValueType=$NegativeInfinity />
-		<TraitDefinition id=example:trait:infinity name="infinity" defaultValueType=$Infinity />
-		<TraitDefinition id=example:trait:enumeratedToken name="enumeratedToken" defaultValueType=$EnumeratedToken />
-		<TraitDefinition id=example:trait:iriReference name="iriReference" defaultValueType=$IriReference />
-		<TraitDefinition id=example:trait:lookupToken name="lookupToken" defaultValueType=$LookupToken />
-		<TraitDefinition id=example:trait:uuid name="uuid" defaultValueType=$Uuid />
-		<TraitDefinition id=example:trait:host name="host" defaultValueType=$HostName />
-		<TraitDefinition id=example:trait:email name="email" defaultValueType=$EmailAddress />
-		<TraitDefinition id=example:trait:url name="url" defaultValueType=$Url />
-		<TraitDefinition id=example:trait:color name="color" defaultValueType=$Color />
-		<TraitDefinition id=example:trait:hexColor name="hexColor" defaultValueType=$HexColor />
-		<TraitDefinition id=example:trait:namedColor name="namedColor" defaultValueType=$NamedColor />
-		<TraitDefinition id=example:trait:rgbColor name="rgbColor" defaultValueType=$RgbColor />
-		<TraitDefinition id=example:trait:hslColor name="hslColor" defaultValueType=$HslColor />
-		<TraitDefinition id=example:trait:hwbColor name="hwbColor" defaultValueType=$HwbColor />
-		<TraitDefinition id=example:trait:labColor name="labColor" defaultValueType=$LabColor />
-		<TraitDefinition id=example:trait:lchColor name="lchColor" defaultValueType=$LchColor />
-		<TraitDefinition id=example:trait:oklabColor name="oklabColor" defaultValueType=$OklabColor />
-		<TraitDefinition id=example:trait:oklchColor name="oklchColor" defaultValueType=$OklchColor />
-		<TraitDefinition id=example:trait:colorFunction name="colorFunction" defaultValueType=$ColorFunction />
-		<TraitDefinition id=example:trait:colorMix name="colorMix" defaultValueType=$ColorMix />
-		<TraitDefinition id=example:trait:deviceCmyk name="deviceCmyk" defaultValueType=$DeviceCmyk />
-		<TraitDefinition id=example:trait:temporal name="temporal" defaultValueType=$Temporal />
-		<TraitDefinition id=example:trait:plainDate name="plainDate" defaultValueType=$PlainDate />
-		<TraitDefinition id=example:trait:plainTime name="plainTime" defaultValueType=$PlainTime />
-		<TraitDefinition id=example:trait:plainDateTime name="plainDateTime" defaultValueType=$PlainDateTime />
-		<TraitDefinition id=example:trait:plainYearMonth name="plainYearMonth" defaultValueType=$PlainYearMonth />
-		<TraitDefinition id=example:trait:plainMonthDay name="plainMonthDay" defaultValueType=$PlainMonthDay />
-		<TraitDefinition id=example:trait:yearWeek name="yearWeek" defaultValueType=$YearWeek />
-		<TraitDefinition id=example:trait:instant name="instant" defaultValueType=$Instant />
-		<TraitDefinition id=example:trait:zonedDateTime name="zonedDateTime" defaultValueType=$ZonedDateTime />
-		<TraitDefinition id=example:trait:duration name="duration" defaultValueType=$Duration />
-		<TraitDefinition id=example:trait:temporalKeyword name="temporalKeyword" defaultValueType=$TemporalKeyword />
-		<TraitDefinition id=example:trait:list name="list" defaultValueType=$List />
-		<TraitDefinition id=example:trait:set name="set" defaultValueType=$Set />
-		<TraitDefinition id=example:trait:map name="map" defaultValueType=$Map />
-		<TraitDefinition id=example:trait:record name="record" defaultValueType=$Record />
-		<TraitDefinition id=example:trait:tuple name="tuple" defaultValueType=$Tuple />
-		<TraitDefinition id=example:trait:range name="range" defaultValueType=$Range />
+		<TraitDefinition
+			defaultValueType=$Text
+			id=example:trait:text
+			name="text"
+		/>
+		<TraitDefinition
+			defaultValueType=$Character
+			id=example:trait:character
+			name="character"
+		/>
+		<TraitDefinition
+			defaultValueType=$Boolean
+			id=example:trait:boolean
+			name="boolean"
+		/>
+		<TraitDefinition
+			defaultValueType=$Number
+			id=example:trait:number
+			name="number"
+		/>
+		<TraitDefinition
+			defaultValueType=$Integer
+			id=example:trait:integer
+			name="integer"
+		/>
+		<TraitDefinition
+			defaultValueType=$Zero
+			id=example:trait:zero
+			name="zero"
+		/>
+		<TraitDefinition
+			defaultValueType=$NegativeInteger
+			id=example:trait:negativeInteger
+			name="negativeInteger"
+		/>
+		<TraitDefinition
+			defaultValueType=$NonPositiveInteger
+			id=example:trait:nonPositiveInteger
+			name="nonPositiveInteger"
+		/>
+		<TraitDefinition
+			defaultValueType=$DecimalNumber
+			id=example:trait:decimalNumber
+			name="decimalNumber"
+		/>
+		<TraitDefinition
+			defaultValueType=$ExponentialNumber
+			id=example:trait:exponentialNumber
+			name="exponentialNumber"
+		/>
+		<TraitDefinition
+			defaultValueType=$PrecisionNumber
+			id=example:trait:precisionNumber
+			name="precisionNumber"
+		/>
+		<TraitDefinition
+			defaultValueType=$Fraction
+			id=example:trait:fraction
+			name="fraction"
+		/>
+		<TraitDefinition
+			defaultValueType=$ImaginaryNumber
+			id=example:trait:imaginaryNumber
+			name="imaginaryNumber"
+		/>
+		<TraitDefinition
+			defaultValueType=$ComplexNumber
+			id=example:trait:complexNumber
+			name="complexNumber"
+		/>
+		<TraitDefinition
+			defaultValueType=$NonNegativeInteger
+			id=example:trait:nonNegativeInteger
+			name="nonNegativeInteger"
+		/>
+		<TraitDefinition
+			defaultValueType=$PositiveInteger
+			id=example:trait:positiveInteger
+			name="positiveInteger"
+		/>
+		<TraitDefinition
+			defaultValueType=$PositiveInfinity
+			id=example:trait:positiveInfinity
+			name="positiveInfinity"
+		/>
+		<TraitDefinition
+			defaultValueType=$NegativeInfinity
+			id=example:trait:negativeInfinity
+			name="negativeInfinity"
+		/>
+		<TraitDefinition
+			defaultValueType=$Infinity
+			id=example:trait:infinity
+			name="infinity"
+		/>
+		<TraitDefinition
+			defaultValueType=$EnumeratedToken
+			id=example:trait:enumeratedToken
+			name="enumeratedToken"
+		/>
+		<TraitDefinition
+			defaultValueType=$IriReference
+			id=example:trait:iriReference
+			name="iriReference"
+		/>
+		<TraitDefinition
+			defaultValueType=$LookupToken
+			id=example:trait:lookupToken
+			name="lookupToken"
+		/>
+		<TraitDefinition
+			defaultValueType=$Uuid
+			id=example:trait:uuid
+			name="uuid"
+		/>
+		<TraitDefinition
+			defaultValueType=$HostName
+			id=example:trait:host
+			name="host"
+		/>
+		<TraitDefinition
+			defaultValueType=$EmailAddress
+			id=example:trait:email
+			name="email"
+		/>
+		<TraitDefinition
+			defaultValueType=$Url
+			id=example:trait:url
+			name="url"
+		/>
+		<TraitDefinition
+			defaultValueType=$Color
+			id=example:trait:color
+			name="color"
+		/>
+		<TraitDefinition
+			defaultValueType=$HexColor
+			id=example:trait:hexColor
+			name="hexColor"
+		/>
+		<TraitDefinition
+			defaultValueType=$NamedColor
+			id=example:trait:namedColor
+			name="namedColor"
+		/>
+		<TraitDefinition
+			defaultValueType=$RgbColor
+			id=example:trait:rgbColor
+			name="rgbColor"
+		/>
+		<TraitDefinition
+			defaultValueType=$HslColor
+			id=example:trait:hslColor
+			name="hslColor"
+		/>
+		<TraitDefinition
+			defaultValueType=$HwbColor
+			id=example:trait:hwbColor
+			name="hwbColor"
+		/>
+		<TraitDefinition
+			defaultValueType=$LabColor
+			id=example:trait:labColor
+			name="labColor"
+		/>
+		<TraitDefinition
+			defaultValueType=$LchColor
+			id=example:trait:lchColor
+			name="lchColor"
+		/>
+		<TraitDefinition
+			defaultValueType=$OklabColor
+			id=example:trait:oklabColor
+			name="oklabColor"
+		/>
+		<TraitDefinition
+			defaultValueType=$OklchColor
+			id=example:trait:oklchColor
+			name="oklchColor"
+		/>
+		<TraitDefinition
+			defaultValueType=$ColorFunction
+			id=example:trait:colorFunction
+			name="colorFunction"
+		/>
+		<TraitDefinition
+			defaultValueType=$ColorMix
+			id=example:trait:colorMix
+			name="colorMix"
+		/>
+		<TraitDefinition
+			defaultValueType=$DeviceCmyk
+			id=example:trait:deviceCmyk
+			name="deviceCmyk"
+		/>
+		<TraitDefinition
+			defaultValueType=$Temporal
+			id=example:trait:temporal
+			name="temporal"
+		/>
+		<TraitDefinition
+			defaultValueType=$PlainDate
+			id=example:trait:plainDate
+			name="plainDate"
+		/>
+		<TraitDefinition
+			defaultValueType=$PlainTime
+			id=example:trait:plainTime
+			name="plainTime"
+		/>
+		<TraitDefinition
+			defaultValueType=$PlainDateTime
+			id=example:trait:plainDateTime
+			name="plainDateTime"
+		/>
+		<TraitDefinition
+			defaultValueType=$PlainYearMonth
+			id=example:trait:plainYearMonth
+			name="plainYearMonth"
+		/>
+		<TraitDefinition
+			defaultValueType=$PlainMonthDay
+			id=example:trait:plainMonthDay
+			name="plainMonthDay"
+		/>
+		<TraitDefinition
+			defaultValueType=$YearWeek
+			id=example:trait:yearWeek
+			name="yearWeek"
+		/>
+		<TraitDefinition
+			defaultValueType=$Instant
+			id=example:trait:instant
+			name="instant"
+		/>
+		<TraitDefinition
+			defaultValueType=$ZonedDateTime
+			id=example:trait:zonedDateTime
+			name="zonedDateTime"
+		/>
+		<TraitDefinition
+			defaultValueType=$Duration
+			id=example:trait:duration
+			name="duration"
+		/>
+		<TraitDefinition
+			defaultValueType=$TemporalKeyword
+			id=example:trait:temporalKeyword
+			name="temporalKeyword"
+		/>
+		<TraitDefinition
+			defaultValueType=$List
+			id=example:trait:list
+			name="list"
+		/>
+		<TraitDefinition
+			defaultValueType=$Set
+			id=example:trait:set
+			name="set"
+		/>
+		<TraitDefinition
+			defaultValueType=$Map
+			id=example:trait:map
+			name="map"
+		/>
+		<TraitDefinition
+			defaultValueType=$Record
+			id=example:trait:record
+			name="record"
+		/>
+		<TraitDefinition
+			defaultValueType=$Tuple
+			id=example:trait:tuple
+			name="tuple"
+		/>
+		<TraitDefinition
+			defaultValueType=$Range
+			id=example:trait:range
+			name="range"
+		/>
 	</TraitDefinitions>
 </Schema>
