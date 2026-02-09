@@ -1,0 +1,102 @@
+[
+	MARKDOWN:
+	**Value-type showcase** — exercises every Codex 1.0.0 value literal
+	for syntax-highlighting verification.
+]
+
+<TraitValueTypes>
+	<TextValues
+		backtick=`raw \` backtick text`
+		empty=""
+		escaped="contains \"quotes\" and \u{1F600}"
+		simple="Hello, world"
+	/>
+
+	<CharacterValues
+		backslash='\\'
+		letter='A'
+		newline='\n'
+		tab='\t'
+		unicode='\u{1F600}'
+	/>
+
+	<BooleanValues disabled=false enabled=true/>
+
+	<NumericValues
+		complex=3+2i
+		decimal=3.14
+		exponential=6.022e23
+		fraction=1/3
+		imaginary=2i
+		integer=42
+		negativeDecimal=-0.5
+		negativeInfinity=-Infinity
+		negativeInteger=-5
+		negativeZero=-0.0
+		positiveInfinity=Infinity
+		precision=19.99p4
+		zero=0
+	/>
+
+	<IdentifierValues
+		for=https://example.org/schema/Person
+		id=https://example.org/showcase/1
+		key=~showcase
+		reference=~widget
+		status=$Active
+		target=https://example.org/target/1
+		uuid=550e8400-e29b-41d4-a716-446655440000
+	/>
+
+	<NetworkValues
+		contact=email("user@example.com")
+		homepage=url("https://example.com/path")
+		server=host("example.com")
+	/>
+
+	<ColorValues
+		blend=color-mix(in srgb, #ff0000, #0000ff)
+		chromatic=lch(50% 40 270)
+		hex=#ff6600
+		hslTint=hsl(30 100% 50%)
+		hwbWash=hwb(0 100% 0%)
+		named=&rebeccapurple
+		okPerceptual=oklab(0.5 0.1 -0.1)
+		okPolar=oklch(0.7 0.15 180)
+		perceptual=lab(50% 20 -30)
+		print=device-cmyk(0 0.5 1 0)
+		rgbFill=rgb(255 128 0)
+		wide=color(display-p3 1 0.5 0)
+	/>
+
+	<TemporalValues
+		alarm={10:30:00}
+		appointment={2024-03-15T10:30:00}
+		billingPeriod={2024-03}
+		birthday={2024-03-15}
+		currentDate={today}
+		holiday={12-25}
+		meeting={2024-03-15T10:30:00[America/New_York]}
+		published={2024-03-15T10:30:00Z}
+		sprintStart={2024-W12}
+		timeout={P1Y2M3D}
+		timestamp={now}
+	/>
+
+	<CollectionValues
+		charRange='a'..'z'
+		dateRange={2024-01-01}..{2024-12-31}
+		list=["hello", 'Z', 42, {2024-03-15}, &red, [true, false]]
+		map=map[name: "Alice", age: 30, active: true]
+		numericRange=1..100
+		record=record[street: "123 Main", city: "Springfield"]
+		set=set[$Read, $Write, $Execute]
+		steppedRange=0..100s5
+		tuple=(10, "hello", true)
+	/>
+
+	<ContentWithGloss>
+		This is some text content {@iri | includes some gloss content
+		{~token | including nested content}. Does it work? We'll see.
+	</ContentWithGloss>
+</TraitValueTypes>
