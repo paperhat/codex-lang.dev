@@ -3784,10 +3784,6 @@ For `ValueIsValid validatorName=$X`, expansion MUST:
 1. Resolve `$X` to exactly one `ValidatorDefinition` in the schema.
 2. Embed the `ValidatorDefinition` content into a SHACL-SPARQL constraint.
 
-If the validator cannot be resolved uniquely, expansion MUST fail with a `SchemaError` (§14).
-
-The embedding contract MUST be purely textual and deterministic.
-
 The embedding contract MUST be:
 
 - The validator content MUST be a SPARQL `SELECT` query text whose results follow the SHACL-SPARQL convention (returning a row per violation with `?this`).
@@ -3800,34 +3796,17 @@ The derived `sh:select` text MUST be exactly the validator content.
 
 ### 10.1 Purpose
 
-This section defines how Codex documents are:
-
-- formatted
-- canonicalized
-- rejected when canonicalization is not possible
-
-Its goals are to:
-
-- ensure exactly one canonical surface form
-- ensure formatting/canonicalization conforms to the language invariants (§2), including the prohibition of heuristics
-- enable mechanical, explainable normalization
-- support lossless round-tripping
-
-This section governs formatting and canonicalization only.
-
 ### 10.2 Processing Phases
-Codex supports two related pipelines:
+
+Conforming implementations MUST support two pipelines:
 
 1. Schema-less formatting / well-formedness check (§2.5) (no schema required)
 2. Semantic validation (§2.5) (schema required)
 
-Formatting and canonicalization are not optional in the full pipeline.
-However, schema availability is required only for semantic validation.
+Formatting and canonicalization MUST be performed in the full pipeline.
 
 #### 10.2.1 Schema-Less Formatting Mode (Required)
 An implementation MUST provide a schema-less formatting / canonicalization mode that can be run without a governing schema.
-
-This mode exists to support well-formedness and formatting checks (gofmt-like), independent of semantic validation.
 
 A schema-less formatter:
 
@@ -3836,8 +3815,6 @@ A schema-less formatter:
 - MUST normalize encoding and line endings as defined by the surface form requirements (§8)
 - MUST apply the canonical form requirement defined in §10.4
 - MUST normalize whitespace, blank-line layout, trait layout, and annotation whitespace
-
-Schema-less formatting is not validation. It exists to produce a consistent surface form without consulting schema meaning.
 
 ##### 10.2.1.1 Schema-less Content Mode Determination
 In schema-less formatting and canonicalization mode, the parser MUST determine a Concept instance’s body mode mechanically as follows:
@@ -3856,9 +3833,7 @@ Lines beginning with the escape sequences `\<` or `\[` are content, not structur
 
 If the body is classified as children mode but contains any non-blank considered line that is neither a valid Concept marker line (§8.5) nor a valid annotation line (§8.9), the document MUST be rejected with a `ParseError` (§14).
 
-This determination is purely mechanical and MUST NOT depend on schema knowledge, heuristics, or inferred intent.
-
-If subsequent schema-based validation determines that the mechanically determined body mode is not permitted for the Concept, validation MUST fail with a `SchemaError` (§14).
+When subsequent schema-based validation determines that the mechanically determined body mode is not authorized for the Concept, validation MUST fail with a `SchemaError` (§14).
 
 #### 10.2.2 Full Validation Pipeline
 To validate a document under a schema, a conforming tool MUST follow this sequence:
@@ -3867,8 +3842,6 @@ To validate a document under a schema, a conforming tool MUST follow this sequen
 2. Formatting + canonicalization (mandatory) — using the schema-less mode defined in §10.2.1
 3. Schema resolution — obtain the governing schema for the document (§12)
 4. Semantic validation — schema rule evaluation (constraints, value types, identity, references)
-
-Schema resolution is required before semantic validation.
 
 ### 10.3 Parse Errors vs Formatting Errors
 #### 10.3.1 Parse Errors
@@ -3879,19 +3852,10 @@ During formatting + canonicalization, a failure MUST be classified as `ParseErro
 
 During formatting + canonicalization, a failure MUST be classified as `FormattingError` (§14) when input can be structurally read, but cannot be transformed into canonical surface form deterministically.
 
-`FormattingError` is distinct from schema or semantic error classes.
-
 ### 10.4 Canonical Form Requirement
 Every valid Codex document MUST normalize to exactly one canonical textual form.
 
-Canonicalization:
-
-- is deterministic
-- is mechanical
-- preserves meaning and Content
-- never guesses author intent
-
-If canonicalization cannot be performed unambiguously, the document MUST be rejected with a `FormattingError` (§14).
+When canonicalization cannot be performed unambiguously, the document MUST be rejected with a `FormattingError` (§14). Formatting errors MUST NOT be downgraded to warnings.
 
 ### 10.5 Canonicalization Rules
 Canonicalization is divided into two phases:
@@ -3926,7 +3890,6 @@ Canonicalization MUST NOT:
 
 - reorder Concepts (except children of `$Unordered` collections during Phase 2)
 - invent or remove Concepts, Traits, or Content
-- infer missing structure
 
 #### 10.5.1 Deterministic Ordering for Unordered Collections
 
@@ -3936,8 +3899,6 @@ In canonical surface form, children of an `$Unordered` collection MUST be sorted
 2. If Concept names are equal, sort by `id` trait value (lexicographic, ascending) if present.
 3. If Concept names are equal and neither child has an `id` trait, sort by `key` trait value (lexicographic, ascending) if present.
 4. If still tied, preserve source order.
-
-This sorting is schema-directed and MUST only be applied during Phase 2 processing.
 
 #### 10.5.2 Canonical Text Value Formatting
 Text Values have a single semantic value after whitespace normalization (§5.1). Canonical surface form MUST be chosen deterministically as follows.
@@ -3964,18 +3925,15 @@ Line breaks introduced by backtick block wrapping are surface-form only; they ar
 ### 10.6 Annotation Canonicalization
 Annotation canonicalization MUST follow the surface form requirements (§8).
 
-In particular:
-
-- Inline annotations collapse internal whitespace to single spaces and trim leading/trailing whitespace (as described in §8)
+- Inline annotations collapse internal whitespace to single spaces and trim leading/trailing whitespace (§8)
 - Block annotations preserve internal line structure
 - Block annotations with `CODE:` or `MARKDOWN:` directives are byte-preserving: tools MUST NOT reindent, trim, strip trailing whitespace, wrap, or interpret escapes within those blocks
 
-If attachment cannot be determined deterministically, canonicalization MUST fail with a `FormattingError` (§14).
+When attachment cannot be determined deterministically, canonicalization MUST fail with a `FormattingError` (§14).
 
 ### 10.7 Allowed vs Forbidden Changes
-The formatter/canonicalizer exists to produce a single canonical surface form without changing meaning.
 
-Allowed changes (examples):
+Allowed changes:
 
 - Normalize newlines to LF and ensure a trailing newline
 - Normalize structural indentation (tabs) for Concept markers and children bodies
@@ -3984,42 +3942,13 @@ Allowed changes (examples):
 - Canonicalize grouping-annotation labels by whitespace normalization
 - Normalize UUID spelling to the canonical form required by §5.8
 
-Forbidden changes (examples):
+Forbidden changes:
 
 - Reorder Concepts
 - Change Content bytes
 - Change any bytes inside `CODE:` or `MARKDOWN:` block annotations
-- Guess annotation attachment or reinterpret annotation kinds
-- Invent, remove, or rename Concepts/Traits/Values
 
-### 10.8 Normalization Failures
-A canonicalization failure occurs when:
-
-- indentation is ambiguous
-- annotation attachment is ambiguous
-- whitespace cannot be normalized without changing meaning
-- structural inconsistencies prevent a unique surface form
-
-Canonicalization failures MUST be classified as `FormattingError` (§14).
-
-### 10.9 Formatting vs Schema Errors
-Mandatory distinction:
-
-- Formatting errors concern how Codex is written
-- Schema errors concern what Codex means
-
-Tools MUST NOT report schema errors when the root cause is a formatting failure.
-
-### 10.10 Error Classification
-Formatting and canonicalization failures MUST be classified as:
-
-```
-FormattingError
-```
-
-They MUST NOT be downgraded to warnings.
-
-### 10.11 Prohibited Behaviors
+### 10.8 Prohibited Behaviors
 Codex tools MUST NOT:
 
 - silently normalize invalid input
@@ -4028,104 +3957,33 @@ Codex tools MUST NOT:
 - discard or rewrite Content
 - depend on source offsets or editor state
 
-### 10.12 Reporting Requirements
+### 10.9 Reporting Requirements
 
-Formatting error reports MUST include at minimum:
+Formatting error reports MUST include:
 
 - error class (`FormattingError`)
 - violated rule
 - location (line number or Concept path)
 - explanation of canonicalization failure
 
-Exact wording is tool-defined.
-
-### 10.13 Non-Goals
-
-This section does not:
-
-- define editor behavior
-- prescribe auto-format-on-save policies
-- define diff or patch semantics
-- define schema validation rules
-- define rendering or execution behavior
-
-### 10.14 Summary
-
-- Canonical surface form is mandatory
-- Canonicalization is mechanical and deterministic
-- Formatting failures are classified as `FormattingError` (§14)
-- No heuristic or best-effort formatting is permitted
-- Formatting is separate from schema validation
-
 ---
 
 ## 11. Schema Definition Language
 
-This section normatively defines the schema definition language for Codex 1.0.0.
-
-It specifies how **schemas themselves are authored in Codex**, including:
-
-* Concept definitions
-* Trait definitions
-* Content, child, trait, and collection rules
-* Enumerated value sets
-* Entity eligibility
-* Declarative constraints
-* Schema versioning and compatibility
-
-This content is **Normative**.
-
----
-
-### 11.1 Purpose
-
-This section normatively defines the **schema definition language for Codex**.
-
-It specifies how **schemas themselves are authored in Codex**, using the same surface form, parsing rules, and language invariants as instance documents.
-
-The purposes of the schema definition language are to:
-
-* make schemas **first-class Codex data**
-* define all schema semantics **declaratively**
-* ensure schema validation satisfies the Codex language invariants, including closed-world semantics, determinism, and prohibition of heuristics
-* enable schemas to validate other schemas (bootstrapping)
-* support deterministic expansion to derived validation artifacts (including SHACL)
-
-Schemas authored using this language are authoritative.
-
-Derived representations (for example, SHACL or RDF graphs) MUST NOT introduce semantics not explicitly defined by the schema definition language and this specification.
-
-The Codex language invariants governing schema-first processing, determinism, and failure rules are defined in §9.
-
-The schema definition language is bootstrapped by a built-in **schema-of-schemas**, which itself is expressed using this language. See §12.3.
-
----
-
-### 11.2 Core Principles
-
-The schema definition language obeys the same language invariants as Codex instance documents.
-
-The following principles are normative:
+### 11.1 Core Principles
 
 * Schemas are **declarative data**, not executable programs.
 * All authorization is **explicit**; nothing is implied or inferred.
 * All constraints are **mechanically enforceable**.
 * Schema semantics MUST be **closed-world**, **deterministic**, and **free of heuristics**.
-* Any schema rule whose semantics cannot be expressed deterministically under this specification MUST cause schema processing to fail with a `SchemaError` (§14).
 
 Schema validation, schema expansion, and derived-artifact generation MUST satisfy the schema-first requirements defined in §9.
-
-Schemas MUST NOT rely on tool-specific behavior, implicit defaults, or external interpretation beyond what is explicitly defined by this specification and the governing schema-of-schemas.
 
 ---
 
 ### 11.3 Schema
 
 A `Schema` Concept defines a governing Codex schema.
-
-A `Schema` document is the authoritative source of semantic meaning, authorization, and validation rules for Codex documents validated under it.
-
-A schema itself is validated as Codex data under the schema-of-schemas.
 
 #### Traits
 A `Schema` Concept MUST declare the following Traits:
@@ -4157,15 +4015,11 @@ A `Schema` Concept MUST declare the following Traits:
 
   The canonical namespace label for this schema. The value MUST be a camelCase name (§4.1). This label is used by importing documents to construct qualified names (§4.1.1) that reference Concept and Trait definitions from this schema. Each schema's `namespace` value MUST be unique among all schemas loaded together (governing schema plus imported schemas); if two schemas declare the same `namespace` value, processing MUST fail with a `SchemaError` (§14).
 
-The following Traits are optional:
+A `Schema` Concept is allowed to declare the following Traits:
 
-* `key` (optional; Lookup Token Value)
-* `title` (optional; Text Value)
-* `description` (optional; Text Value)
-
-If `authoringMode` is missing, invalid, or mixed, schema processing MUST fail with a `SchemaError` (§14).
-
-All conforming implementations MUST support both the Simplified Authoring Mode and the Canonical Authoring Mode (see §9.4).
+* `key` (Lookup Token Value)
+* `title` (Text Value)
+* `description` (Text Value)
 
 #### Children
 A `Schema` MUST satisfy the mode-conditional child-Concept rules defined in §9.4.
@@ -4173,7 +4027,7 @@ A `Schema` MUST satisfy the mode-conditional child-Concept rules defined in §9.
 For `authoringMode=$SimplifiedMode`:
 
 * A `Schema` MUST contain exactly one `ConceptDefinitions` child Concept.
-* The following child Concepts are permitted, in any order:
+* The following child Concepts are allowed, in any order:
 
   * `TraitDefinitions`
   * `EnumeratedValueSets`
@@ -4196,31 +4050,21 @@ For `authoringMode=$CanonicalMode`:
   * `ValueTypeDefinitions`
   * `ValidatorDefinitions`
 
-* A `Schema` in `$CanonicalMode` is permitted to contain a `SchemaImports` child Concept. In `$CanonicalMode`, the `SchemaImports` block declares which imported schemas to load; namespace labels are not used inside the RDF graph (which uses full IRIs directly). The parser MUST merge imported SHACL shapes at the RDF level.
+* A `Schema` in `$CanonicalMode` is allowed to contain a `SchemaImports` child Concept. The parser MUST merge imported SHACL shapes at the RDF level.
 
-No other child Concepts are permitted.
-
-Each container Concept listed above MUST obey the structural, identity, and content rules defined by this specification and the schema-of-schemas.
+No other child Concepts are allowed.
 
 #### Semantic Requirements
 
-* A `Schema` Concept is an Entity and therefore MUST declare an `id`.
-* All Concept, Trait, ValueType, and Constraint identifiers used within the schema MUST be resolvable and unique where required.
-* A schema MUST be self-contained except for explicitly declared external inputs permitted by this specification.
-* A schema MUST be valid under exactly one authoring mode (see §9.4).
 * Any schema whose structure or semantics cannot be interpreted deterministically under this specification MUST be rejected with a `SchemaError` (§14).
-
-The `Schema` Concept defines the boundary within which schema-first parsing, validation, instance-graph mapping, and derived-artifact generation occur, as specified in §9.
 
 ---
 
 ### 11.3.1 Schema Imports
 
-Codex supports composing schemas via imports. A schema or data document declares its imports using a `SchemaImports` block, which binds namespace labels to imported schema IRIs.
-
 #### `SchemaImports`
 
-`SchemaImports` is a language-level child Concept permitted on any root Concept in children mode, regardless of the governing schema's child rules. This is analogous to language-level Traits (`id`, `key`, `reference`, `target`, `for`) which are defined by this specification rather than by any schema.
+`SchemaImports` is a language-level child Concept allowed on any root Concept in children mode, regardless of the governing schema's child rules.
 
 `SchemaImports` MUST only appear as a direct child of a root Concept.
 
@@ -4238,17 +4082,15 @@ Within a `SchemaImports` block, `SchemaImport` children MUST be sorted alphabeti
 
 #### `SchemaImport`
 
-A `SchemaImport` declares a single imported schema.
-
 ##### Traits
 
 * `reference` (required; IRI Reference Value)
 
-  The IRI of the imported schema. This MUST be the `Schema.id` of an imported schema provided via the `importedSchemas` input (§12.2). The `reference` Trait is the language-level reference Trait defined in §7.1; its value MUST be an IRI Reference (never a Lookup Token).
+  The IRI of the imported schema. This MUST be the `Schema.id` of an imported schema provided via the `importedSchemas` input (§12.2). The value MUST be an IRI Reference Value.
 
 * `namespace` (required; Text Value)
 
-  The namespace label used in qualified names (§4.1.1) to reference Concepts and Traits from this imported schema. The value MUST be a camelCase name (§4.1). In canonical form, this value MUST be normalized to the imported schema's declared `namespace` Trait value (§10.5). In non-canonical input, authors are permitted to use any camelCase label; canonicalization normalizes it.
+  The namespace label used in qualified names (§4.1.1) to reference Concepts and Traits from this imported schema. The value MUST be a camelCase name (§4.1). In canonical form, this value MUST be normalized to the imported schema's declared `namespace` Trait value (§10.5).
 
 ##### Semantic Requirements
 
@@ -4260,9 +4102,9 @@ A `SchemaImport` declares a single imported schema.
 
 In data documents, the governing schema's Concept and Trait definitions are referenced without namespace qualification. Only Concepts from imported schemas require qualification via `namespace:ConceptName` (§4.1.1).
 
-Trait names on Concept instances in data documents are always unqualified. The Concept definition (from the governing schema or the imported schema that defines the Concept) determines which `TraitDefinition` each Trait name refers to.
+Trait names on Concept instances in data documents MUST be unqualified. The Concept definition (from the governing schema or the imported schema that defines the Concept) determines which `TraitDefinition` each Trait name refers to.
 
-Enumerated Tokens (`$Value`) and Lookup Tokens (`~key`) are not namespace-qualified. The Trait's constraint determines the `EnumeratedValueSet`; the document's resolution table (§9.8) resolves Lookup Tokens.
+Enumerated Tokens (`$Value`) and Lookup Tokens (`~key`) MUST NOT be namespace-qualified. The Trait's constraint determines the `EnumeratedValueSet`; the document's resolution table (§9.8) resolves Lookup Tokens.
 
 #### Namespace Qualification in Schema Documents
 
@@ -4270,7 +4112,7 @@ In schema documents, references to Concepts and Traits from imported schemas in 
 
 #### Data Documents with Imports
 
-Data documents are permitted to declare `SchemaImports` as a child of their root Concept. This allows data documents to use qualified Concept names for Concepts from imported schemas.
+Data documents are allowed to declare `SchemaImports` as a child of their root Concept.
 
 The `SchemaImports` in a data document MUST be consistent with the governing schema: any schema imported by the data document MUST also be imported by the governing schema (or be the governing schema itself).
 
@@ -4278,42 +4120,38 @@ The `SchemaImports` in a data document MUST be consistent with the governing sch
 
 ### 11.4 Concept Definitions
 
-This section defines how Codex Concepts are declared in schemas.
-
 #### 11.4.1 `ConceptDefinition`
-
-A `ConceptDefinition` declares a Concept class and its structural, semantic, and identity rules.
 
 A `ConceptDefinition` is an Entity.
 
-##### Traits
-* `id` (required; IRI Reference Value)
-* `key` (optional; Lookup Token Value)
-* `name` (required; Concept name, per §4 Naming Rules)
-* `conceptKind` (required; `$Semantic | $Structural | $ValueLike`)
-* `description` (optional; Text Value)
-* `entityEligibility` (required; `$MustBeEntity | $MustNotBeEntity`)
-* `role` (optional; Text Value)
+##### Required Traits
+* `id` (IRI Reference Value)
+* `name` (Concept name, per §4 Naming Rules)
+* `conceptKind` (`$Semantic | $Structural | $ValueLike`)
+* `entityEligibility` (`$MustBeEntity | $MustNotBeEntity`)
+
+##### Allowed Traits
+* `key` (Lookup Token Value)
+* `description` (Text Value)
+* `role` (Text Value)
 
 ##### Children
-A `ConceptDefinition` is permitted to contain, in any order:
+A `ConceptDefinition` is allowed to contain, in any order:
 
-* `ContentRules` (optional)
-* `TraitRules` (optional)
-* `ChildRules` (optional)
-* `CollectionRules` (optional)
+* `ContentRules`
+* `TraitRules`
+* `ChildRules`
+* `CollectionRules`
 
-No other children are permitted.
+No other children are allowed.
 
-If a child section is omitted, its default behavior applies as defined below.
+When a child section is omitted, its default behavior applies as defined below.
 
 ---
 
 #### 11.4.2 `ContentRules`
 
 `ContentRules` declares whether instances of the Concept are in content mode or children mode.
-
-This declaration is schema-authoritative and MUST be consulted before parsing Concept bodies in schema-directed processing (§9).
 
 ##### Children
 Exactly one of:
@@ -4329,7 +4167,7 @@ Traits:
 
 `whitespaceMode` MUST be one of:
 
-* `$Preformatted` — content whitespace is significant and MUST be preserved exactly (e.g., source code, poetry)
+* `$Preformatted` — content whitespace is significant and MUST be preserved exactly
 * `$Flow` — content whitespace is not significant; Codex-conforming tools MUST collapse runs of whitespace to single spaces and trim leading/trailing whitespace
 
 ###### `ForbidsContent`
@@ -4338,13 +4176,13 @@ Traits:
 
 ##### Defaults
 
-If `ContentRules` is omitted, `ForbidsContent` applies.
+When `ContentRules` is omitted, `ForbidsContent` applies.
 
 ---
 
 #### 11.4.3 `TraitRules`
 
-`TraitRules` declares which Traits are permitted, required, or forbidden on instances of the Concept.
+`TraitRules` declares which Traits are allowed, required, or forbidden on instances of the Concept.
 
 ##### Children
 One or more of:
@@ -4352,8 +4190,6 @@ One or more of:
 * `RequiresTrait`
 * `AllowsTrait`
 * `ForbidsTrait`
-
-If no trait rules are needed, omit the `TraitRules` container entirely.
 
 Each rule applies to exactly one trait name.
 
@@ -4363,11 +4199,9 @@ Traits:
 
 * `name` (required; Trait name or qualified Trait name, per §4 and §4.1.1)
 
-Children (optional):
+Children (allowed):
 
 * `AllowedValues` — narrows the set of valid values for this trait on this concept (see below)
-
-When `name` is a qualified Trait name (`namespace:traitName`), it references a `TraitDefinition` from the imported schema identified by the namespace prefix (§11.3.1).
 
 ###### `AllowsTrait`
 
@@ -4375,11 +4209,9 @@ Traits:
 
 * `name` (required; Trait name or qualified Trait name, per §4 and §4.1.1)
 
-Children (optional):
+Children (allowed):
 
 * `AllowedValues` — narrows the set of valid values for this trait on this concept (see below)
-
-When `name` is a qualified Trait name (`namespace:traitName`), it references a `TraitDefinition` from the imported schema identified by the namespace prefix (§11.3.1).
 
 ###### `ForbidsTrait`
 
@@ -4395,17 +4227,16 @@ In the Canonical Representation, concept-level `AllowedValues` translates to an 
 
 ##### Defaults
 
-* Traits not explicitly allowed or required are forbidden.
-* If `TraitRules` is omitted, no Traits are permitted except:
+When `TraitRules` is omitted, no Traits are allowed except:
 
-  * `id`, when permitted or required by `entityEligibility`
-  * `key`, when applicable by schema rules
+* `id`, when allowed or required by `entityEligibility`
+* `key`, when applicable by schema rules
 
 ---
 
 #### 11.4.4 `ChildRules`
 
-`ChildRules` declares which child Concepts are permitted, required, or forbidden beneath instances of the Concept.
+`ChildRules` declares which child Concepts are allowed, required, or forbidden beneath instances of the Concept.
 
 ##### Children
 One or more of:
@@ -4415,29 +4246,21 @@ One or more of:
 * `ForbidsChildConcept`
 * `ExactlyOneChildOf`
 
-If no child rules are needed, omit the `ChildRules` container entirely.
-
 ###### `AllowsChildConcept`
 
 Traits:
 
 * `conceptSelector` (required; Concept name or qualified Concept name per §4.1.1)
-* `min` (optional; non-negative integer; default `0`)
-* `max` (optional; positive integer; omitted means unbounded)
-
-When `conceptSelector` is a qualified Concept name (`namespace:ConceptName`), it references a `ConceptDefinition` from the imported schema identified by the namespace prefix (§11.3.1).
+* `min` (allowed; non-negative integer; default `0`)
+* `max` (allowed; positive integer; omitted means unbounded)
 
 ###### `RequiresChildConcept`
 
 Traits:
 
 * `conceptSelector` (required; Concept name or qualified Concept name per §4.1.1)
-* `min` (optional; positive integer; default `1`)
-* `max` (optional; positive integer; omitted means unbounded)
-
-`RequiresChildConcept` is semantically equivalent to `AllowsChildConcept` with `min = 1`.
-
-When `conceptSelector` is a qualified Concept name, it references a `ConceptDefinition` from the imported schema (§11.3.1).
+* `min` (allowed; positive integer; default `1`)
+* `max` (allowed; positive integer; omitted means unbounded)
 
 ###### `ForbidsChildConcept`
 
@@ -4465,15 +4288,13 @@ Traits:
 
 ##### Defaults
 
-Child Concepts not explicitly allowed or required are forbidden.
+When `ChildRules` is omitted, no child Concepts are allowed.
 
 ---
 
 #### 11.4.5 `CollectionRules`
 
 `CollectionRules` declares collection semantics for Concepts whose children form a logical collection.
-
-These semantics inform schema validation and deterministic graph mapping (§9).
 
 ##### Traits
 * `ordering` (required; `$Ordered | $Unordered`)
@@ -4485,15 +4306,11 @@ These semantics inform schema validation and deterministic graph mapping (§9).
 
 ##### Applicability
 
-If `CollectionRules` is present:
+When `CollectionRules` is present, child ordering and duplication semantics MUST be enforced as declared.
 
-* Child ordering and duplication semantics MUST be enforced as declared.
-* Any schema rule that depends on collection semantics MUST refer to this declaration.
-
-If `CollectionRules` is absent, no collection semantics are assumed.
+When `CollectionRules` is absent, no collection semantics are assumed.
 
 ##### Ordering Semantics
-The `ordering` trait on `CollectionRules` specifies whether the order of children in a collection is semantically significant.
 
 Ordering MUST be exactly one of:
 
@@ -4502,8 +4319,6 @@ Ordering MUST be exactly one of:
 A collection with `ordering=$Ordered` has semantically significant order.
 
 Source order MUST be preserved through all conforming processing.
-
-Conforming implementations MUST NOT reorder children of an `$Ordered` collection.
 
 Two `$Ordered` collections with identical children in different orders MUST be treated as semantically distinct.
 
@@ -4527,46 +4342,36 @@ In canonical surface form, children of an `$Unordered` collection MUST be sorted
 
 #### 11.5.1 `TraitDefinition`
 
-Defines a Trait independently of any Concept.
-
 A `TraitDefinition` is an Entity.
 
-Trait definitions establish the value type and constraints for a Trait that may be used across multiple Concepts.
+##### Required Traits
+* `id` (IRI Reference Value)
+* `name` (Trait name per §4 Naming Rules)
+* `defaultValueType` (value type token, optionally parameterized per §5.18; required unless `defaultValueTypes` is provided)
+* `defaultValueTypes` (list of one or more value type tokens, optionally parameterized per §5.18; required unless `defaultValueType` is provided)
 
-###### Traits
-* `id` (required; IRI Reference Value)
-* `name` (required; Trait name per §4 Naming Rules)
-* `description` (optional; Text Value)
-* `defaultValueType` (required unless `defaultValueTypes` is provided; value type token, optionally parameterized per §5.18)
-* `defaultValueTypes` (required unless `defaultValueType` is provided; list of one or more value type tokens, optionally parameterized per §5.18)
-* `isReferenceTrait` (optional; boolean)
-* `priority` (optional; enumerated token; presentation hint)
+##### Allowed Traits
+* `description` (Text Value)
+* `isReferenceTrait` (boolean)
+* `priority` (enumerated token)
 
-`isReferenceTrait` is schema metadata only. It MUST NOT change the definition of reference Traits in §7, and it MUST NOT change the reference constraint semantics in §9.9.9–§9.9.12.
+When both `defaultValueType` and `defaultValueTypes` are provided, schema processing MUST fail with a `SchemaError` (§14).
 
-If both `defaultValueType` and `defaultValueTypes` are provided, schema processing MUST fail with a `SchemaError` (§14).
-
-`priority` is a meta-schema concern. Implementations MUST NOT use `priority` to change validation or compilation semantics. Meta-schemas are permitted to constrain allowed `priority` values (e.g., `$Primary`, `$Secondary`).
+`priority` is a meta-schema concern. Implementations MUST NOT use `priority` to change validation or compilation semantics. Meta-schemas are allowed to constrain `priority` values.
 
 ##### Value Type Semantics
 When a trait is present on a Concept instance, its value MUST conform to the declared value type.
 
-If `defaultValueType` specifies a single type, the value MUST conform to that type.
-
-If `defaultValueTypes` specifies multiple types, the value MUST conform to exactly one of the listed types.
+When `defaultValueTypes` specifies multiple types, the value MUST conform to exactly one of the listed types.
 
 ##### Collection Type Semantics
-If a trait's value type is a parameterized collection type (e.g., `$List<$Text>`), each element of the collection MUST conform to the declared item type.
+When a trait's value type is a parameterized collection type, each element of the collection MUST conform to the declared item type.
 
-If a trait's value type is an unparameterized collection type (e.g., `$List`), elements are permitted to be of any type.
+When a trait's value type is an unparameterized collection type, elements are allowed to be of any type.
 
-If a trait's value type is a union containing both scalar and collection types (e.g., `[$Text, $List<$Text>]`), the value MUST conform to exactly one member of the union.
+When a trait's value type is a union containing both scalar and collection types, the value MUST conform to exactly one member of the union.
 
-##### Trait Presence
-
-Whether a trait must, may, or must not appear on a Concept instance is governed by `TraitRules` (`RequiresTrait`, `AllowsTrait`, `ForbidsTrait`), not by its value type.
-
-##### Children (Optional)
+##### Allowed Children
 
 * `AllowedValues` — constrains the set of valid values
 
@@ -4602,13 +4407,13 @@ Whether a trait must, may, or must not appear on a Concept instance is governed 
 
 #### 11.5.2 `AllowedValues`
 
-Constrains the values a Trait may accept.
+Constrains the values a Trait accepts.
 
 ##### Children
 Exactly one of:
 
-* `ValueIsOneOf` — value must be in explicit list
-* `EnumeratedConstraint` — value must be member of named enumeration
+* `ValueIsOneOf`
+* `EnumeratedConstraint`
 
 ##### `ValueIsOneOf`
 
@@ -4626,16 +4431,10 @@ Exactly one of:
 
 ### 11.6 Value Types
 
-This section defines how schemas constrain the **Value types** permitted for Trait values.
-
-Value types in schemas are classifiers and constraints. They constrain which surface-form Value spellings (§5) are permitted and which semantic value domain is compiled during schema validation.
-
-Value type checking MUST be deterministic and MUST NOT perform implicit evaluation (for example, resolving `{now}` to a concrete time) unless explicitly required by the governing schema.
+Value type checking MUST be deterministic and MUST NOT perform implicit evaluation.
 
 #### 11.6.1 Built-In Value Type Tokens
-Schemas are permitted to reference the following built-in value type tokens.
-
-Each token corresponds to a Value category defined in §5 (Value Literal Catalog) or to a surface-distinct Numeric Value type (§5.4).
+Schemas are allowed to reference the following built-in value type tokens.
 
 * `$Text`
 * `$Character`
@@ -4695,41 +4494,31 @@ Each token corresponds to a Value category defined in §5 (Value Literal Catalog
 * `$Tuple`
 * `$Range`
 
-A built-in value type token constrains both the permitted surface-form spelling and the semantic value domain compiled during schema validation.
-
-If a schema constrains a Trait value using a built-in value type token, semantic validation MUST convert that value into the corresponding typed IR value (when applicable) and MUST reject values that are syntactically well-formed but semantically invalid for the expected type.
-
-See §2.5 and §9.2 for the distinction between schema-less Value-kind classification and schema validation of expected `ValueType` constraints.
-
-If a schema constrains a value using a built-in value type token, and a Trait value does not match that Value type's surface grammar (or cannot be converted into a valid value of that type), schema-driven validation MUST fail with a `SchemaError` (§14).
+When a schema constrains a Trait value using a built-in value type token, semantic validation MUST convert that value into the corresponding typed IR value and MUST reject values that are syntactically well-formed but semantically invalid for the expected type.
 
 ---
 
-#### 11.6.2 `ValueTypeDefinition` (Optional)
-
-A `ValueTypeDefinition` defines a **schema-specific named value type** with additional validation semantics.
+#### 11.6.2 `ValueTypeDefinition`
 
 A `ValueTypeDefinition` is an Entity.
-
-Schema-defined value types are referenced using Enumerated Token Values whose name matches the `ValueTypeDefinition.name`.
 
 ##### Container
 
 `ValueTypeDefinitions` is a container Concept holding one or more `ValueTypeDefinition` children.
 
-##### Traits
-* `id` (required; IRI Reference Value)
-* `name` (required; Concept name per §4 Naming Rules)
-* `baseValueType` (required; built-in value type token)
-* `validatorName` (optional; Enumerated Token Value identifying a `ValidatorDefinition`)
+##### Required Traits
+* `id` (IRI Reference Value)
+* `name` (Concept name per §4 Naming Rules)
+* `baseValueType` (built-in value type token)
+
+##### Allowed Traits
+* `validatorName` (Enumerated Token Value identifying a `ValidatorDefinition`)
 
 `ValueTypeDefinition` names MUST be unique within the Schema.
 
-The `baseValueType` defines the surface-form Value category.
+When `validatorName` is present, schema-driven validation MUST apply the referenced validator as specified in §9.5.2 and §9.11.6.6.
 
-If `validatorName` is present, schema-driven validation MUST apply the referenced validator as specified in §9.5.2 and §9.11.6.6.
-
-If `validatorName` cannot be resolved to exactly one `ValidatorDefinition`, schema processing MUST fail with a `SchemaError` (§14).
+When `validatorName` cannot be resolved to exactly one `ValidatorDefinition`, schema processing MUST fail with a `SchemaError` (§14).
 
 A `ValueTypeDefinition` MUST NOT change the surface grammar of its `baseValueType`.
 
@@ -4737,9 +4526,7 @@ A `ValueTypeDefinition` MUST NOT change the surface grammar of its `baseValueTyp
 
 #### 11.6.3 Enumerated Value Sets
 
-Schemas are permitted to define named sets of Enumerated Token Values.
-
-Enumerated value sets are used exclusively by constraints and Trait definitions; they do not introduce new Value types.
+Schemas are allowed to define named sets of Enumerated Token Values.
 
 ##### Container
 
@@ -4747,27 +4534,27 @@ Enumerated value sets are used exclusively by constraints and Trait definitions;
 
 ##### `EnumeratedValueSet`
 
-Defines a closed set of enumerated tokens.
-
 An `EnumeratedValueSet` is an Entity.
 
-###### Traits
-* `id` (required; IRI Reference Value)
-* `key` (optional; Lookup Token Value)
-* `name` (required; Concept name per §4 Naming Rules)
-* `description` (optional; Text Value)
+###### Required Traits
+* `id` (IRI Reference Value)
+* `name` (Concept name per §4 Naming Rules)
+
+###### Allowed Traits
+* `key` (Lookup Token Value)
+* `description` (Text Value)
 
 ###### Children
 One or more `Member` children.
 
 ##### `Member`
 
-Defines one member of an enumerated value set.
+###### Required Traits
+* `value` (token name without `$`)
 
-###### Traits
-* `value` (required; token name without `$`)
-* `label` (optional; Text Value)
-* `description` (optional; Text Value)
+###### Allowed Traits
+* `label` (Text Value)
+* `description` (Text Value)
 
 Each `value` MUST be unique within its `EnumeratedValueSet`.
 
@@ -4804,28 +4591,13 @@ The following enumerated value sets are defined by the Codex language itself and
 * `$Single`
 * `$List`
 
-These enumerated sets are authoritative and MUST NOT be redefined by schemas.
+These enumerated sets MUST NOT be redefined by schemas.
 
 ---
 
 ### 11.7 Constraint Model
 
-This section defines the **schema constraint model** used to express semantic validation rules.
-
-Constraints are **declarative**, **closed-world**, and **deterministic**.
-They describe conditions that MUST hold for a document to be valid under a governing schema.
-
-Constraints:
-
-* MUST NOT execute code
-* MUST NOT depend on implicit inference
-* MUST be mechanically translatable to the schema-first validation model defined in §9
-
----
-
 #### 11.7.1 `ConstraintDefinitions`
-
-`ConstraintDefinitions` is a container Concept that groups named, reusable constraints.
 
 ##### Children
 One or more `ConstraintDefinition` children.
@@ -4836,30 +4608,26 @@ The order of `ConstraintDefinition` children MUST be preserved but MUST NOT affe
 
 #### 11.7.2 `ConstraintDefinition`
 
-A `ConstraintDefinition` defines a single named constraint that may be applied to one or more targets.
-
 A `ConstraintDefinition` is itself an Entity.
 
-##### Traits
-* `id` (required; IRI Reference Value)
-* `title` (optional; Text Value)
-* `description` (optional; Text Value)
+##### Required Traits
+* `id` (IRI Reference Value)
+
+##### Allowed Traits
+* `title` (Text Value)
+* `description` (Text Value)
 
 ##### Children
 Exactly two children, in any order:
 
-* `Targets` — declares what the constraint applies to
-* `Rule` — declares the constraint logic
+* `Targets`
+* `Rule`
 
-If either child is missing or appears more than once, schema processing MUST fail with a `SchemaError` (§14).
+When either child is missing or appears more than once, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
 #### 11.7.3 `Targets`
-
-`Targets` declares the focus set for a constraint.
-
-A constraint is permitted to target multiple Concepts and/or contexts.
 
 ##### Children
 One or more of:
@@ -4867,13 +4635,11 @@ One or more of:
 * `TargetConcept`
 * `TargetContext`
 
-If `Targets` contains no children, schema processing MUST fail with a `SchemaError` (§14).
+When `Targets` contains no children, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
 ##### 11.7.3.1 `TargetConcept`
-
-Applies the constraint to instances of a specific Concept.
 
 ###### Traits
 * `conceptSelector` (required; Concept name)
@@ -4885,19 +4651,15 @@ Otherwise, schema processing MUST fail with a `SchemaError` (§14).
 
 ##### 11.7.3.2 `TargetContext`
 
-Applies the constraint relative to a context.
-
 ###### Traits
 * `contextSelector` (required; Concept name or the literal text `"Document"`)
 
-If `contextSelector` is not `"Document"`, it MUST resolve to exactly one `ConceptDefinition`.
+When `contextSelector` is not `"Document"`, it MUST resolve to exactly one `ConceptDefinition`.
 Otherwise, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
 #### 11.7.4 `Rule`
-
-`Rule` contains the constraint logic.
 
 ##### Children
 Exactly one child, which MUST be one of:
@@ -4906,20 +4668,15 @@ Exactly one child, which MUST be one of:
 * an **atomic constraint** (§11.10)
 * a **path-scoped rule** (§11.9 with quantifier)
 
-If `Rule` contains zero or more than one child, schema processing MUST fail with a `SchemaError` (§14).
+When `Rule` contains zero or more than one child, schema processing MUST fail with a `SchemaError` (§14).
 
 `Rule` nodes are purely structural and MUST NOT carry Traits.
 
 ---
 
 ### 11.8 Rule Algebra
-This section defines the **rule algebra** used to compose constraints.
 
-Rule algebra nodes are **purely declarative**, **structural**, and **deterministic**.
-They define how atomic constraints are combined, without introducing new semantics.
-
-Rule algebra MUST be interpreted according to the schema-first validation model defined in §9.
-Rule algebra MUST be translatable to a total, deterministic validation form (for example, SHACL-SPARQL).
+Rule algebra MUST be translatable to a total, deterministic validation form.
 
 ---
 
@@ -4927,16 +4684,13 @@ Rule algebra MUST be translatable to a total, deterministic validation form (for
 
 * Rule algebra nodes MUST NOT carry Traits.
 * Rule algebra nodes MUST contain only other `Rule` nodes as children.
-* Rule algebra MUST NOT introduce side effects, inference, or execution semantics.
 * Any rule tree MUST be finite and acyclic.
 
-If a rule algebra structure cannot be translated deterministically, schema processing MUST fail with a `SchemaError` (§14).
+When a rule algebra structure cannot be translated deterministically, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
 #### 11.8.2 `AllOf`
-
-`AllOf` requires that **all** child rules hold.
 
 ##### Children
 Two or more `Rule` children.
@@ -4949,8 +4703,6 @@ The rule holds if and only if **every** child rule holds for the same focus node
 
 #### 11.8.3 `AnyOf`
 
-`AnyOf` requires that **at least one** child rule holds.
-
 ##### Children
 Two or more `Rule` children.
 
@@ -4962,8 +4714,6 @@ The rule holds if and only if **one or more** child rules hold for the same focu
 
 #### 11.8.4 `Not`
 
-`Not` negates a rule.
-
 ##### Children
 Exactly one `Rule` child.
 
@@ -4974,8 +4724,6 @@ The rule holds if and only if the child rule does **not** hold for the same focu
 ---
 
 #### 11.8.5 `ConditionalConstraint`
-
-`ConditionalConstraint` expresses implication: *if a condition holds, then a consequent must hold*.
 
 ##### Children
 Exactly two children:
@@ -4990,28 +4738,20 @@ The rule holds if and only if:
 * the condition does **not** hold, **or**
 * the condition holds and the consequent holds
 
-This is logically equivalent to:
-`¬When ∨ Then`.
-
 ---
 
 #### 11.8.6 Determinism Requirement
 
 Rule algebra evaluation MUST be:
 
-* order-independent (except where explicitly scoped by paths or quantifiers)
-* free of heuristic interpretation
+* order-independent
 * reducible to a single boolean outcome per focus node
 
-If rule algebra composition would require guessing, short-circuit heuristics, or undefined evaluation order, schema processing MUST fail with a `SchemaError` (§14).
+When rule algebra composition cannot be evaluated deterministically, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
 ### 11.9 Paths and Quantifiers
-This section defines **paths** and **quantifiers** used to scope constraint evaluation over structured data.
-
-Paths and quantifiers are **structural selectors**, not semantic operators.
-They MUST be interpreted deterministically and MUST NOT introduce inference or implicit traversal rules.
 
 All path and quantifier semantics MUST be compatible with the instance-graph mapping defined in §9.7 and the rule-to-SPARQL translation defined in §9.11.
 
@@ -5019,22 +4759,9 @@ All path and quantifier semantics MUST be compatible with the instance-graph map
 
 #### 11.9.1 Paths
 
-A path selects zero or more elements relative to a focus node.
-
-Paths MUST be explicit and MUST NOT depend on implicit defaults, ordering assumptions, or heuristic traversal.
-
-Codex defines the following path types:
-
-* `TraitPath`
-* `ChildPath`
-* `DescendantPath`
-* `ContentPath`
-
 Each path node MUST declare exactly the traits required for its form.
 
 ##### `TraitPath`
-
-Selects values of a Trait on the focus Concept instance.
 
 ###### Traits
 * `traitName` (required; Trait name per the Naming Rules in §4)
@@ -5047,8 +4774,6 @@ Selects each value bound to the named Trait on the focus node.
 
 ##### `ChildPath`
 
-Selects direct child Concept instances of a given Concept type.
-
 ###### Traits
 * `conceptSelector` (required; Concept name)
 
@@ -5060,8 +4785,6 @@ Selects each direct child of the focus node whose Concept type matches `conceptS
 
 ##### `DescendantPath`
 
-Selects descendant Concept instances at any depth of a given Concept type.
-
 ###### Traits
 * `conceptSelector` (required; Concept name)
 
@@ -5072,8 +4795,6 @@ Selects each descendant (via one or more parent links) of the focus node whose C
 ---
 
 ##### `ContentPath`
-
-Selects the content of the focus Concept instance.
 
 ###### Traits
 
@@ -5087,23 +4808,11 @@ Selects the content text if and only if the focus Concept instance is in content
 
 #### 11.9.2 Quantifiers
 
-Quantifiers scope a nested rule over the set of elements selected by a Path.
-
-Quantifiers MUST be explicit and MUST NOT introduce implicit cardinality assumptions.
-
-Codex defines the following quantifiers:
-
-* `Exists`
-* `ForAll`
-* `Count`
-
 Quantifiers MUST appear only in rule nodes that explicitly bind a Path to a nested Rule (see §9.5.3).
 
 ---
 
 ##### `Exists`
-
-At least one selected element MUST satisfy the nested rule.
 
 ###### Semantics
 
@@ -5113,8 +4822,6 @@ The rule holds if and only if there exists at least one path-selected element fo
 
 ##### `ForAll`
 
-All selected elements MUST satisfy the nested rule.
-
 ###### Semantics
 
 The rule holds if and only if no path-selected element violates the nested rule.
@@ -5123,11 +4830,9 @@ The rule holds if and only if no path-selected element violates the nested rule.
 
 ##### `Count`
 
-Constrains the number of selected elements that satisfy the nested rule.
-
-###### Traits
-* `minCount` (optional; non-negative integer)
-* `maxCount` (optional; positive integer)
+###### Allowed Traits
+* `minCount` (non-negative integer)
+* `maxCount` (positive integer)
 
 At least one of `minCount` or `maxCount` MUST be present.
 
@@ -5141,31 +4846,20 @@ The rule holds if and only if the number of path-selected elements that satisfy 
 
 * Paths MUST select a well-defined set of elements.
 * Quantifiers MUST evaluate to a single boolean outcome.
-* If a path selector cannot be resolved uniquely, schema processing MUST fail with a `SchemaError` (§14).
-* If a quantifier cannot be evaluated without guessing, schema processing MUST fail with a `SchemaError` (§14).
+* When a path selector cannot be resolved uniquely, schema processing MUST fail with a `SchemaError` (§14).
+* When a quantifier cannot be evaluated without guessing, schema processing MUST fail with a `SchemaError` (§14).
 
 Paths and quantifiers MUST NOT be evaluated outside the schema-driven validation pipeline defined in §9.
 
 ---
 
 ### 11.10 Atomic Constraints
-Atomic constraints are the **leaves** of the rule algebra.
-Each atomic constraint defines a single, declarative validation predicate with no internal composition.
 
-Atomic constraints:
-
-* MUST be deterministic
-* MUST be mechanically enforceable
-* MUST be evaluable without inference or heuristics
-* MUST be translatable to the schema-driven validation model defined in §9
-
-If an atomic constraint cannot be expressed under the instance-graph mapping (§9.7) and the constraint-to-artifact rules (§9.9–§9.11), schema processing MUST fail with a `SchemaError` (§14).
+When an atomic constraint cannot be expressed under the instance-graph mapping (§9.7) and the constraint-to-artifact rules (§9.9–§9.11), schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
 #### 11.10.1 Trait Constraints
-
-Trait constraints apply to Traits declared on the focus Concept instance.
 
 ##### `TraitExists`
 
@@ -5197,20 +4891,18 @@ The named Trait MUST have at least one value equal to the specified value.
 
 ##### `TraitCardinality`
 
-Constrains the number of values bound to a Trait.
+###### Required Traits
+* `trait` (Trait name per §4)
 
-###### Traits
-* `trait` (required; Trait name per §4)
-* `min` (optional; non-negative integer)
-* `max` (optional; positive integer)
+###### Allowed Traits
+* `min` (non-negative integer)
+* `max` (positive integer)
 
 At least one of `min` or `max` MUST be present.
 
 ---
 
 ##### `TraitValueType`
-
-Constrains the value type of a Trait.
 
 ###### Traits
 * `trait` (required; Trait name per §4)
@@ -5219,8 +4911,6 @@ Constrains the value type of a Trait.
 ---
 
 ##### `TraitLessOrEqual`
-
-Asserts that the numeric value of one Trait is less than or equal to the numeric value of another Trait on the same focus node.
 
 The constraint is vacuously satisfied if either Trait is absent from the focus node.
 
@@ -5244,8 +4934,6 @@ SELECT $this WHERE {
 
 #### 11.10.2 Value Constraints
 
-Value constraints apply to values selected by paths or Traits.
-
 ##### `ValueIsOneOf`
 
 The value MUST be one of the explicitly listed values.
@@ -5261,28 +4949,28 @@ The value MUST match a regular expression.
 
 ###### Traits
 * `pattern` (required; regex text)
-* `flags` (optional; text; SPARQL 1.1 `REGEX` flags)
+
+###### Allowed Traits
+* `flags` (text; SPARQL 1.1 `REGEX` flags)
 
 ---
 
 ##### `PatternConstraint`
 
-Constrains a specific Trait value to match a regular expression.
+###### Required Traits
+* `trait` (Trait name per §4)
+* `pattern` (regex text)
 
-###### Traits
-* `trait` (required; Trait name per §4)
-* `pattern` (required; regex text)
-* `flags` (optional; text; SPARQL 1.1 `REGEX` flags)
+###### Allowed Traits
+* `flags` (text; SPARQL 1.1 `REGEX` flags)
 
 ---
 
 ##### `ValueLength`
 
-Constrains the length of a text value.
-
-###### Traits
-* `min` (optional; non-negative integer)
-* `max` (optional; positive integer)
+###### Allowed Traits
+* `min` (non-negative integer)
+* `max` (positive integer)
 
 At least one of `min` or `max` MUST be present.
 
@@ -5290,16 +4978,14 @@ At least one of `min` or `max` MUST be present.
 
 ##### `ValueInNumericRange`
 
-Constrains a numeric value to an inclusive range.
-
-###### Traits
-* `min` (optional; number)
-* `max` (optional; number)
+###### Allowed Traits
+* `min` (number)
+* `max` (number)
 
 At least one of `min` or `max` MUST be present.
 
 This constraint MUST apply only to numeric value types that support ordered comparison.
-If comparison semantics are not explicitly defined for the active value type, schema processing MUST fail with a `SchemaError` (§14).
+When comparison semantics are not explicitly defined for the active value type, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
@@ -5326,24 +5012,17 @@ If resolution fails, schema processing MUST fail with a `SchemaError` (§14).
 
 #### 11.10.3 Child Constraints
 
-Child constraints apply to child Concept instances.
-
 ##### `ChildConstraint`
-
-Generic child constraint using explicit type dispatch.
 
 ###### Traits
 * `type` (required; one of `RequiresChildConcept | AllowsChildConcept | ForbidsChildConcept`)
 * `conceptSelector` (required; Concept name)
 
-This form is provided for compatibility and normalization.
 Its semantics MUST be equivalent to the corresponding explicit child-rule form defined in §11.4.4.
 
 ---
 
 ##### `ChildSatisfies`
-
-Constrains child Concept instances using a nested rule.
 
 ###### Traits
 * `conceptSelector` (required; Concept name)
@@ -5357,11 +5036,7 @@ The rule MUST be evaluated for each matching child Concept instance.
 
 #### 11.10.4 Collection Constraints
 
-Collection constraints apply only where a Concept’s children form a logical collection.
-
 ##### `CollectionOrdering`
-
-Constrains the ordering semantics of a collection.
 
 ###### Traits
 * `ordering` (required; `$Ordered | $Unordered`)
@@ -5373,8 +5048,6 @@ Constrains the ordering semantics of a collection.
 
 ##### `CollectionAllowsEmpty`
 
-Constrains whether a collection may be empty.
-
 ###### Traits
 * `allowed` (required; boolean)
 
@@ -5385,11 +5058,13 @@ Constrains whether a collection may be empty.
 
 ##### `CollectionAllowsDuplicates`
 
-Constrains whether a collection may contain duplicate members.
+###### Required Traits
+* `allowed` (boolean)
 
-###### Traits
-* `allowed` (required; boolean)
-* `keyTrait` (conditional; required when `allowed=false`)
+###### Allowed Traits
+* `keyTrait` (Trait name per §4)
+
+When `allowed` is `false`, `keyTrait` MUST be present.
 
 ###### Children
 * Exactly one of `ChildPath` or `DescendantPath` (see §9.5.4)
@@ -5398,11 +5073,9 @@ Constrains whether a collection may contain duplicate members.
 
 ##### `MemberCount`
 
-Constrains the number of collection members.
-
-###### Traits
-* `min` (optional; non-negative integer)
-* `max` (optional; positive integer)
+###### Allowed Traits
+* `min` (non-negative integer)
+* `max` (positive integer)
 
 At least one of `min` or `max` MUST be present.
 
@@ -5427,8 +5100,6 @@ The rule MUST be evaluated for each matching collection member.
 
 ##### `UniqueConstraint`
 
-Constrains Trait values to be unique within a scope.
-
 ###### Traits
 * `trait` (required; Trait name per §4)
 * `scope` (required; Concept name defining the uniqueness scope)
@@ -5441,21 +5112,18 @@ Uniqueness semantics MUST follow the deterministic scope rules defined in §9.9.
 
 ##### `OrderConstraint`
 
-Constrains the ordering of collection elements by a trait value.
-
 ###### Traits
 * `type` (required; one of the order constraint types defined below)
 * `byTrait` (required; Trait name per §4)
 
 ###### Types
-* `Ascending`: Elements must be in ascending order by the specified trait value.
-* `Descending`: Elements must be in descending order by the specified trait value.
+* `Ascending`: Elements MUST be in ascending order by the specified trait value.
+* `Descending`: Elements MUST be in descending order by the specified trait value.
 
 ###### Children
 * Exactly one of `ChildPath` or `DescendantPath` (see §9.5.4)
 
-Order constraint semantics apply to `$Ordered` collections only. If an `OrderConstraint` is applied to an `$Unordered` collection, schema processing MUST fail with a `SchemaError` (§14).
-If a rule cannot be translated deterministically, schema processing MUST fail with a `SchemaError` (§14).
+Order constraint semantics apply to `$Ordered` collections only. When an `OrderConstraint` is applied to an `$Unordered` collection, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
@@ -5463,17 +5131,15 @@ If a rule cannot be translated deterministically, schema processing MUST fail wi
 
 ##### `ReferenceConstraint`
 
-Constrains usage of reference Traits.
-
 ###### Traits
 * `type` (required; one of the reference constraint types defined below)
 
 ###### Types
-* `ReferenceTargetsEntity`: Target must be an entity. The `conceptSelector` and `traitName` traits MUST NOT be present.
-* `ReferenceMustResolve`: Reference must resolve. The `conceptSelector` and `traitName` traits MUST NOT be present.
-* `ReferenceSingleton`: At most one reference trait may be present. The `conceptSelector` and `traitName` traits MUST NOT be present.
-* `ReferenceTargetsConcept`: Target must be a specific concept type. The `conceptSelector` trait MUST be present.
-* `ReferenceTraitAllowed`: A specific reference trait is allowed. The `traitName` trait MUST be present.
+* `ReferenceTargetsEntity`: Target MUST be an Entity. The `conceptSelector` and `traitName` traits MUST NOT be present.
+* `ReferenceMustResolve`: Reference MUST resolve. The `conceptSelector` and `traitName` traits MUST NOT be present.
+* `ReferenceSingleton`: At most one reference Trait MUST be present. The `conceptSelector` and `traitName` traits MUST NOT be present.
+* `ReferenceTargetsConcept`: Target MUST be a specific Concept type. The `conceptSelector` trait MUST be present.
+* `ReferenceTraitAllowed`: A specific reference Trait is allowed. The `traitName` trait MUST be present.
 
 Reference constraint semantics MUST follow §9.9.9–§9.9.12 exactly.
 
@@ -5483,19 +5149,14 @@ Reference constraint semantics MUST follow §9.9.9–§9.9.12 exactly.
 
 ##### `IdentityConstraint`
 
-Constrains entity and identifier semantics.
-
-###### Traits
-* `type` (required; one of the identity constraint types defined below)
-* `scope` (optional; Concept name defining an identity uniqueness scope)
-* `pattern` (optional; regex text)
-* `flags` (optional; text; SPARQL 1.1 `REGEX` flags)
+###### Required Traits
+* `type` (one of the identity constraint types defined below)
 
 ###### Types
-* `MustBeEntity`: Instance must be an entity. The `scope`, `pattern`, and `flags` traits MUST NOT be present.
-* `MustNotBeEntity`: Instance must not be an entity. The `scope`, `pattern`, and `flags` traits MUST NOT be present.
-* `IdentifierUniqueness`: Identifiers must be unique within scope. The `scope` trait MUST be present. The `pattern` and `flags` traits MUST NOT be present.
-* `IdentifierForm`: Identifier must match pattern. The `pattern` trait MUST be present. The `scope` trait MUST NOT be present.
+* `MustBeEntity`: Instance MUST be an Entity. The `scope`, `pattern`, and `flags` traits MUST NOT be present.
+* `MustNotBeEntity`: Instance MUST NOT be an Entity. The `scope`, `pattern`, and `flags` traits MUST NOT be present.
+* `IdentifierUniqueness`: Identifiers MUST be unique within scope. The `scope` trait MUST be present. The `pattern` and `flags` traits MUST NOT be present.
+* `IdentifierForm`: Identifier MUST match pattern. The `pattern` trait MUST be present. The `scope` trait MUST NOT be present.
 
 Identity constraint semantics MUST follow the entity and identity model defined in §§3.5 and 6.
 
@@ -5503,25 +5164,19 @@ Identity constraint semantics MUST follow the entity and identity model defined 
 
 `IdentityConstraint(type=MustNotBeEntity)` MUST report an `IdentityError` (§14) if the focus Concept instance declares an `id` Trait.
 
-For `MustBeEntity` and `MustNotBeEntity`, `scope`, `pattern`, and `flags` MUST NOT be present.
-
 `IdentityConstraint(type=IdentifierUniqueness, scope=S)` constrains identifiers to be unique within the nearest enclosing scope `S`.
 Its semantics MUST be identical to `UniqueConstraint(trait=id, scope=S)` as defined in §9.9.7 (where `id` refers to `codex:declaredId`).
 
 `IdentityConstraint(type=IdentifierForm, pattern=p, flags=f)` constrains the spelling of declared identifiers.
 When the focus Concept instance is an Entity, its declared `id` value MUST match the regular expression `p` under SPARQL 1.1 `REGEX` semantics (see §9.5.1).
 
-If `pattern` is not provided for `IdentityConstraint(type=IdentifierForm)`, schema processing MUST fail with a `SchemaError` (§14).
-
-For `IdentifierForm`, `scope` MUST NOT be present.
+When `pattern` is not provided for `IdentityConstraint(type=IdentifierForm)`, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
 #### 11.10.9 Context Constraints
 
 ##### `ContextConstraint`
-
-Constrains the structural context in which a Concept instance may appear.
 
 ###### Traits
 * `type` (required; one of the context constraint types defined below)
@@ -5539,30 +5194,15 @@ Context constraint semantics MUST follow §9.9.8.
 
 ##### `ContentConstraint`
 
-Constrains content presence or structure.
-
 ###### Traits
 * `type` (required; one of the content constraint types defined below)
 
 ###### Types
 * `ForbidsContent`: Requires content is absent. The `pattern` and `flags` traits MUST NOT be present.
 * `ContentRequired`: Requires content exists. The `pattern` and `flags` traits MUST NOT be present.
-* `ContentMatchesPattern`: Requires content matches a pattern. The `pattern` trait MUST be present. The `flags` trait is permitted.
+* `ContentMatchesPattern`: Requires content matches a pattern. The `pattern` trait MUST be present. The `flags` trait is allowed.
 
 Content constraint semantics MUST follow the content model defined in §3.4 and the validation rules defined in §9.9.5.
-
----
-
-#### 11.10.11 Failure Rules
-
-If any atomic constraint:
-
-* lacks required traits
-* references an unresolved selector
-* applies to an incompatible value or structure
-* requires semantics not explicitly defined
-
-schema processing MUST fail with a `SchemaError` (§14) rather than guess.
 
 ---
 
@@ -5621,19 +5261,9 @@ Examples in this section are **informative** and do not introduce additional nor
 
 ---
 
-These examples demonstrate:
-
-* targeting constraints to specific Concepts
-* use of rule algebra (`Not`, `ConditionalConstraint`)
-* reuse of atomic constraints
-* deterministic, schema-first validation intent
-
----
-
 ### 11.12 Relationship to External Systems
-Codex schemas are **authoritative** with respect to meaning and validation.
 
-External representations are permitted to be derived from Codex schemas, subject to the following constraints:
+External representations are allowed to be derived from Codex schemas, subject to the following constraints:
 
 * Any derived representation (including SHACL, SHACL-SPARQL, or OWL) MUST be a pure, deterministic projection of the Codex schema.
 * Derived artifacts MUST NOT introduce semantics, defaults, inference rules, or interpretation not explicitly defined by:
@@ -5641,33 +5271,9 @@ External representations are permitted to be derived from Codex schemas, subject
   * this specification, and
   * the governing Codex schema.
 * Derived artifacts MUST NOT override, weaken, or contradict Codex validation semantics.
-* If a Codex constraint or rule cannot be expressed faithfully in the chosen external system, derivation MUST fail with a `SchemaError` (§14) rather than approximate.
-
-Codex does not defer to external systems for meaning.
-
-External systems are consumers or validation backends only; they are not normative authorities.
+* When a Codex constraint or rule cannot be expressed faithfully in the chosen external system, derivation MUST fail with a `SchemaError` (§14) rather than approximate.
 
 ---
-
-### 11.13 Summary
-
-* The schema definition language is itself Codex.
-* Schemas are declarative, closed-world, and deterministic.
-* All authorization, structure, and constraints are explicit.
-* Content mode, traits, children, collections, and references are schema-defined.
-* Constraint logic is compositional and total.
-* Schemas may validate other schemas via the bootstrap schema-of-schemas.
-* External validation artifacts are optional, derived, and non-authoritative.
-
-All schema semantics are governed by this specification and by the schema-first architecture defined in §9.
-
----
-
-
-
-
-
-
 
 ## 12. Schema Loading and Bootstrapping
 
