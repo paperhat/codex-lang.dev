@@ -65,7 +65,7 @@ A conforming implementation satisfies every normative requirement in this specif
 
 This specification contains no internal conflicts.
 
-Appendix A.1 (EBNF) formalizes the syntactic rules described in the prose. The prose defines semantic meaning and processing obligations. These two forms address distinct concerns and do not conflict.
+The prose sections of this specification are the sole source of authority for all syntactic and semantic rules. Appendix A provides informative grammar projections (EBNF and PEG) that illustrate the prose rules in a formal notation. In case of discrepancy between prose and grammar, the prose is authoritative.
 
 The bootstrap schemas (`bootstrap-schema/schema.cdx` and `bootstrap-schema/simplified/schema.cdx`) instantiate the schema-definition rules defined in this specification. They are derived artifacts, not independent sources of authority.
 
@@ -146,7 +146,7 @@ Accordingly:
 * A conforming implementation MUST be able to parse and check well-formedness without a governing schema.
 * A conforming implementation MUST NOT perform schema validation without an explicit governing schema.
 
-Well-formedness checking includes mechanically recognizing and classifying Value spellings into their Value kinds (and any grammar-defined value types) by applying this specification's surface-form grammar (§5 and Appendix A).
+Well-formedness checking includes mechanically recognizing and classifying Value spellings into their Value kinds (and any grammar-defined value types) by applying the spelling rules defined in §5 and §8.
 
 Expected types and type constraints for Trait values are schema-defined; checking a Trait value against its expected `ValueType` is part of schema validation and therefore requires an explicit governing schema.
 
@@ -330,7 +330,16 @@ This requirement binds schema authors. It is not fully mechanically enforceable 
 
 A Text Value is a sequence of zero or more Unicode scalar values as defined by Unicode 16.0.0. An empty Text Value (zero scalar values) is permitted.
 
-In the Surface Form, Text Values MUST be spelled as quoted text literals (see Appendix A) or backtick text (see §5.2).
+In the Surface Form, Text Values MUST be spelled as quoted text literals or backtick text (see §5.2). Appendix A.1.8 and A.2.8 provide informative grammar projections of these rules.
+
+A quoted text literal is delimited by double-quote characters (`"..."`) and MUST NOT contain raw newlines (U+000A). Within the quotes, any Unicode scalar value other than `"` (U+0022), `\` (U+005C), or newline (U+000A) may appear literally. The `\` character introduces an escape sequence. The permitted escape sequences are:
+
+- `\"` — literal double quote
+- `\\` — literal backslash
+- `\uXXXX` — Unicode scalar value specified by exactly four hexadecimal digits
+- `\u{X...}` — Unicode scalar value specified by one or more hexadecimal digits enclosed in braces
+
+Hexadecimal digits in escape sequences are case-insensitive for parsing. A Unicode escape MUST identify a Unicode scalar value (U+0000 to U+D7FF or U+E000 to U+10FFFF).
 
 After interpreting escape sequences, the resulting character sequence MUST be transformed into the resulting Text Value by applying the following whitespace normalization:
 
@@ -423,18 +432,17 @@ Enumerated Token Values MUST NOT be evaluated.
 
 A Temporal Value represents a declarative temporal literal.
 
-In the Surface Form, Temporal Values MUST be spelled using `{...}`.
-
-Temporal Values MUST conform to the Temporal Value grammar defined by this specification (see Appendix A.1.14 and Appendix A.2.15). The Temporal Value grammar defines the complete braced literal; the Temporal Body grammar defines the content within the braces.
+In the Surface Form, Temporal Values MUST be spelled as `{` followed by a Temporal Body followed by `}`.
 
 Well-formedness checking and temporal kind determination are purely syntactic.
 
 During semantic validation, when a schema declares an expected temporal value type (for example, `$PlainDate`), tools MUST parse the braced payload into that temporal type and MUST reject values that are semantically invalid for that type (for example, an impossible date).
 
-Temporal Keywords (`{now}`, `{today}`, etc.) MUST remain symbolic during semantic validation unless the governing schema explicitly defines otherwise; they MUST NOT be evaluated implicitly.
+Temporal Keywords (`{now}` and `{today}`) MUST remain symbolic during semantic validation unless the governing schema explicitly defines otherwise; they MUST NOT be evaluated implicitly.
 
 #### 5.6.1 Temporal Kind Determination
-To classify a Temporal Value as a specific temporal kind (for example, `ZonedDateTime` or `PlainDate`), tools MUST parse the braced payload using the Temporal Body grammar in Appendix A.
+
+To classify a Temporal Value as a specific temporal kind, tools MUST parse the Temporal Body using the spelling rules defined in §5.6.2.
 
 This classification is purely syntactic and depends only on the braced payload; it does not imply temporal evaluation or interpretation.
 
@@ -452,6 +460,80 @@ The temporal kind MUST be determined by the first matching alternative in the fo
 10. `TemporalKeyword`
 
 Temporal Values MUST NOT be treated as Enumerated Token Values, even when the braced payload is a reserved literal such as `now` or `today`.
+
+#### 5.6.2 Temporal Spelling Rules
+
+This subsection defines the complete spelling rules for each temporal kind. Appendix A.1.14 and A.2.15 provide informative grammar projections of these rules.
+
+**Common components**
+
+The following common components are used by the temporal kinds below:
+
+- A `Year` MUST be spelled as exactly four decimal digits (`0`–`9`).
+- A `Month` MUST be spelled as exactly two decimal digits.
+- A `Day` MUST be spelled as exactly two decimal digits.
+- An `Hour` MUST be spelled as exactly two decimal digits.
+- A `Minute` MUST be spelled as exactly two decimal digits.
+- A `Second` MUST be spelled as exactly two decimal digits.
+- `FractionalSeconds` MUST be spelled as one or more decimal digits.
+- A `WeekNumber` MUST be spelled as exactly two decimal digits.
+
+**PlainDate**
+
+A `PlainDate` MUST be spelled as `Year`, `-`, `Month`, `-`, `Day` (for example, `2024-03-15`).
+
+**YearWeek**
+
+A `YearWeek` MUST be spelled as `Year`, `-`, `W` or `w`, `WeekNumber` (for example, `2024-W12`).
+
+**PlainYearMonth**
+
+A `PlainYearMonth` MUST be spelled as `Year`, `-`, `Month` (for example, `2024-03`).
+
+**PlainMonthDay**
+
+A `PlainMonthDay` MUST be spelled as `Month`, `-`, `Day` (for example, `03-15`).
+
+**PlainTime**
+
+A `PlainTime` MUST be spelled as `Hour`, `:`, `Minute`, optionally followed by `:`, `Second`, which itself is optionally followed by `.`, `FractionalSeconds` (for example, `14:30`, `14:30:00`, `14:30:00.123`).
+
+**PlainDateTime**
+
+A `PlainDateTime` MUST be spelled as a `PlainDate`, followed by `T`, followed by a `PlainTime` (for example, `2024-03-15T14:30:00`).
+
+**Timezone offset**
+
+A timezone offset MUST be spelled as either `Z` or as `+` or `-` followed by `Hour`, `:`, `Minute` (for example, `Z`, `+05:30`, `-08:00`).
+
+**Timezone identifier**
+
+A timezone identifier MUST be spelled as `[`, followed by one or more timezone identifier characters, followed by `]`. A timezone identifier character MUST be an ASCII letter, an ASCII digit, `/`, `_`, or `-` (for example, `[America/New_York]`).
+
+**Instant**
+
+An `Instant` MUST be spelled as a `PlainDateTime` followed by a timezone offset (for example, `2024-03-15T14:30:00Z`).
+
+**ZonedDateTime**
+
+A `ZonedDateTime` MUST be spelled as a `PlainDateTime`, followed by a timezone offset, followed by a timezone identifier (for example, `2024-03-15T14:30:00-05:00[America/New_York]`).
+
+**Duration**
+
+A `Duration` MUST be spelled in one of two forms:
+
+- `P` followed by one or more date duration components, optionally followed by `T` and one or more time duration components.
+- `PT` followed by one or more time duration components.
+
+A date duration component MUST be spelled as one or more decimal digits followed by one of `Y`, `M`, `W`, or `D`.
+
+A time duration component MUST be spelled as one or more decimal digits, optionally followed by `.` and one or more decimal digits, followed by one of `H`, `M`, or `S`.
+
+For example: `P1Y2M3D`, `PT1H30M`, `P1Y2M3DT4H5M6S`, `PT0.5S`.
+
+**TemporalKeyword**
+
+A `TemporalKeyword` MUST be exactly `now` or `today`.
 
 ### 5.7 Color Values
 
@@ -493,7 +575,30 @@ Color space tokens in `color(...)` are case-insensitive for parsing. In canonica
 - `xyz-d50`
 - `xyz-d65`
 
-#### 5.7.1 Named Color Values
+#### 5.7.1 Color Kind Determination
+
+To classify a Color Value as a specific color kind, tools MUST identify the surface spelling and apply the first matching rule in the following ordered list:
+
+1. `HexColor` — spelling begins with `#`
+2. `NamedColor` — spelling begins with `&`
+3. `RgbColor` — function name is `rgb` or `rgba`
+4. `HslColor` — function name is `hsl` or `hsla`
+5. `HwbColor` — function name is `hwb`
+6. `LabColor` — function name is `lab`
+7. `LchColor` — function name is `lch`
+8. `OklabColor` — function name is `oklab`
+9. `OklchColor` — function name is `oklch`
+10. `ColorMix` — function name is `color-mix`
+11. `DeviceCmyk` — function name is `device-cmyk`
+12. `ColorSpaceColor` — function name is `color`
+
+This classification is purely syntactic and depends only on the surface spelling; it does not imply color evaluation or interpretation.
+
+Function name matching for color kind determination is case-insensitive (see §5.7 for canonical case rules).
+
+A relative color form (containing `from` after the function name) retains the color kind determined by its enclosing function name.
+
+#### 5.7.2 Named Color Values
 
 In the Surface Form, a Named Color Value MUST be spelled as `&` followed immediately by a color name.
 
@@ -503,7 +608,7 @@ The color name MUST be one of the named color keywords defined in Appendix B; an
 
 During semantic validation, a recognized named color MUST be interpreted as the sRGB RGBA value defined for that keyword in Appendix B.
 
-#### 5.7.2 Deterministic Conversion-Based Validity (Lab/LCH, OKLab/OKLCH)
+#### 5.7.3 Deterministic Conversion-Based Validity (Lab/LCH, OKLab/OKLCH)
 
 For `lab(...)`, `lch(...)`, `oklab(...)`, and `oklch(...)`, this specification defines semantic validity by **deterministic conversion** to *linear sRGB* (D65).
 
@@ -516,13 +621,13 @@ During semantic validation, when a schema expects any of:
 
 tools MUST:
 
-1. Parse the function arguments using this specification's grammar for that function (Appendix A), producing numeric components.
+1. Parse the function arguments per the color function argument spelling rules of §5.7.4, producing numeric components.
 2. Convert the parsed components to linear sRGB (D65) using the algorithm and constants defined in this subsection.
 3. Reject the value with a `SchemaError` (§14) if the conversion produces any non-finite intermediate value, or if the resulting linear sRGB components are not all within the closed interval `[0,1]`.
 
 Tools MUST NOT clamp, normalize, wrap hues, or apply gamut mapping.
 
-For `lch(...)` and `oklch(...)`, hue is an angle in degrees. Hue values MUST be finite and MUST satisfy `0 <= h < 360`; values outside this range are a `SchemaError`.
+For `lch(...)` and `oklch(...)`, hue MUST satisfy the Hue rule defined in §5.7.4.
 
 **Numeric requirements**
 
@@ -667,19 +772,53 @@ Then proceed as for `oklab(...)`.
 
 The value is semantically valid iff all three components of `lin_sRGB` are finite and each is in `[0,1]`.
 
-#### 5.7.3 Schema-Directed Semantic Color IR
+#### 5.7.4 Schema-Directed Semantic Color IR
 
-This subsection defines the complete semantic color value domains used by schema validation for the built-in color `ValueType` tokens listed in §11.6.1.
+This subsection defines the complete color function argument spelling rules and semantic color value domains used by schema validation for the built-in color `ValueType` tokens listed in §11.6.1. Appendix A.1.15 and A.2.23 provide informative grammar projections of these rules.
 
 These rules apply only during schema-driven semantic validation. They MUST NOT rewrite or normalize the canonical surface spelling.
 
 **Deterministic numeric interpretation**
 
-All arithmetic required by this subsection (including percent conversion, normalization by division, and range comparisons) MUST be performed using the deterministic binary floating-point model defined by §5.7.2 (precision `p=256`, round-to-nearest ties-to-even).
+All arithmetic required by this subsection (including percent conversion, normalization by division, and range comparisons) MUST be performed using the deterministic binary floating-point model defined by §5.7.3 (precision `p=256`, round-to-nearest ties-to-even).
 
-All component inputs and computed intermediates used by this subsection MUST be finite. Any non-finite value (including `Infinity`/`-Infinity`) is a `SchemaError` (§14).
+All component inputs and computed intermediates used by this subsection MUST be finite, per the non-finite rejection rule in §5.7.3.
 
 Percent values are interpreted by dividing by 100 in the mandated numeric model.
+
+**Color function argument spelling**
+
+Color function spellings obey the following structural rules.
+
+A color function is written as `functionName(arguments)`. The function name is case-insensitive for parsing; lowercase is canonical (§5.7).
+
+Newlines MUST NOT appear inside color function parentheses. Whitespace inside color function parentheses consists of spaces (U+0020) and tabs (U+0009) only.
+
+Numeric arguments in color functions use the real-number subset of the Numeric Value form (§5.4): integers, decimal numbers, exponential numbers, precision-annotated numbers, rational fractions, and `Infinity`/`-Infinity`. Complex and imaginary numbers MUST NOT appear in color function arguments.
+
+A percentage argument is a real number immediately followed by `%` with no intervening whitespace.
+
+Color functions accept arguments in one of two separator styles:
+
+- **Modern syntax**: components are separated by whitespace; if an alpha component is present, it follows a `/` separator with optional surrounding whitespace.
+- **Legacy syntax**: components are separated by commas with optional surrounding whitespace; if an alpha component is present, it follows a comma.
+
+`rgb(...)`/`rgba(...)` and `hsl(...)`/`hsla(...)` MUST accept both modern and legacy syntax. All other color functions MUST use modern syntax only.
+
+The `color(...)` function is written as `color(ColorSpace c1 c2 c3)` with an optional alpha. `ColorSpace` is one of the RGB color space tokens (`srgb`, `srgb-linear`, `display-p3`, `a98-rgb`, `prophoto-rgb`, `rec2020`) or XYZ color space tokens (`xyz`, `xyz-d50`, `xyz-d65`). For RGB color spaces, each component is a percentage or a number. For XYZ color spaces, each component is a number.
+
+The `color-mix(...)` function is written as `color-mix(in ColorSpace, stop, stop, ...)` where at least two stops are required and stops are comma-separated. Each stop is a Color Value optionally followed by a percentage weight.
+
+A relative color function is written as `functionName(from originColor c1 c2 c3)` with an optional alpha, where `originColor` is any Color Value. Each channel position accepts either a literal value of the type normally expected for that position, or a single-letter channel keyword referencing the corresponding channel of the origin color after decomposition into the target function's color space. The alpha position accepts the keyword `a` to reference the origin color's alpha. Channel keywords by function:
+
+- `rgb`/`rgba`: `r`, `g`, `b`
+- `hsl`/`hsla`: `h`, `s`, `l`
+- `hwb`: `h`, `w`, `b`
+- `lab`: `l`, `a`, `b`
+- `lch`: `l`, `c`, `h`
+- `oklab`: `l`, `a`, `b`
+- `oklch`: `l`, `c`, `h`
+- `color(ColorSpace ...)`: `r`, `g`, `b`, `x`, `y`, `z`
 
 **Alpha**
 
@@ -692,7 +831,7 @@ If alpha is omitted, `alpha = 1`.
 
 **Hue**
 
-Where a hue component is permitted (in `hsl(...)`, `hwb(...)`, `lch(...)`, and `oklch(...)`), hue is an angle in degrees. Hue values MUST be finite and MUST satisfy `0 <= h < 360`. Hue wrapping/normalization is forbidden.
+Where a hue component is permitted (in `hsl(...)`, `hwb(...)`, `lch(...)`, and `oklch(...)`), hue is an angle in degrees. Hue values MUST be finite and MUST satisfy `0 <= h < 360`. See §5.7.3 for the general prohibition on clamping, normalization, hue wrapping, and gamut mapping.
 
 **Semantic domains by built-in ValueType**
 
@@ -705,66 +844,71 @@ When a schema expects:
 
 - `$NamedColor`: tools MUST validate that the name is a keyword in Appendix B and compile the semantic value as the corresponding sRGB RGBA value defined by Appendix B.
 
-- `$RgbColor`: tools MUST parse `rgb(...)`/`rgba(...)` using Appendix A and compile a semantic sRGB value `(r,g,b,alpha)` where each component is in `[0,1]`.
+- `$RgbColor`: tools MUST parse `rgb(...)`/`rgba(...)` — three RGB components (red, green, blue) and an optional alpha, in modern or legacy syntax — and compile a semantic sRGB value `(r,g,b,alpha)` where each component is in `[0,1]`.
 	- For each `RgbComponent`:
 		- If spelled as a percentage, it MUST be in `[0%,100%]` and is interpreted by dividing by 100.
 		- If spelled as a number, it MUST be in `[0,255]` and is interpreted by dividing by 255.
 
-- `$HslColor`: tools MUST parse `hsl(...)`/`hsla(...)` using Appendix A and compile a semantic HSL value `(h,s,l,alpha)` where:
+- `$HslColor`: tools MUST parse `hsl(...)`/`hsla(...)` — a hue, two percentages, and an optional alpha, in modern or legacy syntax — and compile a semantic HSL value `(h,s,l,alpha)` where:
 	- `h` is degrees and satisfies the Hue rule above.
 	- `s` and `l` are percentages in `[0%,100%]` interpreted as fractions in `[0,1]`.
 
-- `$HwbColor`: tools MUST parse `hwb(...)` using Appendix A and compile a semantic HWB value `(h,w,b,alpha)` where:
+- `$HwbColor`: tools MUST parse `hwb(...)` — a hue, two percentages, and an optional alpha, in modern syntax — and compile a semantic HWB value `(h,w,b,alpha)` where:
 	- `h` is degrees and satisfies the Hue rule above.
 	- `w` and `b` are percentages in `[0%,100%]` interpreted as fractions in `[0,1]`.
 	- Additionally, `w + b` MUST satisfy `<= 1`.
 
-- `$LabColor`: tools MUST parse `lab(...)` using Appendix A and compile a semantic Lab value `(L,a,b,alpha)` where:
+- `$LabColor`: tools MUST parse `lab(...)` — a percentage, two numbers, and an optional alpha, in modern syntax — and compile a semantic Lab value `(L,a,b,alpha)` where:
 	- `L` is a percentage in `[0%,100%]` interpreted as `L` in `[0,100]`.
 	- `a` and `b` are finite real numbers.
-	- The value MUST additionally satisfy the deterministic conversion validity rule in §5.7.2.
+	- The value MUST additionally satisfy the deterministic conversion validity rule in §5.7.3.
 
-- `$LchColor`: tools MUST parse `lch(...)` using Appendix A and compile a semantic LCH value `(L,C,h,alpha)` where:
+- `$LchColor`: tools MUST parse `lch(...)` — a percentage, two numbers, and an optional alpha, in modern syntax — and compile a semantic LCH value `(L,C,h,alpha)` where:
 	- `L` is a percentage in `[0%,100%]` interpreted as `L` in `[0,100]`.
 	- `C` MUST be finite and MUST satisfy `C >= 0`.
 	- `h` satisfies the Hue rule above.
-	- The value MUST additionally satisfy the deterministic conversion validity rule in §5.7.2.
+	- The value MUST additionally satisfy the deterministic conversion validity rule in §5.7.3.
 
-- `$OklabColor`: tools MUST parse `oklab(...)` using Appendix A and compile a semantic OKLab value `(L,a,b,alpha)` where:
+- `$OklabColor`: tools MUST parse `oklab(...)` — three numbers and an optional alpha, in modern syntax — and compile a semantic OKLab value `(L,a,b,alpha)` where:
 	- `L` MUST be in `[0,1]`.
 	- `a` and `b` are finite real numbers.
-	- The value MUST additionally satisfy the deterministic conversion validity rule in §5.7.2.
+	- The value MUST additionally satisfy the deterministic conversion validity rule in §5.7.3.
 
-- `$OklchColor`: tools MUST parse `oklch(...)` using Appendix A and compile a semantic OKLCH value `(L,C,h,alpha)` where:
+- `$OklchColor`: tools MUST parse `oklch(...)` — three numbers and an optional alpha, in modern syntax — and compile a semantic OKLCH value `(L,C,h,alpha)` where:
 	- `L` MUST be in `[0,1]`.
 	- `C` MUST be finite and MUST satisfy `C >= 0`.
 	- `h` satisfies the Hue rule above.
-	- The value MUST additionally satisfy the deterministic conversion validity rule in §5.7.2.
+	- The value MUST additionally satisfy the deterministic conversion validity rule in §5.7.3.
 
 
-- `$DeviceCmyk`: tools MUST parse `device-cmyk(...)` using Appendix A and compile a semantic device-CMYK value `(c,m,y,k,alpha)` where each of `c,m,y,k,alpha` is in `[0,1]`.
+- `$ColorSpaceColor`: tools MUST parse `color(...)` — a `ColorSpace` token followed by three numeric components and an optional alpha, in modern syntax — and compile a semantic color-space value `(space, c1, c2, c3, alpha)` where:
+	- `space` is the `ColorSpace` token.
+	- For RGB color spaces (`srgb`, `srgb-linear`, `display-p3`, `a98-rgb`, `prophoto-rgb`, `rec2020`), each component is a percentage or a number.
+	- For XYZ color spaces (`xyz`, `xyz-d50`, `xyz-d65`), each component is a number.
+
+- `$DeviceCmyk`: tools MUST parse `device-cmyk(...)` — four CMYK components (each a percentage or number) and an optional alpha, in modern syntax — and compile a semantic device-CMYK value `(c,m,y,k,alpha)` where each of `c,m,y,k,alpha` is in `[0,1]`.
 	- If a CMYK component is spelled as a percentage, it MUST be in `[0%,100%]` and is interpreted as a fraction in `[0,1]`.
 	- If a CMYK component is spelled as a number, it MUST be in `[0,1]`.
 
-- `$ColorMix`: tools MUST parse `color-mix(...)` using Appendix A and compile a semantic color-mix value `(space, stops)`.
+- `$ColorMix`: tools MUST parse `color-mix(...)` per the argument spelling rules above and compile a semantic color-mix value `(space, stops)`.
 	- `space` is the `ColorSpace` token.
 	- `stops` is an ordered list of at least two stops.
 	- Each stop is `(color, weight?)` where `weight`, if present, is a percentage in `[0%,100%]`.
 	- The nested `color` value in each stop MUST be semantically valid as `$Color`.
-	- When a schema expects `$Color` and the spelling is `color-mix(...)`, tools MUST additionally evaluate the mix deterministically as specified by §5.7.6.
+	- When a schema expects `$Color` and the spelling is `color-mix(...)`, tools MUST additionally evaluate the mix deterministically as specified by §5.7.7.
 
 
-- `$ColorFunction`: tools MUST accept any function-based Color Value spelling and compile the corresponding semantic function-domain value (including `rgb(...)`, `hsl(...)`, `hwb(...)`, `lab(...)`, `lch(...)`, `oklab(...)`, `oklch(...)`, `color(...)`, `color-mix(...)`, relative-color forms, and `device-cmyk(...)`).
-	- If the spelling is a relative color form, tools MUST interpret `from <color>` deterministically as specified by §5.7.7.
-	- If the spelling is `color-mix(...)`, tools MUST interpret the stop list deterministically as specified by §5.7.6.
+- `$ColorSpaceColorFunctiontion`: tools MUST accept any function-based Color Value spelling and compile the corresponding semantic function-domain value (including `rgb(...)`, `hsl(...)`, `hwb(...)`, `lab(...)`, `lch(...)`, `oklab(...)`, `oklch(...)`, `color(...)`, `color-mix(...)`, relative-color forms, and `device-cmyk(...)`).
+	- If the spelling is a relative color form, tools MUST interpret `from <color>` deterministically as specified by §5.7.8.
+	- If the spelling is `color-mix(...)`, tools MUST interpret the stop list deterministically as specified by §5.7.7.
 
 - `$Color`: tools MUST accept any Color Value spelling and compile a semantic color value as follows.
 	- For `device-cmyk(...)`, the semantic value is the device-CMYK domain value `(c,m,y,k,alpha)`.
-	- For all other Color Value spellings, the semantic value is the `XYZ_D65` interchange form `(X,Y,Z,alpha)` computed deterministically by §5.7.4.
+	- For all other Color Value spellings, the semantic value is the `XYZ_D65` interchange form `(X,Y,Z,alpha)` computed deterministically by §5.7.5.
 
 If a schema expects a specific built-in color ValueType token and the Trait value uses a different Color Value form, schema validation MUST fail with a `SchemaError` (§14).
 
-#### 5.7.4 Deterministic Conversions for `color(...)` Spaces (`XYZ_D65` Interchange)
+#### 5.7.5 Deterministic Conversions for `color(...)` Spaces (`XYZ_D65` Interchange)
 
 This subsection defines a single deterministic conversion graph for all `ColorSpace` tokens used by `color(...)`, `color-mix(...)`, and `color(from <color> ...)`.
 
@@ -773,15 +917,13 @@ The mandated interchange form for convertible colors is `XYZ_D65` with alpha.
 - `XYZ_D65` is a triple `(X,Y,Z)` using the D65 reference white and the scaling convention `Y=1` for the reference white.
 - `alpha` is a fraction in `[0,1]`.
 
-All arithmetic required by this subsection MUST use the deterministic numeric model of §5.7.2.
+All arithmetic required by this subsection MUST use the deterministic numeric model of §5.7.3.
 
-All matrix-vector multiplications required by §5.7.4–§5.7.7 MUST use the single mandated dot-product procedure defined by §5.7.2.
+All matrix-vector multiplications required by §5.7.5–§5.7.8 MUST use the single mandated dot-product procedure defined by §5.7.3.
 
-Tools MUST reject (SchemaError) any semantic conversion step that produces a non-finite intermediate value.
+The non-finite rejection and no-clamp/no-wrap/no-gamut-mapping rules of §5.7.3 apply to all conversions in this subsection.
 
-Tools MUST NOT clamp, normalize, wrap hues, or apply gamut mapping.
-
-##### 5.7.4.1 Transfer Functions
+##### 5.7.5.1 Transfer Functions
 
 For RGB spaces that use a transfer function, each channel value is represented as an encoded fraction in `[0,1]`.
 
@@ -826,7 +968,7 @@ Define the Rec. 2020 transfer functions (used by `rec2020`) as:
 	- If `L < 0.0181`, return `4.5 * L`.
 	- Otherwise return `1.0993 * (L ^ 0.45) - 0.0993`.
 
-##### 5.7.4.2 Matrices and Chromatic Adaptation
+##### 5.7.5.2 Matrices and Chromatic Adaptation
 
 Define the linear sRGB (D65) matrix (linear sRGB → `XYZ_D65`):
 
@@ -837,7 +979,7 @@ M_lin_sRGB_to_XYZ_D65 =
 [ 0.01933081871559182  0.11919477979462598  0.95053215224966069 ]
 ```
 
-Define the inverse matrix (`XYZ_D65` → linear sRGB): this is `M_XYZ_to_lin_sRGB` as defined in §5.7.2.
+Define the inverse matrix (`XYZ_D65` → linear sRGB): this is `M_XYZ_to_lin_sRGB` as defined in §5.7.3.
 
 Define the Display P3 (D65) matrices:
 
@@ -895,7 +1037,7 @@ M_XYZ_D65_to_lin_rec2020 =
 [ 0.01763985744531100 -0.04277061325780800  0.94210312123547400 ]
 ```
 
-Define the Bradford chromatic adaptation matrix (D50 → D65) as `M_D50_to_D65` from §5.7.2.
+Define the Bradford chromatic adaptation matrix (D50 → D65) as `M_D50_to_D65` from §5.7.3.
 
 Define the inverse adaptation matrix (D65 → D50):
 
@@ -906,7 +1048,7 @@ M_D65_to_D50 =
 [-0.00924305815259118  0.01505514489657790  0.75187428995800080 ]
 ```
 
-##### 5.7.4.3 Converting Between a `ColorSpace` and `XYZ_D65`
+##### 5.7.5.3 Converting Between a `ColorSpace` and `XYZ_D65`
 
 For a `ColorSpace` token `S` and components `(c1,c2,c3,alpha)`:
 
@@ -990,35 +1132,35 @@ To convert from `XYZ_D65` to a `ColorSpace` token `S` (used by relative colors a
 - For `xyz-d50`:
 	- Return `XYZ_D50 = M_D65_to_D50 * XYZ_D65`.
 
-##### 5.7.4.4 Converting Any Convertible Color Value to `XYZ_D65`
+##### 5.7.5.4 Converting Any Convertible Color Value to `XYZ_D65`
 
 This subsection defines the conversion to interchange for all Color Value spellings except `device-cmyk(...)`.
 
-Tools MUST reject (SchemaError) any conversion that produces a non-finite intermediate value.
+The non-finite rejection rule of §5.7.3 applies to all conversions in this subsection.
 
 **Hexadecimal and Named colors**
 
-- For a Hex Color spelling, decode the bytes as specified by §5.7.3 (`#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`).
+- For a Hex Color spelling, decode the bytes as specified by §5.7.4 (`#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`).
 	- Let encoded sRGB channels be `r = R/255`, `g = G/255`, `b = B/255`.
 	- Let alpha be `alpha = A/255` (with `A=255` when alpha is absent).
-	- Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.4.3.
+	- Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.5.3.
 
 - For a Named Color spelling `&name`, obtain its hex value from Appendix B and interpret it exactly as if that hex spelling had appeared.
 
 **`rgb(...)` / `rgba(...)`**
 
-- Interpret each `RgbComponent` as specified by §5.7.3 for `$RgbColor`.
+- Interpret each `RgbComponent` as specified by §5.7.4 for `$RgbColor`.
 	- Percent form yields an encoded fraction in `[0,1]` by dividing by 100.
 	- Number form yields an encoded fraction in `[0,1]` by dividing by 255.
-- Interpret alpha per §5.7.3.
-- Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.4.3.
+- Interpret alpha per §5.7.4.
+- Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.5.3.
 
 **`hsl(...)` / `hsla(...)`**
 
-- Interpret `h` (degrees), `s` (fraction), `l` (fraction), and alpha per §5.7.3.
+- Interpret `h` (degrees), `s` (fraction), `l` (fraction), and alpha per §5.7.4.
 - Convert HSL to encoded sRGB as follows.
 
-Let `h` be degrees with `0 <= h < 360`. Let `s` and `l` be fractions in `[0,1]`.
+Let `h` be degrees satisfying the Hue rule of §5.7.4. Let `s` and `l` be fractions in `[0,1]`.
 
 1. Compute `c = (1 - abs(2*l - 1)) * s`.
 2. Compute `h' = h / 60`.
@@ -1039,12 +1181,12 @@ Let `h` be degrees with `0 <= h < 360`. Let `s` and `l` be fractions in `[0,1]`.
 6. Compute `m = l - c/2`.
 7. The encoded sRGB channels are `(r,g,b) = (r1+m, g1+m, b1+m)`.
 - Require each of `r,g,b` to be in `[0,1]` (reject-only semantics).
-- Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.4.3.
+- Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.5.3.
 
 **`hwb(...)`**
 
-- Interpret `h` (degrees), `w` (fraction), `b` (fraction), and alpha per §5.7.3.
-- Additionally, require `w + b <= 1`. If `w + b > 1`, it is a `SchemaError`.
+- Interpret `h` (degrees), `w` (fraction), `b` (fraction), and alpha per §5.7.4.
+- The `w + b <= 1` constraint from §5.7.4 applies.
 
 To convert HWB to encoded sRGB:
 
@@ -1052,14 +1194,14 @@ To convert HWB to encoded sRGB:
 2. Compute the scale factor `t = 1 - w - b`.
 3. The encoded sRGB channels are `(r,g,b) = (rh*t + w, gh*t + w, bh*t + w)`.
 - Require each of `r,g,b` to be in `[0,1]`.
-- Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.4.3.
+- Compute `XYZ_D65` from encoded sRGB using the `srgb` conversion in §5.7.5.3.
 
 **`lab(...)` / `lch(...)` / `oklab(...)` / `oklch(...)`**
 
-- For `lab(...)` and `lch(...)`, compute `XYZ_D65` by applying steps (1)–(3) of §5.7.2.
-- For `oklab(...)` and `oklch(...)`, compute `XYZ_D65` by applying step (4) of §5.7.2.
+- For `lab(...)` and `lch(...)`, compute `XYZ_D65` by applying steps (1)–(3) of §5.7.3.
+- For `oklab(...)` and `oklch(...)`, compute `XYZ_D65` by applying step (4) of §5.7.3.
 
-##### 5.7.4.5 Inverse Conversions Needed by Relative Colors
+##### 5.7.5.5 Inverse Conversions Needed by Relative Colors
 
 Relative color forms require extracting base-channel values from a base interchange color.
 
@@ -1094,7 +1236,7 @@ The base HWB channel tokens used by relative colors are:
 
 **`XYZ_D50` → Lab (D50)**
 
-Let D50 white be `(X_n, Y_n, Z_n)` as defined in §5.7.2. Given `XYZ_D50 = (X,Y,Z)`:
+Let D50 white be `(X_n, Y_n, Z_n)` as defined in §5.7.3. Given `XYZ_D50 = (X,Y,Z)`:
 
 1. Compute `x = X / X_n`, `y = Y / Y_n`, `z = Z / Z_n`.
 2. Define the helper `f(t)`:
@@ -1146,9 +1288,9 @@ Relative channel tokens use:
 - `c = sqrt(a^2 + b^2)`.
 - `h` as degrees computed from `atan2(b,a)` using the same rule as Lab above.
 
-#### 5.7.5 Semantic Interpretation of `color(...)`
+#### 5.7.6 Semantic Interpretation of `color(...)`
 
-When a schema expects a `color(...)` spelling as `$Color` or `$ColorFunction`, tools MUST interpret the components and alpha as follows.
+When a schema expects a `color(...)` spelling as `$Color` or `$ColorSpaceColorFunctiontion`, tools MUST interpret the components and alpha as follows.
 
 For `color(S c1 c2 c3 / alpha?)` where `S` is an RGB `ColorSpace` (`srgb`, `srgb-linear`, `display-p3`, `a98-rgb`, `prophoto-rgb`, `rec2020`):
 
@@ -1159,9 +1301,9 @@ For `color(S x y z / alpha?)` where `S` is an XYZ `ColorSpace` (`xyz`, `xyz-d50`
 
 - Each of `x`, `y`, and `z` MUST be finite and MUST satisfy `>= 0`.
 
-Alpha is interpreted per §5.7.3 (percentage in `[0%,100%]` or number in `[0,1]`; default `alpha=1`).
+Alpha is interpreted per §5.7.4 (percentage in `[0%,100%]` or number in `[0,1]`; default `alpha=1`).
 
-#### 5.7.6 Deterministic Semantic Evaluation of `color-mix(...)`
+#### 5.7.7 Deterministic Semantic Evaluation of `color-mix(...)`
 
 When a schema expects `$Color` and the Trait value is `color-mix(in S, stop1, stop2, ...)`, tools MUST evaluate the mix deterministically.
 
@@ -1174,7 +1316,7 @@ When a schema expects `$Color` and the Trait value is `color-mix(in S, stop1, st
 3. Evaluate each stop color as `$Color`.
 	- If the stop is `device-cmyk(...)`, evaluation fails with `SchemaError` (device-CMYK is not convertible for mixing).
 	- Otherwise, obtain its interchange value `(XYZ_D65, alpha)`.
-4. Convert each stop to interpolation space `S` using §5.7.4.3:
+4. Convert each stop to interpolation space `S` using §5.7.5.3:
 	- If `S` is an RGB space, convert `XYZ_D65` to the *linear* channels for `S` and require each linear channel in `[0,1]`.
 	- If `S` is `xyz`/`xyz-d65`, use `XYZ_D65`.
 	- If `S` is `xyz-d50`, use `XYZ_D50 = M_D65_to_D50 * XYZ_D65`.
@@ -1196,9 +1338,9 @@ When a schema expects `$Color` and the Trait value is `color-mix(in S, stop1, st
 		- For `prophoto-rgb`: compute `XYZ_D50 = M_lin_prophoto_rgb_to_XYZ_D50 * v_out`, then `XYZ_D65 = M_D50_to_D65 * XYZ_D50`.
 7. The semantic `$Color` value is `(XYZ_D65, a_out)`.
 
-#### 5.7.7 Deterministic Semantic Evaluation of Relative Colors (`from <color>`)
+#### 5.7.8 Deterministic Semantic Evaluation of Relative Colors (`from <color>`)
 
-When a schema expects `$Color` or `$ColorFunction` and the Trait value is a relative color form, tools MUST evaluate `from <color>` deterministically as follows.
+When a schema expects `$Color` or `$ColorSpaceColorFunctiontion` and the Trait value is a relative color form, tools MUST evaluate `from <color>` deterministically as follows.
 
 Common requirements:
 
@@ -1206,18 +1348,18 @@ Common requirements:
 	- If the base is `device-cmyk(...)`, evaluation fails with `SchemaError` (device-CMYK is not convertible for relative colors).
 	- Otherwise, obtain base interchange `(XYZ_D65_base, alpha_base)`.
 2. Convert the base interchange value to the function's source domain:
-	- For `rgb(from ...)`, convert `XYZ_D65_base` to `srgb` encoded channels `(r,g,b)` using §5.7.4.3.
-	- For `hsl(from ...)` and `hwb(from ...)`, convert `XYZ_D65_base` to `srgb` encoded channels and then compute base HSL/HWB using §5.7.4.5.
-	- For `lab(from ...)` and `lch(from ...)`, convert `XYZ_D65_base` to `xyz-d50`, then compute base Lab (D50) using §5.7.4.5.
-	- For `oklab(from ...)` and `oklch(from ...)`, compute base OKLab (D65) using §5.7.4.5.
-	- For `color(from ... S ...)`, convert `XYZ_D65_base` to `S` using §5.7.4.3.
+	- For `rgb(from ...)`, convert `XYZ_D65_base` to `srgb` encoded channels `(r,g,b)` using §5.7.5.3.
+	- For `hsl(from ...)` and `hwb(from ...)`, convert `XYZ_D65_base` to `srgb` encoded channels and then compute base HSL/HWB using §5.7.5.5.
+	- For `lab(from ...)` and `lch(from ...)`, convert `XYZ_D65_base` to `xyz-d50`, then compute base Lab (D50) using §5.7.5.5.
+	- For `oklab(from ...)` and `oklch(from ...)`, compute base OKLab (D65) using §5.7.5.5.
+	- For `color(from ... S ...)`, convert `XYZ_D65_base` to `S` using §5.7.5.3.
 3. For each component position in the relative argument list:
 	- If it is a literal numeric/percentage component, interpret it as if it appeared in the corresponding non-relative function form.
 	- If it is a channel token (such as `r`, `g`, `b`, `x`, `y`, `z`, `l`, `a`, `c`, `h`, or `a` for alpha), substitute the base channel value in the same unit system defined below.
 4. Interpret alpha:
 	- If alpha is omitted, use `alpha_base`.
 	- If alpha is spelled as `a`, use `alpha_base`.
-	- If alpha is spelled as a literal, interpret it per the Alpha rule in §5.7.3.
+	- If alpha is spelled as a literal, interpret it per the Alpha rule in §5.7.4.
 5. After substitution, the resulting non-relative color spelling MUST satisfy the semantic rules for that function/value type (including hue and range rules). Otherwise it is a `SchemaError`.
 
 Units for channel substitution:
@@ -1233,13 +1375,13 @@ Units for channel substitution:
 	- Base `l` substitutes the base Lab `L` in the percent unit (a number in `[0,100]`).
 	- Base `a` and `b` substitute the base Lab `a`/`b` components.
 	- Base `c` substitutes chroma `C = sqrt(a^2 + b^2)`.
-	- Base `h` substitutes hue degrees computed from `atan2(b,a)` using the rule in §5.7.4.5.
+	- Base `h` substitutes hue degrees computed from `atan2(b,a)` using the rule in §5.7.5.5.
 
 - `oklab(from ...)` / `oklch(from ...)`:
 	- Base `l` substitutes the base OKLab `L` component in `[0,1]`.
 	- Base `a` and `b` substitute the base OKLab `a`/`b` components.
 	- Base `c` substitutes chroma `C = sqrt(a^2 + b^2)`.
-	- Base `h` substitutes hue degrees computed from `atan2(b,a)` using the rule in §5.7.4.5.
+	- Base `h` substitutes hue degrees computed from `atan2(b,a)` using the rule in §5.7.5.5.
 
 - `color(from ... S ...)`:
 	- If `S` is an RGB space, base `r`, `g`, `b` substitute the encoded channel fractions in `[0,1]`.
@@ -1309,7 +1451,17 @@ Codex-conforming tools MUST NOT dereference Lookup Token Values.
 
 A Character Value represents exactly one Unicode scalar value.
 
-In the Surface Form, Character Values MUST be spelled as character literals delimited by single quotes (`'`). See Appendix A for the full grammar.
+In the Surface Form, Character Values MUST be spelled as character literals delimited by single quotes (`'...'`). A character literal MUST NOT contain raw newlines (U+000A). Within the quotes, any Unicode scalar value other than `'` (U+0027), `\` (U+005C), or newline (U+000A) may appear literally. The `\` character introduces an escape sequence. The permitted escape sequences are:
+
+- `\'` — literal single quote
+- `\\` — literal backslash
+- `\n` — newline (U+000A)
+- `\r` — carriage return (U+000D)
+- `\t` — tab (U+0009)
+- `\uXXXX` — Unicode scalar value specified by exactly four hexadecimal digits
+- `\u{X...}` — Unicode scalar value specified by one or more hexadecimal digits enclosed in braces
+
+Hexadecimal digits in escape sequences are case-insensitive for parsing. A Unicode escape MUST identify a Unicode scalar value (U+0000 to U+D7FF or U+E000 to U+10FFFF).
 
 A Character Value MUST NOT be a Text Value.
 
@@ -1319,7 +1471,7 @@ After interpreting the character literal's escape sequences, the resulting Chara
 
 A List Value is an ordered sequence of zero or more Value elements.
 
-In the Surface Form, List Values MUST be spelled using square brackets (`[...]`). See Appendix A for the full grammar.
+In the Surface Form, a List Value is delimited by square brackets (`[...]`). Elements are separated by commas, with optional whitespace (including newlines) permitted between brackets, around commas, and between elements.
 
 Each element of a List Value MUST be a Value.
 
@@ -1361,7 +1513,7 @@ Two Values are equal if and only if they have the same Value kind and satisfy th
 
 A Set Value is an unordered collection of zero or more Value elements. Set Values have no semantic ordering; however, in canonical surface form, elements MUST be serialized in the order they appear in the source spelling.
 
-In the Surface Form, Set Values MUST be spelled using the `set` keyword followed by square brackets (`set[...]`). See Appendix A for the full grammar.
+In the Surface Form, a Set Value is spelled as the keyword `set` followed immediately (no whitespace) by square brackets (`set[...]`). Elements are separated by commas, with optional whitespace (including newlines) permitted between brackets, around commas, and between elements.
 
 Each element of a Set Value MUST be a Value.
 
@@ -1381,13 +1533,15 @@ For schema-level type constraints on set contents, see §5.18.
 
 A Map Value is a collection of key-value pairs. Map Values have no semantic ordering; however, in canonical surface form, entries MUST be serialized in the order they appear in the source spelling.
 
-In the Surface Form, Map Values MUST be spelled using the `map` keyword followed by square brackets containing `key: value` entries (`map[key: value, ...]`). See Appendix A for the full grammar.
+In the Surface Form, a Map Value is spelled as the keyword `map` followed immediately (no whitespace) by square brackets (`map[...]`). Each entry is written as a key, optional whitespace, a colon (`:`), optional whitespace, and a Value. Entries are separated by commas, with optional whitespace (including newlines) permitted between brackets, around commas, and between entries.
 
 A Map Value MUST permit zero entries.
 
 Each entry in a Map Value MUST bind exactly one key to exactly one Value.
 
 A Map Value MUST permit nesting.
+
+A Map Value MUST NOT require all bound Values to have the same Value kind.
 
 A Map Value MUST contain no duplicate keys.
 
@@ -1414,7 +1568,7 @@ An unquoted identifier key MUST use camelCase.
 
 A Tuple Value is an ordered sequence of one or more Value elements with positional semantics.
 
-In the Surface Form, Tuple Values MUST be spelled using parentheses (`(...)`). See Appendix A for the full grammar.
+In the Surface Form, a Tuple Value is delimited by parentheses (`(...)`). Elements are separated by commas, with optional whitespace (including newlines) permitted between parentheses, around commas, and between elements.
 
 A Tuple Value MUST contain at least one element.
 
@@ -1432,7 +1586,7 @@ For schema-level type constraints on tuple positions, see §5.18.
 
 A Range Value is a declarative interval.
 
-In the Surface Form, Range Values MUST be spelled using `..` between endpoints, with an optional `s` suffix for step (`x..y` or `x..ysz` where `x` is the starting value, `y` is the ending value, and `z` is the step). See Appendix A for the full grammar.
+In the Surface Form, a Range Value is spelled as a start endpoint, the `..` operator, and an end endpoint. An optional step is introduced by the letter `s` followed by the step value. Optional whitespace is permitted around the `..` operator and around the `s` step separator (e.g., `x..y` or `x .. y s z`).
 
 Range endpoints and step values MUST be ordered numeric types (Integer, DecimalNumber, Fraction, ExponentialNumber, or PrecisionNumber), Temporal Values, or Character Values (Character Values are permitted as endpoints only, not as step values). ComplexNumber, ImaginaryNumber, and Infinity MUST NOT appear as range endpoints or step values.
 
@@ -1508,13 +1662,15 @@ For example, `$List<$List<$Text>>` specifies a list of lists of text values.
 
 A Record Value is a fixed-structure aggregate of named fields. Unlike Map Values, which permit arbitrary keys, Record Values have field names that are schema-defined identifiers.
 
-In the Surface Form, Record Values MUST be spelled using the `record` keyword followed by square brackets containing `field: value` entries (`record[field: value, ...]`). See Appendix A for the full grammar.
+In the Surface Form, a Record Value is spelled as the keyword `record` followed immediately (no whitespace) by square brackets (`record[...]`). Each entry is written as a field name, optional whitespace, a colon (`:`), optional whitespace, and a Value. Entries are separated by commas, with optional whitespace (including newlines) permitted between brackets, around commas, and between entries.
 
 A Record Value MUST permit zero fields.
 
 Each entry in a Record Value MUST bind exactly one field name to exactly one Value.
 
 A Record Value MUST permit nesting.
+
+A Record Value MUST NOT require all bound Values to have the same Value kind.
 
 A Record Value MUST contain no duplicate field names.
 
@@ -1712,11 +1868,11 @@ Codex provides two mechanisms for referencing Concepts:
 
 #### 6.2.1 The `id` Trait
 
-Every Entity MUST have exactly one `id` trait.
+Every Entity MUST have exactly one `id` trait. If an Entity lacks an `id` trait, Codex-conforming tools MUST reject that document with an `IdentityError` (§14).
 
-Every non-Entity MUST NOT have an `id` trait.
+Every non-Entity MUST NOT have an `id` trait. If a non-Entity declares an `id` trait, Codex-conforming tools MUST reject that document with an `IdentityError` (§14).
 
-The value of an `id` trait MUST be an IRI Reference Value (§5.9).
+The value of an `id` trait MUST be an IRI Reference Value (§5.9). If the value of an `id` trait is not an IRI Reference Value, Codex-conforming tools MUST reject that document with an `IdentityError` (§14).
 
 Codex-conforming tools MUST NOT synthesize an `id` trait.
 
@@ -1736,9 +1892,9 @@ Changing an Entity's `id` value MUST be treated as creating a new Entity.
 
 #### 6.3.1 The `key` Trait
 
-A Concept MUST have zero or one `key` traits.
+A Concept MUST NOT declare more than one `key` trait (see §3 for the general duplicate trait name prohibition).
 
-The value of a `key` trait MUST be a Lookup Token Value (§5.10).
+The value of a `key` trait MUST be a Lookup Token Value (§5.10). If the value of a `key` trait is not a Lookup Token Value, Codex-conforming tools MUST reject that document with an `IdentityError` (§14).
 
 Codex-conforming tools MUST NOT synthesize a `key` trait.
 
@@ -1768,9 +1924,7 @@ Each reference Trait expresses a declarative relationship from a Concept instanc
 
 An identity reference is either an Entity `id` (an IRI Reference Value; §6.2) or a Concept `key` (a Lookup Token Value; §6.3) that is resolved as explicitly defined by this specification and the governing schema.
 
-The value of each reference Trait MUST be either an IRI Reference Value (see §5.9) or a Lookup Token Value (see §5.10).
-
-The value of a reference Trait MUST NOT be any other Value kind.
+The value of each reference Trait MUST be either an IRI Reference Value (see §5.9) or a Lookup Token Value (see §5.10). The value of a reference Trait MUST NOT be any other Value kind. If the value of a reference Trait is not an IRI Reference Value or a Lookup Token Value, Codex-conforming tools MUST reject that document with a `ReferenceError` (§14).
 
 Reference Traits MUST be interpreted only as declarative relationships.
 
@@ -1778,7 +1932,7 @@ Reference Traits MUST NOT imply dereferencing, loading, execution, or transforma
 
 Reference Traits MUST NOT imply any automatic or external resolution beyond what is explicitly defined by this specification or the governing schema.
 
-A Concept instance MUST NOT declare a reference Trait unless authorized by the governing schema.
+A Concept instance MUST NOT declare a reference Trait unless authorized by the governing schema. If a Concept instance declares an unauthorized reference Trait, Codex-conforming tools MUST reject that document with a `SchemaError` (§14).
 
 Where reference Traits are authorized, the governing schema MUST define any additional semantics beyond the intent statements in this section.
 
@@ -1803,8 +1957,6 @@ If a `for` reference is used to denote a Concept type, it MUST reference the `Co
 ### 7.5 Singleton Rule
 
 If a governing schema requires that at most one of `reference`, `target`, or `for` be present on a Concept instance, it MUST express that requirement using `ReferenceConstraint(type=ReferenceSingleton)`.
-
-If a governing schema authorizes more than one reference Trait on the same Concept instance, it MUST document the permitted combinations and the intended interpretation.
 
 ### 7.6 Examples (Informative)
 
@@ -1926,10 +2078,6 @@ For the purposes of this rule, an attached-annotation stack (see §8.9.6.1) MUST
 
 If grouping or general annotations appear between two sibling Concept instances, blank line requirements are governed by the annotation rules (see §8.9.8).
 
-In canonical surface form, blank line restrictions apply only to structure parsed as child Concepts.
-
-Outside of annotations (see §8.9) and content, a blank line MUST NOT appear in any other location within a Concept instance body interpreted as containing child Concepts.
-
 In canonical surface form, Codex-conforming tools MUST reject documents containing any of the following with a `FormattingError` (§14):
 
 - A blank line between a Concept instance's opening marker and its first child.
@@ -1938,7 +2086,7 @@ In canonical surface form, Codex-conforming tools MUST reject documents containi
 
 A blank line is a line containing no characters after normalization.
 
-Codex-conforming tools MUST treat a line containing only whitespace as empty after normalization. This is a canonicalization rule: trailing whitespace on a line is stripped during Phase 1 canonicalization (§10.5). In canonical form, a blank line contains no characters before its newline — consistent with the `BlankLine` grammar production (Appendix A).
+Codex-conforming tools MUST treat a line containing only whitespace as empty after normalization. This is a canonicalization rule: trailing whitespace on a line is stripped during Phase 1 canonicalization (§10.5). In canonical form, a blank line contains no characters before its newline.
 
 Annotation blank-line rules MUST be defined by the rules for annotations (see §8.9).
 
@@ -1970,7 +2118,7 @@ or, when referencing a Concept from an imported schema (§11.3.1):
 <namespace:ConceptName trait=value>
 ```
 
-The Concept name (or qualified Concept name) MUST follow the naming rules defined by this specification (§4.1).
+The Concept name (or qualified Concept name) MUST follow the naming rules defined by this specification (§4.1). If the name does not conform to §4.1, Codex-conforming tools MUST reject the document with a `ParseError` (§14).
 
 An opening marker includes zero or more Traits.
 
@@ -1992,9 +2140,9 @@ or, when referencing a Concept from an imported schema (§11.3.1):
 
 The closing marker MUST match the most recent unclosed opening marker (see §3.6). A qualified closing marker MUST match a qualified opening marker exactly, including the namespace prefix.
 
-The closing marker MUST appear on its own line after indentation.
+The closing marker MUST appear on its own line after indentation. If the closing marker does not appear on its own line, Codex-conforming tools MUST reject the document with a `SurfaceFormError` (§14).
 
-Additional content MUST NOT appear on the closing marker line.
+Additional content MUST NOT appear on the closing marker line. If additional content appears on the closing marker line, Codex-conforming tools MUST reject the document with a `SurfaceFormError` (§14).
 
 #### 8.5.3 Self-Closing Marker
 
@@ -2016,11 +2164,11 @@ A self-closing marker represents a Concept instance with no content and no child
 
 A self-closing marker includes zero or more Traits.
 
+If multiple Traits are present, they MUST be ordered per §8.6.
+
 #### 8.5.4 Empty Block Concepts
 
 Codex-conforming tools MUST reject the form `<ConceptName></ConceptName>` with a `ParseError` (§14).
-
-To represent a deliberately empty Concept instance, authors MUST use self-closing form.
 
 ### 8.6 Traits
 
@@ -2030,11 +2178,9 @@ A Trait MUST be spelled as:
 traitName=value
 ```
 
-The `traitName` MUST follow the naming rules defined by this specification.
+The `traitName` MUST follow the naming rules defined by this specification (§4.1). If the name does not conform to §4.1, Codex-conforming tools MUST reject the document with a `ParseError` (§14).
 
-The `value` MUST be a Value as defined by this specification.
-
-No whitespace is permitted around `=`.
+Whitespace MUST NOT appear around the `=` separator. If whitespace appears around `=`, Codex-conforming tools MUST reject the document with a `SurfaceFormError` (§14).
 
 Traits MUST be separated by whitespace (space or newline).
 
@@ -2042,35 +2188,45 @@ If multiple Traits are present, canonical form MUST order them alphabetically by
 
 #### 8.6.1 Canonical Trait Formatting
 
-Canonical surface form for Traits depends on the number of Traits present in a Concept opening marker.
+Canonical surface form for Traits depends on whether the complete Concept marker fits within the 100-character line limit.
 
-If a Concept opening marker has one or two Traits, the Traits MUST appear on a single line.
+To determine layout, Codex-conforming tools MUST compute the total length of the Concept marker as if all Traits appeared on a single line: leading indentation, the `<` character, the Concept name, a space before each Trait, each `name=value` pair, and the closing `>` or ` />`. For this computation, each tab character (U+0009) MUST be counted as 2 characters.
 
-If a Concept opening marker has three or more Traits, each Trait MUST appear on its own line.
+If the computed length is 100 characters or fewer, all Traits MUST appear on the same line as the Concept marker.
 
-When Traits are written on multiple lines, each Trait line MUST be indented exactly one nesting level deeper than the Concept marker.
+If the computed length exceeds 100 characters, all Traits MUST be stacked: each Trait MUST appear on its own line, indented exactly one nesting level deeper than the Concept marker. The closing `>` or `/>` MUST appear on its own line at the same indentation level as the opening `<`.
 
-When Traits are written on multiple lines, the closing `>` or `/>` MUST appear on its own line at the same indentation level as the opening `<`.
+A single `name=value` pair MUST NOT be wrapped across lines, even if it exceeds 100 characters.
 
-Example (canonical multiline opening marker):
+A Backtick Text Value MUST NOT appear as an inline Trait value. If a Trait value is expressed as a Backtick Text Value, it MUST use its multiline form, which forces the Concept marker into stacked layout. Alternatively, the value MUST be converted to a Quoted Text Value.
+
+If a document violates any formatting rule in this section, Codex-conforming tools MUST reject the document with a `FormattingError` (§14).
+
+Example (canonical inline — total length under 100 characters):
+
+```cdx
+<Color id=urn:x:c1 name="Red" hex="#FF0000" />
+```
+
+Example (canonical stacked — total length exceeds 100 characters):
 
 ```cdx
 <Book
-	id=book:TheHobbit
-	title="The Hobbit"
-	author="J.R.R. Tolkien"
+	id=urn:isbn:978-0-618-26030-2
+	title="The Hobbit, or There and Back Again"
+	author="John Ronald Reuel Tolkien"
 >
 	[children here]
 </Book>
 ```
 
-Example (canonical multiline self-closing marker):
+Example (canonical stacked self-closing):
 
 ```cdx
 <Book
-	id=book:TheHobbit
-	title="The Hobbit"
-	author="J.R.R. Tolkien"
+	id=urn:isbn:978-0-618-26030-2
+	title="The Hobbit, or There and Back Again"
+	author="John Ronald Reuel Tolkien"
 />
 ```
 
@@ -2078,35 +2234,29 @@ Example (canonical multiline self-closing marker):
 
 In the Surface Form, Trait values are literal spellings of Value types defined by this specification (see §5).
 
-Codex-conforming tools MUST parse Values mechanically.
-
 Codex-conforming tools MUST NOT evaluate, interpret, or normalize Values beyond recognizing their Value type and literal structure.
 
 A Trait value spelling MUST match exactly one Value spelling defined by this specification (see §5).
 
 If a Trait value spelling does not match any Value spelling defined by this specification, Codex-conforming tools MUST reject it with a `ParseError` (§14).
 
-Codex-conforming tools MUST NOT infer a Value type.
-
-Codex-conforming tools MUST NOT coerce one Value type into another.
-
 Within a Concept marker, a Value MUST terminate at the first of the following:
 
 - whitespace outside balanced delimiters (space, tab, or newline)
 - `>` or `/>` (end of Concept marker)
 
-While scanning for Value termination, Codex-conforming tools MUST respect balanced delimiters as required by the Value spellings and the grammar, including `[]`, `{}`, `()`, `''`, and `""`.
+While scanning for Value termination, Codex-conforming tools MUST respect balanced delimiters as required by the Value spellings defined in §5, including `[]`, `{}`, `()`, `''`, and `""`.
 
 Except where permitted by a Value spelling (for example, within text and character literals), leading and trailing whitespace MUST NOT be treated as part of a Value.
 
 #### 8.7.1 Multiline Value Literals
 
-Codex-conforming tools MUST accept multiline spellings for Value literals that use balanced delimiters, including list (`[...]`), set (`set[...]`), map (`map[...]`), tuple (`(...)`), and range forms.
+Codex-conforming tools MUST accept multiline spellings for Value literals that use balanced delimiters, including list (`[...]`), set (`set[...]`), map (`map[...]`), record (`record[...]`), and tuple (`(...)`).
 
 Within a balanced Value literal:
 
-* Line breaks are treated as whitespace.
-* Whitespace between elements, entries, or delimiters is not significant.
+* Line breaks within a balanced Value literal MUST be treated as whitespace.
+* Whitespace between elements, entries, or delimiters MUST NOT be treated as significant.
 * Whitespace MUST NOT terminate the Value.
 
 In canonical surface form, exactly one space MUST follow each comma separator within a balanced Value literal. All other optional whitespace within balanced Value literals MUST be removed. Mandatory whitespace required by a specific production MUST be preserved.
@@ -2119,13 +2269,7 @@ Codex-conforming tools MUST determine Value boundaries solely by balanced delimi
 
 A Content Block is opaque text between an opening marker and a closing marker.
 
-Content is not a Value.
-
 Content MUST NOT be interpreted as Codex structure, Traits, or Values.
-
-In canonical surface form, content lines MUST be indented one nesting level deeper than their enclosing Concept instance.
-
-Content can contain blank lines and can span multiple lines.
 
 #### 8.8.1 Content Termination
 
@@ -2135,10 +2279,11 @@ Codex-conforming tools MUST identify the end of content by scanning for the clos
 
 Within content:
 
+- `\\` represents a literal `\`.
 - `\<` represents a literal `<`.
 - `\[` represents a literal `[`.
 
-A backslash not immediately followed by `<` or `[` is a literal backslash and has no special meaning.
+A backslash not immediately followed by `\`, `<`, or `[` is a literal backslash and has no special meaning.
 
 A raw `<` character MUST NOT appear anywhere in content.
 
@@ -2176,7 +2321,7 @@ For `whitespaceMode=$Flow`:
 
 * Codex-conforming tools MUST collapse each run of whitespace characters (spaces, tabs, and line breaks) to a single U+0020 SPACE.
 * Codex-conforming tools MUST trim leading and trailing whitespace from the resulting content.
-* In canonical surface form, Codex-conforming tools MUST wrap content to lines of at most 100 Unicode scalar values, breaking at whitespace boundaries. If a non-breakable sequence exceeds 100 Unicode scalar values, it MUST appear on its own line without wrapping.
+* In canonical surface form, Codex-conforming tools MUST wrap content to lines of at most 100 characters, including canonical indentation, breaking at whitespace boundaries. For this computation, each tab character (U+0009) MUST be counted as 2 characters. If a non-breakable sequence plus its canonical indentation exceeds 100 characters, it MUST appear on its own line without wrapping.
 * Each wrapped line MUST be indented exactly one nesting level deeper than the enclosing Concept instance.
 
 Schema-less processing MUST treat all content as `$Preformatted` (preserve all whitespace after indentation normalization).
@@ -2250,8 +2395,6 @@ Example: escaping `[` at the start of a content line.
 
 ### 8.9 Annotations
 
-Annotations are editorial metadata, distinct from Values and content.
-
 Codex-conforming tools MUST preserve annotations without interpretation.
 
 #### 8.9.1 Annotation Forms
@@ -2282,11 +2425,9 @@ A block annotation MUST use `[` and `]` on their own lines.
 ]
 ```
 
-Annotations can appear at top-level or within bodies interpreted as containing child Concepts.
+Annotations MUST be permitted at top-level and within bodies interpreted as containing child Concepts.
 
 Annotations MUST NOT appear inside Concept markers (that is, inside `<Concept …>`, `</Concept>`, or `<Concept />`).
-
-Annotations can contain arbitrary text, including blank lines (block annotations only).
 
 #### 8.9.2 Structural Rules
 
@@ -2300,13 +2441,16 @@ For a block annotation:
 * The closing `]` MUST appear as the first non-whitespace character on its own line.
 * The closing `]` line MUST contain no other non-whitespace characters.
 
+If a document violates any structural rule in this section, Codex-conforming tools MUST reject the document with a `SurfaceFormError` (§14).
+
 #### 8.9.3 Escaping
 
 Within an annotation:
 
+* `\\` represents a literal `\`.
 * `\]` represents a literal `]`.
 
-A backslash not immediately followed by `]` is a literal backslash and has no special meaning.
+A backslash not immediately followed by `\` or `]` is a literal backslash and has no special meaning.
 
 #### 8.9.4 Canonical Form
 
@@ -2320,15 +2464,11 @@ Codex-conforming tools MUST canonicalize inline annotations as follows:
 * Internal runs of whitespace (spaces and tabs) MUST be collapsed to a single space.
 * Escaped closing brackets MUST remain escaped (that is, `\]` MUST remain spelled as `\]`).
 
-Canonical rendering MUST use no padding spaces just inside the brackets (for example, `[text]`, not `[ text ]`).
-
 ##### 8.9.4.2 Block Annotation Canonicalization
 
 Block annotations MUST preserve their internal line structure.
 
 Codex-conforming tools MUST normalize block-annotation line endings to LF.
-
-A block annotation can include a directive (see §8.9.5) that controls additional canonicalization.
 
 For a block annotation with no directive, Codex-conforming tools MUST:
 
@@ -2337,7 +2477,7 @@ For a block annotation with no directive, Codex-conforming tools MUST:
 
 #### 8.9.5 Block Annotation Directives
 
-In a block annotation, the first non-blank content line can be a directive line.
+In a block annotation, the first non-blank content line is a directive line if it matches one of the directive forms defined below.
 
 If present, the directive line MUST be exactly one of:
 
@@ -2353,16 +2493,14 @@ Directive behavior:
 
 * `CODE:` — Codex-conforming tools MUST preserve the block annotation bytes verbatim except for newline normalization.
 * `MARKDOWN:` — Codex-conforming tools MUST preserve the block annotation bytes verbatim except for newline normalization.
-* `FLOW:` — The flow-text value is the remaining content with leading and trailing whitespace trimmed, internal runs of whitespace collapsed to single spaces, and escapes interpreted per §8.9.3.
-
-For `CODE:` and `MARKDOWN:` directives, Codex-conforming tools MUST NOT reindent, trim, strip trailing whitespace, wrap, or interpret escapes within the block annotation.
+* `FLOW:` — Codex-conforming tools MUST trim leading and trailing whitespace from the remaining content, MUST collapse internal runs of whitespace to single spaces, and MUST interpret escapes per §8.9.3.
 
 If no directive is present, the block annotation MUST be canonicalized as described in §8.9.4.2.
 
 For `FLOW:` directives, Codex-conforming tools MUST render canonical output as follows:
 
 * Split the remaining content into paragraphs separated by one or more blank lines.
-* For each paragraph, wrap words to lines of at most 100 Unicode scalar values using greedy packing. If a non-breakable sequence exceeds 100 Unicode scalar values, it MUST appear on its own line without wrapping.
+* For each paragraph, wrap words to lines using the 100-character line limit defined in §8.8.4, including canonical indentation and counting tabs as 2 characters. If a non-breakable sequence plus its canonical indentation exceeds 100 characters, it MUST appear on its own line without wrapping.
 * Indent each wrapped line exactly one tab deeper than the `[` / `]` lines.
 * Separate paragraphs by exactly one blank line.
 
@@ -2382,10 +2520,6 @@ An annotation is an attached annotation if and only if:
 * It appears immediately before a Concept opening marker.
 * There is no blank line between the annotation and that marker.
 
-An attached annotation can be either inline or block form.
-
-Multiple attached annotations can stack.
-
 Stacked attached annotations MUST be contiguous and MUST NOT be separated by blank lines.
 
 An attached-annotation stack attaches to the next Concept opening marker.
@@ -2401,12 +2535,6 @@ A grouping annotation is a single-line annotation whose canonicalized annotation
 
 Grouping recognition MUST be performed after applying the inline annotation canonicalization rules in §8.9.4.1.
 
-Grouping annotations MUST NOT attach to Concept instances.
-
-Grouping annotations define a purely editorial grouping region.
-
-Grouping annotations can nest.
-
 Label comparison MUST use the canonical label form (trimmed, with internal whitespace collapsed to single spaces).
 
 Grouping annotations MUST conform to the canonical blank-line requirements in §8.9.8.
@@ -2418,10 +2546,6 @@ An annotation is a general annotation if and only if:
 * It is not an attached annotation.
 * It is not a grouping annotation.
 * It is surrounded by exactly one blank line above and exactly one blank line below, where file boundaries count as blank-line boundaries.
-
-A general annotation can be either inline or block form.
-
-General annotations MUST NOT attach to Concept instances.
 
 #### 8.9.7 Group Nesting and Matching
 
@@ -2437,24 +2561,17 @@ If an `END` label does not match the most recent open group label, or if an `END
 In canonical surface form:
 
 * Attached annotations MUST appear directly above the annotated Concept opening marker with no blank line.
-* Grouping annotations MUST be surrounded by exactly one blank line above and below, where file boundaries count as blank-line boundaries.
-* General annotations MUST be surrounded by exactly one blank line above and below, where file boundaries count as blank-line boundaries.
+* Grouping and general annotations MUST be surrounded by exactly one blank line above and below, where file boundaries count as blank-line boundaries.
 
-Codex-conforming tools MUST reject any annotation that is neither an attached annotation, a grouping annotation, nor a general annotation with a `ParseError` (§14).
+If an annotation does not qualify as an attached annotation, a grouping annotation, or a general annotation, Codex-conforming tools MUST reject the document with a `ParseError` (§14).
 
 ---
 
 ## 9. Schema-First Architecture
 
-Codex is schema-first.
-
-A conforming implementation MUST provide schema-directed parsing and validation.
+A conforming implementation MUST provide schema-directed validation.
 
 This specification defines the authoritative model for schema authoring, schema-to-instance-graph interpretation, and deterministic projection to derived validation artifacts.
-
-Codex has exactly one semantic model: the canonical RDF representation.
-
-All semantic meaning, validation behavior, and derived artifacts are defined solely in terms of this canonical representation. Authoring modes do not define alternative semantics.
 
 Canonical Authoring Mode permits authors to write the canonical RDF representation directly. Simplified Authoring Mode permits authors to write a Codex-native surface form that has no independent semantics and exists only as a deterministic, lossless authoring convenience; documents written in Simplified Authoring Mode MUST expand to a byte-identical canonical RDF representation.
 
@@ -2462,26 +2579,24 @@ No other semantic layers, representations, or interpretive stages exist in Codex
 
 ### 9.1 Scope and Inputs
 
-Semantic processing—including validation, constraint evaluation, and interpretation—requires a governing schema.
-
-Given the same required inputs, a conforming implementation MUST produce the same parsing, validation, and canonicalization results.
+Given the same required inputs, a conforming implementation MUST produce the same validation and canonicalization results.
 
 The required inputs for schema-directed processing are:
 
 - the Codex document bytes
 - the governing schema
 - imported schemas, if the document or governing schema declares schema imports (see §11.3.1)
-- any other external inputs explicitly required by this specification or by the governing schema
+- `documentBaseIri` (for instance graph mapping; see §9.7)
 
 Other external inputs—including environment state, configuration, registries, network access, clocks, or randomness—MUST NOT influence processing.
 
 If any required input is missing, schema-directed processing MUST fail with a `SchemaError` (§14).
 
-Given a Codex document and a governing schema, a conforming implementation MUST dispatch parsing and validation according to that schema.
+Given a Codex document and a governing schema, a conforming implementation MUST dispatch validation according to that schema.
 
 ### 9.2 Schema-Less Formatting / Well-Formedness Checks
 
-If an implementation performs schema-less checks, it MUST limit those checks to rules that are explicitly defined by this specification as independent of schema semantics.
+Schema-less checks MUST be limited to rules that are explicitly defined by this specification as independent of schema semantics.
 
 Schema-less checks are limited to:
 
@@ -2491,12 +2606,10 @@ Schema-less checks are limited to:
 - enforcing surface-form structural well-formedness (including marker nesting/matching)
 - enforcing surface-form canonicalization rules defined by this specification
 
-Schema-less checks MUST NOT include any schema-driven semantic interpretation.
+Without a governing schema, an implementation MUST NOT:
 
-In particular, without a governing schema, an implementation MUST NOT:
-
-- interpret content mode versus child mode for a concept beyond what is mechanically implied by the surface form
-- interpret whether a concept instance is an Entity beyond the presence or absence of an `id` trait spelling
+- interpret content mode versus child mode for a concept beyond the surface-form rule defined in §8.8
+- determine Entity eligibility; a parser observes the presence or absence of an `id` trait spelling, but Entity status (`$MustBeEntity` / `$MustNotBeEntity`) is schema-directed (§11)
 - evaluate trait meaning, trait authorization, expected `ValueType` constraints, value typing beyond surface-form Value recognition, or constraint logic
 - resolve reference traits beyond their surface-form value type constraints
 
@@ -2506,9 +2619,9 @@ An implementation MUST NOT perform semantic validation without a governing schem
 
 Given a governing schema, an implementation MUST perform semantic validation as defined by that schema.
 
-Schema-driven semantic validation MUST be explainable in terms of the specific schema rule(s) applied.
+Schema-driven semantic validation MUST be traceable to the specific schema rule(s) applied.
 
-Schema-driven semantic validation MUST include evaluation of all schema-defined authorizations and constraints, including at least:
+Schema-driven semantic validation MUST include evaluation of all schema-defined authorizations and constraints:
 
 - concept authorization and required/forbidden structure
 - content mode versus child mode requirements
@@ -2518,9 +2631,7 @@ Schema-driven semantic validation MUST include evaluation of all schema-defined 
 - schema-defined constraints over children, descendants, and collections
 - schema-defined reference semantics and any schema-defined resolution requirements
 
-If the governing schema requires any external inputs (for example, inputs needed to resolve lookup tokens or to construct derived validation artifacts), those inputs MUST be explicit and machine-checkable.
-
-The required semantics for schema-driven validation and any required derived artifacts are defined by this specification (notably §9.5–§9.11) and by the schema definition language (§11).
+The required semantics for schema-driven validation and the instance graph are defined by §9.5–§9.11 and by the schema definition language (§11).
 
 ### 9.4 Authoring Modes
 
@@ -2531,24 +2642,11 @@ Codex defines two authoring modes:
 - **Simplified Authoring Mode**: Codex-native schema-definition authoring surface only (§9.5, §11)
 - **Canonical Authoring Mode**: Canonical Representation authoring only via `RdfGraph` (§9.6)
 
-Both modes are mandatory.
-
-All conforming implementations MUST support the Canonical Authoring Mode.
-
-All conforming implementations MUST support the Simplified Authoring Mode.
-
-A schema document MUST NOT mix modes.
-
-The authoring mode MUST be selected by an explicit declaration in the schema document.
+All conforming implementations MUST support both authoring modes.
 
 The schema document's root `Schema` concept MUST have an `authoringMode` trait.
 
-`authoringMode` MUST be exactly one of:
-
-- `$SimplifiedMode`
-- `$CanonicalMode`
-
-If `authoringMode` is missing or has any other value, schema processing MUST fail with a `SchemaError` (§14).
+`authoringMode` MUST be exactly one of `$SimplifiedMode` or `$CanonicalMode`; any other value or a missing `authoringMode` trait is a `SchemaError` (§14).
 
 The following mode-specific constraints MUST hold:
 
@@ -2561,9 +2659,7 @@ The following mode-specific constraints MUST hold:
 
 Simplified Authoring Mode is the Codex-native schema-definition authoring surface defined by the schema definition language (§11).
 
-Simplified Authoring Mode MUST satisfy the Codex language invariants, including closed-world semantics, determinism, and prohibition of heuristics.
-
-To support a total, deterministic projection to derived validation artifacts, simplified-mode schema authoring MUST additionally support the following extensions.
+To support a total, deterministic projection to derived validation artifacts, simplified-mode schema authoring MUST support the following extensions.
 
 #### 9.5.1 Pattern Flags
 
@@ -2591,7 +2687,7 @@ Each `ValidatorDefinition` MUST have these traits:
 
 - `id` (required; IRI Reference Value)
 - `name` (required; Concept name per §4 Naming Rules)
-- `message` (optional; Text Value)
+- `message` (required; Text Value)
 
 `ValidatorDefinition` names MUST be unique within the Schema.
 
@@ -2634,7 +2730,7 @@ The `Path` child MUST be exactly one of:
 - `DescendantPath`
 - `ContentPath`
 
-For schema rules that express the common “every direct child of type X satisfies R” pattern, `ChildSatisfies(conceptSelector=X, Rule=R)` MUST be interpreted as equivalent to `OnPathForAll(Path=ChildPath(X), Rule=R)`.
+`ChildSatisfies(conceptSelector=X, Rule=R)` MUST be interpreted as equivalent to `OnPathForAll(Path=ChildPath(X), Rule=R)`.
 
 #### 9.5.4 Collection and Order Constraint Scoping
 
@@ -2660,10 +2756,6 @@ If `keyTrait` is `id`, it MUST refer to the declared identifier as specified by 
 ### 9.6 Canonical Representation (RDF / SHACL)
 
 The Canonical Representation of Codex schemas is an RDF 1.1 graph.
-
-The Canonical Representation MUST be able to represent any SHACL graph, including SHACL-SPARQL constraints.
-
-This specification does not define namespace prefixes; the Canonical Representation uses IRIs directly.
 
 The Canonical Representation MUST be deterministic and canonical:
 
@@ -2696,8 +2788,8 @@ And exactly one of:
 
 When `lexical` is present, the following additional traits are permitted:
 
-- `datatype` (optional; IRI Reference Value) — RDF datatype IRI
-- `language` (optional; Text Value) — RDF language tag
+- `datatype` (IRI Reference Value) — RDF datatype IRI
+- `language` (Text Value) — RDF language tag
 
 If `language` is present, `datatype` MUST be absent.
 
@@ -2713,8 +2805,6 @@ In the canonical RDF graph, `RdfTriple` children MUST be sorted in ascending lex
 - the pair `(datatypeOrDefault, lexical)` when the object is a literal.
 
 If two triples are identical after this normalization, duplicates MUST be removed.
-
-Any algorithm that derives the Canonical Representation or derives SHACL shapes from the Canonical Representation MUST fail with a `SchemaError` (§14) rather than guess when required semantics are not explicitly defined.
 
 #### 9.6.3 RDF List Encoding (No Blank Nodes)
 
@@ -2743,8 +2833,6 @@ When a derived IRI embeds another IRI or name as a path component, the embedded 
 2. Compute the SHA-256 hash of that byte sequence.
 3. Encode the hash as lowercase hexadecimal (64 characters).
 
-The result is deterministic, fixed-length text safe for use in IRI paths.
-
 #### 9.6.5 Deterministic Derived IRIs (One Way To Say It)
 
 To preserve "one way to say it", every derived IRI used by schema processing, instance graph mapping, and derived validation artifact generation MUST be computed by a single deterministic algorithm.
@@ -2756,17 +2844,15 @@ This requirement applies to:
 - derived SPARQL variable names
 - derived graph structures (RDF lists, edge nodes)
 
-If a derivation is underspecified such that multiple incompatible algorithms could conform, processing MUST fail with a `SchemaError` (§14) rather than guess.
-
 #### 9.6.6 Node Shape IRIs
 
-If derived validation artifacts use node shapes (for example, SHACL `sh:NodeShape` resources), the node shape IRI for a concept class IRI `K` MUST be deterministically derived as:
+The node shape IRI for a concept class IRI `K` MUST be deterministically derived as:
 
 - `nodeShapeIri(K) = K + "#shape"`
 
 #### 9.6.7 Property Shape IRIs
 
-If derived validation artifacts use property shapes (for example, SHACL `sh:PropertyShape` resources), each property shape MUST have a deterministic IRI.
+Each property shape MUST have a deterministic IRI.
 
 For a node shape IRI `S` and a trait name `t`:
 
@@ -2782,17 +2868,13 @@ For a node shape IRI `S` and an RDF predicate IRI `p` used as a SHACL path (for 
 
 #### 9.6.8 Document Node Shape IRI
 
-If derived validation artifacts include a node shape targeting the document node, its node shape IRI MUST be deterministically derived as:
+The document node shape IRI MUST be deterministically derived as:
 
 - `documentNodeShapeIri = schemaIri + "#shape/Document"`
 
-All canonicalization and projection rules for the Canonical Representation required by this specification are defined in this section.
-
-Byte-identical canonicalization requirements apply to the Codex `RdfGraph` form, not to arbitrary RDF serializations such as Turtle or RDF/XML.
-
 ### 9.7 Codex→RDF Instance Graph Mapping
 
-To support deterministic derived validation artifacts (including SHACL), Codex defines a canonical mapping from a parsed Codex document to an RDF instance graph.
+Codex defines a canonical mapping from a parsed Codex document to an RDF instance graph.
 
 The mapping MUST be deterministic and MUST NOT use RDF blank nodes.
 
@@ -2811,8 +2893,6 @@ The RDF node IRI for the Document context MUST be exactly `documentBaseIri`.
 Each Concept instance in the Codex document MUST map to exactly one RDF node whose identity is a deterministic skolem IRI derived from its structural position within the document. The `codex:` prefix used in this section is shorthand; full IRI derivations are defined in §9.7.5.
 
 ##### 9.7.2.1 Skolem IRI Derivation (`nodeIri`)
-
-This section defines a conforming deterministic skolem IRI derivation for concept instance nodes.
 
 Let `C` be a Concept instance.
 
@@ -2839,8 +2919,6 @@ Define `nodeIri(C)` as:
 
 - `documentBaseIri + "/__node/" + join("/", addressSegments(C))`
 
-`nodeIri(C)` MUST be stable and injective within a document.
-
 The RDF node IRI MUST NOT be derived from the Concept instance's declared `id` trait value.
 
 If a Concept instance declares an `id` trait, that declared identifier MUST be represented as data via a dedicated predicate `codex:declaredId`.
@@ -2853,9 +2931,7 @@ If a concept instance `C` declares an `id` trait with value `v`, the mapping MUS
 
 If and only if a Concept instance is an Entity, the mapped RDF node MUST be marked as an Entity using a dedicated predicate `codex:isEntity`.
 
-Presence of an `id` trait spelling does not itself make a concept instance an Entity; entity status is schema-defined via `entityEligibility` (§6.1).
-
-To support identity constraints without guessing, the mapping MUST emit an entity marker for every Concept instance node:
+The mapping MUST emit an entity marker for every Concept instance node:
 
 - If the concept instance is an Entity, emit `(nodeIri(C), codex:isEntity, "true"^^xsd:boolean)`.
 - Otherwise, emit `(nodeIri(C), codex:isEntity, "false"^^xsd:boolean)`.
@@ -2914,8 +2990,6 @@ Their IRIs MUST be deterministically derived from `schemaIri` as follows:
 
 #### 9.7.6 Ordered Children Encoding
 
-This section defines the canonical ordered-children encoding.
-
 For each Concept instance `D`, let:
 
 - `p = nodeIri(C)` if `D` is a direct child of parent Concept instance `C`; `p = documentBaseIri` if `D` is a root Concept instance
@@ -2932,18 +3006,7 @@ The edge node IRI MUST be:
 
 - `e = p + "/__childEdge/" + i`
 
-The index `i` is a unified sibling index: it counts all items (Concept instances and annotations) at the same nesting level in canonical order. This is distinct from `ordinalIndex(C)` (§9.7.2.1), which counts only Concept siblings for the purpose of stable node identity derivation.
-
-`codex:parentNode` is distinct from `codex:parent`:
-
-- `codex:parentNode` links a concept instance node to its parent concept instance node.
-- `codex:parent` links an ordered-child edge node to the parent node (`nodeIri(C)` for non-root concepts, `documentBaseIri` for root concepts).
-
 #### 9.7.7 Annotation Nodes
-
-This section defines the canonical annotation encoding.
-
-Annotations appear only in children-mode contexts (§8.9). Annotations in a children context are interleaved with child Concept instances in canonical order. The unified sibling index defined in §9.7.6 assigns each annotation a position in the same index space as child Concept instances.
 
 For each annotation `A` at a given nesting level, let:
 
@@ -2991,15 +3054,13 @@ Because `id` has no `traitPredicateIri` representation in the instance graph, sc
 - an IRI when `v` is an Enumerated Token Value and the governing trait is constrained by an `EnumeratedValueSet` (see below)
 - otherwise a typed literal
 
-In this section, `xsd:*` refers to the XML Schema datatypes namespace.
-
 For typed literals, the datatype IRI MUST be computed by `valueDatatypeIri(v)` and the lexical form MUST be computed by `valueLex(v)`.
 
 Both `valueDatatypeIri(v)` and `valueLex(v)` MUST be derived by parsing `v` according to the Codex value catalog.
 
 `valueDatatypeIri(v)` MUST be:
 
- `xsd:string` for Text Values
+- `xsd:string` for Text Values
 - `xsd:string` for Character Values
 - `xsd:boolean` for Boolean Values
 - `xsd:integer` for Integer Values
@@ -3008,14 +3069,14 @@ For all other value types, `valueDatatypeIri(v)` MUST be the deterministic URN:
 
 - `urn:cdx:value-type:<T>`
 
-where `<T>` is the Codex value type token name (for example, `Uuid`, `Color`, `Temporal`, `List`, `Map`).
+where `<T>` is the Codex value type token name (for example, `Uuid`, `HexColor`, `PlainDate`, `List`, `Map`).
 
 `valueLex(v)` MUST be:
 
- the decoded Unicode text value for Text Values
- the single Unicode scalar value as Unicode text for Character Values
+- the decoded Unicode text value for Text Values
+- the single Unicode scalar value as Unicode text for Character Values
 - `"true"` or `"false"` for Boolean Values
- base-10 integer text for Integer Values
+- base-10 integer text for Integer Values
 
 For all other value types, `valueLex(v)` MUST be the canonical surface spelling of `v`.
 
@@ -3036,7 +3097,7 @@ If the trait is constrained only by `ValueIsOneOf` (not by an `EnumeratedConstra
 
 If the trait is not constrained by any `EnumeratedValueSet`, the Enumerated Token Value falls through to the typed literal case above.
 
-If a schema constraint requires an interpreted value (for example, numeric comparisons or text length), schema processing MUST either provide the interpreted value in a deterministic RDF representation or fail with a `SchemaError` (§14).
+If a schema constraint requires an interpreted value (for example, numeric comparisons or text length), schema processing MUST provide the interpreted value in a deterministic RDF representation.
 
 #### 9.7.9 Content
 
@@ -3047,8 +3108,6 @@ If a concept instance is in content mode, the mapping MUST emit:
 `contentText` MUST be an `xsd:string` literal containing the concept's content after applying the Codex content escaping rules.
 
 #### 9.7.10 Deterministic Predicate IRIs
-
-For the purposes of this section, let `schemaIri` be the governing schema's `Schema.id` value.
 
 Trait predicate IRIs MUST be derived as follows.
 
@@ -3077,25 +3136,17 @@ Each Concept instance MUST emit an RDF type triple:
 
 If `conceptClassIri(X)` cannot be resolved to exactly one `ConceptDefinition`, schema-driven validation MUST fail with a `SchemaError` (§14).
 
-All aspects of the instance graph mapping required by this specification are defined in this section.
-
 #### 9.7.12 Conformance Graph (`G₁`)
 
 For a Codex instance document processed under a governing schema and an explicit `documentBaseIri`, let `G₁` be the RDF instance graph produced by the Codex→RDF instance graph mapping defined in §9.7.
 
-For purposes of conformance testing and byte-identical comparison, a conforming implementation MUST emit `G₁` in the Codex `RdfGraph` form defined in §9.6.1 and MUST apply the canonical ordering and duplicate-removal rules defined in §9.6.2.
+A conforming implementation MUST emit `G₁` in the Codex `RdfGraph` form defined in §9.6.1 and MUST apply the canonical ordering and duplicate-removal rules defined in §9.6.2.
 
 ### 9.8 Lookup Token Resolution
-
-Lookup Token Values (`~name`) are symbolic references that require resolution to a target identifier.
-
-Resolution is performed using the resolution table, which is constructed from Concepts in the document.
 
 #### 9.8.1 Resolution Table
 
 Each Concept in the document that declares both a `key` trait (§6.3) and an `id` trait (§6.2) contributes one entry to the resolution table, mapping the `key` lookup token to the `id` IRI.
-
-A Concept that declares a `key` trait but no `id` trait does not contribute a resolution entry.
 
 The resolution table MUST be constructed solely from explicit `key` and `id` trait declarations. Resolution entries MUST NOT be inferred, synthesized, or imported implicitly.
 
@@ -3114,20 +3165,16 @@ A governing schema MUST specify, for each context where lookup token values are 
 
 * The lookup token MUST be resolvable.
 * The lookup token MUST NOT appear in the context.
-* Resolution is not required.
-
-These requirements are enforced during schema validation, not during parsing or formatting.
+* The lookup token MUST pass through without resolution.
 
 ### 9.9 Deterministic Projection to Derived Validation Artifacts
 
-If an implementation derives validation artifacts from a governing schema, it MUST do so deterministically.
+Derived validation artifacts MUST be generated deterministically.
 
 Any derived validation artifact MUST be a pure function of:
 
 - the governing schema
-- the explicitly required external inputs, if any
-
-Derived validation artifact generation MUST fail with a `SchemaError` (§14) rather than guess if any required semantic rule is not explicitly defined.
+- the explicitly required external inputs (§9.1)
 
 Derived validation artifact generation MUST fail with a `SchemaError` (§14) if any of the following hold:
 
@@ -3137,11 +3184,9 @@ Derived validation artifact generation MUST fail with a `SchemaError` (§14) if 
 - any schema rule produces a semantic constraint that cannot be expressed under the chosen Codex→RDF instance graph mapping
 - any generic trait mechanism (`TraitRules`, `TraitPath`, `TraitExists`, `TraitMissing`, `TraitEquals`) targets the `id` trait (see §9.7.8)
 
-Codex permits derived validation artifacts expressed as SHACL.
+Derived validation artifacts MUST be expressed as SHACL, including SHACL-SPARQL constraints.
 
-If SHACL is used as a derived validation artifact format, the generated shapes are permitted to use SHACL-SPARQL.
-
-If the governing schema includes constraint definitions with explicit targets, a derived SHACL artifact MUST apply each constraint to the target node shape(s) determined as follows:
+A derived SHACL artifact MUST apply each constraint to the target node shape(s) determined as follows:
 
 - For `TargetConcept conceptSelector="X"`, the constraint MUST be applied to the node shape derived from the `ConceptDefinition` whose `name` is `X`.
 - For `TargetContext contextSelector="Document"`, the constraint MUST be applied to a special node shape with IRI `schemaIri + "#shape/Document"` and MUST include at least:
@@ -3168,9 +3213,7 @@ If a derived validation artifact expresses any constraint using SHACL-SPARQL, th
 - the focus node variable MUST be `?this`
 - a row returned by the query MUST indicate a violation
 
-SPARQL textual equality for derived artifacts is semantic, not lexical; whitespace and formatting variations that do not change query semantics are permitted.
-
-To keep derived artifacts canonical and avoid accidental variable capture, internal SPARQL variables introduced during constraint translation MUST be allocated as follows:
+SPARQL text in derived artifacts MUST be canonically formatted. Internal SPARQL variables introduced during constraint translation MUST be allocated as follows:
 
 - Walk the constraint's rule tree in pre-order.
 - For the `$k$`-th visited node (1-indexed), allocate a node-local suffix `$k$`.
@@ -3179,40 +3222,32 @@ To keep derived artifacts canonical and avoid accidental variable capture, inter
 
 #### 9.9.1 Enumerated Value Sets (`sh:in`)
 
-If a derived SHACL artifact encodes an enumerated value-set constraint using `sh:in` on a property shape `PS`, it MUST emit a triple `(PS, sh:in, listHead)`.
+A derived SHACL artifact encoding an enumerated value-set constraint MUST emit a triple `(PS, sh:in, listHead)` on the property shape `PS`.
 
-This rule applies whenever the governing schema constrains a value to a fixed enumerated set and that constraint is projected into SHACL.
-
-`listHead` MUST be an IRI and MUST be a deterministically derived skolem IRI (no blank nodes).
-
-The list structure MUST be encoded as an RDF list as specified in §9.6.3.
+The list encoding MUST conform to §9.6.3.
 
 #### 9.9.2 Pattern Constraints (`sh:pattern`, `sh:flags`)
 
-If a derived SHACL artifact encodes a pattern constraint using `sh:pattern` on a property shape `PS`, it MUST emit a triple `(PS, sh:pattern, p)`.
+A derived SHACL artifact encoding a pattern constraint MUST emit a triple `(PS, sh:pattern, p)` on the property shape `PS`.
 
-If `flags` is present and non-empty, it MUST emit a triple `(PS, sh:flags, f)`.
-
-This rule applies to derived SHACL constraints corresponding to schema constraints such as `ValueMatchesPattern` and `PatternConstraint`.
+When `flags` is present and non-empty, the artifact MUST also emit a triple `(PS, sh:flags, f)`.
 
 The `pattern` and `flags` semantics MUST be SPARQL 1.1 `REGEX` semantics (see §9.5.1).
 
 #### 9.9.3 SHACL Core Value Constraints
 
-If a derived SHACL artifact encodes a value-length constraint on a property shape `PS`, it MUST emit:
+A derived SHACL artifact encoding a value-length constraint on a property shape `PS` MUST emit:
 
 - `(PS, sh:minLength, "a"^^xsd:integer)` when a minimum length `a` is present
 - `(PS, sh:maxLength, "b"^^xsd:integer)` when a maximum length `b` is present
 
-If a derived SHACL artifact encodes a non-empty constraint on a property shape `PS`, it MUST emit:
+A derived SHACL artifact encoding a non-empty constraint on a property shape `PS` MUST emit:
 
 - `(PS, sh:minLength, "1"^^xsd:integer)`
 
-If a derived SHACL artifact encodes a numeric-range constraint on a property shape `PS`, it MUST use SHACL Core numeric bounds only when the active value datatype is `xsd:integer`.
+A derived SHACL artifact encoding a numeric-range constraint on a property shape `PS` MUST use SHACL Core numeric bounds. The active value datatype MUST be `xsd:integer`; any other active datatype is a `SchemaError` (§14).
 
-If the active datatype is not `xsd:integer`, derived validation artifact generation MUST fail with a `SchemaError` (§14).
-
-When permitted, it MUST emit:
+The artifact MUST emit:
 
 - `(PS, sh:minInclusive, "u"^^xsd:integer)` when a minimum value `u` is present
 - `(PS, sh:maxInclusive, "v"^^xsd:integer)` when a maximum value `v` is present
@@ -3221,50 +3256,48 @@ When permitted, it MUST emit:
 
 For child constraints projected onto a property shape `PS`, let `P` be the concept class IRI (RDF class) targeted by the owning node shape.
 
-If a derived SHACL artifact encodes a required-child constraint for a child concept selector `X` on a property shape `PS`, it MUST emit:
+A derived SHACL artifact encoding a required-child constraint for a child concept selector `X` on a property shape `PS` MUST emit:
 
 - `(PS, sh:path, childPredicateIri(P, conceptClassIri(X)))`
 - `(PS, sh:minCount, "1"^^xsd:integer)`
 - `(PS, sh:class, conceptClassIri(X))`
 
-If a derived SHACL artifact encodes a forbidden-child constraint for a child concept selector `X` on a property shape `PS`, it MUST emit:
+A derived SHACL artifact encoding a forbidden-child constraint for a child concept selector `X` on a property shape `PS` MUST emit:
 
 - `(PS, sh:path, childPredicateIri(P, conceptClassIri(X)))`
 - `(PS, sh:maxCount, "0"^^xsd:integer)`
 
-If a schema rule permits a child relationship (allows without requiring), the derived SHACL artifact MUST NOT emit a constraint.
+An allowed-without-required child relationship MUST NOT produce a constraint in the derived SHACL artifact.
 
 #### 9.9.5 Content Constraints
 
-If a derived SHACL artifact encodes a content-required constraint on a property shape `PS`, it MUST emit:
+For content constraints, let `S` be the owning node shape. The property shape IRI MUST be `PS = predicatePropertyShapeIri(S, codex:content)`.
 
-- Let `S` be the owning node shape for the constraint. The property shape IRI MUST be `PS = predicatePropertyShapeIri(S, codex:content)`.
+A derived SHACL artifact encoding a content-required constraint MUST emit:
+
 - `(PS, sh:path, codex:content)`
 - `(PS, sh:minLength, "1"^^xsd:integer)`
 
-If a derived SHACL artifact encodes a content pattern constraint on a property shape `PS`, it MUST emit:
+A derived SHACL artifact encoding a content pattern constraint MUST emit:
 
-- Let `S` be the owning node shape for the constraint. The property shape IRI MUST be `PS = predicatePropertyShapeIri(S, codex:content)`.
 - `(PS, sh:path, codex:content)`
 - `(PS, sh:pattern, p)`
 
-If `flags` is present and non-empty, it MUST emit:
-
-- `(PS, sh:flags, f)`
+When `flags` is present and non-empty, the artifact MUST also emit `(PS, sh:flags, f)`.
 
 The `pattern` and `flags` semantics MUST be SPARQL 1.1 `REGEX` semantics (see §9.5.1).
 
 #### 9.9.6 Identity Constraints
 
-If a derived SHACL artifact encodes an identity constraint requiring an entity, it MUST emit:
+For identity constraints, let `S` be the owning node shape. The property shape IRI MUST be `PS = predicatePropertyShapeIri(S, codex:isEntity)`.
 
-- Let `S` be the owning node shape for the constraint. The property shape IRI MUST be `PS = predicatePropertyShapeIri(S, codex:isEntity)`.
+A derived SHACL artifact encoding an identity constraint requiring an entity MUST emit:
+
 - `(PS, sh:path, codex:isEntity)`
 - `(PS, sh:hasValue, "true"^^xsd:boolean)`
 
-If a derived SHACL artifact encodes an identity constraint requiring a non-entity, it MUST emit:
+A derived SHACL artifact encoding an identity constraint requiring a non-entity MUST emit:
 
-- Let `S` be the owning node shape for the constraint. The property shape IRI MUST be `PS = predicatePropertyShapeIri(S, codex:isEntity)`.
 - `(PS, sh:path, codex:isEntity)`
 - `(PS, sh:hasValue, "false"^^xsd:boolean)`
 
@@ -3274,7 +3307,7 @@ The `scope` trait MUST be present. For derived artifact purposes, `IdentityConst
 
 Derived validation artifacts MUST support `IdentityConstraint(type=IdentifierForm, pattern=p, flags=f)`.
 
-Because `codex:declaredId` is represented as an RDF IRI term (see §9.7.8), this constraint MUST be expressible using SHACL-SPARQL.
+This constraint MUST be expressed using SHACL-SPARQL.
 It MUST report a violation if the focus node is an Entity and either:
 
 * it has no `codex:declaredId`, or
@@ -3291,19 +3324,17 @@ EXISTS {
 }
 ```
 
-where `p` is the required pattern and `f` is the flags text if present. If `flags` is absent, the generated constraint MUST use the 2-argument `REGEX(text, pattern)` form.
+where `p` is the required pattern and `f` is the flags text if present. When `flags` is absent, the generated constraint MUST use the 2-argument `REGEX(text, pattern)` form.
 
 #### 9.9.7 Uniqueness Constraints
 
 Derived validation artifacts MUST support the `UniqueConstraint` constraint (§11.10.5).
 
-The identity of a trait within a uniqueness constraint is determined by the instance-graph trait mapping (see §9.7.8).
-
-If a uniqueness constraint refers to `t = id`, it MUST refer to the declared identifier as represented by `codex:declaredId`.
+When a uniqueness constraint refers to `t = id`, it MUST refer to the declared identifier as represented by `codex:declaredId`.
 
 For nearest-scope uniqueness, `UniqueConstraint(trait=t, scope=S)` MUST mean:
 
-- within the nearest ancestor (including self) of concept type `S`, no two nodes may share the same value for trait `t`.
+- within the nearest ancestor (including self) of concept type `S`, no two nodes share the same value for trait `t`.
 
 For purposes of this constraint, the nearest scope node is the unique node `scopeK` such that:
 
@@ -3317,19 +3348,13 @@ For purposes of this constraint, the nearest scope node is the unique node `scop
 
 Derived validation artifact generation MUST fail with a `SchemaError` (§14) if no nearest scope node exists.
 
-Derived validation artifacts MUST also enforce the document-wide uniqueness invariants for `id` (§6.2.2) and `key` (§6.3.2). Within a single document, no two nodes may share the same value for `codex:declaredId`, and no two nodes may share the same `key` trait value.
+Derived validation artifacts MUST also enforce the document-wide uniqueness invariants for `id` (§6.2.2) and `key` (§6.3.2). Within a single document, two nodes MUST NOT share the same value for `codex:declaredId`, and two nodes MUST NOT share the same `key` trait value.
 
 #### 9.9.8 Context Constraints
 
-Context constraints are expressible using the deterministic parent links in the instance graph (see §9.7.4).
+Derived validation artifacts MUST express `ContextConstraint(type=OnlyValidUnderParent)`.
 
-`ContextConstraint(type=OnlyValidUnderParent)` MUST be expressible in derived validation artifacts.
-
-`OnlyValidUnderParent` requires that the focus node's immediate parent is of the type specified by `TargetContext` in the constraint's `Targets` block. The `contextSelector` trait MUST NOT be present.
-
-If projected into a SHACL-derived artifact, it MUST map to SHACL-SPARQL and MUST report a violation when the focus node has no direct parent of the target context type.
-
-The SHACL-SPARQL constraint MUST use the following boolean condition:
+The `contextSelector` trait MUST NOT be present. The SHACL-SPARQL constraint MUST use the following boolean condition:
 
 ```
 EXISTS {
@@ -3338,13 +3363,9 @@ EXISTS {
 }
 ```
 
-`ContextConstraint(type=OnlyValidUnderContext, contextSelector=A)` MUST be expressible in derived validation artifacts.
+Derived validation artifacts MUST express `ContextConstraint(type=OnlyValidUnderContext, contextSelector=A)`.
 
-`OnlyValidUnderContext` requires that the focus node has an ancestor of type `A` somewhere in its parent chain. The `contextSelector` trait MUST be present and specifies the required ancestor type.
-
-If projected into a SHACL-derived artifact, it MUST map to SHACL-SPARQL and MUST report a violation when the focus node has no ancestor (via one or more parent links) of type `A`.
-
-The SHACL-SPARQL constraint MUST use the following boolean condition:
+The `contextSelector` trait MUST be present. The SHACL-SPARQL constraint MUST use the following boolean condition:
 
 ```
 EXISTS {
@@ -3355,27 +3376,17 @@ EXISTS {
 
 #### 9.9.9 Reference Constraints (Reference Trait Predicates)
 
-Reference constraints are expressible without external resolution if identifiers are represented by `codex:declaredId` and lookup tokens are resolvable via the resolution table (see §9.8).
-
-For the purposes of reference constraints, the set of reference-trait predicates MUST be exactly:
+The set of reference-trait predicates MUST be exactly:
 
 - `traitPredicateIri("reference")`
 - `traitPredicateIri("target")`
 - `traitPredicateIri("for")`
 
-If a governing schema uses different reference trait names, derived validation artifact generation MUST fail with a `SchemaError` (§14).
+Derived validation artifacts MUST support `ReferenceConstraint(type=ReferenceSingleton)`. The constraint MUST report a violation when more than one reference-trait predicate is present on the same focus node.
 
-`ReferenceConstraint(type=ReferenceSingleton)` MUST be expressible in derived validation artifacts.
-
-If projected into a SHACL-derived artifact, it MUST be expressible (for example, via SHACL-SPARQL or equivalent core constraints) and MUST report a violation when more than one reference-trait predicate is present on the same focus node.
-
-`ReferenceConstraint(type=ReferenceTraitAllowed)` is underspecified unless the constraint specifies which reference trait is allowed.
-
-Therefore, derived validation artifact generation MUST fail with a `SchemaError` (§14) for `ReferenceTraitAllowed` unless the constraint provides an additional trait `traitName` whose value is one of `reference`, `target`, or `for`.
+Derived validation artifacts MUST support `ReferenceConstraint(type=ReferenceTraitAllowed)`. The constraint MUST provide a `traitName` trait whose value is one of `reference`, `target`, or `for`; a missing or invalid `traitName` is a `SchemaError` (§14).
 
 #### 9.9.10 Reference Constraints (Deterministic Resolution and Targets)
-
-Some reference constraints require deterministically resolving reference values to an IRI.
 
 For the purposes of reference constraints, a reference value `v` MUST be one of:
 
@@ -3389,8 +3400,6 @@ Given a reference value `v`, its resolved IRI `r` MUST be computed as follows:
 	- If there exists exactly one entry in the resolution table (§9.8) such that the entry's `tokenLiteral` is `v`, and the entry's `targetIri` is `r`, then `r` is that `targetIri`.
 	- Otherwise, `v` MUST be treated as unresolved.
 - Otherwise, `v` MUST be treated as unresolved.
-
-Derived validation artifacts MUST NOT guess a resolution for an unresolved reference value.
 
 Derived validation artifacts MUST support `ReferenceConstraint(type=ReferenceTargetsEntity)`.
 
@@ -3424,20 +3433,16 @@ Derived validation artifacts MUST support `ReferenceConstraint(type=ReferenceMus
 - A violation MUST be reported if `v` is treated as unresolved.
 - A violation MUST be reported unless there exists a node `n` in the same Document such that `(n, codex:declaredId, r)` holds.
 
-If a derived validation artifact is produced as an RDF graph (including a SHACL graph), the projection to a concrete RDF syntax MUST be exactly:
+The projection of a derived validation artifact to a concrete RDF syntax MUST be exactly:
 
 1. Check the derived `RdfGraph` against the derived-artifact structural rules.
-2. Emit the triples in a chosen RDF concrete syntax (for example, Turtle).
-
-The projection MUST NOT change the set of triples.
+2. Emit the triples in the chosen RDF concrete syntax.
 
 ### 9.10 Failure Rules (No Guessing)
 
 Schema processing, schema-driven validation, instance-graph mapping, and derived-artifact projection MUST fail with an appropriate error rather than guess when required information is missing or ambiguous.
 
-Any derivation step that depends on resolving an identifier, concept, trait, or selector MUST fail immediately with a `SchemaError` (§14) if resolution is not unique and total.
-
-At minimum, processing MUST fail in any of the following cases:
+Processing MUST fail in any of the following cases:
 
 - the schema authoring mode is missing, invalid, or mixed (see §9.4) — `SchemaError`
 - a schema rule requires semantics not explicitly defined by this specification, the governing schema, or the schema-definition specification — `SchemaError`
@@ -3447,10 +3452,6 @@ At minimum, processing MUST fail in any of the following cases:
 - a derived validation artifact cannot be constructed without inventing missing definitions — `SchemaError`
 
 ### 9.11 Simplified Authoring Mode → Canonical Representation Expansion Algorithm (Total)
-
-This section defines a deterministic, total expansion algorithm from the Simplified Authoring Mode (Codex-native schema-definition authoring surface) to the Canonical Representation (`RdfGraph`) suitable for derived validation artifacts (including SHACL and SHACL-SPARQL).
-
-The expansion algorithm is normative.
 
 #### 9.11.1 Inputs and Output
 
@@ -3495,8 +3496,8 @@ Cardinality mapping:
 
 Value type mapping:
 
-- If simplified-mode schema authoring declares a value type token that maps to an RDF datatype IRI, the expansion MUST emit `(PS, sh:datatype, datatypeIri)`.
-- If simplified-mode schema authoring constrains by enumerated set, the expansion MUST emit `(PS, sh:in, listNodeIri)` and MUST emit the RDF list structure using deterministic skolem IRIs (see §9.6.3).
+- When a value type token maps to an RDF datatype IRI, the expansion MUST emit `(PS, sh:datatype, datatypeIri)`.
+- When a value type token constrains by enumerated set, the expansion MUST emit `(PS, sh:in, listNodeIri)` and MUST emit the RDF list structure using deterministic skolem IRIs (see §9.6.3).
 
 Any value-type token without a defined mapping MUST cause expansion failure with a `SchemaError` (§14).
 
@@ -3517,7 +3518,7 @@ Child presence mapping:
 - `RequiresChildConcept` MUST emit `(PS, sh:minCount, "1"^^xsd:integer)`.
 - `ForbidsChildConcept` MUST emit `(PS, sh:maxCount, "0"^^xsd:integer)`.
 
-If simplified-mode schema authoring restricts child type, the expansion MUST emit `(PS, sh:class, Q)`.
+When the child relationship restricts child type, the expansion MUST emit `(PS, sh:class, Q)`.
 
 #### 9.11.6 ConstraintDefinitions → SHACL Constraints
 
@@ -3525,7 +3526,7 @@ ConstraintDefinitions MUST expand to SHACL constraints.
 
 ##### 9.11.6.1 General Rule
 
-Each Codex constraint type permitted by the schema-definition specification MUST map to either:
+Each Codex constraint type defined by the schema-definition specification MUST map to either:
 
 - a SHACL Core constraint expression, or
 - a SHACL-SPARQL constraint (`sh:sparql`).
@@ -3536,14 +3537,7 @@ Atomic constraint mappings that are defined by this specification MUST follow §
 
 ##### 9.11.6.2 Rule Algebra → SHACL-SPARQL (Total)
 
-This section defines a total mapping for the rule algebra elements:
-
-- `AllOf`
-- `AnyOf`
-- `Not`
-- `ConditionalConstraint` (`When` / `Then`)
-
-This mapping is total in the sense that it provides a deterministic SHACL-SPARQL construction for any rule algebra tree.
+The rule algebra elements are `AllOf`, `AnyOf`, `Not`, and `ConditionalConstraint` (`When` / `Then`).
 
 If the rule algebra tree contains an atomic constraint whose required mapping is undefined, expansion MUST fail with a `SchemaError` (§14).
 
@@ -3581,9 +3575,7 @@ If target binding cannot be expressed without ambiguity (for example, the target
 
 ###### 9.11.6.2.2 Deterministic Variable Allocation
 
-Atomic constraints and path/quantifier expressions often require internal SPARQL variables.
-
-To avoid accidental capture and to make the output canonical, expansion MUST allocate internal variable names deterministically.
+Expansion MUST allocate internal variable names deterministically.
 
 Expansion MUST walk the rule tree in pre-order.
 
@@ -3632,13 +3624,11 @@ If `rule` is `ConditionalConstraint` with condition rule `w` (under `When`) and 
 
 - `H(rule, ctx, focusVar) = (!H(w, ctxW, focusVar)) || H(t, ctxT, focusVar)`
 
-This is logically equivalent to: if the condition holds, the consequent must hold.
-
 ###### 9.11.6.2.4 Atomic Rules as `EXISTS` Blocks
 
 If `rule` is atomic, `H(rule, ctx, focusVar)` MUST be a SPARQL `EXISTS { ... }` form or an `EXISTS`-free boolean constant.
 
-For atomic rules whose SHACL Core mapping is defined in §9.9, expansion MUST ALSO define `H(rule, ctx, focusVar)` using only SPARQL 1.1 constructs.
+For atomic rules whose SHACL Core mapping is defined in §9.9, expansion MUST define `H(rule, ctx, focusVar)` using only SPARQL 1.1 constructs.
 
 If an atomic rule cannot be expressed as a SPARQL boolean expression without inventing additional semantics, expansion MUST fail with a `SchemaError` (§14).
 
@@ -3656,16 +3646,9 @@ When a `ConstraintDefinition` uses rule algebra (i.e., contains `AllOf`, `AnyOf`
 
 Expansion MUST NOT additionally emit independent SHACL Core constraints for the same `ConstraintDefinition`.
 
-Rationale: emitting both creates multiple ways to say the same thing and risks divergence between engines.
-
 ##### 9.11.6.3 Paths and Quantifiers → SHACL-SPARQL (Total)
 
-This section defines a total mapping for:
-
-- `TraitPath`, `ChildPath`, `DescendantPath`, `ContentPath`
-- `OnPathExists`, `OnPathForAll`, `OnPathCount`
-
-These operators MUST be expressed using SHACL-SPARQL.
+The path operators (`TraitPath`, `ChildPath`, `DescendantPath`, `ContentPath`) and quantifier operators (`OnPathExists`, `OnPathForAll`, `OnPathCount`) MUST be expressed using SHACL-SPARQL.
 
 ###### 9.11.6.3.1 Path Binding Function
 
@@ -3775,18 +3758,16 @@ Where:
 * The `FILTER` expression applying the count comparisons MUST appear immediately after the subquery.
 * Other bindings or filters MUST NOT intervene between the subquery and its associated `FILTER`.
 
-The resulting boolean condition MUST evaluate to true if and only if the count constraints hold.
-
 ##### 9.11.6.4 SPARQL Constraint Shape
 
 When a constraint is expressed using SHACL-SPARQL, the expansion MUST emit:
 
-Let `targetShapeIri` be the node shape IRI the constraint is applied to (for example, `nodeShapeIri(conceptClassIri(X))` for a concept target or `documentNodeShapeIri` for the Document context).
+Let `targetShapeIri` be the node shape IRI the constraint is applied to.
 
 - `(targetShapeIri, sh:sparql, sparqlConstraintIri)`
 - `(sparqlConstraintIri, sh:select, selectTextLiteral)`
 
-If the source constraint has a `title` or `description`, the expansion MUST emit `sh:message`.
+When the source constraint has a `title` or `description`, the expansion MUST emit `sh:message`.
 
 The SPARQL query MUST be deterministic given the source constraint.
 
@@ -4692,7 +4673,8 @@ Each token corresponds to a Value category defined in §5 (Value Literal Catalog
 * `$LchColor`
 * `$OklabColor`
 * `$OklchColor`
-* `$ColorFunction`
+* `$ColorSpaceColor`
+* `$ColorSpaceColorFunctiontion`
 * `$ColorMix`
 * `$DeviceCmyk`
 * `$Temporal`
@@ -6529,7 +6511,7 @@ ContentCharacter
 	;
 
 ContentEscape
-	= "\\", ( "<" | "[" )
+	= "\\", ( "\\" | "<" | "[" )
 	;
 
 (* Raw '<' is forbidden anywhere in content; raw '[' at line start is
@@ -6666,6 +6648,8 @@ UrlValue
 
 #### A.1.8 Text Values
 
+This grammar is an informative projection of the quoted text spelling rules defined in §5.1. In case of discrepancy, §5.1 is authoritative.
+
 ```ebnf
 TextValue
 	= '"', { TextCharacter }, '"'
@@ -6698,6 +6682,8 @@ HexDigit
 ---
 
 #### A.1.9 Character Values
+
+> This grammar is an informative projection of the character literal spelling rules defined in §5.11. In case of discrepancy, §5.11 is authoritative.
 
 ```ebnf
 CharValue
@@ -6851,6 +6837,8 @@ TypeUnion
 
 #### A.1.14 Temporal Values
 
+This grammar is an informative projection of the spelling rules defined in §5.6.2. In case of discrepancy, §5.6.2 is authoritative.
+
 ```ebnf
 TemporalValue
 	= "{", TemporalBody, "}"
@@ -6920,7 +6908,7 @@ PlainTime
 	;
 
 Duration
-	= "P", DurationComponent, { DurationComponent }, [ "T", { TimeDurationComponent } ]
+	= "P", DurationComponent, { DurationComponent }, [ "T", TimeDurationComponent, { TimeDurationComponent } ]
 	| "P", "T", TimeDurationComponent, { TimeDurationComponent }
 	;
 
@@ -6969,6 +6957,8 @@ FractionalSeconds
 
 #### A.1.15 Color Values
 
+This grammar is an informative projection of the color function argument spelling rules and semantic domains defined in §5.7.4. In case of discrepancy, §5.7.4 is authoritative.
+
 ```ebnf
 (* Color values are accepted as declarative spellings; tools MUST NOT normalize,
 	rewrite, or "best-effort" correct them (§5.7). During semantic validation,
@@ -6988,75 +6978,75 @@ HexColor
 	| "#", HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, [ HexDigit, HexDigit ]
 	;
 
-(* §5.7.1, Appendix B: Name MUST be a named color keyword; unrecognized names are a ParseError (§14). *)
+(* §5.7.2, Appendix B: Name MUST be a named color keyword; unrecognized names are a ParseError (§14). *)
 NamedColor
 	= "&", LowercaseLetter, { LowercaseLetter }
 	;
 
 FunctionColor
-	= RgbFunc
-	| HslFunc
-	| HwbFunc
-	| LabFunc
-	| LchFunc
-	| OklabFunc
-	| OklchFunc
-	| ColorFunc
-	| ColorMixFunc
-	| RelativeColorFunc
-	| DeviceCmykFunc
+	= RgbFunction
+	| HslFunction
+	| HwbFunction
+	| LabFunction
+	| LchFunction
+	| OklabFunction
+	| OklchFunction
+	| ColorSpaceColorFunction
+	| ColorMixFunction
+	| RelativeColorFunction
+	| DeviceCmykFunction
 	;
 
-RgbFunc
-	= ( "rgb" | "rgba" ), "(", ColorWhitespaceOptional, RgbArgs, ColorWhitespaceOptional, ")"
+RgbFunction
+	= ( "rgb" | "rgba" ), "(", ColorWhitespaceOptional, RgbArguments, ColorWhitespaceOptional, ")"
 	;
 
-HslFunc
-	= ( "hsl" | "hsla" ), "(", ColorWhitespaceOptional, HslArgs, ColorWhitespaceOptional, ")"
+HslFunction
+	= ( "hsl" | "hsla" ), "(", ColorWhitespaceOptional, HslArguments, ColorWhitespaceOptional, ")"
 	;
 
-HwbFunc
-	= "hwb", "(", ColorWhitespaceOptional, HwbArgs, ColorWhitespaceOptional, ")"
+HwbFunction
+	= "hwb", "(", ColorWhitespaceOptional, HwbArguments, ColorWhitespaceOptional, ")"
 	;
 
-LabFunc
-	= "lab", "(", ColorWhitespaceOptional, LabArgs, ColorWhitespaceOptional, ")"
+LabFunction
+	= "lab", "(", ColorWhitespaceOptional, LabArguments, ColorWhitespaceOptional, ")"
 	;
 
-LchFunc
-	= "lch", "(", ColorWhitespaceOptional, LchArgs, ColorWhitespaceOptional, ")"
+LchFunction
+	= "lch", "(", ColorWhitespaceOptional, LchArguments, ColorWhitespaceOptional, ")"
 	;
 
-OklabFunc
-	= "oklab", "(", ColorWhitespaceOptional, OklabArgs, ColorWhitespaceOptional, ")"
+OklabFunction
+	= "oklab", "(", ColorWhitespaceOptional, OklabArguments, ColorWhitespaceOptional, ")"
 	;
 
-OklchFunc
-	= "oklch", "(", ColorWhitespaceOptional, OklchArgs, ColorWhitespaceOptional, ")"
+OklchFunction
+	= "oklch", "(", ColorWhitespaceOptional, OklchArguments, ColorWhitespaceOptional, ")"
 	;
 
-ColorFunc
-	= "color", "(", ColorWhitespaceOptional, ( RgbColorSpace, ColorWhitespace, ColorRgbArgs | XyzColorSpace, ColorWhitespace, ColorXyzArgs ), ColorWhitespaceOptional, ")"
+ColorSpaceColorFunction
+	= "color", "(", ColorWhitespaceOptional, ( RgbColorSpace, ColorWhitespace, ColorRgbArguments | XyzColorSpace, ColorWhitespace, ColorXyzArguments ), ColorWhitespaceOptional, ")"
 	;
 
-ColorMixFunc
+ColorMixFunction
 	= "color-mix", "(", ColorWhitespaceOptional, "in", ColorWhitespace, ColorSpace, ColorComma, ColorMixStop,
 	  ColorComma, ColorMixStop, { ColorComma, ColorMixStop }, ColorWhitespaceOptional, ")"
 	;
 
-RelativeColorFunc
-	= RelativeRgbFunc
-	| RelativeHslFunc
-	| RelativeHwbFunc
-	| RelativeLabFunc
-	| RelativeLchFunc
-	| RelativeOklabFunc
-	| RelativeOklchFunc
-	| RelativeColorFuncColor
+RelativeColorFunction
+	= RelativeRgbFunction
+	| RelativeHslFunction
+	| RelativeHwbFunction
+	| RelativeLabFunction
+	| RelativeLchFunction
+	| RelativeOklabFunction
+	| RelativeOklchFunction
+	| RelativeColorSpaceColorFunction
 	;
 
-DeviceCmykFunc
-	= "device-cmyk", "(", ColorWhitespaceOptional, DeviceCmykArgs, ColorWhitespaceOptional, ")"
+DeviceCmykFunction
+	= "device-cmyk", "(", ColorWhitespaceOptional, DeviceCmykArguments, ColorWhitespaceOptional, ")"
 	;
 
 ColorSpace
@@ -7129,72 +7119,72 @@ HueComponent
 	= ColorRealNumber
 	;
 
-RgbArgs
-	= RgbLegacyArgs
-	| RgbModernArgs
+RgbArguments
+	= RgbLegacyArguments
+	| RgbModernArguments
 	;
 
-RgbLegacyArgs
+RgbLegacyArguments
 	= RgbComponent, ColorComma, RgbComponent, ColorComma, RgbComponent,
 	  [ ColorComma, ColorAlpha ]
 	;
 
-RgbModernArgs
+RgbModernArguments
 	= RgbComponent, ColorWhitespace, RgbComponent, ColorWhitespace, RgbComponent,
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
-HslArgs
-	= HslLegacyArgs
-	| HslModernArgs
+HslArguments
+	= HslLegacyArguments
+	| HslModernArguments
 	;
 
-HslLegacyArgs
+HslLegacyArguments
 	= HueComponent, ColorComma, ColorPercentage, ColorComma, ColorPercentage,
 	  [ ColorComma, ColorAlpha ]
 	;
 
-HslModernArgs
+HslModernArguments
 	= HueComponent, ColorWhitespace, ColorPercentage, ColorWhitespace, ColorPercentage,
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
-HwbArgs
+HwbArguments
 	= HueComponent, ColorWhitespace, ColorPercentage, ColorWhitespace, ColorPercentage,
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
-ColorRgbArgs
+ColorRgbArguments
 	= RgbComponent, ColorWhitespace, RgbComponent, ColorWhitespace, RgbComponent,
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
-ColorXyzArgs
+ColorXyzArguments
 	= ColorRealNumber, ColorWhitespace, ColorRealNumber, ColorWhitespace, ColorRealNumber,
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
-DeviceCmykArgs
+DeviceCmykArguments
 	= CmykComponent, ColorWhitespace, CmykComponent, ColorWhitespace, CmykComponent, ColorWhitespace, CmykComponent,
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
-LabArgs
+LabArguments
 	= ColorPercentage, ColorWhitespace, ColorRealNumber, ColorWhitespace, ColorRealNumber,
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
-LchArgs
+LchArguments
 	= ColorPercentage, ColorWhitespace, ColorRealNumber, ColorWhitespace, ColorRealNumber,
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
-OklabArgs
+OklabArguments
 	= ColorRealNumber, ColorWhitespace, ColorRealNumber, ColorWhitespace, ColorRealNumber,
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
 
-OklchArgs
+OklchArguments
 	= ColorRealNumber, ColorWhitespace, ColorRealNumber, ColorWhitespace, ColorRealNumber,
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, ColorAlpha ]
 	;
@@ -7203,36 +7193,36 @@ ColorMixStop
 	= ColorValue, [ ColorWhitespace, ColorPercentage ]
 	;
 
-RelativeRgbFunc
-	= ( "rgb" | "rgba" ), "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeRgbArgs, ColorWhitespaceOptional, ")"
+RelativeRgbFunction
+	= ( "rgb" | "rgba" ), "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeRgbArguments, ColorWhitespaceOptional, ")"
 	;
 
-RelativeHslFunc
-	= ( "hsl" | "hsla" ), "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeHslArgs, ColorWhitespaceOptional, ")"
+RelativeHslFunction
+	= ( "hsl" | "hsla" ), "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeHslArguments, ColorWhitespaceOptional, ")"
 	;
 
-RelativeHwbFunc
-	= "hwb", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeHwbArgs, ColorWhitespaceOptional, ")"
+RelativeHwbFunction
+	= "hwb", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeHwbArguments, ColorWhitespaceOptional, ")"
 	;
 
-RelativeLabFunc
-	= "lab", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeLabArgs, ColorWhitespaceOptional, ")"
+RelativeLabFunction
+	= "lab", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeLabArguments, ColorWhitespaceOptional, ")"
 	;
 
-RelativeLchFunc
-	= "lch", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeLchArgs, ColorWhitespaceOptional, ")"
+RelativeLchFunction
+	= "lch", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeLchArguments, ColorWhitespaceOptional, ")"
 	;
 
-RelativeOklabFunc
-	= "oklab", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeOklabArgs, ColorWhitespaceOptional, ")"
+RelativeOklabFunction
+	= "oklab", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeOklabArguments, ColorWhitespaceOptional, ")"
 	;
 
-RelativeOklchFunc
-	= "oklch", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeOklchArgs, ColorWhitespaceOptional, ")"
+RelativeOklchFunction
+	= "oklch", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, RelativeOklchArguments, ColorWhitespaceOptional, ")"
 	;
 
-RelativeColorFuncColor
-	= "color", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, ColorSpace, ColorWhitespace, RelativeColorArgs, ColorWhitespaceOptional, ")"
+RelativeColorSpaceColorFunction
+	= "color", "(", ColorWhitespaceOptional, "from", ColorWhitespace, ColorValue, ColorWhitespace, ColorSpace, ColorWhitespace, RelativeColorArguments, ColorWhitespaceOptional, ")"
 	;
 
 RelativeRgbChannel
@@ -7273,37 +7263,37 @@ RelativeRgbComponent
 	| RelativeRgbChannel
 	;
 
-RelativeRgbArgs
+RelativeRgbArguments
 	= RelativeRgbComponent, ColorWhitespace, RelativeRgbComponent, ColorWhitespace, RelativeRgbComponent,
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
-RelativeHslArgs
+RelativeHslArguments
 	= ( HueComponent | RelativeHslChannel ), ColorWhitespace, ( ColorPercentage | "s" ), ColorWhitespace, ( ColorPercentage | "l" ),
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
-RelativeHwbArgs
+RelativeHwbArguments
 	= ( HueComponent | "h" ), ColorWhitespace, ( ColorPercentage | "w" ), ColorWhitespace, ( ColorPercentage | "b" ),
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
-RelativeLabArgs
+RelativeLabArguments
 	= ( ColorPercentage | "l" ), ColorWhitespace, ( ColorRealNumber | "a" ), ColorWhitespace, ( ColorRealNumber | "b" ),
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
-RelativeLchArgs
+RelativeLchArguments
 	= ( ColorPercentage | "l" ), ColorWhitespace, ( ColorRealNumber | "c" ), ColorWhitespace, ( ColorRealNumber | "h" ),
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
-RelativeOklabArgs
+RelativeOklabArguments
 	= ( ColorRealNumber | "l" ), ColorWhitespace, ( ColorRealNumber | "a" ), ColorWhitespace, ( ColorRealNumber | "b" ),
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
 
-RelativeOklchArgs
+RelativeOklchArguments
 	= ( ColorRealNumber | "l" ), ColorWhitespace, ( ColorRealNumber | "c" ), ColorWhitespace, ( ColorRealNumber | "h" ),
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
@@ -7318,7 +7308,7 @@ RelativeColorComponent
 	| RelativeColorChannel
 	;
 
-RelativeColorArgs
+RelativeColorArguments
 	= RelativeColorComponent, ColorWhitespace, RelativeColorComponent, ColorWhitespace, RelativeColorComponent,
 	  [ ColorWhitespaceOptional, "/", ColorWhitespaceOptional, RelativeAlphaComponent ]
 	;
@@ -7387,6 +7377,8 @@ LookupToken
 
 #### A.1.19 List Values
 
+> This grammar is an informative projection of the List Value spelling rules defined in §5.12. In case of discrepancy, §5.12 is authoritative.
+
 ```ebnf
 (* List Values are ordered sequences of zero or more elements (§5.12). *)
 ListValue
@@ -7402,6 +7394,8 @@ ListItems
 
 #### A.1.20 Set Values
 
+> This grammar is an informative projection of the Set Value spelling rules defined in §5.14. In case of discrepancy, §5.14 is authoritative.
+
 ```ebnf
 (* Set Values are unordered collections; duplicate elements are a ParseError (§5.14, §14). *)
 SetValue
@@ -7416,6 +7410,8 @@ SetItems
 ---
 
 #### A.1.21 Map Values
+
+> This grammar is an informative projection of the Map Value spelling rules defined in §5.15. In case of discrepancy, §5.15 is authoritative.
 
 ```ebnf
 (* Map Values are key-value collections; duplicate keys are a ParseError (§5.15, §14). *)
@@ -7449,6 +7445,8 @@ MapIdentifier
 
 #### A.1.22 Record Values
 
+> This grammar is an informative projection of the Record Value spelling rules defined in §5.19. In case of discrepancy, §5.19 is authoritative.
+
 ```ebnf
 (* Record Values have schema-defined field names; duplicate fields are a ParseError (§5.19, §14). *)
 RecordValue
@@ -7472,6 +7470,8 @@ RecordFieldName
 
 #### A.1.23 Tuple Values
 
+> This grammar is an informative projection of the Tuple Value spelling rules defined in §5.16. In case of discrepancy, §5.16 is authoritative.
+
 ```ebnf
 (* Tuple Values require at least one element (§5.16). *)
 TupleValue
@@ -7486,6 +7486,8 @@ TupleItems
 ---
 
 #### A.1.24 Range Values
+
+> This grammar is an informative projection of the Range Value spelling rules defined in §5.17. In case of discrepancy, §5.17 is authoritative.
 
 ```ebnf
 (* Range Values are declarative intervals with optional step (§5.17).
@@ -7556,7 +7558,7 @@ UnescapedAnnotationChar
 	;
 
 AnnotationEscape
-	= "\\", "]"
+	= "\\", ( "\\" | "]" )
 	;
 
 (* Inside block annotations, the only escape defined is the same as inline: '\]'. *)
@@ -7748,7 +7750,7 @@ ContentLine <- Indentation ContentText Newline
 
 ContentText <- ContentCharacter*
 ContentCharacter <- ContentEscape / ContentSafeChar
-ContentEscape <- '\\' ('<' / '[')
+ContentEscape <- '\\' ('\\' / '<' / '[')
 ContentSafeChar <- !Newline !'<' .
 ```
 
@@ -7839,6 +7841,8 @@ UrlValue <- 'url' '(' WhitespaceChar* TextValue WhitespaceChar* (',' WhitespaceC
 
 #### A.2.8 Text Values
 
+This grammar is an informative projection of the quoted text spelling rules defined in §5.1. In case of discrepancy, §5.1 is authoritative.
+
 ```peg
 TextValue <- '"' TextCharacter* '"'
 TextCharacter <- EscapeSequence / UnescapedTextCharacter
@@ -7852,6 +7856,8 @@ HexDigit <- [0-9A-Fa-f]
 ---
 
 #### A.2.9 Character Values
+
+> This grammar is an informative projection of the character literal spelling rules defined in §5.11. In case of discrepancy, §5.11 is authoritative.
 
 ```peg
 CharValue <- "'" CharContent "'"
@@ -7936,6 +7942,8 @@ LookupToken <- '~' LowercaseLetter (Letter / Digit)*
 
 #### A.2.15 Temporal Values
 
+This grammar is an informative projection of the spelling rules defined in §5.6.2. In case of discrepancy, §5.6.2 is authoritative.
+
 ```peg
 TemporalValue <- '{' TemporalBody '}'
 
@@ -7957,7 +7965,7 @@ TimeZoneIdChar <- Letter / Digit / '/' / '_' / '-'
 
 PlainTime <- Hour ':' Minute (':' Second ('.' FractionalSeconds)?)?
 
-Duration <- 'P' DurationComponent+ ('T' TimeDurationComponent*)?
+Duration <- 'P' DurationComponent+ ('T' TimeDurationComponent+)?
           / 'P' 'T' TimeDurationComponent+
 DurationComponent <- DigitSequence [YMWD]
 TimeDurationComponent <- DigitSequence ('.' DigitSequence)? [HMS]
@@ -7977,6 +7985,8 @@ FractionalSeconds <- Digit+
 
 #### A.2.16 List Values
 
+> This grammar is an informative projection of the List Value spelling rules defined in §5.12. In case of discrepancy, §5.12 is authoritative.
+
 ```peg
 # Lists permit arbitrary whitespace (including newlines) between tokens.
 
@@ -7988,6 +7998,8 @@ ListItems <- Value (WhitespaceChar* ',' WhitespaceChar* Value)*
 
 #### A.2.17 Set Values
 
+> This grammar is an informative projection of the Set Value spelling rules defined in §5.14. In case of discrepancy, §5.14 is authoritative.
+
 ```peg
 SetValue <- 'set' '[' WhitespaceChar* SetItems? WhitespaceChar* ']'
 SetItems <- Value (WhitespaceChar* ',' WhitespaceChar* Value)*
@@ -7996,6 +8008,8 @@ SetItems <- Value (WhitespaceChar* ',' WhitespaceChar* Value)*
 ---
 
 #### A.2.18 Map Values
+
+> This grammar is an informative projection of the Map Value spelling rules defined in §5.15. In case of discrepancy, §5.15 is authoritative.
 
 ```peg
 MapValue <- 'map' '[' WhitespaceChar* MapItems? WhitespaceChar* ']'
@@ -8009,6 +8023,8 @@ MapIdentifier <- LowercaseLetter (Letter / Digit)*
 
 #### A.2.19 Record Values
 
+> This grammar is an informative projection of the Record Value spelling rules defined in §5.19. In case of discrepancy, §5.19 is authoritative.
+
 ```peg
 RecordValue <- 'record' '[' WhitespaceChar* RecordItems? WhitespaceChar* ']'
 RecordItems <- RecordEntry (WhitespaceChar* ',' WhitespaceChar* RecordEntry)*
@@ -8020,6 +8036,8 @@ RecordFieldName <- LowercaseLetter (Letter / Digit)*
 
 #### A.2.20 Tuple Values
 
+> This grammar is an informative projection of the Tuple Value spelling rules defined in §5.16. In case of discrepancy, §5.16 is authoritative.
+
 ```peg
 TupleValue <- '(' WhitespaceChar* TupleItems WhitespaceChar* ')'
 TupleItems <- Value (WhitespaceChar* ',' WhitespaceChar* Value)*
@@ -8028,6 +8046,8 @@ TupleItems <- Value (WhitespaceChar* ',' WhitespaceChar* Value)*
 ---
 
 #### A.2.21 Range Values
+
+> This grammar is an informative projection of the Range Value spelling rules defined in §5.17. In case of discrepancy, §5.17 is authoritative.
 
 ```peg
 RangeValue <- RangeStart WhitespaceChar* '..' WhitespaceChar* RangeEnd (WhitespaceChar* 's' WhitespaceChar* StepValue)?
@@ -8050,13 +8070,15 @@ HexOctet <- HexDigit HexDigit
 
 #### A.2.23 Color Values
 
+This grammar is an informative projection of the color function argument spelling rules and semantic domains defined in §5.7.4. In case of discrepancy, §5.7.4 is authoritative.
+
 ```peg
 # Color spellings are accepted as declarative literals; semantic validity is checked
 # during schema-driven semantic validation (§5.7).
 
 ColorValue <- HexColor / FunctionColor / NamedColor
 
-FunctionColor <- RgbFunc / HslFunc / HwbFunc / LabFunc / LchFunc / OklabFunc / OklchFunc / ColorFunc / ColorMixFunc / DeviceCmykFunc / RelativeColorFunc
+FunctionColor <- RgbFunction / HslFunction / HwbFunction / LabFunction / LchFunction / OklabFunction / OklchFunction / ColorSpaceColorFunction / ColorMixFunction / DeviceCmykFunction / RelativeColorFunction
 
 HexColor <- '#' (HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
               / HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
@@ -8082,75 +8104,75 @@ RgbColorSpace <- 'srgb-linear' / 'srgb' / 'display-p3' / 'a98-rgb' / 'prophoto-r
 XyzColorSpace <- 'xyz-d50' / 'xyz-d65' / 'xyz'
 ColorSpace <- RgbColorSpace / XyzColorSpace
 
-ColorRgbArgs <- RgbComponent ColorWhitespace RgbComponent ColorWhitespace RgbComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
-ColorXyzArgs <- ColorRealNumber ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
+ColorRgbArguments <- RgbComponent ColorWhitespace RgbComponent ColorWhitespace RgbComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
+ColorXyzArguments <- ColorRealNumber ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-ColorFunc <- 'color' '(' ColorWhitespaceOptional (RgbColorSpace ColorWhitespace ColorRgbArgs / XyzColorSpace ColorWhitespace ColorXyzArgs) ColorWhitespaceOptional ')'
+ColorSpaceColorFunction <- 'color' '(' ColorWhitespaceOptional (RgbColorSpace ColorWhitespace ColorRgbArguments / XyzColorSpace ColorWhitespace ColorXyzArguments) ColorWhitespaceOptional ')'
 
-RgbFunc <- ('rgb' / 'rgba') '(' ColorWhitespaceOptional RgbArgs ColorWhitespaceOptional ')'
-RgbArgs <- RgbLegacyArgs / RgbModernArgs
-RgbLegacyArgs <- RgbComponent ColorComma RgbComponent ColorComma RgbComponent (ColorComma ColorAlpha)?
-RgbModernArgs <- RgbComponent ColorWhitespace RgbComponent ColorWhitespace RgbComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
+RgbFunction <- ('rgb' / 'rgba') '(' ColorWhitespaceOptional RgbArguments ColorWhitespaceOptional ')'
+RgbArguments <- RgbLegacyArguments / RgbModernArguments
+RgbLegacyArguments <- RgbComponent ColorComma RgbComponent ColorComma RgbComponent (ColorComma ColorAlpha)?
+RgbModernArguments <- RgbComponent ColorWhitespace RgbComponent ColorWhitespace RgbComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-HslFunc <- ('hsl' / 'hsla') '(' ColorWhitespaceOptional HslArgs ColorWhitespaceOptional ')'
-HslArgs <- HslLegacyArgs / HslModernArgs
-HslLegacyArgs <- HueComponent ColorComma ColorPercentage ColorComma ColorPercentage (ColorComma ColorAlpha)?
-HslModernArgs <- HueComponent ColorWhitespace ColorPercentage ColorWhitespace ColorPercentage (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
+HslFunction <- ('hsl' / 'hsla') '(' ColorWhitespaceOptional HslArguments ColorWhitespaceOptional ')'
+HslArguments <- HslLegacyArguments / HslModernArguments
+HslLegacyArguments <- HueComponent ColorComma ColorPercentage ColorComma ColorPercentage (ColorComma ColorAlpha)?
+HslModernArguments <- HueComponent ColorWhitespace ColorPercentage ColorWhitespace ColorPercentage (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-HwbFunc <- 'hwb' '(' ColorWhitespaceOptional HwbArgs ColorWhitespaceOptional ')'
-HwbArgs <- HueComponent ColorWhitespace ColorPercentage ColorWhitespace ColorPercentage (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
+HwbFunction <- 'hwb' '(' ColorWhitespaceOptional HwbArguments ColorWhitespaceOptional ')'
+HwbArguments <- HueComponent ColorWhitespace ColorPercentage ColorWhitespace ColorPercentage (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-LabFunc <- 'lab' '(' ColorWhitespaceOptional LabArgs ColorWhitespaceOptional ')'
-LabArgs <- ColorPercentage ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
+LabFunction <- 'lab' '(' ColorWhitespaceOptional LabArguments ColorWhitespaceOptional ')'
+LabArguments <- ColorPercentage ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-LchFunc <- 'lch' '(' ColorWhitespaceOptional LchArgs ColorWhitespaceOptional ')'
-LchArgs <- ColorPercentage ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
+LchFunction <- 'lch' '(' ColorWhitespaceOptional LchArguments ColorWhitespaceOptional ')'
+LchArguments <- ColorPercentage ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-OklabFunc <- 'oklab' '(' ColorWhitespaceOptional OklabArgs ColorWhitespaceOptional ')'
-OklabArgs <- ColorRealNumber ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
+OklabFunction <- 'oklab' '(' ColorWhitespaceOptional OklabArguments ColorWhitespaceOptional ')'
+OklabArguments <- ColorRealNumber ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-OklchFunc <- 'oklch' '(' ColorWhitespaceOptional OklchArgs ColorWhitespaceOptional ')'
-OklchArgs <- ColorRealNumber ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
+OklchFunction <- 'oklch' '(' ColorWhitespaceOptional OklchArguments ColorWhitespaceOptional ')'
+OklchArguments <- ColorRealNumber ColorWhitespace ColorRealNumber ColorWhitespace ColorRealNumber (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
 CmykComponent <- ColorPercentage / ColorRealNumber
 
-DeviceCmykFunc <- 'device-cmyk' '(' ColorWhitespaceOptional DeviceCmykArgs ColorWhitespaceOptional ')'
-DeviceCmykArgs <- CmykComponent ColorWhitespace CmykComponent ColorWhitespace CmykComponent ColorWhitespace CmykComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
+DeviceCmykFunction <- 'device-cmyk' '(' ColorWhitespaceOptional DeviceCmykArguments ColorWhitespaceOptional ')'
+DeviceCmykArguments <- CmykComponent ColorWhitespace CmykComponent ColorWhitespace CmykComponent ColorWhitespace CmykComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional ColorAlpha)?
 
-ColorMixFunc <- 'color-mix' '(' ColorWhitespaceOptional 'in' ColorWhitespace ColorSpace ColorComma ColorMixStop (ColorComma ColorMixStop)+ ColorWhitespaceOptional ')'
+ColorMixFunction <- 'color-mix' '(' ColorWhitespaceOptional 'in' ColorWhitespace ColorSpace ColorComma ColorMixStop (ColorComma ColorMixStop)+ ColorWhitespaceOptional ')'
 ColorMixStop <- ColorValue (ColorWhitespace ColorPercentage)?
 
-RelativeColorFunc <- RelativeRgbFunc / RelativeHslFunc / RelativeHwbFunc / RelativeLabFunc / RelativeLchFunc / RelativeOklabFunc / RelativeOklchFunc / RelativeColorFuncColor
+RelativeColorFunction <- RelativeRgbFunction / RelativeHslFunction / RelativeHwbFunction / RelativeLabFunction / RelativeLchFunction / RelativeOklabFunction / RelativeOklchFunction / RelativeColorSpaceColorFunction
 
 RelativeAlphaComponent <- ColorAlpha / 'a'
 
 RelativeRgbChannel <- 'r' / 'g' / 'b'
 RelativeRgbComponent <- RgbComponent / RelativeRgbChannel
-RelativeRgbArgs <- RelativeRgbComponent ColorWhitespace RelativeRgbComponent ColorWhitespace RelativeRgbComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
-RelativeRgbFunc <- ('rgb' / 'rgba') '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeRgbArgs ColorWhitespaceOptional ')'
+RelativeRgbArguments <- RelativeRgbComponent ColorWhitespace RelativeRgbComponent ColorWhitespace RelativeRgbComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeRgbFunction <- ('rgb' / 'rgba') '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeRgbArguments ColorWhitespaceOptional ')'
 
-RelativeHslArgs <- (HueComponent / 'h') ColorWhitespace (ColorPercentage / 's') ColorWhitespace (ColorPercentage / 'l') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
-RelativeHslFunc <- ('hsl' / 'hsla') '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeHslArgs ColorWhitespaceOptional ')'
+RelativeHslArguments <- (HueComponent / 'h') ColorWhitespace (ColorPercentage / 's') ColorWhitespace (ColorPercentage / 'l') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeHslFunction <- ('hsl' / 'hsla') '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeHslArguments ColorWhitespaceOptional ')'
 
-RelativeHwbArgs <- (HueComponent / 'h') ColorWhitespace (ColorPercentage / 'w') ColorWhitespace (ColorPercentage / 'b') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
-RelativeHwbFunc <- 'hwb' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeHwbArgs ColorWhitespaceOptional ')'
+RelativeHwbArguments <- (HueComponent / 'h') ColorWhitespace (ColorPercentage / 'w') ColorWhitespace (ColorPercentage / 'b') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeHwbFunction <- 'hwb' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeHwbArguments ColorWhitespaceOptional ')'
 
-RelativeLabArgs <- (ColorPercentage / 'l') ColorWhitespace (ColorRealNumber / 'a') ColorWhitespace (ColorRealNumber / 'b') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
-RelativeLabFunc <- 'lab' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeLabArgs ColorWhitespaceOptional ')'
+RelativeLabArguments <- (ColorPercentage / 'l') ColorWhitespace (ColorRealNumber / 'a') ColorWhitespace (ColorRealNumber / 'b') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeLabFunction <- 'lab' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeLabArguments ColorWhitespaceOptional ')'
 
-RelativeLchArgs <- (ColorPercentage / 'l') ColorWhitespace (ColorRealNumber / 'c') ColorWhitespace (ColorRealNumber / 'h') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
-RelativeLchFunc <- 'lch' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeLchArgs ColorWhitespaceOptional ')'
+RelativeLchArguments <- (ColorPercentage / 'l') ColorWhitespace (ColorRealNumber / 'c') ColorWhitespace (ColorRealNumber / 'h') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeLchFunction <- 'lch' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeLchArguments ColorWhitespaceOptional ')'
 
-RelativeOklabArgs <- (ColorRealNumber / 'l') ColorWhitespace (ColorRealNumber / 'a') ColorWhitespace (ColorRealNumber / 'b') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
-RelativeOklabFunc <- 'oklab' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeOklabArgs ColorWhitespaceOptional ')'
+RelativeOklabArguments <- (ColorRealNumber / 'l') ColorWhitespace (ColorRealNumber / 'a') ColorWhitespace (ColorRealNumber / 'b') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeOklabFunction <- 'oklab' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeOklabArguments ColorWhitespaceOptional ')'
 
-RelativeOklchArgs <- (ColorRealNumber / 'l') ColorWhitespace (ColorRealNumber / 'c') ColorWhitespace (ColorRealNumber / 'h') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
-RelativeOklchFunc <- 'oklch' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeOklchArgs ColorWhitespaceOptional ')'
+RelativeOklchArguments <- (ColorRealNumber / 'l') ColorWhitespace (ColorRealNumber / 'c') ColorWhitespace (ColorRealNumber / 'h') (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeOklchFunction <- 'oklch' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace RelativeOklchArguments ColorWhitespaceOptional ')'
 
 RelativeColorChannel <- 'r' / 'g' / 'b' / 'x' / 'y' / 'z'
 RelativeColorComponent <- ColorPercentage / ColorRealNumber / RelativeColorChannel
-RelativeColorArgs <- RelativeColorComponent ColorWhitespace RelativeColorComponent ColorWhitespace RelativeColorComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
-RelativeColorFuncColor <- 'color' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace ColorSpace ColorWhitespace RelativeColorArgs ColorWhitespaceOptional ')'
+RelativeColorArguments <- RelativeColorComponent ColorWhitespace RelativeColorComponent ColorWhitespace RelativeColorComponent (ColorWhitespaceOptional '/' ColorWhitespaceOptional RelativeAlphaComponent)?
+RelativeColorSpaceColorFunction <- 'color' '(' ColorWhitespaceOptional 'from' ColorWhitespace ColorValue ColorWhitespace ColorSpace ColorWhitespace RelativeColorArguments ColorWhitespaceOptional ')'
 ```
 
 ---
@@ -8182,7 +8204,7 @@ AnnotationBlockLine <- Indentation AnnotationBlockChar* Newline
 
 AnnotationChar <- AnnotationEscape / UnescapedAnnotationChar
 UnescapedAnnotationChar <- !(']' / '\n') .
-AnnotationEscape <- '\\' ']'
+AnnotationEscape <- '\\' ('\\' / ']')
 
 AnnotationBlockChar <- AnnotationEscape / UnescapedAnnotationBlockChar
 UnescapedAnnotationBlockChar <- !'\n' .
