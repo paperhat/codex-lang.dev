@@ -120,15 +120,15 @@ Do not regress:
 - **§9.7**: Instance graph `nodeIri` must not derive from `id` trait. Declared `id` stored via `codex:declaredId`. Ordered children use unified sibling index (counting both Concept instances and annotations). Annotations represented via §9.7.7 edge nodes with 7 reserved `codex:annotation*` predicates. Subsections are §9.7.1–§9.7.12.
 - **§9.8**: Lookup token resolution table built from `key`+`id` on Concepts. Resolution entries must not be inferred, synthesized, or imported implicitly.
 - **§9.10**: Fail with error rather than guess when required info is missing or ambiguous.
-- **§10.5**: Two-phase canonicalization: Phase 1 (schema-free) for encoding/indentation/layout/alphabetical trait ordering; Phase 2 (schema-directed) for content whitespace mode, namespace label normalization (author's label → schema's declared `namespace`), SchemaImport canonical ordering (alphabetical by canonical namespace).
-- **§10.5.1**: `$Unordered` collection sort: Concept name → `id` → `key` → source order.
-- **§11.2**: Schemas are declarative data, not executable. All authorization explicit.
-- **§11.3**: Schema requires `namespace` trait (camelCase Text Value). `SchemaImports` allowed as child for both authoring modes.
-- **§11.3.1**: `SchemaImports` is a language-level child of any root concept (schema or data docs). Contains one or more `SchemaImport` children. `SchemaImport` has required `reference` (IRI) and `namespace` (Text) traits. Governing schema is default namespace; only imported concepts/traits need qualification. Duplicate canonical namespace labels → `SchemaError`.
-- **§11.4.3–4**: Default closed-world: traits/children not explicitly allowed/required are forbidden. `RequiresTrait`/`AllowsTrait`/`ForbidsTrait` accept qualified trait names (`namespace:traitName`). `AllowsChildConcept`/`RequiresChildConcept`/`ForbidsChildConcept`/`ConceptOption` accept qualified concept names (`namespace:ConceptName`).
-- **§11.6.4**: Built-in enumerated sets (`ConceptKind`, `EntityEligibility`, `CompatibilityClass`, `Ordering`, `Cardinality`) must not be redefined.
-- **§11.7**: Constraints must not execute code or depend on implicit inference.
-- **§11.12**: Derived representations must not introduce semantics beyond spec/schema. Must not override/weaken Codex validation.
+- **§10.4**: Two-phase canonicalization: Phase 1 (schema-free) for encoding/indentation/layout/alphabetical trait ordering; Phase 2 (schema-directed) for content whitespace mode, namespace label normalization (author's label → schema's declared `namespace`), SchemaImport canonical ordering (alphabetical by canonical namespace).
+- **§10.4.1**: `$Unordered` collection sort: Concept name → `id` → `key` → source order.
+- **§11.1**: Schemas are declarative data, not executable. All authorization explicit.
+- **§11.2**: Schema requires `namespace` trait (camelCase Text Value). `SchemaImports` allowed as child for both authoring modes.
+- **§11.2.1**: `SchemaImports` is a language-level child of any root concept (schema or data docs). Contains one or more `SchemaImport` children. `SchemaImport` has required `reference` (IRI) and `namespace` (Text) traits. Governing schema is default namespace; only imported concepts/traits need qualification. Duplicate canonical namespace labels → `SchemaError`.
+- **§11.3.3–4**: Default closed-world: traits/children not explicitly allowed/required are forbidden. `RequiresTrait`/`AllowsTrait`/`ForbidsTrait` accept qualified trait names (`namespace:traitName`). `AllowsChildConcept`/`RequiresChildConcept`/`ForbidsChildConcept`/`ConceptOption` accept qualified concept names (`namespace:ConceptName`).
+- **§11.5.4**: Built-in enumerated sets (`ConceptKind`, `EntityEligibility`, `CompatibilityClass`, `Ordering`, `Cardinality`) must not be redefined.
+- **§11.6**: Constraints must not execute code or depend on implicit inference.
+- **§11.11**: Derived representations must not introduce semantics beyond spec/schema. Must not override/weaken Codex validation.
 - **§12.2**: Entry point is `validate(documentBytes, governingSchema, importedSchemas) → validatedDocument`. Governing schema must be explicit. Must not substitute, infer, or override. Missing schema is `SchemaError`, not `ParseError`. `importedSchemas` maps schema IRIs to schema bytes.
 - **§12.3**: Bootstrap schema-of-schemas: built-in, immutable. Root `Schema` = schema document. Not substitutable for instance docs.
 - **§13.3**: `id`, `namespace`, `version`, `versionScheme` all required on root `Schema`.

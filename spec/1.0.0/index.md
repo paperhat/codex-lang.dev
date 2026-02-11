@@ -85,7 +85,7 @@ An implementation MUST NOT infer meaning from omission, shape, or other non-spec
 
 An implementation MUST NOT assume defaults unless explicitly defined by this specification or by the governing schema.
 
-Structural ordering carries no semantic meaning to Codex itself. Trait order in canonical form is alphabetical by Trait name (§10.5); implementations MUST NOT treat Trait order as semantically significant. For children and collection elements, schemas define whether ordering is semantically significant (§11.4). Implementations MUST preserve the ordering of children and collection elements both for round-trippability (see §2.6) and to support schema-defined ordering constraints.
+Structural ordering carries no semantic meaning to Codex itself. Trait order in canonical form is alphabetical by Trait name (§10.4); implementations MUST NOT treat Trait order as semantically significant. For children and collection elements, schemas define whether ordering is semantically significant (§11.3). Implementations MUST preserve the ordering of children and collection elements both for round-trippability (see §2.6) and to support schema-defined ordering constraints.
 
 ### 2.2 Determinism and Explainability
 
@@ -95,7 +95,7 @@ Required inputs are:
 
 - document bytes
 - governing schema (for validation; not required for well-formedness checking)
-- imported schemas (for validation of documents with schema imports; see §11.3.1)
+- imported schemas (for validation of documents with schema imports; see §11.2.1)
 - document base IRI (for instance graph mapping; see §9.7)
 
 In particular:
@@ -299,7 +299,7 @@ The two qualified name forms are:
 
 The namespace prefix and the local name MUST each satisfy the naming rules of §4.1 and §4.2 independently.
 
-Qualified names MUST only appear in contexts where schema imports are in effect (§11.3.1). The namespace prefix MUST resolve to an imported schema via the document's `SchemaImports` declarations.
+Qualified names MUST only appear in contexts where schema imports are in effect (§11.2.1). The namespace prefix MUST resolve to an imported schema via the document's `SchemaImports` declarations.
 
 Language-level Trait names (`id`, `key`, `reference`, `target`, `for`) MUST NOT be namespace-qualified. These Traits are defined by this specification (§6–§7), not by any schema.
 
@@ -369,7 +369,7 @@ No other spellings are permitted.
 
 ### 5.4 Numeric Values
 
-Each type defined in §5.4.1–§5.4.9 is an independent standalone value type, determined by lexical form at parse time during well-formedness checking (§2.5). No schema is required for type determination. `$Number` (§11.6) is a union type token that accepts any of these types. It is not a parent type.
+Each type defined in §5.4.1–§5.4.9 is an independent standalone value type, determined by lexical form at parse time during well-formedness checking (§2.5). No schema is required for type determination. `$Number` (§11.5) is a union type token that accepts any of these types. It is not a parent type.
 
 When the surface spelling could match multiple type grammars, the type MUST be the first match in this order: ComplexNumber, ImaginaryNumber, PrecisionNumber, ExponentialNumber, Fraction, PositiveInfinity, NegativeInfinity, DecimalNumber, Integer.
 
@@ -389,7 +389,7 @@ The literal `0`, or an optional `-` sign followed by a non-zero ASCII digit (`1`
 
 The spelling `-0` MUST NOT appear. A conforming implementation MUST reject it as a `SurfaceFormError` (§14).
 
-Integer constraint tokens for schema validation (§11.6): `$Zero` (spelling `0`), `$PositiveInteger` (no `-`, digits not `0`), `$NegativeInteger` (`-` present, digits not `0`), `$NonNegativeInteger` (`$Zero` or `$PositiveInteger`), `$NonPositiveInteger` (`$Zero` or `$NegativeInteger`). These are schema-level constraint tokens, not separate types.
+Integer constraint tokens for schema validation (§11.5): `$Zero` (spelling `0`), `$PositiveInteger` (no `-`, digits not `0`), `$NegativeInteger` (`-` present, digits not `0`), `$NonNegativeInteger` (`$Zero` or `$PositiveInteger`), `$NonPositiveInteger` (`$Zero` or `$NegativeInteger`). These are schema-level constraint tokens, not separate types.
 
 #### 5.4.2 DecimalNumber
 
@@ -442,7 +442,7 @@ A NegativeInfinity value represents negative infinity.
 
 The literal spelling `-Infinity`.
 
-`+Infinity` MUST NOT appear. `$Infinity` (§11.6) is a union type token accepting either PositiveInfinity or NegativeInfinity. It is not a parent type.
+`+Infinity` MUST NOT appear. `$Infinity` (§11.5) is a union type token accepting either PositiveInfinity or NegativeInfinity. It is not a parent type.
 
 #### 5.4.8 ImaginaryNumber
 
@@ -816,7 +816,7 @@ The value is semantically valid iff all three components of `lin_sRGB` are finit
 
 #### 5.7.4 Schema-Directed Semantic Color IR
 
-This subsection defines the complete color function argument spelling rules and semantic color value domains used by schema validation for the built-in color `ValueType` tokens listed in §11.6.1. Appendix A.1.15 and A.2.23 provide informative grammar projections of these rules.
+This subsection defines the complete color function argument spelling rules and semantic color value domains used by schema validation for the built-in color `ValueType` tokens listed in §11.5.1. Appendix A.1.15 and A.2.23 provide informative grammar projections of these rules.
 
 These rules apply only during schema-driven semantic validation. They MUST NOT rewrite or normalize the canonical surface spelling.
 
@@ -2130,7 +2130,7 @@ In canonical surface form, Codex-conforming tools MUST reject documents containi
 
 A blank line is a line containing no characters after normalization.
 
-Codex-conforming tools MUST treat a line containing only whitespace as empty after normalization. This is a canonicalization rule: trailing whitespace on a line is stripped during Phase 1 canonicalization (§10.5). In canonical form, a blank line contains no characters before its newline.
+Codex-conforming tools MUST treat a line containing only whitespace as empty after normalization. This is a canonicalization rule: trailing whitespace on a line is stripped during Phase 1 canonicalization (§10.4). In canonical form, a blank line contains no characters before its newline.
 
 Annotation blank-line rules MUST be defined by the rules for annotations (see §8.9).
 
@@ -2155,7 +2155,7 @@ An opening marker MUST be spelled as:
 <ConceptName trait=value>
 ```
 
-or, when referencing a Concept from an imported schema (§11.3.1):
+or, when referencing a Concept from an imported schema (§11.2.1):
 
 ```cdx
 <namespace:ConceptName>
@@ -2176,7 +2176,7 @@ A closing marker MUST be spelled as:
 </ConceptName>
 ```
 
-or, when referencing a Concept from an imported schema (§11.3.1):
+or, when referencing a Concept from an imported schema (§11.2.1):
 
 ```cdx
 </namespace:ConceptName>
@@ -2197,7 +2197,7 @@ A self-closing marker MUST be spelled as:
 <ConceptName trait=value />
 ```
 
-or, when referencing a Concept from an imported schema (§11.3.1):
+or, when referencing a Concept from an imported schema (§11.2.1):
 
 ```cdx
 <namespace:ConceptName />
@@ -2205,6 +2205,8 @@ or, when referencing a Concept from an imported schema (§11.3.1):
 ```
 
 A self-closing marker represents a Concept instance with no content and no child Concepts.
+
+Whitespace MUST appear immediately before `/>` in a self-closing marker.
 
 A self-closing marker includes zero or more Traits.
 
@@ -2353,7 +2355,7 @@ A backslash not immediately followed by `\`, `<`, or `[` is a literal backslash 
 
 A raw `<` character MUST NOT appear anywhere in content.
 
-A raw `[` character MUST NOT appear as the first non-indentation character of a content line. This preserves schema-less determinism of content-versus-children body mode (see §10.2.1.1).
+A raw `[` character MUST NOT appear as the first non-indentation character of a content line. This preserves schema-less determinism of content-versus-children body mode (see §10.1.1.1).
 
 Codex-conforming tools MUST reject violations of these content escaping rules with a `ParseError` (§14).
 
@@ -2377,7 +2379,7 @@ Indentation normalization is schema-free and MUST be performed before schema-dir
 
 Whitespace mode normalization is schema-directed and MUST be performed during schema-directed processing.
 
-The governing schema declares `whitespaceMode` on each Concept that allows content (see §11.4.2).
+The governing schema declares `whitespaceMode` on each Concept that allows content (see §11.3.2).
 
 For `whitespaceMode=$Preformatted`:
 
@@ -2651,7 +2653,7 @@ The required inputs for schema-directed processing are:
 
 - the Codex document bytes
 - the governing schema
-- imported schemas, if the document or governing schema declares schema imports (see §11.3.1)
+- imported schemas, if the document or governing schema declares schema imports (see §11.2.1)
 - `documentBaseIri` (for instance graph mapping; see §9.7)
 
 Other external inputs—including environment state, configuration, registries, network access, clocks, or randomness—MUST NOT influence processing.
@@ -2868,7 +2870,11 @@ The sort key for an `RdfTriple` is the tuple `(subject, predicate, objectKey)`, 
 `objectKey` MUST be:
 
 - `object` when the object is an IRI, and
-- the pair `(datatypeOrDefault, lexical)` when the object is a literal.
+- the tuple `(datatypeOrDefault, languageOrEmpty, lexical)` when the object is a literal.
+
+`datatypeOrDefault` MUST be: `datatype` if present; otherwise `rdf:langString` if `language` is present; otherwise `xsd:string`.
+
+`languageOrEmpty` MUST be: `language` if present; otherwise the empty string.
 
 If two triples have identical sort keys, the duplicate MUST be removed.
 
@@ -2946,6 +2952,14 @@ For a node shape IRI `S` and an RDF predicate IRI `p` used as a SHACL path (for 
 The document node shape IRI MUST be deterministically derived as:
 
 - `documentNodeShapeIri = schemaIri + "#shape/Document"`
+
+#### 9.6.9 SPARQL Constraint IRIs
+
+Each SHACL-SPARQL constraint node emitted for a `ConstraintDefinition` MUST have a deterministic IRI.
+
+For a target node shape IRI `S` and a `ConstraintDefinition` with `id` value `C`:
+
+- `sparqlConstraintIri(S, C) = S + "/constraint/" + iriHash(C)`
 
 ### 9.7 Codex→RDF Instance Graph Mapping
 
@@ -3221,7 +3235,7 @@ A conforming implementation MUST emit `G₁` in the Codex `RdfGraph` form define
 
 #### 9.8.1 Resolution Table
 
-Each Concept in the document that declares both a `key` trait (§6.3) and an `id` trait (§6.2) contributes one entry to the resolution table, mapping the `key` lookup token to the `id` IRI.
+Each Concept in the document that declares both a `key` trait (§6.3) and an `id` trait (§6.2) contributes one entry to the resolution table. Each entry consists of a `tokenLiteral` (the `key` lookup token value) and a `targetIri` (the `id` IRI value).
 
 The resolution table MUST be constructed solely from explicit `key` and `id` trait declarations. Resolution entries MUST NOT be inferred, synthesized, or imported implicitly.
 
@@ -3403,7 +3417,7 @@ where `p` is the required pattern and `f` is the flags text if present. When `fl
 
 #### 9.9.7 Uniqueness Constraints
 
-Derived validation artifacts MUST support the `UniqueConstraint` constraint (§11.10.5).
+Derived validation artifacts MUST support the `UniqueConstraint` constraint (§11.9.4).
 
 When a uniqueness constraint refers to `t = id`, it MUST refer to the declared identifier as represented by `codex:declaredId`.
 
@@ -3837,10 +3851,12 @@ Where:
 
 When a constraint is expressed using SHACL-SPARQL, the expansion MUST emit:
 
-Let `targetShapeIri` be the node shape IRI the constraint is applied to.
+Let `targetShapeIri` be the node shape IRI the constraint is applied to. Let `C` be the `ConstraintDefinition`'s `id` value.
 
-- `(targetShapeIri, sh:sparql, sparqlConstraintIri)`
-- `(sparqlConstraintIri, sh:select, selectTextLiteral)`
+- `(targetShapeIri, sh:sparql, sparqlConstraintIri(targetShapeIri, C))`
+- `(sparqlConstraintIri(targetShapeIri, C), sh:select, selectTextLiteral)`
+
+`sparqlConstraintIri` MUST be computed according to §9.6.9.
 
 When the source constraint has a `title` or `description`, the expansion MUST emit `sh:message`.
 
@@ -3869,9 +3885,7 @@ The derived `sh:select` text MUST be exactly the validator content.
 
 ## 10. Formatting and Canonicalization
 
-### 10.1 Purpose
-
-### 10.2 Processing Phases
+### 10.1 Processing Phases
 
 Conforming implementations MUST support two pipelines:
 
@@ -3880,7 +3894,7 @@ Conforming implementations MUST support two pipelines:
 
 Formatting and canonicalization MUST be performed in the full pipeline.
 
-#### 10.2.1 Schema-Less Formatting Mode (Required)
+#### 10.1.1 Schema-Less Formatting Mode (Required)
 An implementation MUST provide a schema-less formatting / canonicalization mode that can be run without a governing schema.
 
 A schema-less formatter:
@@ -3888,10 +3902,10 @@ A schema-less formatter:
 - MUST NOT claim that its output is valid under any schema
 - MUST NOT report schema/semantic error classes (e.g., `SchemaError`, `IdentityError`, `ReferenceError`, `ConstraintError`)
 - MUST normalize encoding and line endings as defined by the surface form requirements (§8)
-- MUST apply the canonical form requirement defined in §10.4
+- MUST apply the canonical form requirement defined in §10.3
 - MUST normalize whitespace, blank-line layout, trait layout, and annotation whitespace
 
-##### 10.2.1.1 Schema-less Content Mode Determination
+##### 10.1.1.1 Schema-less Content Mode Determination
 In schema-less formatting and canonicalization mode, the parser MUST determine a Concept instance’s body mode mechanically as follows:
 
 * Let the body lines be the lines between the Concept instance's opening marker and its matching closing marker (or empty for a self-closing marker).
@@ -3910,29 +3924,29 @@ If the body is classified as children mode but contains any non-blank considered
 
 When subsequent schema-based validation determines that the mechanically determined body mode is not authorized for the Concept, validation MUST fail with a `SchemaError` (§14).
 
-#### 10.2.2 Full Validation Pipeline
+#### 10.1.2 Full Validation Pipeline
 To validate a document under a schema, a conforming tool MUST follow this sequence:
 
 1. Decode + newline normalization
-2. Formatting + canonicalization (mandatory) — using the schema-less mode defined in §10.2.1
+2. Formatting + canonicalization (mandatory) — using the schema-less mode defined in §10.1.1
 3. Schema resolution — obtain the governing schema for the document (§12)
 4. Semantic validation — schema rule evaluation (constraints, value types, identity, references)
 
-### 10.3 Parse Errors vs Formatting Errors
-#### 10.3.1 Parse Errors
+### 10.2 Parse Errors vs Formatting Errors
+#### 10.2.1 Parse Errors
 
 During formatting + canonicalization, a failure MUST be classified as `ParseError` (§14) when input cannot be read into the syntactic structure required to produce a parsed document model (AST) as defined by the Codex surface form.
 
-#### 10.3.2 Formatting Errors
+#### 10.2.2 Formatting Errors
 
 During formatting + canonicalization, a failure MUST be classified as `FormattingError` (§14) when input can be structurally read, but cannot be transformed into canonical surface form deterministically.
 
-### 10.4 Canonical Form Requirement
+### 10.3 Canonical Form Requirement
 Every valid Codex document MUST normalize to exactly one canonical textual form.
 
 When canonicalization cannot be performed unambiguously, the document MUST be rejected with a `FormattingError` (§14). Formatting errors MUST NOT be downgraded to warnings.
 
-### 10.5 Canonicalization Rules
+### 10.4 Canonicalization Rules
 Canonicalization is divided into two phases:
 
 **Phase 1 (schema-free)** applies to all documents:
@@ -3946,8 +3960,9 @@ Canonicalization is divided into two phases:
 - canonical Trait layout (1–2 Traits on one line; 3+ Traits on separate lines)
 - canonical placement of self-closing markers
 - canonical inline-annotation whitespace collapse
-- canonical Text Value escaping and formatting (§10.5.2)
-- canonical Value literal whitespace (exactly one space MUST follow each comma separator; all other optional whitespace MUST be removed; mandatory whitespace required by a specific production MUST be preserved)
+- canonical grouping-annotation label whitespace normalization
+- canonical Text Value escaping and formatting (§10.4.2)
+- canonical Value literal formatting (exactly one space MUST follow each comma separator; all other optional whitespace MUST be removed; mandatory whitespace required by a specific production MUST be preserved; case-insensitive components MUST be normalized to their canonical case as defined by each value type in §5)
 - alphabetical ordering of Traits by Trait name
 - preservation of Concept and Content order
 - canonical `RdfTriple` ordering within `RdfGraph` (§9.6.2)
@@ -3956,8 +3971,8 @@ Canonicalization is divided into two phases:
 **Phase 2 (schema-directed)** applies during schema-directed processing:
 
 - content whitespace mode normalization per `whitespaceMode` declaration (§8.8.4)
-- deterministic sorting of children in `$Unordered` collections (§10.5.1)
-- namespace label normalization: the `namespace` trait on each `SchemaImport` MUST be normalized to the imported schema's declared `namespace` value (§11.3.1)
+- deterministic sorting of children in `$Unordered` collections (§10.4.1)
+- namespace label normalization: the `namespace` trait on each `SchemaImport` MUST be normalized to the imported schema's declared `namespace` value (§11.2.1)
 - `SchemaImport` ordering: within a `SchemaImports` block, `SchemaImport` children MUST be sorted alphabetically by their canonical `namespace` value (lexicographic ascending)
 
 Schema-less processing MUST complete Phase 1 only. Schema-directed processing MUST complete both phases.
@@ -3967,7 +3982,7 @@ Canonicalization MUST NOT:
 - reorder Concepts (except children of `$Unordered` collections during Phase 2, and `RdfTriple` children within `RdfGraph` per §9.6.2)
 - invent or remove Concepts, Traits, or Content
 
-#### 10.5.1 Deterministic Ordering for Unordered Collections
+#### 10.4.1 Deterministic Ordering for Unordered Collections
 
 In canonical surface form, children of an `$Unordered` collection MUST be sorted according to the following deterministic algorithm:
 
@@ -3976,7 +3991,7 @@ In canonical surface form, children of an `$Unordered` collection MUST be sorted
 3. If Concept names are equal and neither child has an `id` trait, sort by `key` trait value (lexicographic, ascending) if present.
 4. If still tied, preserve source order.
 
-#### 10.5.2 Canonical Text Value Formatting
+#### 10.4.2 Canonical Text Value Formatting
 Text Values have a single semantic value after whitespace normalization (§5.1). Canonical surface form MUST be chosen deterministically as follows.
 
 Let `t` be the normalized Text Value (after escape interpretation and whitespace normalization).
@@ -3998,7 +4013,7 @@ Canonical backtick blocks are always multi-line: the opening and closing backtic
 
 Line breaks introduced by backtick block wrapping are surface-form only; they are not part of the Text Value.
 
-### 10.6 Annotation Canonicalization
+### 10.5 Annotation Canonicalization
 Annotation canonicalization MUST follow the surface form requirements (§8).
 
 - Inline annotations collapse internal whitespace to single spaces and trim leading/trailing whitespace (§8)
@@ -4007,7 +4022,7 @@ Annotation canonicalization MUST follow the surface form requirements (§8).
 
 When attachment cannot be determined deterministically, canonicalization MUST fail with a `FormattingError` (§14).
 
-### 10.7 Allowed vs Forbidden Changes
+### 10.6 Allowed vs Forbidden Changes
 
 Allowed changes:
 
@@ -4020,11 +4035,11 @@ Allowed changes:
 
 Forbidden changes:
 
-- Reorder Concepts
-- Change Content bytes
+- Reorder Concepts (except children of `$Unordered` collections during Phase 2, and `RdfTriple` children within `RdfGraph` per §9.6.2)
+- Change Content bytes (except content whitespace mode normalization during Phase 2, per §8.8.4)
 - Change any bytes inside `CODE:` or `MARKDOWN:` block annotations
 
-### 10.8 Prohibited Behaviors
+### 10.7 Prohibited Behaviors
 Codex tools MUST NOT:
 
 - silently normalize invalid input
@@ -4033,7 +4048,7 @@ Codex tools MUST NOT:
 - discard or rewrite Content
 - depend on source offsets or editor state
 
-### 10.9 Reporting Requirements
+### 10.8 Reporting Requirements
 
 Formatting error reports MUST include:
 
@@ -4057,7 +4072,7 @@ Schema validation, schema expansion, and derived-artifact generation MUST satisf
 
 ---
 
-### 11.3 Schema
+### 11.2 Schema
 
 A `Schema` Concept defines a governing Codex schema.
 
@@ -4110,7 +4125,7 @@ For `authoringMode=$SimplifiedMode`:
   * `ConstraintDefinitions`
   * `ValueTypeDefinitions`
   * `ValidatorDefinitions`
-  * `SchemaImports` (see §11.3.1)
+  * `SchemaImports` (see §11.2.1)
 
 * A `Schema` MUST NOT contain `RdfGraph`.
 
@@ -4136,7 +4151,7 @@ No other child Concepts are allowed.
 
 ---
 
-### 11.3.1 Schema Imports
+### 11.2.1 Schema Imports
 
 #### `SchemaImports`
 
@@ -4166,7 +4181,7 @@ Within a `SchemaImports` block, `SchemaImport` children MUST be sorted alphabeti
 
 * `namespace` (required; Text Value)
 
-  The namespace label used in qualified names (§4.1.1) to reference Concepts and Traits from this imported schema. The value MUST be a camelCase name (§4.1). In canonical form, this value MUST be normalized to the imported schema's declared `namespace` Trait value (§10.5).
+  The namespace label used in qualified names (§4.1.1) to reference Concepts and Traits from this imported schema. The value MUST be a camelCase name (§4.1). In canonical form, this value MUST be normalized to the imported schema's declared `namespace` Trait value (§10.4).
 
 ##### Semantic Requirements
 
@@ -4194,9 +4209,9 @@ The `SchemaImports` in a data document MUST be consistent with the governing sch
 
 ---
 
-### 11.4 Concept Definitions
+### 11.3 Concept Definitions
 
-#### 11.4.1 `ConceptDefinition`
+#### 11.3.1 `ConceptDefinition`
 
 A `ConceptDefinition` is an Entity.
 
@@ -4225,7 +4240,7 @@ When a child section is omitted, its default behavior applies as defined below.
 
 ---
 
-#### 11.4.2 `ContentRules`
+#### 11.3.2 `ContentRules`
 
 `ContentRules` declares whether instances of the Concept are in content mode or children mode.
 
@@ -4256,7 +4271,7 @@ When `ContentRules` is omitted, `ForbidsContent` applies.
 
 ---
 
-#### 11.4.3 `TraitRules`
+#### 11.3.3 `TraitRules`
 
 `TraitRules` declares which Traits are allowed, required, or forbidden on instances of the Concept.
 
@@ -4310,7 +4325,7 @@ When `TraitRules` is omitted, no Traits are allowed except:
 
 ---
 
-#### 11.4.4 `ChildRules`
+#### 11.3.4 `ChildRules`
 
 `ChildRules` declares which child Concepts are allowed, required, or forbidden beneath instances of the Concept.
 
@@ -4368,7 +4383,7 @@ When `ChildRules` is omitted, no child Concepts are allowed.
 
 ---
 
-#### 11.4.5 `CollectionRules`
+#### 11.3.5 `CollectionRules`
 
 `CollectionRules` declares collection semantics for Concepts whose children form a logical collection.
 
@@ -4410,13 +4425,13 @@ Validation of `$Unordered` collections MUST be order-insensitive.
 
 Semantic comparison of `$Unordered` collections MUST be order-insensitive: two `$Unordered` collections with identical children in different orders MUST be treated as semantically equivalent.
 
-In canonical surface form, children of an `$Unordered` collection MUST be sorted according to the deterministic ordering defined in §10.5.1.
+In canonical surface form, children of an `$Unordered` collection MUST be sorted according to the deterministic ordering defined in §10.4.1.
 
 ---
 
-### 11.5. Trait Definitions
+### 11.4. Trait Definitions
 
-#### 11.5.1 `TraitDefinition`
+#### 11.4.1 `TraitDefinition`
 
 A `TraitDefinition` is an Entity.
 
@@ -4481,7 +4496,7 @@ When a trait's value type is a union containing both scalar and collection types
 
 ---
 
-#### 11.5.2 `AllowedValues`
+#### 11.4.2 `AllowedValues`
 
 Constrains the values a Trait accepts.
 
@@ -4505,11 +4520,11 @@ Exactly one of:
 
 ---
 
-### 11.6 Value Types
+### 11.5 Value Types
 
 Value type checking MUST be deterministic and MUST NOT perform implicit evaluation.
 
-#### 11.6.1 Built-In Value Type Tokens
+#### 11.5.1 Built-In Value Type Tokens
 Schemas are allowed to reference the following built-in value type tokens.
 
 * `$Text`
@@ -4574,7 +4589,7 @@ When a schema constrains a Trait value using a built-in value type token, semant
 
 ---
 
-#### 11.6.2 `ValueTypeDefinition`
+#### 11.5.2 `ValueTypeDefinition`
 
 A `ValueTypeDefinition` is an Entity.
 
@@ -4600,7 +4615,7 @@ A `ValueTypeDefinition` MUST NOT change the surface grammar of its `baseValueTyp
 
 ---
 
-#### 11.6.3 Enumerated Value Sets
+#### 11.5.3 Enumerated Value Sets
 
 Schemas are allowed to define named sets of Enumerated Token Values.
 
@@ -4636,7 +4651,7 @@ Each `value` MUST be unique within its `EnumeratedValueSet`.
 
 ---
 
-#### 11.6.4 Built-In Enumerated Value Sets
+#### 11.5.4 Built-In Enumerated Value Sets
 The following enumerated value sets are defined by the Codex language itself and MUST be recognized by all conforming implementations.
 
 ##### `ConceptKind`
@@ -4671,9 +4686,9 @@ These enumerated sets MUST NOT be redefined by schemas.
 
 ---
 
-### 11.7 Constraint Model
+### 11.6 Constraint Model
 
-#### 11.7.1 `ConstraintDefinitions`
+#### 11.6.1 `ConstraintDefinitions`
 
 ##### Children
 One or more `ConstraintDefinition` children.
@@ -4682,7 +4697,7 @@ The order of `ConstraintDefinition` children MUST be preserved but MUST NOT affe
 
 ---
 
-#### 11.7.2 `ConstraintDefinition`
+#### 11.6.2 `ConstraintDefinition`
 
 A `ConstraintDefinition` is itself an Entity.
 
@@ -4703,7 +4718,7 @@ When either child is missing or appears more than once, schema processing MUST f
 
 ---
 
-#### 11.7.3 `Targets`
+#### 11.6.3 `Targets`
 
 ##### Children
 One or more of:
@@ -4715,7 +4730,7 @@ When `Targets` contains no children, schema processing MUST fail with a `SchemaE
 
 ---
 
-##### 11.7.3.1 `TargetConcept`
+##### 11.6.3.1 `TargetConcept`
 
 ###### Traits
 * `conceptSelector` (required; Concept name)
@@ -4725,7 +4740,7 @@ Otherwise, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
-##### 11.7.3.2 `TargetContext`
+##### 11.6.3.2 `TargetContext`
 
 ###### Traits
 * `contextSelector` (required; Concept name or the literal text `"Document"`)
@@ -4735,14 +4750,14 @@ Otherwise, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
-#### 11.7.4 `Rule`
+#### 11.6.4 `Rule`
 
 ##### Children
 Exactly one child, which MUST be one of:
 
-* a **composition rule** (§11.8)
-* an **atomic constraint** (§11.10)
-* a **path-scoped rule** (§11.9 with quantifier)
+* a **composition rule** (§11.7)
+* an **atomic constraint** (§11.9)
+* a **path-scoped rule** (§11.8 with quantifier)
 
 When `Rule` contains zero or more than one child, schema processing MUST fail with a `SchemaError` (§14).
 
@@ -4750,23 +4765,23 @@ When `Rule` contains zero or more than one child, schema processing MUST fail wi
 
 ---
 
-### 11.8 Rule Algebra
+### 11.7 Rule Algebra
 
 Rule algebra MUST be translatable to a total, deterministic validation form.
 
 ---
 
-#### 11.8.1 General Rules
+#### 11.7.1 General Rules
 
 * Rule algebra nodes MUST NOT carry Traits.
-* Rule algebra nodes MUST contain only other `Rule` nodes as children.
+* `AllOf`, `AnyOf`, and `Not` MUST contain only `Rule` nodes as children.
 * Any rule tree MUST be finite and acyclic.
 
 When a rule algebra structure cannot be translated deterministically, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
-#### 11.8.2 `AllOf`
+#### 11.7.2 `AllOf`
 
 ##### Children
 Two or more `Rule` children.
@@ -4777,7 +4792,7 @@ The rule holds if and only if **every** child rule holds for the same focus node
 
 ---
 
-#### 11.8.3 `AnyOf`
+#### 11.7.3 `AnyOf`
 
 ##### Children
 Two or more `Rule` children.
@@ -4788,7 +4803,7 @@ The rule holds if and only if **one or more** child rules hold for the same focu
 
 ---
 
-#### 11.8.4 `Not`
+#### 11.7.4 `Not`
 
 ##### Children
 Exactly one `Rule` child.
@@ -4799,7 +4814,7 @@ The rule holds if and only if the child rule does **not** hold for the same focu
 
 ---
 
-#### 11.8.5 `ConditionalConstraint`
+#### 11.7.5 `ConditionalConstraint`
 
 ##### Children
 Exactly two children:
@@ -4816,7 +4831,7 @@ The rule holds if and only if:
 
 ---
 
-#### 11.8.6 Determinism Requirement
+#### 11.7.6 Determinism Requirement
 
 Rule algebra evaluation MUST be:
 
@@ -4827,13 +4842,13 @@ When rule algebra composition cannot be evaluated deterministically, schema proc
 
 ---
 
-### 11.9 Paths and Quantifiers
+### 11.8 Paths and Quantifiers
 
 All path and quantifier semantics MUST be compatible with the instance-graph mapping defined in §9.7 and the rule-to-SPARQL translation defined in §9.11.
 
 ---
 
-#### 11.9.1 Paths
+#### 11.8.1 Paths
 
 Each path node MUST declare exactly the traits required for its form.
 
@@ -4882,7 +4897,7 @@ Selects the content text if and only if the focus Concept instance is in content
 
 ---
 
-#### 11.9.2 Quantifiers
+#### 11.8.2 Quantifiers
 
 Quantifiers MUST appear only in rule nodes that explicitly bind a Path to a nested Rule (see §9.5.3).
 
@@ -4918,7 +4933,7 @@ The rule holds if and only if the number of path-selected elements that satisfy 
 
 ---
 
-#### 11.9.3 Determinism and Totality
+#### 11.8.3 Determinism and Totality
 
 * Paths MUST select a well-defined set of elements.
 * Quantifiers MUST evaluate to a single boolean outcome.
@@ -4929,13 +4944,13 @@ Paths and quantifiers MUST NOT be evaluated outside the schema-driven validation
 
 ---
 
-### 11.10 Atomic Constraints
+### 11.9 Atomic Constraints
 
 When an atomic constraint cannot be expressed under the instance-graph mapping (§9.7) and the constraint-to-artifact rules (§9.9–§9.11), schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
-#### 11.10.1 Trait Constraints
+#### 11.9.1 Trait Constraints
 
 ##### `TraitExists`
 
@@ -4999,16 +5014,16 @@ The constraint is vacuously satisfied if either Trait is absent from the focus n
 Produces a SHACL-SPARQL constraint that selects the focus node when the left value exceeds the right value:
 
 ```sparql
-SELECT $this WHERE {
-  $this <traitPredicateIri(leftTrait)> ?left .
-  $this <traitPredicateIri(rightTrait)> ?right .
+SELECT DISTINCT ?this WHERE {
+  ?this <traitPredicateIri(leftTrait)> ?left .
+  ?this <traitPredicateIri(rightTrait)> ?right .
   FILTER(?left > ?right)
 }
 ```
 
 ---
 
-#### 11.10.2 Value Constraints
+#### 11.9.1 Value Constraints
 
 ##### `ValueIsOneOf`
 
@@ -5086,7 +5101,7 @@ If resolution fails, schema processing MUST fail with a `SchemaError` (§14).
 
 ---
 
-#### 11.10.3 Child Constraints
+#### 11.9.2 Child Constraints
 
 ##### `ChildConstraint`
 
@@ -5094,7 +5109,7 @@ If resolution fails, schema processing MUST fail with a `SchemaError` (§14).
 * `type` (required; one of `RequiresChildConcept | AllowsChildConcept | ForbidsChildConcept`)
 * `conceptSelector` (required; Concept name)
 
-Its semantics MUST be equivalent to the corresponding explicit child-rule form defined in §11.4.4.
+Its semantics MUST be equivalent to the corresponding explicit child-rule form defined in §11.3.4.
 
 ---
 
@@ -5110,7 +5125,7 @@ The rule MUST be evaluated for each matching child Concept instance.
 
 ---
 
-#### 11.10.4 Collection Constraints
+#### 11.9.3 Collection Constraints
 
 ##### `CollectionOrdering`
 
@@ -5172,7 +5187,7 @@ The rule MUST be evaluated for each matching collection member.
 
 ---
 
-#### 11.10.5 Uniqueness Constraints
+#### 11.9.4 Uniqueness Constraints
 
 ##### `UniqueConstraint`
 
@@ -5184,7 +5199,7 @@ Uniqueness semantics MUST follow the deterministic scope rules defined in §9.9.
 
 ---
 
-#### 11.10.6 Order Constraints
+#### 11.9.5 Order Constraints
 
 ##### `OrderConstraint`
 
@@ -5203,7 +5218,7 @@ Order constraint semantics apply to `$Ordered` collections only. When an `OrderC
 
 ---
 
-#### 11.10.7 Reference Constraints
+#### 11.9.6 Reference Constraints
 
 ##### `ReferenceConstraint`
 
@@ -5221,7 +5236,7 @@ Reference constraint semantics MUST follow §9.9.9–§9.9.12 exactly.
 
 ---
 
-#### 11.10.8 Identity Constraints
+#### 11.9.7 Identity Constraints
 
 ##### `IdentityConstraint`
 
@@ -5250,7 +5265,7 @@ When `pattern` is not provided for `IdentityConstraint(type=IdentifierForm)`, sc
 
 ---
 
-#### 11.10.9 Context Constraints
+#### 11.9.8 Context Constraints
 
 ##### `ContextConstraint`
 
@@ -5266,7 +5281,7 @@ Context constraint semantics MUST follow §9.9.8.
 
 ---
 
-#### 11.10.10 Content Constraints
+#### 11.9.10 Content Constraints
 
 ##### `ContentConstraint`
 
@@ -5282,7 +5297,7 @@ Content constraint semantics MUST follow the content model defined in §3.4 and 
 
 ---
 
-### 11.11 Complete Constraint Example (Informative)
+### 11.10 Complete Constraint Example (Informative)
 
 This section provides illustrative examples of constraint definitions authored using the schema definition language.
 
@@ -5337,7 +5352,7 @@ Examples in this section are **informative** and do not introduce additional nor
 
 ---
 
-### 11.12 Relationship to External Systems
+### 11.11 Relationship to External Systems
 
 External representations are allowed to be derived from Codex schemas, subject to the following constraints:
 
@@ -5361,7 +5376,7 @@ Codex is a schema-first language.
 
 A Codex document MUST NOT be semantically validated without an explicit governing schema.
 
-Codex permits schema-less formatting and well-formedness checks that do not require a governing schema, but such checks MUST NOT perform semantic interpretation or validation (see §9.2 and §10.2.1).
+Codex permits schema-less formatting and well-formedness checks that do not require a governing schema, but such checks MUST NOT perform semantic interpretation or validation (see §9.2 and §10.1.1).
 
 This section normatively defines how a conforming implementation obtains the governing schema for a document.
 
@@ -5376,15 +5391,17 @@ Its goals are to:
 
 A conforming implementation MUST require explicit provision of a governing schema for semantic validation.
 
-Schema-less formatting and well-formedness checks (§9.2, §10.2.1) do not require a governing schema and MUST NOT be blocked by the absence of one.
+Schema-less formatting and well-formedness checks (§9.2, §10.1.1) do not require a governing schema and MUST NOT be blocked by the absence of one.
 
 For semantic validation, the governing schema is provided directly by the caller as an explicit input:
 
 ```
-validate(documentBytes, governingSchema, importedSchemas) → validatedDocument
+validate(documentBytes, governingSchema, importedSchemas, documentBaseIri) → validatedDocument
 ```
 
-`importedSchemas` is a map from schema IRIs to schema bytes. The document's `SchemaImports` declarations (§11.3.1) bind namespace labels to IRIs in this map. If a document or its governing schema declares no imports, `importedSchemas` is permitted to be empty.
+`importedSchemas` is a map from schema IRIs to schema bytes. The document's `SchemaImports` declarations (§11.2.1) bind namespace labels to IRIs in this map. If a document or its governing schema declares no imports, `importedSchemas` is permitted to be empty.
+
+`documentBaseIri` is the base IRI for instance graph mapping (§9.7). It MUST be an IRI. If `documentBaseIri` is missing, semantic validation MUST fail with a `SchemaError` (§14).
 
 The implementation MUST use the provided schema and MUST NOT attempt to substitute, infer, or override it.
 
@@ -5481,7 +5498,7 @@ If a loaded schema is not valid Codex or is not a valid schema under the bootstr
 
 #### 12.5.4 Imported Schema Unavailable
 
-If a `SchemaImport` (§11.3.1) declares a `reference` IRI that is not present in the `importedSchemas` map:
+If a `SchemaImport` (§11.2.1) declares a `reference` IRI that is not present in the `importedSchemas` map:
 
 * Error class: `SchemaError` (§14)
 * The report MUST indicate which imported schema IRI was unavailable
@@ -5489,7 +5506,7 @@ If a `SchemaImport` (§11.3.1) declares a `reference` IRI that is not present in
 
 #### 12.5.5 Duplicate Namespace Label
 
-If two or more imported schemas (after namespace label normalization per §10.5) produce the same canonical `namespace` value:
+If two or more imported schemas (after namespace label normalization per §10.4) produce the same canonical `namespace` value:
 
 * Error class: `SchemaError` (§14)
 * The report MUST indicate the duplicate namespace label and the conflicting schema IRIs
@@ -5828,7 +5845,7 @@ Examples (illustrative):
 - malformed Traits
 - unterminated Annotation (missing closing `]`)
 - structurally invalid nesting of markers
-- `SchemaImports` on a non-root Concept (§11.3.1)
+- `SchemaImports` on a non-root Concept (§11.2.1)
 
 #### 14.4.2 SurfaceFormError
 
@@ -5988,9 +6005,9 @@ Error wording, formatting, and presentation are tool-defined, but classification
 #### 14.5.1 Error Payload Shape (Recommended)
 
 This specification does not mandate a serialization format (JSON, CBOR, exceptions, etc.).
-However, to ensure cross-tool interoperability and stable automated testing, tools SHOULD expose errors in a structured form with stable fields.
+However, cross-tool interoperability and stable automated testing benefit from structured error payloads with stable fields.
 
-When a tool exposes a structured error payload, it SHOULD include the following fields:
+When a tool exposes a structured error payload, the following fields are recommended:
 
 * `primaryClass` (required): one of the top-level error classes in §14.3.
 * `code` (required): a stable machine identifier for the specific rule violation (for example, `parse.unterminated-annotation` or `schema.value-type-mismatch`).
@@ -6006,10 +6023,10 @@ When a tool exposes a structured error payload, it SHOULD include the following 
 * `ruleRef` (optional): a stable reference identifying the violated rule or constraint.
 * `causes` (optional): a list of nested errors (each with the same shape), ordered from most-direct to least-direct cause.
 
-Tools MAY include additional fields.
+This list does not prohibit additional fields.
 When an error payload includes both a `span` and a `conceptPath`, the `span` MUST identify the precise surface-form location for the same failing construct.
 
-### 14.7 Non-Goals
+### 14.6 Non-Goals
 
 This section does not:
 
@@ -6021,7 +6038,7 @@ This section does not:
 
 It defines what kind of error occurred, not how it is presented.
 
-### 14.8 Summary
+### 14.7 Summary
 
 - every failure has exactly one primary error class
 - error classes are finite and closed
@@ -6066,6 +6083,8 @@ Character classes use the following extensions:
 ---
 
 #### A.1.2 Document Structure
+
+> This grammar is an informative projection of the document-level rules defined in §8 (one root Concept), §8.2 (trailing LF), §8.4 (blank lines), and §8.9 (annotations). In case of discrepancy, those sections are authoritative.
 
 ```ebnf
 (* A Codex document contains exactly one root Concept and MUST end with
@@ -6117,6 +6136,8 @@ Concept
 
 #### A.1.3 Block Concepts
 
+> This grammar is an informative projection of the Concept marker rules defined in §8.5 and the content rules defined in §8.8. In case of discrepancy, those sections are authoritative.
+
 ```ebnf
 (* Block concepts contain either children or content.
 	The parser consults the governing schema (§11) to select the Body production.
@@ -6135,7 +6156,7 @@ ClosingMarkerLine
 	;
 
 OpeningMarker
-	= "<", ConceptNameOrQualified, [ Traits ], ">"
+	= "<", ConceptNameOrQualified, [ Traits ], { WhitespaceChar }, ">"
 	;
 
 ClosingMarker
@@ -6207,19 +6228,23 @@ ContentSafeChar
 
 #### A.1.4 Self-Closing Concepts
 
+> This grammar is an informative projection of the self-closing marker rules defined in §8.5.3. In case of discrepancy, §8.5.3 is authoritative.
+
 ```ebnf
 SelfClosingConcept
 	= SelfClosingMarker
 	;
 
 SelfClosingMarker
-	= "<", ConceptNameOrQualified, [ Traits ], "/>"
+	= "<", ConceptNameOrQualified, [ Traits ], Whitespace, "/>"
 	;
 ```
 
 ---
 
 #### A.1.5 Concept Names
+
+> This grammar is an informative projection of the naming rules defined in §4.1 and §4.1.1. In case of discrepancy, those sections are authoritative.
 
 ```ebnf
 (* Naming rule details beyond basic lexical form (e.g., no runs of uppercase)
@@ -6270,9 +6295,11 @@ Digit
 
 #### A.1.6 Traits
 
+> This grammar is an informative projection of the Trait spelling rules defined in §8.6. In case of discrepancy, §8.6 is authoritative.
+
 ```ebnf
 Traits
-	= WhitespaceNoNewline, Trait, { Whitespace, Trait }
+	= Whitespace, Trait, { Whitespace, Trait }
 	;
 
 Trait
@@ -6332,7 +6359,7 @@ UrlValue
 
 #### A.1.8 Text Values
 
-This grammar is an informative projection of the quoted text spelling rules defined in §5.1. In case of discrepancy, §5.1 is authoritative.
+> This grammar is an informative projection of the quoted text spelling rules defined in §5.1. In case of discrepancy, §5.1 is authoritative.
 
 ```ebnf
 TextValue
@@ -6426,6 +6453,8 @@ BooleanValue
 ---
 
 #### A.1.12 Numeric Values
+
+> This grammar is an informative projection of the numeric value spelling rules defined in §5.4. In case of discrepancy, §5.4 is authoritative.
 
 ```ebnf
 NumericValue
@@ -6527,7 +6556,7 @@ TypeUnion
 
 #### A.1.14 Temporal Values
 
-This grammar is an informative projection of the spelling rules defined in §5.6.2. In case of discrepancy, §5.6.2 is authoritative.
+> This grammar is an informative projection of the spelling rules defined in §5.6.2. In case of discrepancy, §5.6.2 is authoritative.
 
 ```ebnf
 TemporalValue
@@ -6647,7 +6676,7 @@ FractionalSeconds
 
 #### A.1.15 Color Values
 
-This grammar is an informative projection of the color function argument spelling rules and semantic domains defined in §5.7.4. In case of discrepancy, §5.7.4 is authoritative.
+> This grammar is an informative projection of the color function argument spelling rules and semantic domains defined in §5.7.4. In case of discrepancy, §5.7.4 is authoritative.
 
 ```ebnf
 (* Color values are accepted as declarative spellings; tools MUST NOT normalize,
@@ -7008,6 +7037,8 @@ RelativeColorArguments
 
 #### A.1.16 UUID Values
 
+> This grammar is an informative projection of the UUID spelling rules defined in §5.8. In case of discrepancy, §5.8 is authoritative.
+
 ```ebnf
 (* UUID format: 8-4-4-4-12 hex digits (§5.8).
 	Hex digits are case-insensitive for parsing; lowercase is canonical. *)
@@ -7027,6 +7058,8 @@ HexOctet
 ---
 
 #### A.1.17 IRI Reference Values
+
+> This grammar is an informative projection of the IRI reference spelling rules defined in §5.9. In case of discrepancy, §5.9 is authoritative.
 
 ```ebnf
 (* IRI references are unquoted tokens containing a ':' (§5.9).
@@ -7055,6 +7088,8 @@ IriTokenChar
 ---
 
 #### A.1.18 Lookup Token Values
+
+> This grammar is an informative projection of the Lookup Token spelling rules defined in §5.10. In case of discrepancy, §5.10 is authoritative.
 
 ```ebnf
 (* Lookup tokens reference document-scoped keys (§5.10). *)
@@ -7215,6 +7250,8 @@ OrderedNumericValue
 
 #### A.1.25 Annotations
 
+> This grammar is an informative projection of the annotation rules defined in §8.9. In case of discrepancy, §8.9 is authoritative.
+
 ```ebnf
 (* Codex defines two surface forms for annotations (§8.9):
 	- Inline: '[' ... ']' on a single line
@@ -7235,6 +7272,10 @@ AnnotationBlock
 	  Indentation, "]", Newline
 	;
 
+(* A line consisting solely of Indentation + "]" + Newline terminates the
+	block annotation; such a line MUST NOT be consumed as an AnnotationBlockLine.
+	In EBNF this constraint is not directly expressible; implementations must
+	check for the closing "]" before trying AnnotationBlockLine. *)
 AnnotationBlockLine
 	= Indentation, { AnnotationBlockChar }, Newline
 	;
@@ -7264,6 +7305,8 @@ UnescapedAnnotationBlockChar
 ---
 
 #### A.1.26 Whitespace and Structural Elements
+
+> This grammar is an informative projection of the whitespace and structural rules defined in §8.2 (line endings), §8.3 (indentation), and §8.4 (blank lines). In case of discrepancy, those sections are authoritative.
 
 ```ebnf
 (* Indentation uses tabs only; spaces in indentation are errors (§8.3). *)
@@ -7316,11 +7359,8 @@ The following character classes are used but not fully enumerated:
 ---
 
 #### A.1.28 Value Termination and Disambiguation
-```ebnf
-(* This section is an informative projection of the normative rules
-	defined in §8.7 (Value termination) and §8.7.1 (Value type disambiguation).
-	In case of discrepancy, §8.7 and §8.7.1 are authoritative. *)
-```
+
+> This grammar is an informative projection of the Value termination and disambiguation rules defined in §8.7 and §8.7.1. In case of discrepancy, those sections are authoritative.
 ### A.2 PEG (Informative)
 
 The PEG grammar is informative. It provides an implementation-ready, unambiguous grammar.
@@ -7349,6 +7389,8 @@ This grammar uses standard PEG notation:
 
 #### A.2.2 Document Structure
 
+> This grammar is an informative projection of the document-level rules defined in §8 (one root Concept), §8.2 (trailing LF), §8.4 (blank lines), and §8.9 (annotations). In case of discrepancy, those sections are authoritative.
+
 ```peg
 # A Codex document contains exactly one root Concept.
 # Surface-form rules constrain root count, blank-line placement, and annotation kinds.
@@ -7374,6 +7416,8 @@ Concept <- BlockConcept / SelfClosingConcept
 
 #### A.2.3 Block Concepts
 
+> This grammar is an informative projection of the Concept marker rules defined in §8.5 and the content rules defined in §8.8. In case of discrepancy, those sections are authoritative.
+
 ```peg
 # Block concepts contain either children or content.
 # The parser consults the governing schema (ContentRules) to decide which Body to parse.
@@ -7384,7 +7428,7 @@ BlockConcept <- OpeningMarkerLine Body ClosingMarkerLine
 OpeningMarkerLine <- Indentation OpeningMarker Newline
 ClosingMarkerLine <- Indentation ClosingMarker Newline
 
-OpeningMarker <- '<' ConceptNameOrQualified Traits? '>'
+OpeningMarker <- '<' ConceptNameOrQualified Traits? WhitespaceChar* '>'
 ClosingMarker <- '</' ConceptNameOrQualified '>'
 
 # Body is selected by schema lookup on ConceptName (§11):
@@ -7415,15 +7459,19 @@ ContentSafeChar <- !Newline !'<' .
 
 #### A.2.4 Self-Closing Concepts
 
+> This grammar is an informative projection of the self-closing marker rules defined in §8.5.3. In case of discrepancy, §8.5.3 is authoritative.
+
 ```peg
 SelfClosingConcept <- SelfClosingMarker
 
-SelfClosingMarker <- '<' ConceptNameOrQualified Traits? '/>'
+SelfClosingMarker <- '<' ConceptNameOrQualified Traits? Whitespace '/>'
 ```
 
 ---
 
 #### A.2.5 Concept Names
+
+> This grammar is an informative projection of the naming rules defined in §4.1 and §4.1.1. In case of discrepancy, those sections are authoritative.
 
 ```peg
 ConceptName <- UppercaseLetter (Letter / Digit)*
@@ -7447,12 +7495,14 @@ Digit <- [0-9]
 
 #### A.2.6 Traits
 
+> This grammar is an informative projection of the Trait spelling rules defined in §8.6. In case of discrepancy, §8.6 is authoritative.
+
 ```peg
 # Traits are whitespace-separated tokens in the opening marker.
 # Newline is permitted in Whitespace, enabling multi-line trait layout;
 # formatting rules define canonical layout.
 
-Traits <- WhitespaceNoNewline Trait (Whitespace Trait)*
+Traits <- Whitespace Trait (Whitespace Trait)*
 
 Trait <- TraitName '=' Value
 
@@ -7500,7 +7550,7 @@ UrlValue <- 'url' '(' WhitespaceChar* TextValue WhitespaceChar* (',' WhitespaceC
 
 #### A.2.8 Text Values
 
-This grammar is an informative projection of the quoted text spelling rules defined in §5.1. In case of discrepancy, §5.1 is authoritative.
+> This grammar is an informative projection of the quoted text spelling rules defined in §5.1. In case of discrepancy, §5.1 is authoritative.
 
 ```peg
 TextValue <- '"' TextCharacter* '"'
@@ -7551,6 +7601,8 @@ BooleanValue <- 'true' / 'false'
 
 #### A.2.12 Numeric Values
 
+> This grammar is an informative projection of the numeric value spelling rules defined in §5.4. In case of discrepancy, §5.4 is authoritative.
+
 ```peg
 NumericValue <- ComplexNumber
              / ImaginaryNumber
@@ -7599,6 +7651,8 @@ TypeUnion <- '[' EnumeratedToken (',' ' ' EnumeratedToken)* ']'
 
 #### A.2.14 Lookup Tokens
 
+> This grammar is an informative projection of the Lookup Token spelling rules defined in §5.10. In case of discrepancy, §5.10 is authoritative.
+
 ```peg
 LookupToken <- '~' LowercaseLetter (Letter / Digit)*
 ```
@@ -7607,7 +7661,7 @@ LookupToken <- '~' LowercaseLetter (Letter / Digit)*
 
 #### A.2.15 Temporal Values
 
-This grammar is an informative projection of the spelling rules defined in §5.6.2. In case of discrepancy, §5.6.2 is authoritative.
+> This grammar is an informative projection of the spelling rules defined in §5.6.2. In case of discrepancy, §5.6.2 is authoritative.
 
 ```peg
 TemporalValue <- '{' TemporalBody '}'
@@ -7726,6 +7780,8 @@ OrderedNumericValue <- PrecisionNumber / ExponentialNumber / Fraction / DecimalN
 
 #### A.2.22 UUID Values
 
+> This grammar is an informative projection of the UUID spelling rules defined in §5.8. In case of discrepancy, §5.8 is authoritative.
+
 ```peg
 UuidValue <- HexOctet HexOctet HexOctet HexOctet '-' HexOctet HexOctet '-' HexOctet HexOctet '-' HexOctet HexOctet '-' HexOctet HexOctet HexOctet HexOctet HexOctet HexOctet
 HexOctet <- HexDigit HexDigit
@@ -7735,7 +7791,7 @@ HexOctet <- HexDigit HexDigit
 
 #### A.2.23 Color Values
 
-This grammar is an informative projection of the color function argument spelling rules and semantic domains defined in §5.7.4. In case of discrepancy, §5.7.4 is authoritative.
+> This grammar is an informative projection of the color function argument spelling rules and semantic domains defined in §5.7.4. In case of discrepancy, §5.7.4 is authoritative.
 
 ```peg
 # Color spellings are accepted as declarative literals; semantic validity is checked
@@ -7844,6 +7900,8 @@ RelativeColorSpaceColorFunction <- 'color' '(' ColorWhitespaceOptional 'from' Co
 
 #### A.2.24 IRI References
 
+> This grammar is an informative projection of the IRI reference spelling rules defined in §5.9. In case of discrepancy, §5.9 is authoritative.
+
 ```peg
 # IRI references are fallback unquoted values that contain ':'.
 # Exact RFC 3987 profiling is enforced by surface-form validation, not this PEG.
@@ -7858,6 +7916,8 @@ IriTokenChar <- !ValueTerminator .
 
 #### A.2.25 Annotations
 
+> This grammar is an informative projection of the annotation rules defined in §8.9. In case of discrepancy, §8.9 is authoritative.
+
 ```peg
 Annotation <- AnnotationLine / AnnotationBlock
 
@@ -7865,7 +7925,7 @@ AnnotationLine <- Indentation '[' AnnotationChar* ']' Newline
 
 AnnotationBlock <- Indentation '[' Newline AnnotationBlockLine* Indentation ']' Newline
 
-AnnotationBlockLine <- Indentation AnnotationBlockChar* Newline
+AnnotationBlockLine <- !(Indentation ']' Newline) Indentation AnnotationBlockChar* Newline
 
 AnnotationChar <- AnnotationEscape / UnescapedAnnotationChar
 UnescapedAnnotationChar <- !(']' / '\n') .
@@ -7878,6 +7938,8 @@ UnescapedAnnotationBlockChar <- !'\n' .
 ---
 
 #### A.2.26 Whitespace and Structural Elements
+
+> This grammar is an informative projection of the whitespace and structural rules defined in §8.2 (line endings), §8.3 (indentation), and §8.4 (blank lines). In case of discrepancy, those sections are authoritative.
 
 ```peg
 Newline <- '\n'
@@ -7893,7 +7955,7 @@ BlankLine <- Newline
 Indentation <- '\t'*
 
 # Conservative terminators for unquoted tokens in markers:
-ValueTerminator <- [ \t\n] / '>'
+ValueTerminator <- [ \t\n] / '/>' / '>'
 ```
 
 ---
