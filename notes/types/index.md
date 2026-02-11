@@ -508,9 +508,8 @@ Evaluators return `Invalid(...)` rather than throwing exceptions.
 
 | Operator | Signature | Description |
 |----------|-----------|-------------|
-| `IsFinite` | `(AnyNumber) → Boolean` | Not infinite or NaN |
+| `IsFinite` | `(AnyNumber) → Boolean` | Not infinite |
 | `IsInfinite` | `(AnyNumber) → Boolean` | Positive or negative infinity |
-| `IsNaN` | `(AnyNumber) → Boolean` | Not a number |
 | `IsPositive` | `(AnyRealNumber) → Boolean` | Greater than zero |
 | `IsNegative` | `(AnyRealNumber) → Boolean` | Less than zero |
 | `IsZero` | `(AnyNumber) → Boolean` | Equal to zero |
@@ -1594,9 +1593,9 @@ Ranges are declarative endpoints; they do not imply enumeration of intermediate 
 All operators return `Validation<T>`:
 
 - Domain violations → `Invalid([TypeMismatch, ...])`
-- Division by zero → `Valid(Infinity)` or `Valid(-Infinity)` per operand sign
-- `0 / 0` → `Valid(Infinity)` (not NaN, per Codex §5.4)
-- `sqrt(-x)` where `x > 0` → `Valid(Infinity)` (not NaN)
+- Division by zero (nonzero dividend) → `Valid(PositiveInfinity)` or `Valid(NegativeInfinity)` per operand sign
+- `0 / 0` → `Invalid([Divide::INDETERMINATE_FORM])`
+- `sqrt(-x)` where `x > 0` → `Invalid([SquareRoot::DOMAIN_ERROR])`
 - Empty collection access → `Valid(Absent)`
 - Index out of bounds → `Valid(Absent)`
 
