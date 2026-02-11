@@ -57,9 +57,9 @@ Unless explicitly stated otherwise:
 - Text labeled **Informative** is explanatory and does not define requirements.
 - Examples are illustrative and non-normative.
 
-All statements that do not use **MUST** or **MUST NOT** are informative unless they appear in a normative section and define required behavior through other unambiguous language.
+All statements that do not use **MUST** or **MUST NOT** are informative.
 
-A conforming implementation satisfies every normative requirement in this specification. Given identical inputs, all conforming implementations MUST produce identical outputs.
+A conforming implementation satisfies every normative requirement in this specification.
 
 #### 1.3.1 Consistency Guarantee
 
@@ -89,7 +89,7 @@ Structural ordering carries no semantic meaning to Codex itself. Trait order in 
 
 ### 2.2 Determinism and Explainability
 
-Given the same inputs, a conforming implementation MUST produce the same results.
+Given the same inputs, all conforming implementations MUST produce identical results.
 
 Required inputs are:
 
@@ -125,7 +125,7 @@ Codex enforces separation between:
 Accordingly:
 
 - Parsing MUST determine only the syntactic structure of the document.
-- Formatting and canonicalization MUST be mechanical and MUST NOT perform schema evaluation.
+- Formatting and canonicalization MUST be mechanical and MUST NOT perform schema validation.
 - Semantic validation MUST evaluate schema rules (including content-mode interpretation, constraints, value types, identity, and references) and MUST NOT be performed implicitly during parsing.
 
 ### 2.4 Target Agnosticism
@@ -199,7 +199,7 @@ A Trait instance MUST NOT have independent identity.
 
 A Concept instance MUST NOT declare two or more Traits with the same Trait name. A violation MUST be rejected with a `SurfaceFormError` (§14).
 
-Trait meaning and permissibility MUST be defined by the governing schema.
+Trait meaning and permissibility MUST be defined by the governing schema, except for language-level traits whose meaning is defined by this specification (§6, §7).
 
 ### 3.3 Value
 
@@ -297,7 +297,7 @@ The two qualified name forms are:
 * **Qualified Concept name**: `namespacePrefix:ConceptName` — a namespace prefix followed by `:` followed by a PascalCase Concept name.
 * **Qualified Trait name**: `namespacePrefix:traitName` — a namespace prefix followed by `:` followed by a camelCase Trait name.
 
-The namespace prefix, the colon, and the local name MUST each satisfy the naming rules of §4.1 and §4.2 independently.
+The namespace prefix and the local name MUST each satisfy the naming rules of §4.1 and §4.2 independently.
 
 Qualified names MUST only appear in contexts where schema imports are in effect (§11.3.1). The namespace prefix MUST resolve to an imported schema via the document's `SchemaImports` declarations.
 
@@ -343,14 +343,14 @@ Hexadecimal digits in escape sequences are case-insensitive for parsing. A Unico
 
 After interpreting escape sequences, the resulting character sequence MUST be transformed into the resulting Text Value by applying the following whitespace normalization:
 
-- Each maximal run of whitespace characters (spaces, tabs, and U+000A LINE FEED) MUST be replaced with a single U+0020 SPACE.
+- Each maximal run of characters with the Unicode `White_Space` property (as defined by Unicode 16.0.0) MUST be replaced with a single U+0020 SPACE.
 - Leading and trailing U+0020 SPACE MUST be removed.
 
 This normalization applies to all Text Value spellings (quoted text and backtick text). The resulting Text Value MUST be single-line.
 
 ### 5.2 Backtick Text
 
-A Backtick Text is a surface-form spelling of a Text Value.
+A Backtick Text is a surface-form spelling of a Text Value, delimited by backtick characters (`` ` ``).
 
 Backtick text MUST allow authors to write Text Values that span multiple source lines.
 
@@ -369,60 +369,102 @@ No other spellings are permitted.
 
 ### 5.4 Numeric Values
 
-Codex performs no arithmetic and no numeric normalization. Numeric spellings MUST be preserved exactly. Explicit `+` signs are not permitted; absence of a sign indicates a positive value.
+Each type defined in §5.4.1–§5.4.9 is an independent standalone value type, determined by lexical form at parse time during well-formedness checking (§2.5). No schema is required for type determination. `$Number` (§11.6) is a union type token that accepts any of these types. It is not a parent type.
 
-Integer components in Numeric Value spellings MUST NOT contain leading zeros, except that the single digit `0` is permitted. A sign character (if present) is not part of the integer component.
+When the surface spelling could match multiple type grammars, the type MUST be the first match in this order: ComplexNumber, ImaginaryNumber, PrecisionNumber, ExponentialNumber, Fraction, PositiveInfinity, NegativeInfinity, DecimalNumber, Integer.
 
-This requirement applies to:
+Codex performs no arithmetic and no numeric normalization. Spellings MUST be preserved exactly. Value-level `+` signs MUST NOT appear; absence of a sign indicates a positive value. Exponent signs in ExponentialNumber (§5.4.3) and complex-number signs in ComplexNumber (§5.4.9) are not value-level signs.
 
-- integer Numeric Values
-- the integer component of Decimal Numbers
-- the exponent digit sequence of Scientific Numbers
-- the explicit precision suffix digit sequence (if present)
-- fraction denominators
+Integer digit sequences MUST NOT have leading zeros, except that the single digit `0` is permitted. A sign character (if present) is not part of the integer component. This applies to: Integer values, the integer part of DecimalNumber, the exponent digits of ExponentialNumber, the precision suffix digits of PrecisionNumber, and Fraction denominators.
 
-In the Surface Form, Numeric Values MUST be spelled using the numeric literal grammar defined by this specification.
+NaN MUST NOT appear.
 
-Numeric Values MUST NOT include NaN. The literal spellings `Infinity` and `-Infinity` are permitted; `+Infinity` is not permitted. When compiled to XSD, `Infinity` MUST be translated to `INF` and `-Infinity` MUST be translated to `-INF`.
+When mapped to XSD datatypes for the RDF canonical representation (§9), `Infinity` MUST be translated to `INF` and `-Infinity` MUST be translated to `-INF`.
 
-When classifying a Numeric Value for schema validation purposes (see §11.6), tools MUST distinguish the following cases based on surface spelling:
+#### 5.4.1 Integer
 
-- `PositiveInfinity`: the literal spelling `Infinity`
-- `NegativeInfinity`: the literal spelling `-Infinity`
-- `Infinity`: either `PositiveInfinity` or `NegativeInfinity`
+An Integer value represents a whole number.
 
-When classifying an Integer for schema validation purposes (see §11.6), tools MUST distinguish the following cases based on surface spelling:
+The literal `0`, or an optional `-` sign followed by a non-zero ASCII digit (`1`–`9`) followed by zero or more ASCII digits (`0`–`9`).
 
-- `Zero`: the literal spelling `0`
-- `PositiveInteger`: an Integer with no `-` sign whose digit sequence is not `0`
-- `NegativeInteger`: an Integer with a `-` sign (whose digit sequence is not `0`)
-- `NonNegativeInteger`: `Zero` or `PositiveInteger`
-- `NonPositiveInteger`: `Zero` or `NegativeInteger`
+The spelling `-0` MUST NOT appear. A conforming implementation MUST reject it as a `SurfaceFormError` (§14).
 
-The literal spelling `-0` MUST NOT appear as an integer Numeric Value.
+Integer constraint tokens for schema validation (§11.6): `$Zero` (spelling `0`), `$PositiveInteger` (no `-`, digits not `0`), `$NegativeInteger` (`-` present, digits not `0`), `$NonNegativeInteger` (`$Zero` or `$PositiveInteger`), `$NonPositiveInteger` (`$Zero` or `$NegativeInteger`). These are schema-level constraint tokens, not separate types.
 
-Codex-conforming tools MUST reject the integer spelling `-0` as a `SurfaceFormError` (§14).
+#### 5.4.2 DecimalNumber
 
-These integer-only classifiers do not apply to non-integer Numeric Value spellings. For example, the DecimalNumber spelling `-0.0` remains permitted.
+A DecimalNumber value represents a number with a decimal point.
 
-The meaning of a Numeric Value beyond its literal spelling MUST be defined by the governing schema or consuming system.
+An optional `-` sign, followed by an integer digit sequence (satisfying the no-leading-zeros rule), followed by a `.` (U+002E), followed by one or more ASCII digits (`0`–`9`).
 
-#### 5.4.1 Precision-Significant Numbers
+`-0.0` is permitted. The Integer `-0` prohibition does not apply to DecimalNumber. Trailing zeros after the decimal point are significant (spelling is preserved).
 
-A precision-significant number is a Numeric Value spelled with a `p` suffix.
+#### 5.4.3 ExponentialNumber
 
-The declared precision (a count of decimal places) MUST be determined by one of the following mechanisms:
+An ExponentialNumber value represents a number in scientific notation.
 
-- Inferred precision: the count of decimal places in the literal spelling, including trailing zeros. A literal with no decimal point has 0 decimal places.
-- Explicit precision: a non-negative integer following the `p` suffix, which overrides inferred precision.
+An Integer or DecimalNumber base, followed by `e` or `E`, followed by an optional sign (`+` or `-`), followed by an integer digit sequence (satisfying the no-leading-zeros rule).
+
+The `+` or `-` after `e`/`E` is the exponent sign, not a value-level sign. The value-level `+` prohibition does not apply here. Case of `e`/`E` is preserved (spelling preservation).
+
+#### 5.4.4 PrecisionNumber
+
+A PrecisionNumber value represents a number with declared measurement precision.
+
+A DecimalNumber followed by `p`, optionally followed by an integer digit sequence (satisfying the no-leading-zeros rule).
+
+Declared precision is a count of decimal places, determined by:
+
+- Inferred: the count of digits after the decimal point in the DecimalNumber base, including trailing zeros.
+- Explicit: the integer after `p`, which overrides inferred precision.
 
 Consuming systems MUST preserve the declared precision.
+
+#### 5.4.5 Fraction
+
+A Fraction value represents a rational number as a numerator/denominator pair.
+
+An Integer (numerator) followed by `/` (U+002F) followed by an integer digit sequence (denominator, satisfying the no-leading-zeros rule).
+
+The denominator MUST NOT be `0`. A conforming implementation MUST reject a zero denominator as a `SurfaceFormError` (§14).
+
+Fractions MUST NOT be reduced or normalized. The spelling is preserved exactly.
+
+#### 5.4.6 PositiveInfinity
+
+A PositiveInfinity value represents positive infinity.
+
+The literal spelling `Infinity`.
+
+#### 5.4.7 NegativeInfinity
+
+A NegativeInfinity value represents negative infinity.
+
+The literal spelling `-Infinity`.
+
+`+Infinity` MUST NOT appear. `$Infinity` (§11.6) is a union type token accepting either PositiveInfinity or NegativeInfinity. It is not a parent type.
+
+#### 5.4.8 ImaginaryNumber
+
+An ImaginaryNumber value represents a pure imaginary number.
+
+An Integer or DecimalNumber followed immediately by `i` (U+0069).
+
+#### 5.4.9 ComplexNumber
+
+A ComplexNumber value represents a complex number with real and imaginary parts.
+
+An Integer or DecimalNumber (real part), followed by `+` or `-`, followed by an Integer or DecimalNumber (imaginary coefficient), followed immediately by `i` (U+0069).
+
+The `+` or `-` between the real and imaginary parts is the complex-number sign, not a value-level sign. The value-level `+` prohibition does not apply here.
+
+The meaning of any value of these types beyond its literal spelling MUST be defined by the governing schema or consuming system.
 
 ### 5.5 Enumerated Token Values
 
 An Enumerated Token Value is a Value drawn from a schema-defined closed set.
 
-In the Surface Form, Enumerated Token Values MUST be spelled with a leading `$` sigil followed by a token name. The token name MUST use PascalCase.
+In the Surface Form, Enumerated Token Values MUST be spelled with a leading `$` sigil followed by a token name. The token name MUST use PascalCase. An Enumerated Token Value spelling may include type parameters as defined in §5.18.
 
 Enumerated Token Values MUST NOT be treated as Text Values.
 
@@ -831,7 +873,7 @@ If alpha is omitted, `alpha = 1`.
 
 **Hue**
 
-Where a hue component is permitted (in `hsl(...)`, `hwb(...)`, `lch(...)`, and `oklch(...)`), hue is an angle in degrees. Hue values MUST be finite and MUST satisfy `0 <= h < 360`. See §5.7.3 for the general prohibition on clamping, normalization, hue wrapping, and gamut mapping.
+Where a hue component is permitted (in `hsl(...)`, `hwb(...)`, `lch(...)`, and `oklch(...)`), hue is a bare numeric angle in degrees. A hue component MUST NOT be spelled as a percentage. Hue values MUST be finite and MUST satisfy `0 <= h < 360`. See §5.7.3 for the general prohibition on clamping, normalization, hue wrapping, and gamut mapping.
 
 **Semantic domains by built-in ValueType**
 
@@ -898,7 +940,7 @@ When a schema expects:
 	- When a schema expects `$Color` and the spelling is `color-mix(...)`, tools MUST additionally evaluate the mix deterministically as specified by §5.7.7.
 
 
-- `$ColorSpaceColorFunctiontion`: tools MUST accept any function-based Color Value spelling and compile the corresponding semantic function-domain value (including `rgb(...)`, `hsl(...)`, `hwb(...)`, `lab(...)`, `lch(...)`, `oklab(...)`, `oklch(...)`, `color(...)`, `color-mix(...)`, relative-color forms, and `device-cmyk(...)`).
+- `$ColorSpaceColorFunction`: tools MUST accept any function-based Color Value spelling and compile the corresponding semantic function-domain value (including `rgb(...)`, `hsl(...)`, `hwb(...)`, `lab(...)`, `lch(...)`, `oklab(...)`, `oklch(...)`, `color(...)`, `color-mix(...)`, relative-color forms, and `device-cmyk(...)`).
 	- If the spelling is a relative color form, tools MUST interpret `from <color>` deterministically as specified by §5.7.8.
 	- If the spelling is `color-mix(...)`, tools MUST interpret the stop list deterministically as specified by §5.7.7.
 
@@ -1290,7 +1332,7 @@ Relative channel tokens use:
 
 #### 5.7.6 Semantic Interpretation of `color(...)`
 
-When a schema expects a `color(...)` spelling as `$Color` or `$ColorSpaceColorFunctiontion`, tools MUST interpret the components and alpha as follows.
+When a schema expects a `color(...)` spelling as `$Color` or `$ColorSpaceColorFunction`, tools MUST interpret the components and alpha as follows.
 
 For `color(S c1 c2 c3 / alpha?)` where `S` is an RGB `ColorSpace` (`srgb`, `srgb-linear`, `display-p3`, `a98-rgb`, `prophoto-rgb`, `rec2020`):
 
@@ -1340,7 +1382,7 @@ When a schema expects `$Color` and the Trait value is `color-mix(in S, stop1, st
 
 #### 5.7.8 Deterministic Semantic Evaluation of Relative Colors (`from <color>`)
 
-When a schema expects `$Color` or `$ColorSpaceColorFunctiontion` and the Trait value is a relative color form, tools MUST evaluate `from <color>` deterministically as follows.
+When a schema expects `$Color` or `$ColorSpaceColorFunction` and the Trait value is a relative color form, tools MUST evaluate `from <color>` deterministically as follows.
 
 Common requirements:
 
@@ -1558,7 +1600,7 @@ In the Surface Form, a map key MUST be one of:
 - an unquoted identifier key
 - a Text Value
 - a Character Value
-- an integer Numeric Value
+- an Integer value
 - an Enumerated Token Value
 - an IRI Reference Value
 
@@ -1633,7 +1675,9 @@ A type argument MUST be one of:
 
 A type union is a bracketed, comma-separated list of value type tokens. A value conforms to a type union if it conforms to any member type.
 
-Type arguments MUST NOT contain whitespace.
+When a parameterized type has multiple type arguments, the arguments MUST be separated by a comma followed by exactly one space (`, `). Within a type union, members MUST be separated by a comma followed by exactly one space (`, `).
+
+Type arguments MUST NOT contain whitespace. No whitespace is permitted immediately after `<`, immediately before `>`, immediately after `[`, or immediately before `]`.
 
 #### 5.18.3 Unparameterized Collection Types
 
@@ -1690,7 +1734,7 @@ A Host Name Value represents a DNS hostname in **ASCII form**.
 
 Host Name Values are defined to avoid reliance on external internationalization profiles. Implementations MUST treat Host Name Values as already being in ASCII (for example, A-label form for internationalized names).
 
-In the Surface Form, Host Name Values MUST be spelled as the keyword `host` followed by a parenthesized Text Value:
+In the Surface Form, Host Name Values MUST be spelled as the keyword `host` followed by a parenthesized Text Value. Optional whitespace is permitted after `(` and before `)`:
 
 - `host("<hostname>")`
 
@@ -1729,7 +1773,7 @@ A Host Name Value MUST NOT be treated as a Text Value.
 
 An Email Address Value represents an email address with a Unicode local part and an ASCII domain.
 
-In the Surface Form, Email Address Values MUST be spelled as the keyword `email` followed by a parenthesized Text Value:
+In the Surface Form, Email Address Values MUST be spelled as the keyword `email` followed by a parenthesized Text Value. Optional whitespace is permitted after `(` and before `)`:
 
 - `email("<address>")`
 
@@ -1778,7 +1822,7 @@ In the Surface Form, URL Values MUST be spelled using one of the following two f
 
 The keyword `url` MUST be spelled using ASCII lowercase letters.
 
-Both arguments MUST be Text Values.
+Both arguments MUST be Text Values. Optional whitespace is permitted after `(`, before `)`, and around the comma in the two-argument form.
 
 For all Unicode character classifications referenced by this section (whitespace, control, bidirectional control, and private-use), tools MUST use the Unicode 16.0.0 character property tables.
 
@@ -2249,7 +2293,29 @@ While scanning for Value termination, Codex-conforming tools MUST respect balanc
 
 Except where permitted by a Value spelling (for example, within text and character literals), leading and trailing whitespace MUST NOT be treated as part of a Value.
 
-#### 8.7.1 Multiline Value Literals
+#### 8.7.1 Value Type Disambiguation
+
+When a maximal Value token (recognized under the termination rules above) could match the spelling rules of more than one Value type, tools MUST resolve the type by deterministic precedence. The Value type MUST be the first match in the following order:
+
+1. Delimited values: Text Value (`"..."`, `'...'`), Character Value, Backtick Text, Host Name Value (`host(...)`), Email Address Value (`email(...)`), URL Value (`url(...)`)
+2. Boolean Value (`true` or `false`)
+3. Enumerated Token Value (`$...`)
+4. Lookup Token Value (`~...`)
+5. Temporal Value (`{...}`)
+6. Set Value (`set[...]`)
+7. Map Value (`map[...]`)
+8. Record Value (`record[...]`)
+9. List Value (`[...]`)
+10. Tuple Value (`(...)`)
+11. Color Value (all permitted color literal spellings, including function-based and named colors)
+12. UUID Value (8-4-4-4-12 hexadecimal pattern)
+13. Range Value (contains `..` with valid endpoints)
+14. Numeric Value (ComplexNumber, ImaginaryNumber, PrecisionNumber, ExponentialNumber, Fraction, PositiveInfinity, NegativeInfinity, DecimalNumber, Integer per §5.4)
+15. IRI Reference Value (fallback: token contains `:` and matches the IRI Reference spelling per §5.9)
+
+If a token matches multiple Value type spellings at the same precedence level, tools MUST reject it with a `ParseError` (§14).
+
+#### 8.7.2 Multiline Value Literals
 
 Codex-conforming tools MUST accept multiline spellings for Value literals that use balanced delimiters, including list (`[...]`), set (`set[...]`), map (`map[...]`), record (`record[...]`), and tuple (`(...)`).
 
@@ -2774,7 +2840,7 @@ When the Canonical Representation is authored as a Codex graph form, it MUST use
 
 `RdfGraph` MUST be in children mode.
 
-`RdfGraph` children MUST be one or more `RdfTriple`.
+`RdfGraph` children MUST include one or more `RdfTriple`. `RdfGraph` children MUST be `RdfTriple` children and annotations only; no other Concept children are allowed.
 
 Each `RdfTriple` MUST have these traits:
 
@@ -2797,14 +2863,23 @@ If `datatype` is absent and `language` is absent, the literal datatype MUST be `
 
 #### 9.6.2 Canonical Ordering and Duplicate Removal
 
-In the canonical RDF graph, `RdfTriple` children MUST be sorted in ascending lexicographic order of `(subject, predicate, objectKey)`.
+The sort key for an `RdfTriple` is the tuple `(subject, predicate, objectKey)`, compared in ascending lexicographic order.
 
 `objectKey` MUST be:
 
 - `object` when the object is an IRI, and
 - the pair `(datatypeOrDefault, lexical)` when the object is a literal.
 
-If two triples are identical after this normalization, duplicates MUST be removed.
+If two triples have identical sort keys, the duplicate MUST be removed.
+
+When an `RdfGraph` contains no grouping annotations (§8.9.7), all `RdfTriple` children MUST be sorted by sort key.
+
+When an `RdfGraph` contains grouping annotations, the following rules apply:
+
+1. Within each group, `RdfTriple` children MUST be sorted by sort key.
+2. Groups at the same nesting level MUST be sorted in ascending lexicographic order of their canonical group label.
+3. `RdfTriple` children not enclosed in any group MUST be sorted by sort key and MUST appear before all groups at the same nesting level.
+4. An attached annotation (§8.9.6.1) on an `RdfTriple` MUST move with that triple during sorting.
 
 #### 9.6.3 RDF List Encoding (No Blank Nodes)
 
@@ -3875,6 +3950,7 @@ Canonicalization is divided into two phases:
 - canonical Value literal whitespace (exactly one space MUST follow each comma separator; all other optional whitespace MUST be removed; mandatory whitespace required by a specific production MUST be preserved)
 - alphabetical ordering of Traits by Trait name
 - preservation of Concept and Content order
+- canonical `RdfTriple` ordering within `RdfGraph` (§9.6.2)
 - content indentation normalization (§8.8.3)
 
 **Phase 2 (schema-directed)** applies during schema-directed processing:
@@ -3888,7 +3964,7 @@ Schema-less processing MUST complete Phase 1 only. Schema-directed processing MU
 
 Canonicalization MUST NOT:
 
-- reorder Concepts (except children of `$Unordered` collections during Phase 2)
+- reorder Concepts (except children of `$Unordered` collections during Phase 2, and `RdfTriple` children within `RdfGraph` per §9.6.2)
 - invent or remove Concepts, Traits, or Content
 
 #### 10.5.1 Deterministic Ordering for Unordered Collections
@@ -4473,7 +4549,7 @@ Schemas are allowed to reference the following built-in value type tokens.
 * `$OklabColor`
 * `$OklchColor`
 * `$ColorSpaceColor`
-* `$ColorSpaceColorFunctiontion`
+* `$ColorSpaceColorFunction`
 * `$ColorMix`
 * `$DeviceCmyk`
 * `$Temporal`
@@ -6213,6 +6289,8 @@ TraitName
 
 #### A.1.7 Values
 
+> The inline productions for `HostNameValue`, `EmailAddressValue`, and `UrlValue` below are informative projections of §5.20, §5.21, and §5.22 respectively. In case of discrepancy, those sections are authoritative.
+
 ```ebnf
 Value
 	= TextValue
@@ -6313,6 +6391,8 @@ CharEscapeSequence
 
 #### A.1.10 Backtick Text
 
+> This grammar is an informative projection of the backtick text spelling rules defined in §5.2. In case of discrepancy, §5.2 is authoritative.
+
 ```ebnf
 BacktickText
 	= "`", { BacktickChar }, "`"
@@ -6334,6 +6414,8 @@ BacktickEscape
 ---
 
 #### A.1.11 Boolean Values
+
+> This grammar is an informative projection of the Boolean Value spelling rules defined in §5.3. In case of discrepancy, §5.3 is authoritative.
 
 ```ebnf
 BooleanValue
@@ -6419,6 +6501,8 @@ IntegerDigits
 ---
 
 #### A.1.13 Enumerated Tokens
+
+> This grammar is an informative projection of the Enumerated Token spelling rules defined in §5.5 and the parameterized type syntax defined in §5.18. In case of discrepancy, §5.5 and §5.18 are authoritative.
 
 ```ebnf
 EnumeratedToken
@@ -7233,42 +7317,9 @@ The following character classes are used but not fully enumerated:
 
 #### A.1.28 Value Termination and Disambiguation
 ```ebnf
-(* Value termination is token-level, not type-level.
-
-	In a Concept marker, an unquoted Value token MUST terminate at the first of:
-	- whitespace (space, tab, or newline)
-	- ">" or "/>" (end of marker)
-
-	While scanning for termination, parsers MUST respect balanced delimiters for
-	delimited value spellings and composite literals, including:
-	[], {}, (), '', "", backticks, and range forms (`..` with optional `s` step).
-
-	This appendix provides type grammars for each Value form, but conformance requires
-	the termination behavior above.
-
-	Value disambiguation is performed by deterministic precedence, applied to the
-	maximal token recognized under the termination rule.
-
-	Precedence (highest first):
-
-	1. Delimited: TextValue, CharValue, BacktickText, HostNameValue, EmailAddressValue, UrlValue
-	2. BooleanValue ("true" | "false")
-	3. EnumeratedToken ($...)
-	4. LookupToken (~...)
-	5. TemporalValue ({...})
-	6. SetValue (set[...])
-	7. MapValue (map[...])
-	8. RecordValue (record[...])
-	9. ListValue ([...])
-	10. TupleValue ((...))
-	11. ColorValue (all permitted color literal spellings, including functions and named colors)
-	12. UuidValue (8-4-4-4-12 with hex digits)
-	13. RangeValue (contains ".." with valid endpoints)
-	14. NumericValue (Complex/Imaginary/Fraction/Infinity/Precision/Scientific/Decimal/Integer per §A.1.12)
-	15. IriReference (fallback: token contains ":" and matches IriReference)
-
-	If a token matches multiple forms at the same precedence level, parsing MUST fail
-	with a ParseError (§14) rather than guess. *)
+(* This section is an informative projection of the normative rules
+	defined in §8.7 (Value termination) and §8.7.1 (Value type disambiguation).
+	In case of discrepancy, §8.7 and §8.7.1 are authoritative. *)
 ```
 ### A.2 PEG (Informative)
 
@@ -7412,6 +7463,8 @@ TraitName <- LowercaseLetter (Letter / Digit)*
 
 #### A.2.7 Values
 
+> The inline productions for `HostNameValue`, `EmailAddressValue`, and `UrlValue` below are informative projections of §5.20, §5.21, and §5.22 respectively. In case of discrepancy, those sections are authoritative.
+
 ```peg
 # Values are tried in deterministic precedence order.
 # Token termination in markers is governed by the surface rules (see A.1.28);
@@ -7476,6 +7529,8 @@ CharEscapeSequence <- '\\' ( ['\\nrt] / UnicodeEscape )
 
 #### A.2.10 Backtick Text
 
+> This grammar is an informative projection of the backtick text spelling rules defined in §5.2. In case of discrepancy, §5.2 is authoritative.
+
 ```peg
 BacktickText <- '`' BacktickChar* '`'
 BacktickChar <- BacktickEscape / (!'`' .)
@@ -7485,6 +7540,8 @@ BacktickEscape <- '\\' '`'
 ---
 
 #### A.2.11 Boolean Values
+
+> This grammar is an informative projection of the Boolean Value spelling rules defined in §5.3. In case of discrepancy, §5.3 is authoritative.
 
 ```peg
 BooleanValue <- 'true' / 'false'
@@ -7525,6 +7582,8 @@ IntegerDigits <- '0' / NonZeroDigit Digit*
 ---
 
 #### A.2.13 Enumerated Tokens
+
+> This grammar is an informative projection of the Enumerated Token spelling rules defined in §5.5 and the parameterized type syntax defined in §5.18. In case of discrepancy, §5.5 and §5.18 are authoritative.
 
 ```peg
 EnumeratedToken <- '$' UppercaseLetter (Letter / Digit)* TypeParameters?

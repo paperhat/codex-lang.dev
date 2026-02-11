@@ -1,0 +1,935 @@
+[Canonical Codex bootstrap schema-of-schemas, built from the Codex 1.0.0 specification.]
+<Schema
+	authoringMode=$CanonicalMode
+	compatibilityClass=$Initial
+	id=urn:codex:bootstrap:1.0.0
+	namespace="bootstrap"
+	version="1.0.0"
+	versionScheme=$Semver
+>
+	<RdfGraph>
+		[GROUP: AllowsContent]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#AllowsContent#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#AllowsContent#shape/property/trait/135999c7c16267d31cf2a282fba5da9e95481c7782a03a2c32e3f6273f9a0a78
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#AllowsContent#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#AllowsContent
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#AllowsContent#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#AllowsContent#shape/property/trait/135999c7c16267d31cf2a282fba5da9e95481c7782a03a2c32e3f6273f9a0a78
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#AllowsContent#shape/property/trait/135999c7c16267d31cf2a282fba5da9e95481c7782a03a2c32e3f6273f9a0a78
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#whitespaceMode
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#AllowsContent#shape/property/trait/135999c7c16267d31cf2a282fba5da9e95481c7782a03a2c32e3f6273f9a0a78
+		/>
+
+		[END: AllowsContent]
+
+		[GROUP: AllowsTrait]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#AllowsTrait#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#AllowsTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#AllowsTrait#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#AllowsTrait
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#AllowsTrait#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#AllowsTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#AllowsTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#AllowsTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#name
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#AllowsTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		[END: AllowsTrait]
+
+		[GROUP: ConceptDefinition]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/2c70e12b7a0646f92279f427c7b38e7334d8e5389cff167a1dc30e73f826b683
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/4437253f37ee1f3064b11a243d63d67fff606f4392ec666b5a8cf2d9d999451e
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/4b168d88dc872a7753c2bc35b36a2d4249487af55baf78f247f38cae2fe962da
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/6379b227d84a69b19ecaab2b9fcfd7baa32cddceaf11af000f2c09afd7a3ffad
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/c9046f7a37ad0ea7cee73355984fa5428982f8b37c8f7bcec91f7ac71a7cd104
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#ConceptDefinition
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/2c70e12b7a0646f92279f427c7b38e7334d8e5389cff167a1dc30e73f826b683
+		/>
+
+		<RdfTriple
+			object=urn:cdx:value-type:LookupToken
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/2c70e12b7a0646f92279f427c7b38e7334d8e5389cff167a1dc30e73f826b683
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#key
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/2c70e12b7a0646f92279f427c7b38e7334d8e5389cff167a1dc30e73f826b683
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/4437253f37ee1f3064b11a243d63d67fff606f4392ec666b5a8cf2d9d999451e
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/4437253f37ee1f3064b11a243d63d67fff606f4392ec666b5a8cf2d9d999451e
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#conceptKind
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/4437253f37ee1f3064b11a243d63d67fff606f4392ec666b5a8cf2d9d999451e
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/4b168d88dc872a7753c2bc35b36a2d4249487af55baf78f247f38cae2fe962da
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/4b168d88dc872a7753c2bc35b36a2d4249487af55baf78f247f38cae2fe962da
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#role
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/4b168d88dc872a7753c2bc35b36a2d4249487af55baf78f247f38cae2fe962da
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/6379b227d84a69b19ecaab2b9fcfd7baa32cddceaf11af000f2c09afd7a3ffad
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/6379b227d84a69b19ecaab2b9fcfd7baa32cddceaf11af000f2c09afd7a3ffad
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#entityEligibility
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/6379b227d84a69b19ecaab2b9fcfd7baa32cddceaf11af000f2c09afd7a3ffad
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#name
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/c9046f7a37ad0ea7cee73355984fa5428982f8b37c8f7bcec91f7ac71a7cd104
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/c9046f7a37ad0ea7cee73355984fa5428982f8b37c8f7bcec91f7ac71a7cd104
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#description
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinition#shape/property/trait/c9046f7a37ad0ea7cee73355984fa5428982f8b37c8f7bcec91f7ac71a7cd104
+		/>
+
+		[END: ConceptDefinition]
+
+		[GROUP: ConceptDefinitions]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinitions#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#ConceptDefinitions
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#ConceptDefinitions#shape
+		/>
+
+		[END: ConceptDefinitions]
+
+		[GROUP: ContentRules]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#ContentRules#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#ContentRules
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#ContentRules#shape
+		/>
+
+		[END: ContentRules]
+
+		[GROUP: ForbidsContent]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#ForbidsContent#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#ForbidsContent
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#ForbidsContent#shape
+		/>
+
+		[END: ForbidsContent]
+
+		[GROUP: ForbidsTrait]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#ForbidsTrait#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#ForbidsTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#ForbidsTrait#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#ForbidsTrait
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#ForbidsTrait#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#ForbidsTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#ForbidsTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#ForbidsTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#name
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#ForbidsTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		[END: ForbidsTrait]
+
+		[GROUP: RdfGraph]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#RdfGraph#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#RdfGraph
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#RdfGraph#shape
+		/>
+
+		[END: RdfGraph]
+
+		[GROUP: RdfTriple]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/23761c9a25e7e554bc94613ad9ed061537ac540e989b9f1ca8eea5f02b56e027
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/2958d416d08aa5a472d7b509036cb7eafd542add84527e66a145ea64cb4cdc75
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/55ebd68669f8cb0349c7dc9862befbcec326bb661b804e780fd6b9dd92638698
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/78f3f3423b346310eb58f4add60ff80181ec4c4b83fb663a6b072d6888b6b905
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/a4ef304ba42a200bafd78b046e0869af9183f6eee5524aead5dcb3a5ab5f8f3f
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/a9491f4c1bf7b0cffbadcba2db8f028e4b3f2867cb59e1f3a0bc1968f3c51242
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#RdfTriple
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/23761c9a25e7e554bc94613ad9ed061537ac540e989b9f1ca8eea5f02b56e027
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/23761c9a25e7e554bc94613ad9ed061537ac540e989b9f1ca8eea5f02b56e027
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#IRI
+			predicate=http://www.w3.org/ns/shacl#nodeKind
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/23761c9a25e7e554bc94613ad9ed061537ac540e989b9f1ca8eea5f02b56e027
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#predicate
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/23761c9a25e7e554bc94613ad9ed061537ac540e989b9f1ca8eea5f02b56e027
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/2958d416d08aa5a472d7b509036cb7eafd542add84527e66a145ea64cb4cdc75
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#IRI
+			predicate=http://www.w3.org/ns/shacl#nodeKind
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/2958d416d08aa5a472d7b509036cb7eafd542add84527e66a145ea64cb4cdc75
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#object
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/2958d416d08aa5a472d7b509036cb7eafd542add84527e66a145ea64cb4cdc75
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/55ebd68669f8cb0349c7dc9862befbcec326bb661b804e780fd6b9dd92638698
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#IRI
+			predicate=http://www.w3.org/ns/shacl#nodeKind
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/55ebd68669f8cb0349c7dc9862befbcec326bb661b804e780fd6b9dd92638698
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#datatype
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/55ebd68669f8cb0349c7dc9862befbcec326bb661b804e780fd6b9dd92638698
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/78f3f3423b346310eb58f4add60ff80181ec4c4b83fb663a6b072d6888b6b905
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/78f3f3423b346310eb58f4add60ff80181ec4c4b83fb663a6b072d6888b6b905
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#lexical
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/78f3f3423b346310eb58f4add60ff80181ec4c4b83fb663a6b072d6888b6b905
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/a4ef304ba42a200bafd78b046e0869af9183f6eee5524aead5dcb3a5ab5f8f3f
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/a4ef304ba42a200bafd78b046e0869af9183f6eee5524aead5dcb3a5ab5f8f3f
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#language
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/a4ef304ba42a200bafd78b046e0869af9183f6eee5524aead5dcb3a5ab5f8f3f
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/a9491f4c1bf7b0cffbadcba2db8f028e4b3f2867cb59e1f3a0bc1968f3c51242
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/a9491f4c1bf7b0cffbadcba2db8f028e4b3f2867cb59e1f3a0bc1968f3c51242
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#IRI
+			predicate=http://www.w3.org/ns/shacl#nodeKind
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/a9491f4c1bf7b0cffbadcba2db8f028e4b3f2867cb59e1f3a0bc1968f3c51242
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#subject
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#RdfTriple#shape/property/trait/a9491f4c1bf7b0cffbadcba2db8f028e4b3f2867cb59e1f3a0bc1968f3c51242
+		/>
+
+		[END: RdfTriple]
+
+		[GROUP: RequiresTrait]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#RequiresTrait#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#RequiresTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#RequiresTrait#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#RequiresTrait
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#RequiresTrait#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#RequiresTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#RequiresTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#RequiresTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#name
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#RequiresTrait#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
+		/>
+
+		[END: RequiresTrait]
+
+		[GROUP: Schema]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/2c70e12b7a0646f92279f427c7b38e7334d8e5389cff167a1dc30e73f826b683
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/5ca4f3850ccc331aaf8a257d6086e526a3b42a63e18cb11d020847985b31d188
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/8f66a4ee2adc45bd74761568c0e8bf53642e88e45b2ca36faafecff07171efb9
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/aaf2320646108059a87ab5017a86aee454f5378ed95003dbb2e12f4ca5266e0e
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/c9046f7a37ad0ea7cee73355984fa5428982f8b37c8f7bcec91f7ac71a7cd104
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/d0e6210a7a6c6a073b721508cd647aa09d1902d0a463ec303dbb7ec3d27397f8
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/e50283e7e182652e804401e2feab12f04186603c22a6907f72df571dea2a99ee
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#Schema
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/2c70e12b7a0646f92279f427c7b38e7334d8e5389cff167a1dc30e73f826b683
+		/>
+
+		<RdfTriple
+			object=urn:cdx:value-type:LookupToken
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/2c70e12b7a0646f92279f427c7b38e7334d8e5389cff167a1dc30e73f826b683
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#key
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/2c70e12b7a0646f92279f427c7b38e7334d8e5389cff167a1dc30e73f826b683
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/5ca4f3850ccc331aaf8a257d6086e526a3b42a63e18cb11d020847985b31d188
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/5ca4f3850ccc331aaf8a257d6086e526a3b42a63e18cb11d020847985b31d188
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/5ca4f3850ccc331aaf8a257d6086e526a3b42a63e18cb11d020847985b31d188
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#version
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/5ca4f3850ccc331aaf8a257d6086e526a3b42a63e18cb11d020847985b31d188
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/8f66a4ee2adc45bd74761568c0e8bf53642e88e45b2ca36faafecff07171efb9
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/8f66a4ee2adc45bd74761568c0e8bf53642e88e45b2ca36faafecff07171efb9
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#authoringMode
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/8f66a4ee2adc45bd74761568c0e8bf53642e88e45b2ca36faafecff07171efb9
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#namespace
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/aaf2320646108059a87ab5017a86aee454f5378ed95003dbb2e12f4ca5266e0e
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/aaf2320646108059a87ab5017a86aee454f5378ed95003dbb2e12f4ca5266e0e
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#title
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/aaf2320646108059a87ab5017a86aee454f5378ed95003dbb2e12f4ca5266e0e
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/c9046f7a37ad0ea7cee73355984fa5428982f8b37c8f7bcec91f7ac71a7cd104
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/c9046f7a37ad0ea7cee73355984fa5428982f8b37c8f7bcec91f7ac71a7cd104
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#description
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/c9046f7a37ad0ea7cee73355984fa5428982f8b37c8f7bcec91f7ac71a7cd104
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/d0e6210a7a6c6a073b721508cd647aa09d1902d0a463ec303dbb7ec3d27397f8
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/d0e6210a7a6c6a073b721508cd647aa09d1902d0a463ec303dbb7ec3d27397f8
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#compatibilityClass
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/d0e6210a7a6c6a073b721508cd647aa09d1902d0a463ec303dbb7ec3d27397f8
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/e50283e7e182652e804401e2feab12f04186603c22a6907f72df571dea2a99ee
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/e50283e7e182652e804401e2feab12f04186603c22a6907f72df571dea2a99ee
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#versionScheme
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/e50283e7e182652e804401e2feab12f04186603c22a6907f72df571dea2a99ee
+		/>
+
+		[END: Schema]
+
+		[GROUP: SchemaImport]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#SchemaImport#shape/property/trait/52367a6622b19f08825e915fad80c542ad4f4c34dbcebad9f5007994b3e39208
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#SchemaImport#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
+			predicate=http://www.w3.org/ns/shacl#property
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#SchemaImport
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape/property/trait/52367a6622b19f08825e915fad80c542ad4f4c34dbcebad9f5007994b3e39208
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape/property/trait/52367a6622b19f08825e915fad80c542ad4f4c34dbcebad9f5007994b3e39208
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#IRI
+			predicate=http://www.w3.org/ns/shacl#nodeKind
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape/property/trait/52367a6622b19f08825e915fad80c542ad4f4c34dbcebad9f5007994b3e39208
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#reference
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape/property/trait/52367a6622b19f08825e915fad80c542ad4f4c34dbcebad9f5007994b3e39208
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#PropertyShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
+		/>
+
+		<RdfTriple
+			object=http://www.w3.org/2001/XMLSchema#string
+			predicate=http://www.w3.org/ns/shacl#datatype
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#minCount
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#namespace
+			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
+		/>
+
+		[END: SchemaImport]
+
+		[GROUP: SchemaImports]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#SchemaImports#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#SchemaImports
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#SchemaImports#shape
+		/>
+
+		[END: SchemaImports]
+
+		[GROUP: TraitRules]
+
+		<RdfTriple
+			object=http://www.w3.org/ns/shacl#NodeShape
+			predicate=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+			subject=urn:codex:bootstrap:1.0.0#TraitRules#shape
+		/>
+
+		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#TraitRules
+			predicate=http://www.w3.org/ns/shacl#targetClass
+			subject=urn:codex:bootstrap:1.0.0#TraitRules#shape
+		/>
+
+		[END: TraitRules]
+	</RdfGraph>
+</Schema>
