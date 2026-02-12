@@ -1603,8 +1603,7 @@ All operators return `Validation<T>`:
 
 ## 15. References
 
-- `behavior-dialect-semantics/index.md` — Complete value model and coercion rules
-- `behavior-dialect/index.md` — Evaluation model and type guards
+- `behavior-dialect/index.md` — Evaluation model, value model, and coercion rules
 - `behavior-vocabulary/math/index.md` — Mathematical operator definitions
 - `behavior-vocabulary/text/index.md` — Text operator definitions
 - `behavior-vocabulary/temporal/index.md` — Temporal operator definitions
