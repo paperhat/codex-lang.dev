@@ -1,5 +1,1 @@
-<Recipe
-	author=~chas
-	id=recipe:spaghetti
-	title="Spaghetti"
-/>
+<Recipe author=~chas id=recipe:spaghetti title="Spaghetti" />
