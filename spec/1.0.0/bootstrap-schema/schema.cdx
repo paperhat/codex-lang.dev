@@ -8430,6 +8430,12 @@
 		/>
 
 		<RdfTriple
+			object=urn:codex:bootstrap:1.0.0#EnumeratedValueSet#shape/constraint/83ac20965684154568a3036d75786e2237ddcdf4fced4e00339a960b9f0f4dbb
+			predicate=http://www.w3.org/ns/shacl#sparql
+			subject=urn:codex:bootstrap:1.0.0#EnumeratedValueSet#shape
+		/>
+
+		<RdfTriple
 			object=urn:codex:bootstrap:1.0.0#EnumeratedValueSet
 			predicate=http://www.w3.org/ns/shacl#targetClass
 			subject=urn:codex:bootstrap:1.0.0#EnumeratedValueSet#shape
@@ -8445,6 +8451,18 @@
 			lexical="SELECT DISTINCT ?this WHERE { ?this <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <urn:codex:bootstrap:1.0.0#EnumeratedValueSet> . FILTER( !( !EXISTS { ?this <urn:codex:bootstrap:1.0.0#codex/parentNode>* ?scope1 . ?scope1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <urn:codex:bootstrap:1.0.0#Schema> . ?other1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <urn:codex:bootstrap:1.0.0#EnumeratedValueSet> . ?other1 <urn:codex:bootstrap:1.0.0#codex/parentNode>* ?scope1 . ?this <urn:codex:bootstrap:1.0.0#name> ?v1 . ?other1 <urn:codex:bootstrap:1.0.0#name> ?v1 . FILTER(?this != ?other1) FILTER NOT EXISTS { ?this <urn:codex:bootstrap:1.0.0#codex/parentNode>* ?mid1 . ?mid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <urn:codex:bootstrap:1.0.0#Schema> . ?mid1 <urn:codex:bootstrap:1.0.0#codex/parentNode>+ ?scope1 . FILTER(?mid1 != ?scope1) } } ) ) }"
 			predicate=http://www.w3.org/ns/shacl#select
 			subject=urn:codex:bootstrap:1.0.0#EnumeratedValueSet#shape/constraint/5c4742f25c49ed4a48cde2d2cf81ea20ef620ef6fd711e5b1896efa0cc0d5728
+		/>
+
+		<RdfTriple
+			lexical="Built-in enumerated value set names must not be redefined"
+			predicate=http://www.w3.org/ns/shacl#message
+			subject=urn:codex:bootstrap:1.0.0#EnumeratedValueSet#shape/constraint/83ac20965684154568a3036d75786e2237ddcdf4fced4e00339a960b9f0f4dbb
+		/>
+
+		<RdfTriple
+			lexical="SELECT DISTINCT ?this WHERE { ?this <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <urn:codex:bootstrap:1.0.0#EnumeratedValueSet> . ?this <urn:codex:bootstrap:1.0.0#name> ?name . FILTER(?name IN (\"ConceptKind\", \"EntityEligibility\", \"CompatibilityClass\", \"Ordering\", \"Cardinality\")) }"
+			predicate=http://www.w3.org/ns/shacl#select
+			subject=urn:codex:bootstrap:1.0.0#EnumeratedValueSet#shape/constraint/83ac20965684154568a3036d75786e2237ddcdf4fced4e00339a960b9f0f4dbb
 		/>
 
 		<RdfTriple
@@ -18820,7 +18838,7 @@
 
 		<RdfTriple
 			datatype=http://www.w3.org/2001/XMLSchema#boolean
-			lexical="false"
+			lexical="true"
 			predicate=http://www.w3.org/ns/shacl#hasValue
 			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/predicate/28c6fdde3c613b7db5df17df3f19647f8ea857a00406bcd26b4ef46d5dc096c1
 		/>
@@ -18987,6 +19005,12 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:1.0.0#namespace
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
+		/>
+
+		<RdfTriple
+			lexical="^(?!.*[A-Z]{3})[a-z][a-zA-Z0-9]*$"
+			predicate=http://www.w3.org/ns/shacl#pattern
 			subject=urn:codex:bootstrap:1.0.0#Schema#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
 		/>
 
@@ -19730,6 +19754,12 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:1.0.0#namespace
 			predicate=http://www.w3.org/ns/shacl#path
+			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
+		/>
+
+		<RdfTriple
+			lexical="^(?!.*[A-Z]{3})[a-z][a-zA-Z0-9]*$"
+			predicate=http://www.w3.org/ns/shacl#pattern
 			subject=urn:codex:bootstrap:1.0.0#SchemaImport#shape/property/trait/9359f3bb2efa7aabd0264fb67fb1d99f91871778e9b887179d6b2debaa251ec6
 		/>
 

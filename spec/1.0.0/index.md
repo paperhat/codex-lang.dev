@@ -460,6 +460,14 @@ The `+` or `-` between the real and imaginary parts is the complex-number sign, 
 
 The meaning of any value of these types beyond its literal spelling MUST be defined by the governing schema or consuming system.
 
+`$RealNumber` (§11.5) is a union type token accepting Integer, DecimalNumber, ExponentialNumber, PrecisionNumber, Fraction, PositiveInfinity, or NegativeInfinity. It is not a parent type.
+
+`$FiniteNumber` (§11.5) is a union type token accepting Integer, DecimalNumber, ExponentialNumber, PrecisionNumber, Fraction, ImaginaryNumber, or ComplexNumber. It is not a parent type.
+
+`$FiniteRealNumber` (§11.5) is a union type token accepting Integer, DecimalNumber, ExponentialNumber, PrecisionNumber, or Fraction. It is not a parent type. The membership of `$FiniteRealNumber` is the same as the `OrderedNumericValue` grammar rule (Appendix A).
+
+`$ExactNumber` (§11.5) is a union type token accepting Integer or Fraction. It is not a parent type.
+
 ### 5.5 Enumerated Token Values
 
 An Enumerated Token Value is a Value drawn from a schema-defined closed set.
@@ -576,6 +584,8 @@ For example: `P1Y2M3D`, `PT1H30M`, `P1Y2M3DT4H5M6S`, `PT0.5S`.
 **TemporalKeyword**
 
 A `TemporalKeyword` MUST be exactly `now` or `today`.
+
+`$TemporalPoint` (§11.5) is a union type token accepting PlainDate, PlainTime, PlainDateTime, PlainYearMonth, PlainMonthDay, YearWeek, Instant, or ZonedDateTime. It is not a parent type.
 
 ### 5.7 Color Values
 
@@ -1630,7 +1640,7 @@ A Range Value is a declarative interval.
 
 In the Surface Form, a Range Value is spelled as a start endpoint, the `..` operator, and an end endpoint. An optional step is introduced by the letter `s` followed by the step value. Optional whitespace is permitted around the `..` operator and around the `s` step separator (e.g., `x..y` or `x .. y s z`).
 
-Range endpoints and step values MUST be ordered numeric types (Integer, DecimalNumber, Fraction, ExponentialNumber, or PrecisionNumber), Temporal Values, or Character Values (Character Values are permitted as endpoints only, not as step values). ComplexNumber, ImaginaryNumber, and Infinity MUST NOT appear as range endpoints or step values.
+Range endpoints and step values MUST be `$FiniteRealNumber` types (Integer, DecimalNumber, ExponentialNumber, PrecisionNumber, or Fraction), Temporal Values, or Character Values (Character Values are permitted as endpoints only, not as step values). ComplexNumber, ImaginaryNumber, and Infinity MUST NOT appear as range endpoints or step values.
 
 A Range Value MUST contain a start endpoint and an end endpoint.
 
@@ -3059,6 +3069,11 @@ The following reserved predicates are used by the instance graph mapping:
 - `codex:annotationKind`
 - `codex:annotationDirective`
 - `codex:annotationTarget`
+- `codex:mapKey`
+- `codex:mapValue`
+- `codex:rangeStart`
+- `codex:rangeEnd`
+- `codex:rangeStep`
 
 Their IRIs MUST be deterministically derived from `schemaIri` as follows:
 
@@ -3076,6 +3091,11 @@ Their IRIs MUST be deterministically derived from `schemaIri` as follows:
 - `codex:annotationKind` MUST be `schemaIri + "#codex/annotationKind"`
 - `codex:annotationDirective` MUST be `schemaIri + "#codex/annotationDirective"`
 - `codex:annotationTarget` MUST be `schemaIri + "#codex/annotationTarget"`
+- `codex:mapKey` MUST be `schemaIri + "#codex/mapKey"`
+- `codex:mapValue` MUST be `schemaIri + "#codex/mapValue"`
+- `codex:rangeStart` MUST be `schemaIri + "#codex/rangeStart"`
+- `codex:rangeEnd` MUST be `schemaIri + "#codex/rangeEnd"`
+- `codex:rangeStep` MUST be `schemaIri + "#codex/rangeStep"`
 
 #### 9.7.6 Ordered Children Encoding
 
@@ -3141,6 +3161,7 @@ Because `id` has no `traitPredicateIri` representation in the instance graph, sc
 
 - an IRI when `v` is an IRI Reference Value
 - an IRI when `v` is an Enumerated Token Value and the governing trait is constrained by an `EnumeratedValueSet` (see below)
+- the collection head IRI of the collection graph (§9.7.8.1) when `v` is a collection value (List, Set, Map, Record, Tuple, or Range)
 - otherwise a typed literal
 
 For typed literals, the datatype IRI MUST be computed by `valueDatatypeIri(v)` and the lexical form MUST be computed by `valueLex(v)`.
@@ -3154,11 +3175,13 @@ Both `valueDatatypeIri(v)` and `valueLex(v)` MUST be derived by parsing `v` acco
 - `xsd:boolean` for Boolean Values
 - `xsd:integer` for Integer Values
 
-For all other value types, `valueDatatypeIri(v)` MUST be the deterministic URN:
+For all other scalar value types, `valueDatatypeIri(v)` MUST be the deterministic URN:
 
 - `urn:cdx:value-type:<T>`
 
-where `<T>` is the Codex value type token name (for example, `Uuid`, `HexColor`, `PlainDate`, `List`, `Map`).
+where `<T>` is the Codex value type token name (for example, `Uuid`, `HexColor`, `PlainDate`).
+
+Collection value types (List, Set, Map, Record, Tuple, and Range) do not produce typed literals. Their RDF mapping is defined in §9.7.8.1.
 
 `valueLex(v)` MUST be:
 
@@ -3167,7 +3190,7 @@ where `<T>` is the Codex value type token name (for example, `Uuid`, `HexColor`,
 - `"true"` or `"false"` for Boolean Values
 - base-10 integer text for Integer Values
 
-For all other value types, `valueLex(v)` MUST be the canonical surface spelling of `v`.
+For all other scalar value types, `valueLex(v)` MUST be the canonical surface spelling of `v`.
 
 Lookup Token Values MUST be represented as typed literals with:
 
@@ -3180,13 +3203,81 @@ When an Enumerated Token Value `v` appears on a trait that is constrained by an 
 
 where `tokenName(v)` is the token name without the `$` sigil.
 
-This rule applies regardless of where the Enumerated Token Value appears in the trait's value structure. If the trait value is a collection (List, Set, Map, Record, Tuple, or Range) whose elements are Enumerated Token Values, each element `v` MUST independently produce an IRI via the same rule.
+This rule applies to scalar trait values. For Enumerated Token Values within collections, see §9.7.8.1.
 
 If the trait is constrained only by `ValueIsOneOf` (not by an `EnumeratedConstraint` referencing an `EnumeratedValueSet`), Enumerated Token Values fall through to the typed literal case above. `ValueIsOneOf` does not provide an `EnumeratedValueSet` from which to derive an IRI base.
 
 If the trait is not constrained by any `EnumeratedValueSet`, the Enumerated Token Value falls through to the typed literal case above.
 
 If a schema constraint requires an interpreted value (for example, numeric comparisons or text length), schema processing MUST provide the interpreted value in a deterministic RDF representation.
+
+##### 9.7.8.1 Collection Value Graphs
+
+When a trait value `v` is a collection (List, Set, Map, Record, Tuple, or Range), `valueTerm(v)` MUST NOT be a typed literal. Instead, the value MUST be represented as a structured collection graph using the standard RDF list vocabulary (`rdf:first`, `rdf:rest`, `rdf:nil`) and reserved Codex predicates.
+
+All collection graph nodes MUST be IRIs. No blank nodes are permitted (§9.6.1).
+
+**List anchor and node IRIs.**
+
+For a trait `t=v` on concept instance `C`, let:
+
+- `traitPredIri = traitPredicateIri(t)`
+- `collectionAnchor = nodeIri(C) + "/list/" + iriHash(traitPredIri)`
+
+List node IRIs MUST follow the same pattern as §9.6.3:
+
+- `listNodeIri(collectionAnchor, i) = collectionAnchor + "/" + i`
+
+The list head node is at position 0. `valueTerm(v)` for the trait MUST be `listNodeIri(collectionAnchor, 0)`.
+
+If the collection is empty (zero elements), `valueTerm(v)` MUST be `rdf:nil`.
+
+**Ordered collections (List, Tuple).**
+
+For a List or Tuple with elements `e_0, e_1, ..., e_(n-1)`:
+
+For each position `i` from 0 to n-1, the mapping MUST emit:
+
+- `(listNodeIri(collectionAnchor, i), rdf:first, elementTerm(e_i))`
+- `(listNodeIri(collectionAnchor, i), rdf:rest, listNodeIri(collectionAnchor, i+1))` — or `rdf:nil` when `i = n-1`
+
+**Unordered collections (Set).**
+
+Sets use the same RDF list encoding as Lists. Element order in the RDF list MUST match canonical source order (§5.14).
+
+**Keyed collections (Map, Record).**
+
+For a Map or Record with entries `(k_0:v_0), (k_1:v_1), ..., (k_(n-1):v_(n-1))`:
+
+For each position `i` from 0 to n-1, let `entryIri = listNodeIri(collectionAnchor, i) + "/__entry"`. The mapping MUST emit:
+
+- `(listNodeIri(collectionAnchor, i), rdf:first, entryIri)`
+- `(listNodeIri(collectionAnchor, i), rdf:rest, listNodeIri(collectionAnchor, i+1))` — or `rdf:nil` when `i = n-1`
+- `(entryIri, codex:mapKey, elementTerm(k_i))`
+- `(entryIri, codex:mapValue, elementTerm(v_i))`
+
+Entry order in the RDF list MUST match canonical source order.
+
+**Range.**
+
+For a Range `start..end` (with optional step), let the components be `start`, `end`, and (if present) `step`. A Range MUST be encoded as a single RDF resource (not a list). Let `rangeIri = nodeIri(C) + "/range/" + iriHash(traitPredIri)`. The mapping MUST emit:
+
+- `(rangeIri, codex:rangeStart, elementTerm(start))`
+- `(rangeIri, codex:rangeEnd, elementTerm(end))`
+- If a step is present: `(rangeIri, codex:rangeStep, elementTerm(step))`
+
+`valueTerm(v)` for a Range MUST be `rangeIri`.
+
+**`elementTerm(e)`.**
+
+Each element `e` within a collection MUST be mapped to an RDF term as follows:
+
+- If `e` is an IRI Reference Value, `elementTerm(e)` MUST be the IRI.
+- If `e` is an Enumerated Token Value and the governing trait is constrained by an `EnumeratedValueSet` `E`, `elementTerm(e)` MUST be the IRI `E.id + "#" + tokenName(e)`.
+- If `e` is a nested collection (List, Set, Map, Record, Tuple, or Range), `elementTerm(e)` MUST be the head IRI of the nested collection's graph. Let `nestedAnchor = listNodeIri(collectionAnchor, i) + "/__value"`, where `i` is the position of the element in the parent collection. For nested List, Set, Map, Record, or Tuple collections, the nested collection anchor is `nestedAnchor` and the list head IRI is `nestedAnchor + "/0"`. For a nested Range, the range IRI is `nestedAnchor` directly. The nested collection graph MUST be emitted following the same rules defined in this section.
+- Otherwise, `elementTerm(e)` MUST be the typed literal `valueLex(e)^^valueDatatypeIri(e)`, using the scalar rules defined in §9.7.8.
+
+This rule replaces the typed-literal representation for collection values. A collection value on a trait MUST always produce a collection graph; it MUST NOT produce a typed literal.
 
 #### 9.7.9 Content
 
@@ -3728,6 +3819,8 @@ For atomic rules mapped in §9.9, the `H` translation MUST be:
 - `TraitEquals(trait=t, value=v)`: `EXISTS { focusVar <traitPredicateIri(t)> <valueTerm(v)> }`
 
 Here `?vK` MUST follow the deterministic variable allocation rule in §9.11.6.2.2.
+
+If `value` in a `TraitEquals` rule is a collection value (List, Set, Map, Record, Tuple, or Range), derived validation artifact generation MUST fail with a `SchemaError` (§14). Collection equality is not expressible as a single-triple SPARQL pattern.
 
 ###### 9.11.6.2.5 One-Way Representation Rule
 
@@ -4546,6 +4639,10 @@ Schemas are allowed to reference the following built-in value type tokens.
 * `$PositiveInfinity`
 * `$NegativeInfinity`
 * `$Infinity`
+* `$RealNumber`
+* `$FiniteNumber`
+* `$FiniteRealNumber`
+* `$ExactNumber`
 * `$EnumeratedToken`
 * `$IriReference`
 * `$LookupToken`
@@ -4553,7 +4650,6 @@ Schemas are allowed to reference the following built-in value type tokens.
 * `$HostName`
 * `$EmailAddress`
 * `$Url`
-* `$Color`
 * `$HexColor`
 * `$NamedColor`
 * `$RgbColor`
@@ -4567,7 +4663,7 @@ Schemas are allowed to reference the following built-in value type tokens.
 * `$ColorSpaceColorFunction`
 * `$ColorMix`
 * `$DeviceCmyk`
-* `$Temporal`
+* `$Color`
 * `$PlainDate`
 * `$PlainTime`
 * `$PlainDateTime`
@@ -4578,6 +4674,7 @@ Schemas are allowed to reference the following built-in value type tokens.
 * `$ZonedDateTime`
 * `$Duration`
 * `$TemporalKeyword`
+* `$TemporalPoint`
 * `$List`
 * `$Set`
 * `$Map`

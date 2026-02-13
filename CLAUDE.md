@@ -129,7 +129,7 @@ Do not regress:
 - **§11.5.4**: Built-in enumerated sets (`ConceptKind`, `EntityEligibility`, `CompatibilityClass`, `Ordering`, `Cardinality`) must not be redefined.
 - **§11.6**: Constraints must not execute code or depend on implicit inference.
 - **§11.11**: Derived representations must not introduce semantics beyond spec/schema. Must not override/weaken Codex validation.
-- **§12.2**: Entry point is `validate(documentBytes, governingSchema, importedSchemas) → validatedDocument`. Governing schema must be explicit. Must not substitute, infer, or override. Missing schema is `SchemaError`, not `ParseError`. `importedSchemas` maps schema IRIs to schema bytes.
+- **§12.2**: Entry point is `validate(documentBytes, governingSchema, importedSchemas, documentBaseIri) → validatedDocument`. Governing schema must be explicit. Must not substitute, infer, or override. Missing schema is `SchemaError`, not `ParseError`. `importedSchemas` maps schema IRIs to schema bytes. `documentBaseIri` is required for instance graph mapping (§9.7); must be an IRI.
 - **§12.3**: Bootstrap schema-of-schemas: built-in, immutable. Root `Schema` = schema document. Not substitutable for instance docs.
 - **§13.3**: `id`, `namespace`, `version`, `versionScheme` all required on root `Schema`.
 - **§13.4.1**: Four version schemes: `$Semver`, `$DateYYYYMM`, `$DateYYYYMMDD`, `$Lexical`.

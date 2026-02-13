@@ -63,6 +63,10 @@ def _working_tree_json_files() -> list[str]:
     return sorted(json_paths)
 
 
+def _gate_bootstrap_regression() -> None:
+    _run(["python3", "tools/bootstrap_regression.py"])
+
+
 def _gate_no_json() -> None:
     # Enforce against the working tree so the check matches what will be shipped.
     # (CI checkouts will still contain any committed JSON, and will fail.)
@@ -267,6 +271,7 @@ def main(argv: list[str]) -> int:
     _gate_no_unfenced_dollar_tokens_in_markdown()
     _gate_cdx_annotation_lint()
     _gate_conformance_smokecheck()
+    _gate_bootstrap_regression()
     _gate_no_json()
 
     print("ok: readiness_check passed")

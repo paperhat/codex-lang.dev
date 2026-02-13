@@ -458,4 +458,4 @@ Rules:
 
 ## See Also
 
-- [Terminology: Data Documents and Schemas](/notes/terminology-data-documents/)
+- [Codex Language Specification](/spec/1.0.0/)

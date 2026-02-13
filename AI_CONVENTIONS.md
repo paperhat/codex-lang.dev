@@ -7,7 +7,7 @@ This repo contains normative language specifications and conformance artifacts.
 - The spec is a closed-world conformance target: prefer explicit, testable requirements over open-ended guidance.
 
 ## Normativity
-- Use RFC 2119/8174 requirement keywords with discipline (use the capitalized forms defined by the spec, in the spec).
+- Codex defines its own keyword semantics: only `must` and `must not` are used. `may`, `should`, and `optional` are prohibited (§1.3). Do not cite RFC 2119/8174.
 - Do not use **should** and **should not**.
 - Do not use **may**, **optional**, **legacy**, **deprecated**, or **future** language.
 - Write exactly one mandatory standard: prefer unambiguous `must` / `must not` requirements with no permitted alternatives.

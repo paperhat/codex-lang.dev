@@ -4,6 +4,27 @@ This file records all changes made to the Codex specification during implementat
 
 ---
 
+## 2026-02-13: §9.7.5, §9.7.8, §9.7.8.1 (new), §9.11.6.2.4, §11.5.1 — Collection-to-RDF mapping and value type token changes
+
+**Sections:** §9.7.5, §9.7.8, §9.7.8.1 (new), §9.11.6.2.4, §11.5.1
+**Plan:** plans/collection-rdf-mapping-plan.md
+
+**Changes:**
+
+1. **§9.7.5**: Added 5 reserved predicates (`codex:mapKey`, `codex:mapValue`, `codex:rangeStart`, `codex:rangeEnd`, `codex:rangeStep`) with IRI derivations. Total reserved predicates: 19.
+
+2. **§9.7.8**: Added fourth case to `valueTerm(v)`: collection values (List, Set, Map, Record, Tuple, Range) return the collection head IRI of the collection graph (§9.7.8.1) instead of a typed literal. Scoped `valueDatatypeIri(v)` and `valueLex(v)` to scalar value types. Replaced contradictory collection paragraph (former line 3183) with redirect to §9.7.8.1.
+
+3. **§9.7.8.1 (new)**: Full specification for mapping collection values to structured RDF graphs. Defines list anchor/node IRIs reusing §9.6.3 pattern; ordered collections (List, Tuple) as `rdf:first`/`rdf:rest`/`rdf:nil` linked lists; unordered collections (Set) same as List with canonical source order; keyed collections (Map, Record) as RDF lists of entry nodes with `codex:mapKey`/`codex:mapValue`; Range as single resource node with `codex:rangeStart`/`codex:rangeEnd`/`codex:rangeStep`; `elementTerm(e)` with 4 cases (IRI ref, constrained enum token, nested collection, scalar). Empty collections map to `rdf:nil`.
+
+4. **§9.11.6.2.4**: If `TraitEquals.value` is a collection value, derived validation artifact generation MUST fail with `SchemaError`. Collection equality is not expressible as a single-triple SPARQL pattern.
+
+5. **§11.5.1**: Removed `$Color` and `$Temporal` from the built-in value type token list. Specific subtypes remain. *(Note: `$Color` removal was incomplete — §5.7.4 still references `$Color` normatively ~15 times. Restoration planned; see plans/union-type-tokens-plan.md.)*
+
+**Rationale:** Collection trait values previously had no RDF representation, breaking the round-trip guarantee (§2.6) for any trait containing a List, Set, Map, Record, Tuple, or Range. The new §9.7.8.1 provides deterministic, skolem-IRI-based collection graphs using standard RDF list encoding for ordered types and entry-node patterns for keyed types.
+
+---
+
 ## 2026-02-10: Text escape simplification — re-add `\\`, remove Unicode escape canonicalization rule
 
 **Sections:** §10.5.2, A.1.8, A.2.8
@@ -42,7 +63,7 @@ This file records all changes made to the Codex specification during implementat
 
 9. **§11.4.4 ChildRules**: `AllowsChildConcept`, `RequiresChildConcept`, `ForbidsChildConcept`, `ConceptOption` now accept qualified concept names (`namespace:ConceptName`) for imported concepts.
 
-10. **§12.2 Validate**: Expanded signature to `validate(documentBytes, governingSchema, importedSchemas) → validatedDocument`. `importedSchemas` maps schema IRIs to schema bytes.
+10. **§12.2 Validate**: Expanded signature to `validate(documentBytes, governingSchema, importedSchemas, documentBaseIri) → validatedDocument`. `importedSchemas` maps schema IRIs to schema bytes. `documentBaseIri` (already present) is required for instance graph mapping (§9.7).
 
 11. **§12.5.4–6 Error Handling** (new): Three error subsections — Imported Schema Unavailable, Duplicate Namespace Label, Unresolved Qualified Name (all `SchemaError`).
 

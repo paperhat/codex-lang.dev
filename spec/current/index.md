@@ -9,7 +9,7 @@ This page points to the **current published version** of the Codex Language Spec
 
 ## Current Version
 
-→ [**Codex Language Specification v1.0.0**](./1.0.0/)
+→ [**Codex Language Specification v1.0.0**](../1.0.0/)
 
 ---
 

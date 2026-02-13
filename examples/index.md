@@ -77,7 +77,7 @@
 	key=~bob
 	name="Bob"
 	initial='B'
-	age=-0
+	age=30
 	rangeOfLetters='a'..'z'
 	rangeOfDates={2024-01-01}..{2024-12-31}s7
 	tags=set[$Friend, $Colleague]
