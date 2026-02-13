@@ -1,0 +1,2496 @@
+[Simplified Codex bootstrap schema-of-schemas, built from the Codex 1.0.0 specification.]
+<Schema
+	authoringMode=$SimplifiedMode
+	compatibilityClass=$Initial
+	id=urn:codex:bootstrap:1.0.0
+	namespace="bootstrap"
+	version="1.0.0"
+	versionScheme=$Semver
+>
+	<ConceptDefinitions>
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#AllOf
+			name="AllOf"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="Rule" min=2 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#AllowedValues
+			name="AllowedValues"
+		>
+			<ChildRules>
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="EnumeratedConstraint" />
+
+					<ConceptOption conceptSelector="ValueIsOneOf" />
+				</ExactlyOneChildOf>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#AllowsChildConcept
+			name="AllowsChildConcept"
+		>
+			<TraitRules>
+				<AllowsTrait name="max" />
+
+				<AllowsTrait name="min" />
+
+				<RequiresTrait name="conceptSelector" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#AllowsContent
+			name="AllowsContent"
+		>
+			<TraitRules>
+				<AllowsTrait name="whitespaceMode" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#AllowsTrait
+			name="AllowsTrait"
+		>
+			<TraitRules>
+				<RequiresTrait name="name" />
+			</TraitRules>
+
+			<ChildRules>
+				<AllowsChildConcept conceptSelector="AllowedValues" max=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#AnyOf
+			name="AnyOf"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="Rule" min=2 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ChildConstraint
+			name="ChildConstraint"
+		>
+			<TraitRules>
+				<RequiresTrait name="conceptSelector" />
+
+				<RequiresTrait name="type">
+					<AllowedValues>
+						<EnumeratedConstraint set="ChildConstraintType" />
+					</AllowedValues>
+				</RequiresTrait>
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ChildPath
+			name="ChildPath"
+		>
+			<TraitRules>
+				<RequiresTrait name="conceptSelector" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ChildRules
+			name="ChildRules"
+		>
+			<ChildRules>
+				<AllowsChildConcept conceptSelector="AllowsChildConcept" />
+
+				<AllowsChildConcept conceptSelector="ExactlyOneChildOf" />
+
+				<AllowsChildConcept conceptSelector="ForbidsChildConcept" />
+
+				<AllowsChildConcept conceptSelector="RequiresChildConcept" />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ChildSatisfies
+			name="ChildSatisfies"
+		>
+			<TraitRules>
+				<RequiresTrait name="conceptSelector" />
+			</TraitRules>
+
+			<ChildRules>
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					max=1
+					min=1
+				/>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#CollectionAllowsDuplicates
+			name="CollectionAllowsDuplicates"
+		>
+			<TraitRules>
+				<AllowsTrait name="keyTrait" />
+
+				<RequiresTrait name="allowed" />
+			</TraitRules>
+
+			<ChildRules>
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="ChildPath" />
+
+					<ConceptOption conceptSelector="ContentPath" />
+
+					<ConceptOption conceptSelector="DescendantPath" />
+
+					<ConceptOption conceptSelector="TraitPath" />
+				</ExactlyOneChildOf>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#CollectionAllowsEmpty
+			name="CollectionAllowsEmpty"
+		>
+			<TraitRules>
+				<RequiresTrait name="allowed" />
+			</TraitRules>
+
+			<ChildRules>
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="ChildPath" />
+
+					<ConceptOption conceptSelector="ContentPath" />
+
+					<ConceptOption conceptSelector="DescendantPath" />
+
+					<ConceptOption conceptSelector="TraitPath" />
+				</ExactlyOneChildOf>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#CollectionOrdering
+			name="CollectionOrdering"
+		>
+			<TraitRules>
+				<RequiresTrait name="ordering" />
+			</TraitRules>
+
+			<ChildRules>
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="ChildPath" />
+
+					<ConceptOption conceptSelector="ContentPath" />
+
+					<ConceptOption conceptSelector="DescendantPath" />
+
+					<ConceptOption conceptSelector="TraitPath" />
+				</ExactlyOneChildOf>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#CollectionRules
+			name="CollectionRules"
+		>
+			<TraitRules>
+				<AllowsTrait name="allowsDuplicates" />
+
+				<AllowsTrait name="ordering" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustBeEntity
+			id=urn:codex:bootstrap:1.0.0#ConceptDefinition
+			name="ConceptDefinition"
+		>
+			<TraitRules>
+				<AllowsTrait name="description" />
+
+				<AllowsTrait name="role" />
+
+				<RequiresTrait name="conceptKind" />
+
+				<RequiresTrait name="entityEligibility" />
+
+				<RequiresTrait name="name" />
+			</TraitRules>
+
+			<ChildRules>
+				<AllowsChildConcept conceptSelector="ChildRules" />
+
+				<AllowsChildConcept conceptSelector="CollectionRules" />
+
+				<AllowsChildConcept conceptSelector="ContentRules" />
+
+				<AllowsChildConcept conceptSelector="TraitRules" />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ConceptDefinitions
+			name="ConceptDefinitions"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="ConceptDefinition" min=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ConceptOption
+			name="ConceptOption"
+		>
+			<TraitRules>
+				<RequiresTrait name="conceptSelector" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ConditionalConstraint
+			name="ConditionalConstraint"
+		>
+			<ChildRules>
+				<RequiresChildConcept
+					conceptSelector="Then"
+					max=1
+					min=1
+				/>
+
+				<RequiresChildConcept
+					conceptSelector="When"
+					max=1
+					min=1
+				/>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustBeEntity
+			id=urn:codex:bootstrap:1.0.0#ConstraintDefinition
+			name="ConstraintDefinition"
+		>
+			<TraitRules>
+				<AllowsTrait name="description" />
+
+				<AllowsTrait name="title" />
+			</TraitRules>
+
+			<ChildRules>
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					max=1
+					min=1
+				/>
+
+				<RequiresChildConcept
+					conceptSelector="Targets"
+					max=1
+					min=1
+				/>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ConstraintDefinitions
+			name="ConstraintDefinitions"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="ConstraintDefinition" min=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ContentConstraint
+			name="ContentConstraint"
+		>
+			<TraitRules>
+				<AllowsTrait name="flags" />
+
+				<AllowsTrait name="pattern" />
+
+				<RequiresTrait name="type">
+					<AllowedValues>
+						<EnumeratedConstraint set="ContentConstraintType" />
+					</AllowedValues>
+				</RequiresTrait>
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ContentPath
+			name="ContentPath"
+		/>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ContentRules
+			name="ContentRules"
+		>
+			<ChildRules>
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="AllowsContent" />
+
+					<ConceptOption conceptSelector="ForbidsContent" />
+				</ExactlyOneChildOf>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ContextConstraint
+			name="ContextConstraint"
+		>
+			<TraitRules>
+				<AllowsTrait name="contextSelector" />
+
+				<RequiresTrait name="type">
+					<AllowedValues>
+						<EnumeratedConstraint set="ContextConstraintType" />
+					</AllowedValues>
+				</RequiresTrait>
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#Count
+			name="Count"
+		>
+			<TraitRules>
+				<AllowsTrait name="maxCount" />
+
+				<AllowsTrait name="minCount" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#DescendantPath
+			name="DescendantPath"
+		>
+			<TraitRules>
+				<RequiresTrait name="conceptSelector" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#EachMemberSatisfies
+			name="EachMemberSatisfies"
+		>
+			<ChildRules>
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="ChildPath" />
+
+					<ConceptOption conceptSelector="ContentPath" />
+
+					<ConceptOption conceptSelector="DescendantPath" />
+
+					<ConceptOption conceptSelector="TraitPath" />
+				</ExactlyOneChildOf>
+
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					max=1
+					min=1
+				/>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#EnumeratedConstraint
+			name="EnumeratedConstraint"
+		>
+			<TraitRules>
+				<RequiresTrait name="set" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustBeEntity
+			id=urn:codex:bootstrap:1.0.0#EnumeratedValueSet
+			name="EnumeratedValueSet"
+		>
+			<TraitRules>
+				<AllowsTrait name="description" />
+
+				<RequiresTrait name="name" />
+			</TraitRules>
+
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="Member" min=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#EnumeratedValueSets
+			name="EnumeratedValueSets"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="EnumeratedValueSet" min=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ExactlyOneChildOf
+			name="ExactlyOneChildOf"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="ConceptOption" min=2 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#Exists
+			name="Exists"
+		/>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ForAll
+			name="ForAll"
+		/>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ForbidsChildConcept
+			name="ForbidsChildConcept"
+		>
+			<TraitRules>
+				<RequiresTrait name="conceptSelector" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ForbidsContent
+			name="ForbidsContent"
+		/>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ForbidsTrait
+			name="ForbidsTrait"
+		>
+			<TraitRules>
+				<RequiresTrait name="name" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#IdentityConstraint
+			name="IdentityConstraint"
+		>
+			<TraitRules>
+				<AllowsTrait name="flags" />
+
+				<AllowsTrait name="pattern" />
+
+				<AllowsTrait name="scope" />
+
+				<RequiresTrait name="type">
+					<AllowedValues>
+						<EnumeratedConstraint set="IdentityConstraintType" />
+					</AllowedValues>
+				</RequiresTrait>
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$ValueLike
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#Member
+			name="Member"
+		>
+			<TraitRules>
+				<AllowsTrait name="description" />
+
+				<AllowsTrait name="label" />
+
+				<RequiresTrait name="value" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#MemberCount
+			name="MemberCount"
+		>
+			<TraitRules>
+				<AllowsTrait name="max" />
+
+				<AllowsTrait name="min" />
+			</TraitRules>
+
+			<ChildRules>
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="ChildPath" />
+
+					<ConceptOption conceptSelector="ContentPath" />
+
+					<ConceptOption conceptSelector="DescendantPath" />
+
+					<ConceptOption conceptSelector="TraitPath" />
+				</ExactlyOneChildOf>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#Not
+			name="Not"
+		>
+			<ChildRules>
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					max=1
+					min=1
+				/>
+			</ChildRules>
+		</ConceptDefinition>
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#OnPathCount
+			name="OnPathCount"
+		>
+			<TraitRules>
+				<AllowsTrait name="maxCount" />
+
+				<AllowsTrait name="minCount" />
+			</TraitRules>
+
+			<ChildRules>
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="ChildPath" />
+
+					<ConceptOption conceptSelector="ContentPath" />
+
+					<ConceptOption conceptSelector="DescendantPath" />
+
+					<ConceptOption conceptSelector="TraitPath" />
+				</ExactlyOneChildOf>
+
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					max=1
+					min=1
+				/>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#OnPathExists
+			name="OnPathExists"
+		>
+			<ChildRules>
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="ChildPath" />
+
+					<ConceptOption conceptSelector="ContentPath" />
+
+					<ConceptOption conceptSelector="DescendantPath" />
+
+					<ConceptOption conceptSelector="TraitPath" />
+				</ExactlyOneChildOf>
+
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					max=1
+					min=1
+				/>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#OnPathForAll
+			name="OnPathForAll"
+		>
+			<ChildRules>
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="ChildPath" />
+
+					<ConceptOption conceptSelector="ContentPath" />
+
+					<ConceptOption conceptSelector="DescendantPath" />
+
+					<ConceptOption conceptSelector="TraitPath" />
+				</ExactlyOneChildOf>
+
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					max=1
+					min=1
+				/>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#OrderConstraint
+			name="OrderConstraint"
+		>
+			<TraitRules>
+				<RequiresTrait name="byTrait" />
+
+				<RequiresTrait name="type">
+					<AllowedValues>
+						<EnumeratedConstraint set="OrderConstraintType" />
+					</AllowedValues>
+				</RequiresTrait>
+			</TraitRules>
+
+			<ChildRules>
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="ChildPath" />
+
+					<ConceptOption conceptSelector="DescendantPath" />
+				</ExactlyOneChildOf>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#PatternConstraint
+			name="PatternConstraint"
+		>
+			<TraitRules>
+				<AllowsTrait name="flags" />
+
+				<RequiresTrait name="pattern" />
+
+				<RequiresTrait name="trait" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#RdfGraph
+			name="RdfGraph"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="RdfTriple" min=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#RdfTriple
+			name="RdfTriple"
+		>
+			<TraitRules>
+				<AllowsTrait name="datatype" />
+
+				<AllowsTrait name="language" />
+
+				<AllowsTrait name="lexical" />
+
+				<AllowsTrait name="object" />
+
+				<RequiresTrait name="predicate" />
+
+				<RequiresTrait name="subject" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ReferenceConstraint
+			name="ReferenceConstraint"
+		>
+			<TraitRules>
+				<AllowsTrait name="conceptSelector" />
+
+				<AllowsTrait name="traitName" />
+
+				<RequiresTrait name="type">
+					<AllowedValues>
+						<EnumeratedConstraint set="ReferenceConstraintType" />
+					</AllowedValues>
+				</RequiresTrait>
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#RequiresChildConcept
+			name="RequiresChildConcept"
+		>
+			<TraitRules>
+				<AllowsTrait name="max" />
+
+				<AllowsTrait name="min" />
+
+				<RequiresTrait name="conceptSelector" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#RequiresTrait
+			name="RequiresTrait"
+		>
+			<TraitRules>
+				<RequiresTrait name="name" />
+			</TraitRules>
+
+			<ChildRules>
+				<AllowsChildConcept conceptSelector="AllowedValues" max=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#Rule
+			name="Rule"
+		>
+			<ChildRules>
+				<ExactlyOneChildOf>
+					<ConceptOption conceptSelector="AllOf" />
+
+					<ConceptOption conceptSelector="AnyOf" />
+
+					<ConceptOption conceptSelector="ChildConstraint" />
+
+					<ConceptOption conceptSelector="ChildSatisfies" />
+
+					<ConceptOption conceptSelector="CollectionAllowsDuplicates" />
+
+					<ConceptOption conceptSelector="CollectionAllowsEmpty" />
+
+					<ConceptOption conceptSelector="CollectionOrdering" />
+
+					<ConceptOption conceptSelector="ConditionalConstraint" />
+
+					<ConceptOption conceptSelector="ContentConstraint" />
+
+					<ConceptOption conceptSelector="ContextConstraint" />
+
+					<ConceptOption conceptSelector="EachMemberSatisfies" />
+
+					<ConceptOption conceptSelector="IdentityConstraint" />
+
+					<ConceptOption conceptSelector="MemberCount" />
+
+					<ConceptOption conceptSelector="Not" />
+
+					<ConceptOption conceptSelector="OnPathCount" />
+
+					<ConceptOption conceptSelector="OnPathExists" />
+
+					<ConceptOption conceptSelector="OnPathForAll" />
+
+					<ConceptOption conceptSelector="OrderConstraint" />
+
+					<ConceptOption conceptSelector="PatternConstraint" />
+
+					<ConceptOption conceptSelector="ReferenceConstraint" />
+
+					<ConceptOption conceptSelector="TraitCardinality" />
+
+					<ConceptOption conceptSelector="TraitEquals" />
+
+					<ConceptOption conceptSelector="TraitExists" />
+
+					<ConceptOption conceptSelector="TraitLessOrEqual" />
+
+					<ConceptOption conceptSelector="TraitMissing" />
+
+					<ConceptOption conceptSelector="TraitValueType" />
+
+					<ConceptOption conceptSelector="UniqueConstraint" />
+
+					<ConceptOption conceptSelector="ValueInNumericRange" />
+
+					<ConceptOption conceptSelector="ValueIsNonEmpty" />
+
+					<ConceptOption conceptSelector="ValueIsValid" />
+
+					<ConceptOption conceptSelector="ValueLength" />
+
+					<ConceptOption conceptSelector="ValueMatchesPattern" />
+				</ExactlyOneChildOf>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustBeEntity
+			id=urn:codex:bootstrap:1.0.0#Schema
+			name="Schema"
+		>
+			<TraitRules>
+				<AllowsTrait name="description" />
+
+				<AllowsTrait name="title" />
+
+				<RequiresTrait name="authoringMode" />
+
+				<RequiresTrait name="compatibilityClass" />
+
+				<RequiresTrait name="namespace" />
+
+				<RequiresTrait name="version" />
+
+				<RequiresTrait name="versionScheme" />
+			</TraitRules>
+
+			<ChildRules>
+				<AllowsChildConcept conceptSelector="ConceptDefinitions" max=1 />
+
+				<AllowsChildConcept conceptSelector="ConstraintDefinitions" max=1 />
+
+				<AllowsChildConcept conceptSelector="EnumeratedValueSets" max=1 />
+
+				<AllowsChildConcept conceptSelector="RdfGraph" max=1 />
+
+				<AllowsChildConcept conceptSelector="SchemaImports" max=1 />
+
+				<AllowsChildConcept conceptSelector="TraitDefinitions" max=1 />
+
+				<AllowsChildConcept conceptSelector="ValidatorDefinitions" max=1 />
+
+				<AllowsChildConcept conceptSelector="ValueTypeDefinitions" max=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#SchemaImport
+			name="SchemaImport"
+		>
+			<TraitRules>
+				<RequiresTrait name="namespace" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#SchemaImports
+			name="SchemaImports"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="SchemaImport" min=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#TargetConcept
+			name="TargetConcept"
+		>
+			<TraitRules>
+				<RequiresTrait name="conceptSelector" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#TargetContext
+			name="TargetContext"
+		>
+			<TraitRules>
+				<RequiresTrait name="contextSelector" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#Targets
+			name="Targets"
+		>
+			<ChildRules>
+				<AllowsChildConcept conceptSelector="TargetConcept" />
+
+				<AllowsChildConcept conceptSelector="TargetContext" />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#Then
+			name="Then"
+		>
+			<ChildRules>
+				<RequiresChildConcept
+					conceptSelector="Rule"
+					max=1
+					min=1
+				/>
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#TraitCardinality
+			name="TraitCardinality"
+		>
+			<TraitRules>
+				<AllowsTrait name="max" />
+
+				<AllowsTrait name="min" />
+
+				<RequiresTrait name="trait" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustBeEntity
+			id=urn:codex:bootstrap:1.0.0#TraitDefinition
+			name="TraitDefinition"
+		>
+			<TraitRules>
+				<AllowsTrait name="defaultValueType" />
+
+				<AllowsTrait name="defaultValueTypes" />
+
+				<AllowsTrait name="description" />
+
+				<AllowsTrait name="isReferenceTrait" />
+
+				<AllowsTrait name="priority" />
+
+				<RequiresTrait name="name" />
+			</TraitRules>
+
+			<ChildRules>
+				<AllowsChildConcept conceptSelector="AllowedValues" max=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#TraitDefinitions
+			name="TraitDefinitions"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="TraitDefinition" min=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#TraitEquals
+			name="TraitEquals"
+		>
+			<TraitRules>
+				<RequiresTrait name="trait" />
+
+				<RequiresTrait name="value" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#TraitExists
+			name="TraitExists"
+		>
+			<TraitRules>
+				<RequiresTrait name="trait" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#TraitLessOrEqual
+			name="TraitLessOrEqual"
+		>
+			<TraitRules>
+				<RequiresTrait name="leftTrait" />
+
+				<RequiresTrait name="rightTrait" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#TraitMissing
+			name="TraitMissing"
+		>
+			<TraitRules>
+				<RequiresTrait name="trait" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#TraitPath
+			name="TraitPath"
+		>
+			<TraitRules>
+				<RequiresTrait name="traitName" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#TraitRules
+			name="TraitRules"
+		>
+			<ChildRules>
+				<AllowsChildConcept conceptSelector="AllowsTrait" />
+
+				<AllowsChildConcept conceptSelector="ForbidsTrait" />
+
+				<AllowsChildConcept conceptSelector="RequiresTrait" />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#TraitValueType
+			name="TraitValueType"
+		>
+			<TraitRules>
+				<RequiresTrait name="trait" />
+
+				<RequiresTrait name="valueType" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#UniqueConstraint
+			name="UniqueConstraint"
+		>
+			<TraitRules>
+				<RequiresTrait name="scope" />
+
+				<RequiresTrait name="trait" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustBeEntity
+			id=urn:codex:bootstrap:1.0.0#ValidatorDefinition
+			name="ValidatorDefinition"
+		>
+			<TraitRules>
+				<RequiresTrait name="message" />
+
+				<RequiresTrait name="name" />
+			</TraitRules>
+
+			<ContentRules>
+				<AllowsContent />
+			</ContentRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ValidatorDefinitions
+			name="ValidatorDefinitions"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="ValidatorDefinition" min=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ValueInNumericRange
+			name="ValueInNumericRange"
+		>
+			<TraitRules>
+				<AllowsTrait name="max" />
+
+				<AllowsTrait name="min" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ValueIsNonEmpty
+			name="ValueIsNonEmpty"
+		/>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ValueIsOneOf
+			name="ValueIsOneOf"
+		>
+			<TraitRules>
+				<RequiresTrait name="values" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ValueIsValid
+			name="ValueIsValid"
+		>
+			<TraitRules>
+				<RequiresTrait name="validatorName" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ValueLength
+			name="ValueLength"
+		>
+			<TraitRules>
+				<AllowsTrait name="max" />
+
+				<AllowsTrait name="min" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ValueMatchesPattern
+			name="ValueMatchesPattern"
+		>
+			<TraitRules>
+				<AllowsTrait name="flags" />
+
+				<RequiresTrait name="pattern" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustBeEntity
+			id=urn:codex:bootstrap:1.0.0#ValueTypeDefinition
+			name="ValueTypeDefinition"
+		>
+			<TraitRules>
+				<AllowsTrait name="validatorName" />
+
+				<RequiresTrait name="baseValueType" />
+
+				<RequiresTrait name="name" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#ValueTypeDefinitions
+			name="ValueTypeDefinitions"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="ValueTypeDefinition" min=1 />
+			</ChildRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#When
+			name="When"
+		>
+			<ChildRules>
+				<RequiresChildConcept conceptSelector="Rule" max=1 min=1 />
+			</ChildRules>
+		</ConceptDefinition>
+	</ConceptDefinitions>
+
+	<ConstraintDefinitions>
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/AllowsChildConcept>
+			<Targets>
+				<TargetConcept conceptSelector="AllowsChildConcept" />
+			</Targets>
+
+			<Rule>
+				<TraitLessOrEqual leftTrait="min" rightTrait="max" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/ChildRules>
+			<Targets>
+				<TargetConcept conceptSelector="ChildRules" />
+			</Targets>
+
+			<Rule>
+				<AnyOf>
+					<Rule>
+						<ChildConstraint conceptSelector="AllowsChildConcept" type=$RequiresChildConcept />
+					</Rule>
+
+					<Rule>
+						<ChildConstraint conceptSelector="ExactlyOneChildOf" type=$RequiresChildConcept />
+					</Rule>
+
+					<Rule>
+						<ChildConstraint conceptSelector="ForbidsChildConcept" type=$RequiresChildConcept />
+					</Rule>
+
+					<Rule>
+						<ChildConstraint conceptSelector="RequiresChildConcept" type=$RequiresChildConcept />
+					</Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/ConceptDefinition>
+			<Targets>
+				<TargetConcept conceptSelector="ConceptDefinition" />
+			</Targets>
+
+			<Rule>
+				<UniqueConstraint scope="Schema" trait="name" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/ContentConstraint>
+			<Targets>
+				<TargetConcept conceptSelector="ContentConstraint" />
+			</Targets>
+
+			<Rule>
+				<AllOf>
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<Rule>
+									<TraitEquals trait="type" value=$ContentMatchesPattern />
+								</Rule>
+							</When>
+
+							<Then>
+								<Rule>
+									<TraitExists trait="pattern" />
+								</Rule>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<Rule>
+									<AnyOf>
+										<Rule>
+											<TraitEquals trait="type" value=$ContentRequired />
+										</Rule>
+
+										<Rule>
+											<TraitEquals trait="type" value=$ForbidsContent />
+										</Rule>
+									</AnyOf>
+								</Rule>
+							</When>
+
+							<Then>
+								<Rule>
+									<AllOf>
+										<Rule>
+											<TraitMissing trait="flags" />
+										</Rule>
+
+										<Rule>
+											<TraitMissing trait="pattern" />
+										</Rule>
+									</AllOf>
+								</Rule>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+				</AllOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/ContextConstraint>
+			<Targets>
+				<TargetConcept conceptSelector="ContextConstraint" />
+			</Targets>
+
+			<Rule>
+				<AllOf>
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<Rule>
+									<TraitEquals trait="type" value=$OnlyValidUnderContext />
+								</Rule>
+							</When>
+
+							<Then>
+								<Rule>
+									<TraitExists trait="contextSelector" />
+								</Rule>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<Rule>
+									<TraitEquals trait="type" value=$OnlyValidUnderParent />
+								</Rule>
+							</When>
+
+							<Then>
+								<Rule>
+									<TraitMissing trait="contextSelector" />
+								</Rule>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+				</AllOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/Count>
+			<Targets>
+				<TargetConcept conceptSelector="Count" />
+			</Targets>
+
+			<Rule>
+				<AllOf>
+					<Rule>
+						<AnyOf>
+							<Rule>
+								<TraitExists trait="maxCount" />
+							</Rule>
+
+							<Rule>
+								<TraitExists trait="minCount" />
+							</Rule>
+						</AnyOf>
+					</Rule>
+
+					<Rule>
+						<TraitLessOrEqual leftTrait="minCount" rightTrait="maxCount" />
+					</Rule>
+				</AllOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/EnumeratedValueSet>
+			<Targets>
+				<TargetConcept conceptSelector="EnumeratedValueSet" />
+			</Targets>
+
+			<Rule>
+				<UniqueConstraint scope="Schema" trait="name" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/IdentityConstraint>
+			<Targets>
+				<TargetConcept conceptSelector="IdentityConstraint" />
+			</Targets>
+
+			<Rule>
+				<AllOf>
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<Rule>
+									<TraitEquals trait="type" value=$IdentifierForm />
+								</Rule>
+							</When>
+
+							<Then>
+								<Rule>
+									<TraitExists trait="pattern" />
+								</Rule>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<Rule>
+									<TraitEquals trait="type" value=$IdentifierUniqueness />
+								</Rule>
+							</When>
+
+							<Then>
+								<Rule>
+									<AllOf>
+										<Rule>
+											<TraitExists trait="scope" />
+										</Rule>
+
+										<Rule>
+											<TraitMissing trait="flags" />
+										</Rule>
+
+										<Rule>
+											<TraitMissing trait="pattern" />
+										</Rule>
+									</AllOf>
+								</Rule>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<Rule>
+									<AnyOf>
+										<Rule>
+											<TraitEquals trait="type" value=$MustBeEntity />
+										</Rule>
+
+										<Rule>
+											<TraitEquals trait="type" value=$MustNotBeEntity />
+										</Rule>
+									</AnyOf>
+								</Rule>
+							</When>
+
+							<Then>
+								<Rule>
+									<AllOf>
+										<Rule>
+											<TraitMissing trait="flags" />
+										</Rule>
+
+										<Rule>
+											<TraitMissing trait="pattern" />
+										</Rule>
+
+										<Rule>
+											<TraitMissing trait="scope" />
+										</Rule>
+									</AllOf>
+								</Rule>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+				</AllOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/Member>
+			<Targets>
+				<TargetConcept conceptSelector="Member" />
+			</Targets>
+
+			<Rule>
+				<UniqueConstraint scope="EnumeratedValueSet" trait="value" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/MemberCount>
+			<Targets>
+				<TargetConcept conceptSelector="MemberCount" />
+			</Targets>
+
+			<Rule>
+				<AllOf>
+					<Rule>
+						<AnyOf>
+							<Rule>
+								<TraitExists trait="max" />
+							</Rule>
+
+							<Rule>
+								<TraitExists trait="min" />
+							</Rule>
+						</AnyOf>
+					</Rule>
+
+					<Rule>
+						<TraitLessOrEqual leftTrait="min" rightTrait="max" />
+					</Rule>
+				</AllOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/OnPathCount>
+			<Targets>
+				<TargetConcept conceptSelector="OnPathCount" />
+			</Targets>
+
+			<Rule>
+				<AnyOf>
+					<Rule>
+						<TraitExists trait="maxCount" />
+					</Rule>
+
+					<Rule>
+						<TraitExists trait="minCount" />
+					</Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/RdfTriple>
+			<Targets>
+				<TargetConcept conceptSelector="RdfTriple" />
+			</Targets>
+
+			<Rule>
+				<AllOf>
+					<Rule>
+						<AnyOf>
+							<Rule>
+								<AllOf>
+									<Rule>
+										<TraitExists trait="object" />
+									</Rule>
+
+									<Rule>
+										<TraitMissing trait="lexical" />
+									</Rule>
+								</AllOf>
+							</Rule>
+
+							<Rule>
+								<AllOf>
+									<Rule>
+										<TraitExists trait="lexical" />
+									</Rule>
+
+									<Rule>
+										<TraitMissing trait="object" />
+									</Rule>
+								</AllOf>
+							</Rule>
+						</AnyOf>
+					</Rule>
+
+					<Rule>
+						<Not>
+							<Rule>
+								<AllOf>
+									<Rule>
+										<TraitExists trait="datatype" />
+									</Rule>
+
+									<Rule>
+										<TraitExists trait="language" />
+									</Rule>
+								</AllOf>
+							</Rule>
+						</Not>
+					</Rule>
+				</AllOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/ReferenceConstraint>
+			<Targets>
+				<TargetConcept conceptSelector="ReferenceConstraint" />
+			</Targets>
+
+			<Rule>
+				<AllOf>
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<Rule>
+									<TraitEquals trait="type" value=$ReferenceTargetsConcept />
+								</Rule>
+							</When>
+
+							<Then>
+								<Rule>
+									<AllOf>
+										<Rule>
+											<TraitExists trait="conceptSelector" />
+										</Rule>
+
+										<Rule>
+											<TraitMissing trait="traitName" />
+										</Rule>
+									</AllOf>
+								</Rule>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<Rule>
+									<TraitEquals trait="type" value=$ReferenceTraitAllowed />
+								</Rule>
+							</When>
+
+							<Then>
+								<Rule>
+									<AllOf>
+										<Rule>
+											<TraitExists trait="traitName" />
+										</Rule>
+
+										<Rule>
+											<TraitMissing trait="conceptSelector" />
+										</Rule>
+									</AllOf>
+								</Rule>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<Rule>
+									<AnyOf>
+										<Rule>
+											<TraitEquals trait="type" value=$ReferenceMustResolve />
+										</Rule>
+
+										<Rule>
+											<TraitEquals trait="type" value=$ReferenceSingleton />
+										</Rule>
+
+										<Rule>
+											<TraitEquals trait="type" value=$ReferenceTargetsEntity />
+										</Rule>
+									</AnyOf>
+								</Rule>
+							</When>
+
+							<Then>
+								<Rule>
+									<AllOf>
+										<Rule>
+											<TraitMissing trait="conceptSelector" />
+										</Rule>
+
+										<Rule>
+											<TraitMissing trait="traitName" />
+										</Rule>
+									</AllOf>
+								</Rule>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+				</AllOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/RequiresChildConcept>
+			<Targets>
+				<TargetConcept conceptSelector="RequiresChildConcept" />
+			</Targets>
+
+			<Rule>
+				<TraitLessOrEqual leftTrait="min" rightTrait="max" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/Schema>
+			<Targets>
+				<TargetConcept conceptSelector="Schema" />
+			</Targets>
+
+			<Rule>
+				<AllOf>
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<Rule>
+									<TraitEquals trait="authoringMode" value=$SimplifiedMode />
+								</Rule>
+							</When>
+
+							<Then>
+								<Rule>
+									<AllOf>
+										<Rule>
+											<ChildConstraint conceptSelector="ConceptDefinitions" type=$RequiresChildConcept />
+										</Rule>
+
+										<Rule>
+											<ChildConstraint conceptSelector="RdfGraph" type=$ForbidsChildConcept />
+										</Rule>
+									</AllOf>
+								</Rule>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+
+					<Rule>
+						<ConditionalConstraint>
+							<When>
+								<Rule>
+									<TraitEquals trait="authoringMode" value=$CanonicalMode />
+								</Rule>
+							</When>
+
+							<Then>
+								<Rule>
+									<AllOf>
+										<Rule>
+											<ChildConstraint conceptSelector="ConceptDefinitions" type=$ForbidsChildConcept />
+										</Rule>
+
+										<Rule>
+											<ChildConstraint conceptSelector="ConstraintDefinitions" type=$ForbidsChildConcept />
+										</Rule>
+
+										<Rule>
+											<ChildConstraint conceptSelector="EnumeratedValueSets" type=$ForbidsChildConcept />
+										</Rule>
+
+										<Rule>
+											<ChildConstraint conceptSelector="RdfGraph" type=$RequiresChildConcept />
+										</Rule>
+
+										<Rule>
+											<ChildConstraint conceptSelector="TraitDefinitions" type=$ForbidsChildConcept />
+										</Rule>
+
+										<Rule>
+											<ChildConstraint conceptSelector="ValidatorDefinitions" type=$ForbidsChildConcept />
+										</Rule>
+
+										<Rule>
+											<ChildConstraint conceptSelector="ValueTypeDefinitions" type=$ForbidsChildConcept />
+										</Rule>
+									</AllOf>
+								</Rule>
+							</Then>
+						</ConditionalConstraint>
+					</Rule>
+				</AllOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/Targets>
+			<Targets>
+				<TargetConcept conceptSelector="Targets" />
+			</Targets>
+
+			<Rule>
+				<AnyOf>
+					<Rule>
+						<ChildConstraint conceptSelector="TargetConcept" type=$RequiresChildConcept />
+					</Rule>
+
+					<Rule>
+						<ChildConstraint conceptSelector="TargetContext" type=$RequiresChildConcept />
+					</Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/TraitCardinality>
+			<Targets>
+				<TargetConcept conceptSelector="TraitCardinality" />
+			</Targets>
+
+			<Rule>
+				<AllOf>
+					<Rule>
+						<AnyOf>
+							<Rule>
+								<TraitExists trait="max" />
+							</Rule>
+
+							<Rule>
+								<TraitExists trait="min" />
+							</Rule>
+						</AnyOf>
+					</Rule>
+
+					<Rule>
+						<TraitLessOrEqual leftTrait="min" rightTrait="max" />
+					</Rule>
+				</AllOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/TraitDefinition/nameUniqueness>
+			<Targets>
+				<TargetConcept conceptSelector="TraitDefinition" />
+			</Targets>
+
+			<Rule>
+				<UniqueConstraint scope="Schema" trait="name" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/TraitDefinition/valueTypeExclusivity>
+			<Targets>
+				<TargetConcept conceptSelector="TraitDefinition" />
+			</Targets>
+
+			<Rule>
+				<AnyOf>
+					<Rule>
+						<AllOf>
+							<Rule>
+								<TraitExists trait="defaultValueType" />
+							</Rule>
+
+							<Rule>
+								<TraitMissing trait="defaultValueTypes" />
+							</Rule>
+						</AllOf>
+					</Rule>
+
+					<Rule>
+						<AllOf>
+							<Rule>
+								<TraitExists trait="defaultValueTypes" />
+							</Rule>
+
+							<Rule>
+								<TraitMissing trait="defaultValueType" />
+							</Rule>
+						</AllOf>
+					</Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/TraitRules>
+			<Targets>
+				<TargetConcept conceptSelector="TraitRules" />
+			</Targets>
+
+			<Rule>
+				<AnyOf>
+					<Rule>
+						<ChildConstraint conceptSelector="AllowsTrait" type=$RequiresChildConcept />
+					</Rule>
+
+					<Rule>
+						<ChildConstraint conceptSelector="ForbidsTrait" type=$RequiresChildConcept />
+					</Rule>
+
+					<Rule>
+						<ChildConstraint conceptSelector="RequiresTrait" type=$RequiresChildConcept />
+					</Rule>
+				</AnyOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/ValidatorDefinition>
+			<Targets>
+				<TargetConcept conceptSelector="ValidatorDefinition" />
+			</Targets>
+
+			<Rule>
+				<UniqueConstraint scope="Schema" trait="name" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/ValueInNumericRange>
+			<Targets>
+				<TargetConcept conceptSelector="ValueInNumericRange" />
+			</Targets>
+
+			<Rule>
+				<AllOf>
+					<Rule>
+						<AnyOf>
+							<Rule>
+								<TraitExists trait="max" />
+							</Rule>
+
+							<Rule>
+								<TraitExists trait="min" />
+							</Rule>
+						</AnyOf>
+					</Rule>
+
+					<Rule>
+						<TraitLessOrEqual leftTrait="min" rightTrait="max" />
+					</Rule>
+				</AllOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/ValueLength>
+			<Targets>
+				<TargetConcept conceptSelector="ValueLength" />
+			</Targets>
+
+			<Rule>
+				<AllOf>
+					<Rule>
+						<AnyOf>
+							<Rule>
+								<TraitExists trait="max" />
+							</Rule>
+
+							<Rule>
+								<TraitExists trait="min" />
+							</Rule>
+						</AnyOf>
+					</Rule>
+
+					<Rule>
+						<TraitLessOrEqual leftTrait="min" rightTrait="max" />
+					</Rule>
+				</AllOf>
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/ValueTypeDefinition>
+			<Targets>
+				<TargetConcept conceptSelector="ValueTypeDefinition" />
+			</Targets>
+
+			<Rule>
+				<UniqueConstraint scope="Schema" trait="name" />
+			</Rule>
+		</ConstraintDefinition>
+	</ConstraintDefinitions>
+
+	<EnumeratedValueSets>
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#AuthoringMode name="AuthoringMode">
+			<Member value="CanonicalMode" />
+
+			<Member value="SimplifiedMode" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#ChildConstraintType name="ChildConstraintType">
+			<Member value="AllowsChildConcept" />
+
+			<Member value="ForbidsChildConcept" />
+
+			<Member value="RequiresChildConcept" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#CompatibilityClass name="CompatibilityClass">
+			<Member value="BackwardCompatible" />
+
+			<Member value="Breaking" />
+
+			<Member value="ForwardCompatible" />
+
+			<Member value="Initial" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#ConceptKind name="ConceptKind">
+			<Member value="Semantic" />
+
+			<Member value="Structural" />
+
+			<Member value="ValueLike" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#ContentConstraintType name="ContentConstraintType">
+			<Member value="ContentMatchesPattern" />
+
+			<Member value="ContentRequired" />
+
+			<Member value="ForbidsContent" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#ContextConstraintType name="ContextConstraintType">
+			<Member value="OnlyValidUnderContext" />
+
+			<Member value="OnlyValidUnderParent" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#EntityEligibility name="EntityEligibility">
+			<Member value="MustBeEntity" />
+
+			<Member value="MustNotBeEntity" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#IdentityConstraintType name="IdentityConstraintType">
+			<Member value="IdentifierForm" />
+
+			<Member value="IdentifierUniqueness" />
+
+			<Member value="MustBeEntity" />
+
+			<Member value="MustNotBeEntity" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#OrderConstraintType name="OrderConstraintType">
+			<Member value="Ascending" />
+
+			<Member value="Descending" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#Ordering name="Ordering">
+			<Member value="Ordered" />
+
+			<Member value="Unordered" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#ReferenceConstraintType name="ReferenceConstraintType">
+			<Member value="ReferenceMustResolve" />
+
+			<Member value="ReferenceSingleton" />
+
+			<Member value="ReferenceTargetsConcept" />
+
+			<Member value="ReferenceTargetsEntity" />
+
+			<Member value="ReferenceTraitAllowed" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#VersionScheme name="VersionScheme">
+			<Member value="DateYYYYMM" />
+
+			<Member value="DateYYYYMMDD" />
+
+			<Member value="Lexical" />
+
+			<Member value="Semver" />
+		</EnumeratedValueSet>
+
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#WhitespaceMode name="WhitespaceMode">
+			<Member value="Flow" />
+
+			<Member value="Preformatted" />
+		</EnumeratedValueSet>
+	</EnumeratedValueSets>
+
+	<TraitDefinitions>
+		<TraitDefinition
+			defaultValueType=$Boolean
+			id=urn:codex:bootstrap:1.0.0#allowed
+			name="allowed"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Boolean
+			id=urn:codex:bootstrap:1.0.0#allowsDuplicates
+			name="allowsDuplicates"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$EnumeratedToken
+			id=urn:codex:bootstrap:1.0.0#authoringMode
+			name="authoringMode"
+		>
+			<AllowedValues>
+				<EnumeratedConstraint set="AuthoringMode" />
+			</AllowedValues>
+		</TraitDefinition>
+
+		<TraitDefinition
+			defaultValueType=$ValueTypeExpression
+			id=urn:codex:bootstrap:1.0.0#baseValueType
+			name="baseValueType"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$TraitName
+			id=urn:codex:bootstrap:1.0.0#byTrait
+			name="byTrait"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$EnumeratedToken
+			id=urn:codex:bootstrap:1.0.0#compatibilityClass
+			name="compatibilityClass"
+		>
+			<AllowedValues>
+				<EnumeratedConstraint set="CompatibilityClass" />
+			</AllowedValues>
+		</TraitDefinition>
+
+		<TraitDefinition
+			defaultValueType=$EnumeratedToken
+			id=urn:codex:bootstrap:1.0.0#conceptKind
+			name="conceptKind"
+		>
+			<AllowedValues>
+				<EnumeratedConstraint set="ConceptKind" />
+			</AllowedValues>
+		</TraitDefinition>
+
+		<TraitDefinition
+			defaultValueType=$ConceptName
+			id=urn:codex:bootstrap:1.0.0#conceptSelector
+			name="conceptSelector"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$ConceptName
+			id=urn:codex:bootstrap:1.0.0#contextSelector
+			name="contextSelector"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$IriReference
+			id=urn:codex:bootstrap:1.0.0#datatype
+			name="datatype"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$ValueTypeExpression
+			id=urn:codex:bootstrap:1.0.0#defaultValueType
+			name="defaultValueType"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$ValueTypeExpression
+			id=urn:codex:bootstrap:1.0.0#defaultValueTypes
+			name="defaultValueTypes"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:1.0.0#description
+			name="description"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$EnumeratedToken
+			id=urn:codex:bootstrap:1.0.0#entityEligibility
+			name="entityEligibility"
+		>
+			<AllowedValues>
+				<EnumeratedConstraint set="EntityEligibility" />
+			</AllowedValues>
+		</TraitDefinition>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:1.0.0#flags
+			name="flags"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Boolean
+			id=urn:codex:bootstrap:1.0.0#isReferenceTrait
+			name="isReferenceTrait"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$TraitName
+			id=urn:codex:bootstrap:1.0.0#keyTrait
+			name="keyTrait"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:1.0.0#label
+			name="label"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:1.0.0#language
+			name="language"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$TraitName
+			id=urn:codex:bootstrap:1.0.0#leftTrait
+			name="leftTrait"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:1.0.0#lexical
+			name="lexical"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$NonNegativeInteger
+			id=urn:codex:bootstrap:1.0.0#max
+			name="max"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$NonNegativeInteger
+			id=urn:codex:bootstrap:1.0.0#maxCount
+			name="maxCount"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:1.0.0#message
+			name="message"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$NonNegativeInteger
+			id=urn:codex:bootstrap:1.0.0#min
+			name="min"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$NonNegativeInteger
+			id=urn:codex:bootstrap:1.0.0#minCount
+			name="minCount"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:1.0.0#name
+			name="name"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:1.0.0#namespace
+			name="namespace"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$IriReference
+			id=urn:codex:bootstrap:1.0.0#object
+			name="object"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$EnumeratedToken
+			id=urn:codex:bootstrap:1.0.0#ordering
+			name="ordering"
+		>
+			<AllowedValues>
+				<EnumeratedConstraint set="Ordering" />
+			</AllowedValues>
+		</TraitDefinition>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:1.0.0#pattern
+			name="pattern"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$IriReference
+			id=urn:codex:bootstrap:1.0.0#predicate
+			name="predicate"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$EnumeratedToken
+			id=urn:codex:bootstrap:1.0.0#priority
+			name="priority"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$TraitName
+			id=urn:codex:bootstrap:1.0.0#rightTrait
+			name="rightTrait"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:1.0.0#role
+			name="role"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$ConceptName
+			id=urn:codex:bootstrap:1.0.0#scope
+			name="scope"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$ConceptName
+			id=urn:codex:bootstrap:1.0.0#set
+			name="set"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$IriReference
+			id=urn:codex:bootstrap:1.0.0#subject
+			name="subject"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:1.0.0#title
+			name="title"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$TraitName
+			id=urn:codex:bootstrap:1.0.0#trait
+			name="trait"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$TraitName
+			id=urn:codex:bootstrap:1.0.0#traitName
+			name="traitName"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$EnumeratedToken
+			id=urn:codex:bootstrap:1.0.0#type
+			name="type"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$EnumeratedToken
+			id=urn:codex:bootstrap:1.0.0#validatorName
+			name="validatorName"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$ValueExpression
+			id=urn:codex:bootstrap:1.0.0#value
+			name="value"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$ValueExpression
+			id=urn:codex:bootstrap:1.0.0#values
+			name="values"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$ValueTypeExpression
+			id=urn:codex:bootstrap:1.0.0#valueType
+			name="valueType"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$Text
+			id=urn:codex:bootstrap:1.0.0#version
+			name="version"
+		/>
+
+		<TraitDefinition
+			defaultValueType=$EnumeratedToken
+			id=urn:codex:bootstrap:1.0.0#versionScheme
+			name="versionScheme"
+		>
+			<AllowedValues>
+				<EnumeratedConstraint set="VersionScheme" />
+			</AllowedValues>
+		</TraitDefinition>
+
+		<TraitDefinition
+			defaultValueType=$EnumeratedToken
+			id=urn:codex:bootstrap:1.0.0#whitespaceMode
+			name="whitespaceMode"
+		>
+			<AllowedValues>
+				<EnumeratedConstraint set="WhitespaceMode" />
+			</AllowedValues>
+		</TraitDefinition>
+	</TraitDefinitions>
+
+	<ValueTypeDefinitions>
+		<ValueTypeDefinition
+			baseValueType=$Text
+			id=urn:cdx:value-type:ConceptName
+			name="ConceptName"
+		/>
+
+		<ValueTypeDefinition
+			baseValueType=$Text
+			id=urn:cdx:value-type:TraitName
+			name="TraitName"
+		/>
+
+		<ValueTypeDefinition
+			baseValueType=$Text
+			id=urn:cdx:value-type:ValueExpression
+			name="ValueExpression"
+		/>
+
+		<ValueTypeDefinition
+			baseValueType=$Text
+			id=urn:cdx:value-type:ValueTypeExpression
+			name="ValueTypeExpression"
+		/>
+	</ValueTypeDefinitions>
+</Schema>
