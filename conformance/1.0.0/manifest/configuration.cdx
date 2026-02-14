@@ -478,8 +478,8 @@
 	/>
 
 	<Case
-		id="invalid/value-type-matrix/colorFunction-rejects"
-		input="cases/invalid/value-type-matrix/colorFunction-rejects/data.cdx"
+		id="invalid/value-type-matrix/colorSpaceColorFunction-rejects"
+		input="cases/invalid/value-type-matrix/colorSpaceColorFunction-rejects/data.cdx"
 		schema="cases/valid/value-type-matrix/schema.cdx"
 		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
 		expectedPrimaryErrorClass=$SchemaError
@@ -502,8 +502,8 @@
 	/>
 
 	<Case
-		id="invalid/value-type-matrix/temporal-rejects"
-		input="cases/invalid/value-type-matrix/temporal-rejects/data.cdx"
+		id="invalid/value-type-matrix/temporalPoint-rejects"
+		input="cases/invalid/value-type-matrix/temporalPoint-rejects/data.cdx"
 		schema="cases/valid/value-type-matrix/schema.cdx"
 		expectedError="expected/errors/value-type-matrix/schema-error.cdx"
 		expectedPrimaryErrorClass=$SchemaError

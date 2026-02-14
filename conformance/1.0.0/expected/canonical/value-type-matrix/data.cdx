@@ -2,8 +2,8 @@
 	boolean=true
 	character='a'
 	color=#ff0000
-	colorFunction=rgb(0 0 0)
 	colorMix=color-mix(in srgb, #ff0000, #0000ff)
+	colorSpaceColorFunction=rgb(0 0 0)
 	complexNumber=1+2i
 	decimalNumber=1.0
 	deviceCmyk=device-cmyk(0 0 0 0)
@@ -46,8 +46,8 @@
 	record=record[x:1]
 	rgbColor=rgb(0 0 0)
 	set=set[$A, $B]
-	temporal={now}
 	temporalKeyword={now}
+	temporalPoint={2026-01-15}
 	text="hi"
 	tuple=(1, 2)
 	url=url("https://example.com")

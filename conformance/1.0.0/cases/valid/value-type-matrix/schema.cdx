@@ -49,10 +49,10 @@
 				<AllowsTrait name="lchColor" />
 				<AllowsTrait name="oklabColor" />
 				<AllowsTrait name="oklchColor" />
-				<AllowsTrait name="colorFunction" />
+				<AllowsTrait name="colorSpaceColorFunction" />
 				<AllowsTrait name="colorMix" />
 				<AllowsTrait name="deviceCmyk" />
-				<AllowsTrait name="temporal" />
+				<AllowsTrait name="temporalPoint" />
 				<AllowsTrait name="plainDate" />
 				<AllowsTrait name="plainTime" />
 				<AllowsTrait name="plainDateTime" />
@@ -254,9 +254,9 @@
 			name="oklchColor"
 		/>
 		<TraitDefinition
-			defaultValueType=$ColorFunction
-			id=example:trait:colorFunction
-			name="colorFunction"
+			defaultValueType=$ColorSpaceColorFunction
+			id=example:trait:colorSpaceColorFunction
+			name="colorSpaceColorFunction"
 		/>
 		<TraitDefinition
 			defaultValueType=$ColorMix
@@ -269,9 +269,9 @@
 			name="deviceCmyk"
 		/>
 		<TraitDefinition
-			defaultValueType=$Temporal
-			id=example:trait:temporal
-			name="temporal"
+			defaultValueType=$TemporalPoint
+			id=example:trait:temporalPoint
+			name="temporalPoint"
 		/>
 		<TraitDefinition
 			defaultValueType=$PlainDate
