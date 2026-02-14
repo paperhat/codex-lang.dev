@@ -4,6 +4,16 @@ This file records all changes made to the Codex specification during implementat
 
 ---
 
+## 2026-02-14: §8.1 — Add UTF-32 BOM detection and rejection
+
+**Section:** §8.1 File Encoding
+
+**Change:** Added two UTF-32 BOM rejection rules to the encoding determination algorithm, before the existing UTF-16 checks: `00 00 FE FF` (UTF-32 BE) and `FF FE 00 00` (UTF-32 LE). Both reject with a `ParseError`: UTF-32 is not supported.
+
+**Rationale:** A UTF-32 LE file starts with `FF FE 00 00`, whose first two bytes match the UTF-16 LE BOM (`FF FE`). Without explicit UTF-32 detection, such files are misdetected as UTF-16 LE and produce misleading error messages. Checking 4-byte BOMs before 2-byte BOMs (longer match first) resolves the ambiguity.
+
+---
+
 ## 2026-02-13: §9.7.5, §9.7.8, §9.7.8.1 (new), §9.11.6.2.4, §11.5.1 — Collection-to-RDF mapping and value type token changes
 
 **Sections:** §9.7.5, §9.7.8, §9.7.8.1 (new), §9.11.6.2.4, §11.5.1

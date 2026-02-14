@@ -56,6 +56,14 @@ Declarative semantic markup for the Paperhat system, backed by RDF/OWL2/SHACL/SP
 - **Canonical**: One surface form per valid document.
 - **Schema-first**: Well-formedness is schema-free; validity requires schema.
 
+## No Abbreviations
+
+**Never abbreviate words.** Use complete, unabbreviated terms at all times — in code, file content, task descriptions, summaries, conversation text, and tool invocations. The only permitted short forms are standard initialisms and acronyms (e.g., RDF, SHACL, IRI, UUID, UTF).
+
+Examples of violations: "ConceptDef" (use "ConceptDefinition"), "Attr" (use "Attribute"), "Desc" (use "Description"), "Impl" (use "Implementation"), "Ref" (use "Reference"), "Config" (use "Configuration"), "Param" (use "Parameter"), "Prop" (use "Property").
+
+This rule has no exceptions. Do not truncate words for brevity, convenience, or space savings.
+
 ## Plans
 
 Plans must be saved in this repository's root directory (e.g., `plans/`) so the human can see them. Do not use `~/.claude/plans/` — that folder is invisible to the human.

@@ -56,7 +56,7 @@
 			name="AllowsContent"
 		>
 			<TraitRules>
-				<AllowsTrait name="whitespaceMode" />
+				<RequiresTrait name="whitespaceMode" />
 			</TraitRules>
 		</ConceptDefinition>
 
@@ -166,11 +166,7 @@
 				<ExactlyOneChildOf>
 					<ConceptOption conceptSelector="ChildPath" />
 
-					<ConceptOption conceptSelector="ContentPath" />
-
 					<ConceptOption conceptSelector="DescendantPath" />
-
-					<ConceptOption conceptSelector="TraitPath" />
 				</ExactlyOneChildOf>
 			</ChildRules>
 		</ConceptDefinition>
@@ -189,11 +185,7 @@
 				<ExactlyOneChildOf>
 					<ConceptOption conceptSelector="ChildPath" />
 
-					<ConceptOption conceptSelector="ContentPath" />
-
 					<ConceptOption conceptSelector="DescendantPath" />
-
-					<ConceptOption conceptSelector="TraitPath" />
 				</ExactlyOneChildOf>
 			</ChildRules>
 		</ConceptDefinition>
@@ -212,11 +204,7 @@
 				<ExactlyOneChildOf>
 					<ConceptOption conceptSelector="ChildPath" />
 
-					<ConceptOption conceptSelector="ContentPath" />
-
 					<ConceptOption conceptSelector="DescendantPath" />
-
-					<ConceptOption conceptSelector="TraitPath" />
 				</ExactlyOneChildOf>
 			</ChildRules>
 		</ConceptDefinition>
@@ -228,9 +216,9 @@
 			name="CollectionRules"
 		>
 			<TraitRules>
-				<AllowsTrait name="allowsDuplicates" />
+				<RequiresTrait name="allowsDuplicates" />
 
-				<AllowsTrait name="ordering" />
+				<RequiresTrait name="ordering" />
 			</TraitRules>
 		</ConceptDefinition>
 
@@ -242,6 +230,8 @@
 		>
 			<TraitRules>
 				<AllowsTrait name="description" />
+
+				<AllowsTrait name="key" />
 
 				<AllowsTrait name="role" />
 
@@ -436,11 +426,7 @@
 				<ExactlyOneChildOf>
 					<ConceptOption conceptSelector="ChildPath" />
 
-					<ConceptOption conceptSelector="ContentPath" />
-
 					<ConceptOption conceptSelector="DescendantPath" />
-
-					<ConceptOption conceptSelector="TraitPath" />
 				</ExactlyOneChildOf>
 
 				<RequiresChildConcept
@@ -470,6 +456,8 @@
 		>
 			<TraitRules>
 				<AllowsTrait name="description" />
+
+				<AllowsTrait name="key" />
 
 				<RequiresTrait name="name" />
 			</TraitRules>
@@ -596,11 +584,7 @@
 				<ExactlyOneChildOf>
 					<ConceptOption conceptSelector="ChildPath" />
 
-					<ConceptOption conceptSelector="ContentPath" />
-
 					<ConceptOption conceptSelector="DescendantPath" />
-
-					<ConceptOption conceptSelector="TraitPath" />
 				</ExactlyOneChildOf>
 			</ChildRules>
 		</ConceptDefinition>
@@ -887,6 +871,8 @@
 
 					<ConceptOption conceptSelector="ValueIsNonEmpty" />
 
+					<ConceptOption conceptSelector="ValueIsOneOf" />
+
 					<ConceptOption conceptSelector="ValueIsValid" />
 
 					<ConceptOption conceptSelector="ValueLength" />
@@ -904,6 +890,8 @@
 		>
 			<TraitRules>
 				<AllowsTrait name="description" />
+
+				<AllowsTrait name="key" />
 
 				<AllowsTrait name="title" />
 
@@ -945,6 +933,8 @@
 		>
 			<TraitRules>
 				<RequiresTrait name="namespace" />
+
+				<RequiresTrait name="reference" />
 			</TraitRules>
 		</ConceptDefinition>
 
@@ -1173,7 +1163,7 @@
 			</TraitRules>
 
 			<ContentRules>
-				<AllowsContent />
+				<RequiresContent />
 			</ContentRules>
 		</ConceptDefinition>
 
@@ -1331,6 +1321,28 @@
 			</Rule>
 		</ConstraintDefinition>
 
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/CollectionAllowsDuplicates>
+			<Targets>
+				<TargetConcept conceptSelector="CollectionAllowsDuplicates" />
+			</Targets>
+
+			<Rule>
+				<ConditionalConstraint>
+					<When>
+						<Rule>
+							<TraitEquals trait="allowed" value=false />
+						</Rule>
+					</When>
+
+					<Then>
+						<Rule>
+							<TraitExists trait="keyTrait" />
+						</Rule>
+					</Then>
+				</ConditionalConstraint>
+			</Rule>
+		</ConstraintDefinition>
+
 		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/ConceptDefinition>
 			<Targets>
 				<TargetConcept conceptSelector="ConceptDefinition" />
@@ -1474,6 +1486,40 @@
 
 			<Rule>
 				<UniqueConstraint scope="Schema" trait="name" />
+			</Rule>
+		</ConstraintDefinition>
+
+		<ConstraintDefinition id=urn:codex:bootstrap:1.0.0#constraint/EnumeratedValueSet/builtInRedefinitionProhibition>
+			<Targets>
+				<TargetConcept conceptSelector="EnumeratedValueSet" />
+			</Targets>
+
+			<Rule>
+				<Not>
+					<Rule>
+						<AnyOf>
+							<Rule>
+								<TraitEquals trait="name" value="Cardinality" />
+							</Rule>
+
+							<Rule>
+								<TraitEquals trait="name" value="CompatibilityClass" />
+							</Rule>
+
+							<Rule>
+								<TraitEquals trait="name" value="ConceptKind" />
+							</Rule>
+
+							<Rule>
+								<TraitEquals trait="name" value="EntityEligibility" />
+							</Rule>
+
+							<Rule>
+								<TraitEquals trait="name" value="Ordering" />
+							</Rule>
+						</AnyOf>
+					</Rule>
+				</Not>
 			</Rule>
 		</ConstraintDefinition>
 
@@ -2047,6 +2093,12 @@
 			<Member value="SimplifiedMode" />
 		</EnumeratedValueSet>
 
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#Cardinality name="Cardinality">
+			<Member value="List" />
+
+			<Member value="Single" />
+		</EnumeratedValueSet>
+
 		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#ChildConstraintType name="ChildConstraintType">
 			<Member value="AllowsChildConcept" />
 
@@ -2288,7 +2340,7 @@
 		/>
 
 		<TraitDefinition
-			defaultValueType=$NonNegativeInteger
+			defaultValueType=$FiniteRealNumber
 			id=urn:codex:bootstrap:1.0.0#max
 			name="max"
 		/>
@@ -2306,7 +2358,7 @@
 		/>
 
 		<TraitDefinition
-			defaultValueType=$NonNegativeInteger
+			defaultValueType=$FiniteRealNumber
 			id=urn:codex:bootstrap:1.0.0#min
 			name="min"
 		/>
@@ -2473,6 +2525,12 @@
 			baseValueType=$Text
 			id=urn:cdx:value-type:ConceptName
 			name="ConceptName"
+		/>
+
+		<ValueTypeDefinition
+			baseValueType=$LookupToken
+			id=urn:cdx:value-type:LookupToken
+			name="LookupToken"
 		/>
 
 		<ValueTypeDefinition

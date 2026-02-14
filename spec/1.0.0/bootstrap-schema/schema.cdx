@@ -1163,6 +1163,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:1.0.0#AllowsTrait#shape/property/child/0bd62a15e6910a4096a63e5b01ba0456f59ed50a4c727662f3ddb1e2117380a7
+		/>
+
+		<RdfTriple
 			object=urn:codex:bootstrap:1.0.0#AllowsTrait#child/0bd62a15e6910a4096a63e5b01ba0456f59ed50a4c727662f3ddb1e2117380a7
 			predicate=http://www.w3.org/ns/shacl#path
 			subject=urn:codex:bootstrap:1.0.0#AllowsTrait#shape/property/child/0bd62a15e6910a4096a63e5b01ba0456f59ed50a4c727662f3ddb1e2117380a7
@@ -7574,6 +7581,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="0"
+			predicate=http://www.w3.org/ns/shacl#minInclusive
+			subject=urn:codex:bootstrap:1.0.0#Count#shape/property/trait/a7760e7549cabbd3fe9c479077ea42e464c6ff9dc02400d95cefaf05745155ef
+		/>
+
+		<RdfTriple
 			object=urn:codex:bootstrap:1.0.0#minCount
 			predicate=http://www.w3.org/ns/shacl#path
 			subject=urn:codex:bootstrap:1.0.0#Count#shape/property/trait/a7760e7549cabbd3fe9c479077ea42e464c6ff9dc02400d95cefaf05745155ef
@@ -7595,6 +7609,13 @@
 			datatype=http://www.w3.org/2001/XMLSchema#integer
 			lexical="1"
 			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:1.0.0#Count#shape/property/trait/d0685efba23430ec703fce822145f7ecb3300ab7a4edf1ec2898e3473258f552
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="0"
+			predicate=http://www.w3.org/ns/shacl#minInclusive
 			subject=urn:codex:bootstrap:1.0.0#Count#shape/property/trait/d0685efba23430ec703fce822145f7ecb3300ab7a4edf1ec2898e3473258f552
 		/>
 
@@ -11110,7 +11131,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#string
+			object=urn:cdx:value-type:ValueExpression
 			predicate=http://www.w3.org/ns/shacl#datatype
 			subject=urn:codex:bootstrap:1.0.0#Member#shape/property/trait/cd42404d52ad55ccfa9aca4adc828aa5800ad9d385a0671fbcbf724118320619
 		/>
@@ -11529,6 +11550,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="0"
+			predicate=http://www.w3.org/ns/shacl#minInclusive
+			subject=urn:codex:bootstrap:1.0.0#MemberCount#shape/property/trait/1f6fa6f69d185e6086d04e7330361bf9001a3b8d0ce511171055dc34eb90c1c5
+		/>
+
+		<RdfTriple
 			object=urn:codex:bootstrap:1.0.0#min
 			predicate=http://www.w3.org/ns/shacl#path
 			subject=urn:codex:bootstrap:1.0.0#MemberCount#shape/property/trait/1f6fa6f69d185e6086d04e7330361bf9001a3b8d0ce511171055dc34eb90c1c5
@@ -11550,6 +11578,13 @@
 			datatype=http://www.w3.org/2001/XMLSchema#integer
 			lexical="1"
 			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:1.0.0#MemberCount#shape/property/trait/9baf3a40312f39849f46dad1040f2f039f1cffa1238c41e9db675315cfad39b6
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="0"
+			predicate=http://www.w3.org/ns/shacl#minInclusive
 			subject=urn:codex:bootstrap:1.0.0#MemberCount#shape/property/trait/9baf3a40312f39849f46dad1040f2f039f1cffa1238c41e9db675315cfad39b6
 		/>
 
@@ -12271,6 +12306,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="0"
+			predicate=http://www.w3.org/ns/shacl#minInclusive
+			subject=urn:codex:bootstrap:1.0.0#OnPathCount#shape/property/trait/a7760e7549cabbd3fe9c479077ea42e464c6ff9dc02400d95cefaf05745155ef
+		/>
+
+		<RdfTriple
 			object=urn:codex:bootstrap:1.0.0#minCount
 			predicate=http://www.w3.org/ns/shacl#path
 			subject=urn:codex:bootstrap:1.0.0#OnPathCount#shape/property/trait/a7760e7549cabbd3fe9c479077ea42e464c6ff9dc02400d95cefaf05745155ef
@@ -12292,6 +12334,13 @@
 			datatype=http://www.w3.org/2001/XMLSchema#integer
 			lexical="1"
 			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:1.0.0#OnPathCount#shape/property/trait/d0685efba23430ec703fce822145f7ecb3300ab7a4edf1ec2898e3473258f552
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="0"
+			predicate=http://www.w3.org/ns/shacl#minInclusive
 			subject=urn:codex:bootstrap:1.0.0#OnPathCount#shape/property/trait/d0685efba23430ec703fce822145f7ecb3300ab7a4edf1ec2898e3473258f552
 		/>
 
@@ -16026,6 +16075,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:1.0.0#AllowedValues
 			predicate=http://www.w3.org/ns/shacl#class
+			subject=urn:codex:bootstrap:1.0.0#RequiresTrait#shape/property/child/0bd62a15e6910a4096a63e5b01ba0456f59ed50a4c727662f3ddb1e2117380a7
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:1.0.0#RequiresTrait#shape/property/child/0bd62a15e6910a4096a63e5b01ba0456f59ed50a4c727662f3ddb1e2117380a7
 		/>
 
@@ -21216,6 +21272,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="0"
+			predicate=http://www.w3.org/ns/shacl#minInclusive
+			subject=urn:codex:bootstrap:1.0.0#TraitCardinality#shape/property/trait/1f6fa6f69d185e6086d04e7330361bf9001a3b8d0ce511171055dc34eb90c1c5
+		/>
+
+		<RdfTriple
 			object=urn:codex:bootstrap:1.0.0#min
 			predicate=http://www.w3.org/ns/shacl#path
 			subject=urn:codex:bootstrap:1.0.0#TraitCardinality#shape/property/trait/1f6fa6f69d185e6086d04e7330361bf9001a3b8d0ce511171055dc34eb90c1c5
@@ -21269,6 +21332,13 @@
 			datatype=http://www.w3.org/2001/XMLSchema#integer
 			lexical="1"
 			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:1.0.0#TraitCardinality#shape/property/trait/9baf3a40312f39849f46dad1040f2f039f1cffa1238c41e9db675315cfad39b6
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="0"
+			predicate=http://www.w3.org/ns/shacl#minInclusive
 			subject=urn:codex:bootstrap:1.0.0#TraitCardinality#shape/property/trait/9baf3a40312f39849f46dad1040f2f039f1cffa1238c41e9db675315cfad39b6
 		/>
 
@@ -21478,6 +21548,13 @@
 		<RdfTriple
 			object=urn:codex:bootstrap:1.0.0#AllowedValues
 			predicate=http://www.w3.org/ns/shacl#class
+			subject=urn:codex:bootstrap:1.0.0#TraitDefinition#shape/property/child/0bd62a15e6910a4096a63e5b01ba0456f59ed50a4c727662f3ddb1e2117380a7
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="1"
+			predicate=http://www.w3.org/ns/shacl#maxCount
 			subject=urn:codex:bootstrap:1.0.0#TraitDefinition#shape/property/child/0bd62a15e6910a4096a63e5b01ba0456f59ed50a4c727662f3ddb1e2117380a7
 		/>
 
@@ -22247,7 +22324,7 @@
 		/>
 
 		<RdfTriple
-			object=http://www.w3.org/2001/XMLSchema#string
+			object=urn:cdx:value-type:ValueExpression
 			predicate=http://www.w3.org/ns/shacl#datatype
 			subject=urn:codex:bootstrap:1.0.0#TraitEquals#shape/property/trait/cd42404d52ad55ccfa9aca4adc828aa5800ad9d385a0671fbcbf724118320619
 		/>
@@ -24272,7 +24349,7 @@
 		/>
 
 		<RdfTriple
-			object=urn:cdx:value-type:ConceptName
+			object=http://www.w3.org/2001/XMLSchema#string
 			predicate=http://www.w3.org/ns/shacl#datatype
 			subject=urn:codex:bootstrap:1.0.0#ValidatorDefinition#shape/property/trait/82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89
 		/>
@@ -25752,6 +25829,13 @@
 		/>
 
 		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="0"
+			predicate=http://www.w3.org/ns/shacl#minInclusive
+			subject=urn:codex:bootstrap:1.0.0#ValueLength#shape/property/trait/1f6fa6f69d185e6086d04e7330361bf9001a3b8d0ce511171055dc34eb90c1c5
+		/>
+
+		<RdfTriple
 			object=urn:codex:bootstrap:1.0.0#min
 			predicate=http://www.w3.org/ns/shacl#path
 			subject=urn:codex:bootstrap:1.0.0#ValueLength#shape/property/trait/1f6fa6f69d185e6086d04e7330361bf9001a3b8d0ce511171055dc34eb90c1c5
@@ -25773,6 +25857,13 @@
 			datatype=http://www.w3.org/2001/XMLSchema#integer
 			lexical="1"
 			predicate=http://www.w3.org/ns/shacl#maxCount
+			subject=urn:codex:bootstrap:1.0.0#ValueLength#shape/property/trait/9baf3a40312f39849f46dad1040f2f039f1cffa1238c41e9db675315cfad39b6
+		/>
+
+		<RdfTriple
+			datatype=http://www.w3.org/2001/XMLSchema#integer
+			lexical="0"
+			predicate=http://www.w3.org/ns/shacl#minInclusive
 			subject=urn:codex:bootstrap:1.0.0#ValueLength#shape/property/trait/9baf3a40312f39849f46dad1040f2f039f1cffa1238c41e9db675315cfad39b6
 		/>
 
