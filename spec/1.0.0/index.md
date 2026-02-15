@@ -189,6 +189,8 @@ A Concept instance MUST be in exactly one of two body modes:
 - **children mode**: the Concept instance contains zero or more child Concepts and no Content.
 - **content mode**: the Concept instance contains Content and no child Concepts.
 
+The governing schema's `ContentRules` (§11.3.2) determines which mode or modes are permitted for each Concept type. When both modes are permitted, the instance's `bodyMode` trait (§11.3.2) determines which mode applies.
+
 ### 3.2 Trait
 
 A Trait binds a Trait name to a Value.
@@ -301,7 +303,7 @@ The namespace prefix and the local name MUST each satisfy the naming rules of §
 
 Qualified names MUST only appear in contexts where schema imports are in effect (§11.2.1). The namespace prefix MUST resolve to an imported schema via the document's `SchemaImports` declarations.
 
-Language-level Trait names (`id`, `key`, `reference`, `target`, `for`) MUST NOT be namespace-qualified. These Traits are defined by this specification (§6–§7), not by any schema.
+Language-level Trait names (`id`, `key`, `reference`, `target`, `for`, `bodyMode`) MUST NOT be namespace-qualified. These Traits are defined by this specification (§6–§7 and §11.3.2), not by any schema.
 
 ### 4.2 Consecutive Uppercase Restriction
 
@@ -2393,6 +2395,8 @@ Whitespace mode normalization is schema-directed and MUST be performed during sc
 
 The governing schema declares `whitespaceMode` on each Concept that allows content (see §11.3.2).
 
+When the governing schema declares `AllowsContentOrChildren` for a Concept, the parser MUST read the `bodyMode` trait from the Concept's opening marker to determine the body production. If `bodyMode=$content`, the parser selects `ContentBody`. If `bodyMode=$children`, the parser selects `ChildrenBody`. If the `bodyMode` trait is absent or has an invalid value, parsing MUST fail with a `SchemaError` (§14).
+
 For `whitespaceMode=$Preformatted`:
 
 * Codex-conforming tools MUST preserve all content whitespace exactly after indentation normalization.
@@ -4342,8 +4346,10 @@ When a child section is omitted, its default behavior applies as defined below.
 ##### Children
 Exactly one of:
 
-* `AllowsContent` — instances are in content mode
-* `ForbidsContent` — instances are in children mode
+* `AllowsContent` — instances MUST be in content mode (self-closing permitted)
+* `AllowsContentOrChildren` — instances may be in either mode; each instance's `bodyMode` trait (§11.3.2) determines which mode applies
+* `ForbidsContent` — instances MUST be in children mode
+* `RequiresContent` — instances MUST be in content mode and MUST be block concepts with non-empty content (self-closing forbidden)
 
 ###### `AllowsContent`
 
@@ -4359,6 +4365,48 @@ Traits:
 ###### `ForbidsContent`
 
 `ForbidsContent` has no traits.
+
+###### `AllowsContentOrChildren`
+
+Traits:
+
+* `whitespaceMode` (required; Enumerated Token Value)
+
+`whitespaceMode` MUST be one of:
+
+* `$Preformatted` — content whitespace is significant and MUST be preserved exactly (applies when an instance is in content mode)
+* `$Flow` — content whitespace is not significant (applies when an instance is in content mode)
+
+When `AllowsContentOrChildren` is declared, the `ConceptDefinition` MUST also declare `ChildRules`. If `ChildRules` is absent, the schema MUST be rejected with a `SchemaError` (§14).
+
+When `AllowsContentOrChildren` is declared, the `bodyMode` language-level trait is automatically available and required on all instances of the Concept. The schema MUST NOT separately declare `bodyMode` in `TraitRules`.
+
+###### The `bodyMode` Trait
+
+When a `ConceptDefinition` declares `AllowsContentOrChildren` in its `ContentRules`, every block instance of that Concept MUST declare a `bodyMode` trait on its opening marker.
+
+The `bodyMode` trait MUST be an Enumerated Token Value. Allowed values:
+
+- `$content` — the instance is in content mode
+- `$children` — the instance is in children mode
+
+`bodyMode` is a language-level trait. It MUST NOT be namespace-qualified. Its meaning is defined by this specification, not by any schema.
+
+A Concept instance whose `ConceptDefinition` does not declare `AllowsContentOrChildren` MUST NOT declare a `bodyMode` trait. If present, validation MUST fail with a `SchemaError` (§14).
+
+The parser MUST read the `bodyMode` trait from the opening marker to select the body production before parsing the body. This is schema-directed dispatch via trait value, consistent with the schema-directed model described in §8.8 and Appendix A.
+
+A `ConceptDefinition` that does not declare `AllowsContentOrChildren` MUST NOT declare `bodyMode` in its `TraitRules`. If present, the schema MUST be rejected with a `SchemaError` (§14).
+
+###### `RequiresContent`
+
+Traits:
+
+* `whitespaceMode` (required; Enumerated Token Value) — same values as `AllowsContent`
+
+`RequiresContent` is identical to `AllowsContent` with one additional constraint: instances MUST be block concepts with non-empty content. Self-closing markers are not permitted when the governing `ConceptDefinition` declares `RequiresContent`. If an instance is self-closing, validation MUST fail with a `SchemaError` (§14).
+
+This exists for Concepts whose content is structurally required (e.g., `ValidatorDefinition`, whose content MUST be a SPARQL SELECT query per §9.5.2).
 
 ##### Defaults
 
@@ -4428,6 +4476,7 @@ When `TraitRules` is omitted, no Traits are allowed except:
 One or more of:
 
 * `AllowsChildConcept`
+* `AllowsImportedChildren`
 * `RequiresChildConcept`
 * `ForbidsChildConcept`
 * `ExactlyOneChildOf`
@@ -4439,6 +4488,24 @@ Traits:
 * `conceptSelector` (required; Concept name or qualified Concept name per §4.1.1)
 * `min` (allowed; non-negative integer; default `0`)
 * `max` (allowed; positive integer; omitted means unbounded)
+
+###### `AllowsImportedChildren`
+
+Declares that all `ConceptDefinition`s from the specified imported schema are allowed as children of the governed Concept, with no minimum or maximum cardinality constraints.
+
+Traits:
+
+* `namespace` (required; Text Value) — MUST match the `namespace` value of a `SchemaImport` declared in the same schema's `SchemaImports` block (§11.2.1). If no matching `SchemaImport` exists, the schema MUST be rejected with a `SchemaError` (§14).
+
+Semantics:
+
+`AllowsImportedChildren` is equivalent to declaring `AllowsChildConcept` (with no `min` or `max`) for every `ConceptDefinition` in the imported schema identified by the namespace. It does not affect `RequiresChildConcept` or `ForbidsChildConcept` — those must still be declared individually when needed.
+
+`AllowsImportedChildren` may coexist with individual `AllowsChildConcept`, `RequiresChildConcept`, and `ForbidsChildConcept` entries for concepts from the same imported schema. Individual entries take precedence for cardinality and prohibition:
+
+* `RequiresChildConcept` for a specific imported concept adds a minimum cardinality requirement.
+* `ForbidsChildConcept` for a specific imported concept overrides the allowance from `AllowsImportedChildren`.
+* `AllowsChildConcept` with explicit `min` or `max` for a specific imported concept overrides the default (no min, no max) from `AllowsImportedChildren`.
 
 ###### `RequiresChildConcept`
 
@@ -5998,6 +6065,13 @@ Examples (illustrative):
 - imported schema IRI not found in `importedSchemas` (§12.5.4)
 - duplicate canonical namespace labels across imported schemas (§12.5.5)
 - qualified name references undefined Concept or Trait in imported schema (§12.5.6)
+- `bodyMode` trait value does not match the mechanically determined body mode
+- `bodyMode` trait missing on an instance of a Concept that declares `AllowsContentOrChildren`
+- `bodyMode` trait present on an instance of a Concept that does not declare `AllowsContentOrChildren`
+- `AllowsContentOrChildren` declared without `ChildRules`
+- `bodyMode` declared in `TraitRules` of a `ConceptDefinition` that does not declare `AllowsContentOrChildren`
+- Self-closing instance of a Concept that declares `RequiresContent`
+- `AllowsImportedChildren` namespace does not match any `SchemaImport.namespace` in the same schema's `SchemaImports` block
 
 See §9 and §11 for schema rules.
 
@@ -6262,9 +6336,12 @@ ClosingMarker
 	= "</", ConceptNameOrQualified, ">"
 	;
 
-(* Body is selected by schema lookup on ConceptName (§11):
-	- If schema indicates children mode: ChildrenBody
-	- If schema indicates content mode: ContentBody *)
+(* Body is selected by schema lookup on ConceptName (section 11):
+	- If schema indicates children mode (ForbidsContent): ChildrenBody
+	- If schema indicates content mode (AllowsContent/RequiresContent): ContentBody
+	- If schema indicates either mode (AllowsContentOrChildren):
+	  read the bodyMode trait from the opening marker (§11.3.2);
+	  $children selects ChildrenBody, $content selects ContentBody *)
 Body
 	= ChildrenBody | ContentBody
 	;
@@ -7530,9 +7607,11 @@ ClosingMarkerLine <- Indentation ClosingMarker Newline
 OpeningMarker <- '<' ConceptNameOrQualified Traits? WhitespaceChar* '>'
 ClosingMarker <- '</' ConceptNameOrQualified '>'
 
-# Body is selected by schema lookup on ConceptName (§11):
-# - children mode: ChildrenBody
-# - content mode: ContentBody
+# Body is selected by schema lookup on ConceptName (section 11):
+# - ForbidsContent: ChildrenBody
+# - AllowsContent/RequiresContent: ContentBody
+# - AllowsContentOrChildren: read bodyMode trait from opening marker;
+#   $children selects ChildrenBody, $content selects ContentBody
 Body <- ChildrenBody / ContentBody
 
 # ChildrenBody admits BlankLine and Annotation; their legality and attachment kinds
@@ -8241,7 +8320,7 @@ A discrepancy between §11 and this appendix is a defect to report (§1.3.1).
 
 ### C.1 ConceptDefinitions
 
-The bootstrap schema defines the following 80 ConceptDefinitions.
+The bootstrap schema defines the following 83 ConceptDefinitions.
 
 Language-level traits (`id`, `key`, `reference`, `target`, `for`) are not listed in the Required Traits or Allowed Traits columns. Entity eligibility determines `id` availability; `key`, `reference`, `target`, and `for` must be explicitly authorized via TraitRules when used.
 
@@ -8251,11 +8330,13 @@ Language-level traits (`id`, `key`, `reference`, `target`, `for`) are not listed
 | AllowedValues | Structural | MustNotBeEntity | — | — | — | — | EnumeratedConstraint, ValueIsOneOf | §11.4.2 |
 | AllowsChildConcept | Structural | MustNotBeEntity | conceptSelector | max, min | — | — | — | §11.3.4 |
 | AllowsContent | Structural | MustNotBeEntity | whitespaceMode | — | — | — | — | §11.3.2 |
+| AllowsContentOrChildren | Structural | MustNotBeEntity | whitespaceMode | — | — | — | — | §11.3.2 |
+| AllowsImportedChildren | Structural | MustNotBeEntity | namespace | — | — | — | — | §11.3.4 |
 | AllowsTrait | Structural | MustNotBeEntity | name | — | — | AllowedValues (max=1) | — | §11.3.3 |
 | AnyOf | Structural | MustNotBeEntity | — | — | Rule (min=2) | — | — | §11.7.3 |
 | ChildConstraint | Structural | MustNotBeEntity | conceptSelector, type | — | — | — | — | §11.9.2 |
 | ChildPath | Structural | MustNotBeEntity | conceptSelector | — | — | — | — | §11.8.1 |
-| ChildRules | Structural | MustNotBeEntity | — | — | — | AllowsChildConcept, ExactlyOneChildOf, ForbidsChildConcept, RequiresChildConcept | — | §11.3.4 |
+| ChildRules | Structural | MustNotBeEntity | — | — | — | AllowsChildConcept, AllowsImportedChildren, ExactlyOneChildOf, ForbidsChildConcept, RequiresChildConcept | — | §11.3.4 |
 | ChildSatisfies | Structural | MustNotBeEntity | conceptSelector | — | Rule (min=1, max=1) | — | — | §11.9.2 |
 | CollectionAllowsDuplicates | Structural | MustNotBeEntity | allowed | keyTrait | — | — | ChildPath, DescendantPath | §11.9.3 |
 | CollectionAllowsEmpty | Structural | MustNotBeEntity | allowed | — | — | — | ChildPath, DescendantPath | §11.9.3 |
@@ -8269,7 +8350,7 @@ Language-level traits (`id`, `key`, `reference`, `target`, `for`) are not listed
 | ConstraintDefinitions | Structural | MustNotBeEntity | — | — | ConstraintDefinition (min=1) | — | — | §11.6.1 |
 | ContentConstraint | Structural | MustNotBeEntity | type | flags, pattern | — | — | — | §11.9.10 |
 | ContentPath | Structural | MustNotBeEntity | — | — | — | — | — | §11.8.1 |
-| ContentRules | Structural | MustNotBeEntity | — | — | — | — | AllowsContent, ForbidsContent | §11.3.2 |
+| ContentRules | Structural | MustNotBeEntity | — | — | — | — | AllowsContent, AllowsContentOrChildren, ForbidsContent, RequiresContent | §11.3.2 |
 | ContextConstraint | Structural | MustNotBeEntity | type | contextSelector | — | — | — | §11.9.8 |
 | Count | Structural | MustNotBeEntity | — | maxCount, minCount | — | — | — | §11.8.2 |
 | DescendantPath | Structural | MustNotBeEntity | conceptSelector | — | — | — | — | §11.8.1 |
@@ -8296,6 +8377,7 @@ Language-level traits (`id`, `key`, `reference`, `target`, `for`) are not listed
 | RdfTriple | Structural | MustNotBeEntity | predicate, subject | datatype, language, lexical, object | — | — | — | §9.6.1 |
 | ReferenceConstraint | Structural | MustNotBeEntity | type | conceptSelector, traitName | — | — | — | §11.9.6 |
 | RequiresChildConcept | Structural | MustNotBeEntity | conceptSelector | max, min | — | — | — | §11.3.4 |
+| RequiresContent | Structural | MustNotBeEntity | whitespaceMode | — | — | — | — | §11.3.2 |
 | RequiresTrait | Structural | MustNotBeEntity | name | — | — | AllowedValues (max=1) | — | §11.3.3 |
 | Rule | Structural | MustNotBeEntity | — | — | — | — | AllOf, AnyOf, ChildConstraint, ChildSatisfies, CollectionAllowsDuplicates, CollectionAllowsEmpty, CollectionOrdering, ConditionalConstraint, ContentConstraint, ContextConstraint, EachMemberSatisfies, IdentityConstraint, MemberCount, Not, OnPathCount, OnPathExists, OnPathForAll, OrderConstraint, PatternConstraint, ReferenceConstraint, TraitCardinality, TraitEquals, TraitExists, TraitLessOrEqual, TraitMissing, TraitValueType, UniqueConstraint, ValueInNumericRange, ValueIsNonEmpty, ValueIsOneOf, ValueIsValid, ValueLength, ValueMatchesPattern | §11.6.4 |
 | Schema | Structural | MustBeEntity | authoringMode, compatibilityClass, namespace, version, versionScheme | description, title | — | ConceptDefinitions (max=1), ConstraintDefinitions (max=1), EnumeratedValueSets (max=1), RdfGraph (max=1), SchemaImports (max=1), TraitDefinitions (max=1), ValidatorDefinitions (max=1), ValueTypeDefinitions (max=1) | — | §11.2 |
@@ -8330,7 +8412,7 @@ Language-level traits (`id`, `key`, `reference`, `target`, `for`) are not listed
 
 ### C.2 TraitDefinitions
 
-The bootstrap schema defines the following 49 TraitDefinitions.
+The bootstrap schema defines the following 50 TraitDefinitions.
 
 | Name | Default Value Type | Allowed Values | Is Reference Trait | Spec Reference |
 |------|-------------------|----------------|-------------------|----------------|
@@ -8338,6 +8420,7 @@ The bootstrap schema defines the following 49 TraitDefinitions.
 | allowsDuplicates | $Boolean | — | No | §11.3.5 |
 | authoringMode | $EnumeratedToken | AuthoringMode | No | §11.2 |
 | baseValueType | $ValueTypeExpression | — | No | §11.5.2 |
+| bodyMode | $EnumeratedToken | BodyMode | No | §11.3.2 |
 | byTrait | $TraitName | — | No | §11.9.5 |
 | compatibilityClass | $EnumeratedToken | CompatibilityClass | No | §13.5 |
 | conceptKind | $EnumeratedToken | ConceptKind | No | §11.3.1 |
@@ -8386,11 +8469,12 @@ The bootstrap schema defines the following 49 TraitDefinitions.
 
 ### C.3 EnumeratedValueSets
 
-The bootstrap schema defines the following 14 EnumeratedValueSets. Sets marked with (*) are built-in and MUST NOT be redefined by schemas (§11.5.4).
+The bootstrap schema defines the following 15 EnumeratedValueSets. Sets marked with (*) are built-in and MUST NOT be redefined by schemas (§11.5.4).
 
 | Name | Members | Spec Reference |
 |------|---------|----------------|
 | AuthoringMode | $CanonicalMode, $SimplifiedMode | §9.4 |
+| BodyMode | $children, $content | §11.3.2 |
 | Cardinality (*) | $List, $Single | §11.5.4 |
 | ChildConstraintType | $AllowsChildConcept, $ForbidsChildConcept, $RequiresChildConcept | §11.9.2 |
 | CompatibilityClass (*) | $BackwardCompatible, $Breaking, $ForwardCompatible, $Initial | §13.5 |
@@ -8412,7 +8496,7 @@ The bootstrap schema defines the following 26 ConstraintDefinitions. These enfor
 | Constraint ID | Targets | Rule Summary | Spec Reference |
 |---------------|---------|--------------|----------------|
 | AllowsChildConcept | AllowsChildConcept | min must be less than or equal to max | §11.3.4 |
-| ChildRules | ChildRules | At least one child of AllowsChildConcept, ExactlyOneChildOf, ForbidsChildConcept, or RequiresChildConcept | §11.3.4 |
+| ChildRules | ChildRules | At least one child of AllowsChildConcept, AllowsImportedChildren, ExactlyOneChildOf, ForbidsChildConcept, or RequiresChildConcept | §11.3.4 |
 | CollectionAllowsDuplicates | CollectionAllowsDuplicates | When allowed=false, keyTrait must be present | §11.9.3 |
 | ConceptDefinition | ConceptDefinition | name must be unique within Schema | §11.3.1 |
 | ContentConstraint | ContentConstraint | When type=$ContentMatchesPattern, pattern required; when type=$ContentRequired or $ForbidsContent, pattern and flags must be absent | §11.9.10 |

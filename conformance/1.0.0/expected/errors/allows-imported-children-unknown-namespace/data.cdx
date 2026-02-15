@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="AllowsImportedChildren namespace does not match any SchemaImport.namespace in the same schema's SchemaImports block." />

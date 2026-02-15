@@ -63,6 +63,28 @@
 		<ConceptDefinition
 			conceptKind=$Structural
 			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#AllowsContentOrChildren
+			name="AllowsContentOrChildren"
+		>
+			<TraitRules>
+				<RequiresTrait name="whitespaceMode" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#AllowsImportedChildren
+			name="AllowsImportedChildren"
+		>
+			<TraitRules>
+				<RequiresTrait name="namespace" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
 			id=urn:codex:bootstrap:1.0.0#AllowsTrait
 			name="AllowsTrait"
 		>
@@ -122,6 +144,8 @@
 		>
 			<ChildRules>
 				<AllowsChildConcept conceptSelector="AllowsChildConcept" />
+
+				<AllowsChildConcept conceptSelector="AllowsImportedChildren" />
 
 				<AllowsChildConcept conceptSelector="ExactlyOneChildOf" />
 
@@ -370,7 +394,11 @@
 				<ExactlyOneChildOf>
 					<ConceptOption conceptSelector="AllowsContent" />
 
+					<ConceptOption conceptSelector="AllowsContentOrChildren" />
+
 					<ConceptOption conceptSelector="ForbidsContent" />
+
+					<ConceptOption conceptSelector="RequiresContent" />
 				</ExactlyOneChildOf>
 			</ChildRules>
 		</ConceptDefinition>
@@ -787,6 +815,17 @@
 				<AllowsTrait name="min" />
 
 				<RequiresTrait name="conceptSelector" />
+			</TraitRules>
+		</ConceptDefinition>
+
+		<ConceptDefinition
+			conceptKind=$Structural
+			entityEligibility=$MustNotBeEntity
+			id=urn:codex:bootstrap:1.0.0#RequiresContent
+			name="RequiresContent"
+		>
+			<TraitRules>
+				<RequiresTrait name="whitespaceMode" />
 			</TraitRules>
 		</ConceptDefinition>
 
@@ -1304,6 +1343,10 @@
 				<AnyOf>
 					<Rule>
 						<ChildConstraint conceptSelector="AllowsChildConcept" type=$RequiresChildConcept />
+					</Rule>
+
+					<Rule>
+						<ChildConstraint conceptSelector="AllowsImportedChildren" type=$RequiresChildConcept />
 					</Rule>
 
 					<Rule>
@@ -2093,6 +2136,12 @@
 			<Member value="SimplifiedMode" />
 		</EnumeratedValueSet>
 
+		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#BodyMode name="BodyMode">
+			<Member value="children" />
+
+			<Member value="content" />
+		</EnumeratedValueSet>
+
 		<EnumeratedValueSet id=urn:codex:bootstrap:1.0.0#Cardinality name="Cardinality">
 			<Member value="List" />
 
@@ -2224,6 +2273,16 @@
 			id=urn:codex:bootstrap:1.0.0#baseValueType
 			name="baseValueType"
 		/>
+
+		<TraitDefinition
+			defaultValueType=$EnumeratedToken
+			id=urn:codex:bootstrap:1.0.0#bodyMode
+			name="bodyMode"
+		>
+			<AllowedValues>
+				<EnumeratedConstraint set="BodyMode" />
+			</AllowedValues>
+		</TraitDefinition>
 
 		<TraitDefinition
 			defaultValueType=$TraitName

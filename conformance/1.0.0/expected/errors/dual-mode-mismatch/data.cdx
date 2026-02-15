@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="Body contains children but bodyMode is set to $content; the actual body contents must match the declared body mode." />

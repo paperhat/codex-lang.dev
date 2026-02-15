@@ -1,0 +1,24 @@
+<Schema
+	id=urn:test:consumer
+	version="1.0.0"
+	versionScheme=$Semver
+	authoringMode=$SimplifiedMode
+	compatibilityClass=$Initial
+	namespace="consumer"
+>
+	<SchemaImports>
+		<SchemaImport reference=urn:test:provider namespace="provider" />
+	</SchemaImports>
+	<ConceptDefinitions>
+		<ConceptDefinition
+			id=urn:test:consumer#Container
+			name="Container"
+			conceptKind=$Semantic
+			entityEligibility=$MustNotBeEntity
+		>
+			<ChildRules>
+				<AllowsImportedChildren namespace="provider" />
+			</ChildRules>
+		</ConceptDefinition>
+	</ConceptDefinitions>
+</Schema>

@@ -1,0 +1,4 @@
+<FlexBlock bodyMode=$children>
+	<Item />
+	<Item />
+</FlexBlock>

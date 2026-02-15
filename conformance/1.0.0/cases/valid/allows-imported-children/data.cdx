@@ -1,0 +1,6 @@
+<Container>
+	<SchemaImports>
+		<SchemaImport reference=urn:test:provider namespace="provider" />
+	</SchemaImports>
+	<provider:Widget />
+</Container>

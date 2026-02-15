@@ -1,0 +1,1 @@
+<ErrorExpectation primaryClass=$SchemaError notes="AllowsContentOrChildren requires ChildRules to be defined on the same concept; without ChildRules there is no valid children mode." />

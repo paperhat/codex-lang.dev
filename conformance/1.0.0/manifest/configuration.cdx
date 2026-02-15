@@ -973,4 +973,53 @@
 		input="cases/valid/blankline-between-annotations-and-root/data.cdx"
 		expectedCanonical="expected/canonical/blankline-between-annotations-and-root/data.cdx"
 	/>
+
+	<Case
+		id="valid/dual-mode-content"
+		input="cases/valid/dual-mode-content/data.cdx"
+		schema="cases/valid/dual-mode-content/schema.cdx"
+	/>
+
+	<Case
+		id="valid/dual-mode-children"
+		input="cases/valid/dual-mode-children/data.cdx"
+		schema="cases/valid/dual-mode-content/schema.cdx"
+	/>
+
+	<Case
+		id="invalid/dual-mode-missing-body-mode"
+		input="cases/invalid/dual-mode-missing-body-mode/data.cdx"
+		schema="cases/valid/dual-mode-content/schema.cdx"
+		expectedError="expected/errors/dual-mode-missing-body-mode/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/dual-mode-mismatch"
+		input="cases/invalid/dual-mode-mismatch/data.cdx"
+		schema="cases/valid/dual-mode-content/schema.cdx"
+		expectedError="expected/errors/dual-mode-mismatch/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="invalid/dual-mode-no-child-rules"
+		input="cases/invalid/dual-mode-no-child-rules/schema.cdx"
+		expectedError="expected/errors/dual-mode-no-child-rules/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
+
+	<Case
+		id="valid/allows-imported-children"
+		input="cases/valid/allows-imported-children/data.cdx"
+		schema="cases/valid/allows-imported-children/schema.cdx"
+		importedSchema="cases/valid/allows-imported-children/provider-schema.cdx"
+	/>
+
+	<Case
+		id="invalid/allows-imported-children-unknown-namespace"
+		input="cases/invalid/allows-imported-children-unknown-namespace/schema.cdx"
+		expectedError="expected/errors/allows-imported-children-unknown-namespace/data.cdx"
+		expectedPrimaryErrorClass=$SchemaError
+	/>
 </ConformanceManifest>
