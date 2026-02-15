@@ -709,6 +709,8 @@ The real-exponent power computations required by §5.7 (for example, raising a c
 
 Tools MUST NOT use lower-precision arithmetic for any intermediate step, and MUST NOT approximate this procedure using binary64 or binary128.
 
+Matrix constants and other decimal numeric constants provided in this specification MUST be parsed directly at precision p=256. An implementation MUST NOT parse these constants through an intermediate floating-point type of lower precision.
+
 **Constants**
 
 Define:
@@ -767,6 +769,8 @@ M_{LMS\to XYZ} =
 -0.0763729366746601 & -0.4214933324022432 & 1.5869240198367816
 \end{bmatrix}
 $$
+
+The M1 and M2 matrices are from Björn Ottosson, "A perceptual color space for image processing" (2020, updated 2021-01-25). Inverse matrices were computed at p=256 from these source matrices.
 
 **Algorithms**
 

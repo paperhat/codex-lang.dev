@@ -4,6 +4,18 @@ This file records all changes made to the Codex specification during implementat
 
 ---
 
+## 2026-02-15: §5.7.3 — Constant parsing mandate and OkLab provenance
+
+**Section:** §5.7.3 Deterministic Conversion-Based Validity
+
+**Changes:**
+1. Added constant parsing mandate after the arithmetic mandate: matrix constants and other decimal numeric constants provided in the specification must be parsed directly at precision p=256; implementations must not parse these constants through an intermediate floating-point type of lower precision (e.g., IEEE 754 binary64).
+2. Added OkLab provenance note after the M1 (OKLab→LMS) and M2 (LMS→XYZ) matrix definitions: credits Björn Ottosson's 2020 paper and notes that inverse matrices were computed at p=256 from the source matrices.
+
+**Rationale:** §5.7.3 mandates p=256 arithmetic but did not specify how to parse the decimal matrix constants provided in the same section. An implementation that parses constants through a binary64 intermediary gets different binary values than one that parses directly at p=256 for constants with more than 15 significant digits. The OkLab matrices have 16-digit coefficients, making this distinction observable.
+
+---
+
 ## 2026-02-14: §8.1 — Add UTF-32 BOM detection and rejection
 
 **Section:** §8.1 File Encoding
