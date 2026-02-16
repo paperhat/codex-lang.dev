@@ -4,6 +4,19 @@ This file records all changes made to the Codex specification during implementat
 
 ---
 
+## 2026-02-16: §5.15.1, A.1.21, A.2.18 — Map key expansion to all non-collection values
+
+**Sections:** §5.15.1 Map Keys, A.1.21 Map Values (EBNF MapKey), A.2.18 Map Values (PEG MapKey)
+
+**Changes:**
+1. §5.15.1: Replaced the six-type enumerated list of allowed map key types with a two-rule formulation: a map key must be either an unquoted identifier key (MapIdentifier) or any Value that is not a collection value. Collection values (List, Set, Map, Record, Tuple) must not be used as map keys.
+2. A.1.21: Expanded the EBNF `MapKey` rule from 6 alternatives to 16 (MapIdentifier plus the 15 non-collection Value alternatives).
+3. A.2.18: Expanded the PEG `MapKey` rule correspondingly. `MapIdentifier` moved to last position so `BooleanValue` matches `true`/`false` before `MapIdentifier` can consume them as bare identifiers.
+
+**Rationale:** Equality (§5.13) is defined for all Value types, so duplicate key detection works for any key type. The existing parser infrastructure (`find_kv_separator` requiring `: ` and `tokenize_comma_separated` respecting balanced delimiters) handles colons in temporal values and function-call syntax without ambiguity. One exclusionary rule (no collections) replaces an arbitrary enumerated list.
+
+---
+
 ## 2026-02-15: §5.7.3 — Constant parsing mandate and OkLab provenance
 
 **Section:** §5.7.3 Deterministic Conversion-Based Validity

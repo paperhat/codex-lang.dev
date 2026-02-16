@@ -1613,12 +1613,10 @@ For schema-level type constraints on map keys and values, see §5.18.
 
 In the Surface Form, a map key MUST be one of:
 
-- an unquoted identifier key
-- a Text Value
-- a Character Value
-- an Integer value
-- an Enumerated Token Value
-- an IRI Reference Value
+- an unquoted identifier key (MapIdentifier)
+- any Value that is not a collection value
+
+Collection values — List Values, Set Values, Map Values, Record Values, and Tuple Values — MUST NOT be used as map keys.
 
 An unquoted identifier key MUST use camelCase.
 
@@ -7332,13 +7330,24 @@ MapEntry
 	= MapKey, { Whitespace }, ":", { Whitespace }, Value
 	;
 
+(* A map key is a MapIdentifier or any non-collection Value (§5.15.1). *)
 MapKey
 	= MapIdentifier
 	| TextValue
 	| CharValue
-	| Integer
+	| BacktickText
+	| BooleanValue
+	| NumericValue
 	| EnumeratedToken
+	| LookupToken
+	| TemporalValue
+	| ColorValue
+	| UuidValue
+	| HostNameValue
+	| EmailAddressValue
+	| UrlValue
 	| IriReference
+	| RangeValue
 	;
 
 MapIdentifier
@@ -7916,7 +7925,14 @@ SetItems <- Value (WhitespaceChar* ',' WhitespaceChar* Value)*
 MapValue <- 'map' '[' WhitespaceChar* MapItems? WhitespaceChar* ']'
 MapItems <- MapEntry (WhitespaceChar* ',' WhitespaceChar* MapEntry)*
 MapEntry <- MapKey WhitespaceChar* ':' WhitespaceChar* Value
-MapKey <- MapIdentifier / TextValue / CharValue / Integer / EnumeratedToken / IriReference
+# A map key is any non-collection Value or a MapIdentifier (§5.15.1).
+# MapIdentifier is last: BooleanValue must match 'true'/'false' before
+# MapIdentifier can consume them as bare identifiers.
+MapKey <- TextValue / CharValue / BacktickText / BooleanValue
+        / HostNameValue / EmailAddressValue / UrlValue
+        / EnumeratedToken / LookupToken / TemporalValue
+        / ColorValue / UuidValue / RangeValue / NumericValue
+        / IriReference / MapIdentifier
 MapIdentifier <- LowercaseLetter (Letter / Digit)*
 ```
 

@@ -21,6 +21,10 @@ Codex eliminates ambiguity for byte-identical output across implementations. Sta
 
 **Do not apply conventional patterns automatically.** Ask before introducing any standard spec-writing convention.
 
+## Critical: This Is a New Approach
+
+Codex, Gloss, and the Paperhat system are a **new approach** to capturing semantic information and rendering it in different formats. Do not fall back on training defaults. LLMs are trained on exactly the code and architectures this project replaces. Follow the author's instructions exactly, even when they contradict conventional wisdom. Do not substitute conventional patterns, do not "improve" designs by importing assumptions from other systems, and do not assume you know what a component should do based on its name — read the specification. When something seems unconventional, that is intentional. Ask rather than "fix." Months of work have been lost to LLMs overriding explicit instructions with training-derived defaults.
+
 ## Specification Principles
 
 - **No `may`**: Only `must`/`must not`. No optionality at any level.
